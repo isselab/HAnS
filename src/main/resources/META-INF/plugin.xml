@@ -1,0 +1,21 @@
+<idea-plugin>
+    <id>org.easelab.HAnS</id>
+    <name>HAnS: Helping Annotate Software</name>
+    <vendor email="johmara@student.chalmers.se" url="http://www.johmara.dev">easelab</vendor>
+
+    <description><![CDATA[
+    Integrates FAXE to enable feature annotation
+    ]]></description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
