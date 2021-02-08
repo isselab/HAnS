@@ -1,13 +1,13 @@
-package feature-model;
+package featureModel;
 
 import com.intellij.lang.Language;
 
-public class SimpleLanguage extends Language {
+public class FeatureModelLanguage extends Language {
 
-    public static final SimpleLanguage INSTANCE = new SimpleLanguage();
+    public static final FeatureModelLanguage INSTANCE = new FeatureModelLanguage();
 
-    private SimpleLanguage() {
-        super("Simple");
+    private FeatureModelLanguage() {
+        super("FeatureModel");
     }
 
 }

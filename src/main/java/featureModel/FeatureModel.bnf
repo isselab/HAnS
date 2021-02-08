@@ -1,0 +1,20 @@
+{
+  parserClass="featureModel.parser.FeatureModelParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="FeatureModel"
+  psiImplClassSuffix="Impl"
+  psiPackage="featureModel.psi"
+  psiImplPackage="featureModel.psi.impl"
+
+  elementTypeHolderClass="featureModel.psi.FeatureModelTypes"
+  elementTypeClass="featureModel.psi.FeatureModelElementType"
+  tokenTypeClass="featureModel.psi.FeatureModelTokenType"
+}
+
+featureModelFile ::= projectName (('\n'|'\r\n')* feature)* (('\t'|'\n'|'\r\n')* EOF)
+
+projectName ::= FEATURENAME
+
+feature ::= (FEATURENAME | '\t' feature)
