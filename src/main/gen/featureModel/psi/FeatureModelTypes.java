@@ -11,7 +11,7 @@ public interface FeatureModelTypes {
   IElementType FEATURE = new FeatureModelElementType("FEATURE");
   IElementType PROJECT_NAME = new FeatureModelElementType("PROJECT_NAME");
 
-  IElementType EOF = new FeatureModelTokenType("EOF");
+  IElementType CRLF = new FeatureModelTokenType("CRLF");
   IElementType FEATURENAME = new FeatureModelTokenType("FEATURENAME");
 
   class Factory {

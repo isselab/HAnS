@@ -15,18 +15,21 @@ import com.intellij.psi.TokenType;
 %eof{  return;
 %eof}
 
-SPACE= ' '* -> skip ;
+CRLF=[\n|\r\n]
+SPACE= [' ']
 
-KEYWORDS= ('or'|'xor'|'?') -> skip ;
+KEYWORDS= ('or'|'xor'|'?')
 
-FEATURENAME= ([A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+)+;
+FEATURENAME= ([A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+)
 
 %state WAITING_VALUE
 
 %%
 
-<YYINITIAL> {FEATURENAME}                                { yybegin(YYINITIAL); return FeatureModelTypes.FEATURENAME; }
+<YYINITIAL> {FEATURENAME}+                                 { yybegin(YYINITIAL); return FeatureModelTypes.FEATURENAME; }
 
-<WAITING_VALUE> {SPACE}                                  { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE; }
+<WAITING_VALUE> {CRLF}({CRLF}|{SPACE})+                    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+({CRLF}|{SPACE})+                                          { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+<WAITING_VALUE> {SPACE}+                                   { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE; }
 
-[^]                                                      { return TokenType.BAD_CHARACTER; }
+[^]                                                        { return TokenType.BAD_CHARACTER; }

@@ -59,7 +59,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // projectName (('\n'|'\r\n')* feature)* (('\t'|'\n'|'\r\n')* EOF)
+  // projectName ((CRLF)* feature)* (('\t'|CRLF)*)
   static boolean featureModelFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile")) return false;
     if (!nextTokenIs(b, FEATURENAME)) return false;
@@ -72,7 +72,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (('\n'|'\r\n')* feature)*
+  // ((CRLF)* feature)*
   private static boolean featureModelFile_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile_1")) return false;
     while (true) {
@@ -83,7 +83,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // ('\n'|'\r\n')* feature
+  // (CRLF)* feature
   private static boolean featureModelFile_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile_1_0")) return false;
     boolean r;
@@ -94,55 +94,34 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ('\n'|'\r\n')*
+  // (CRLF)*
   private static boolean featureModelFile_1_0_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile_1_0_0")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!featureModelFile_1_0_0_0(b, l + 1)) break;
+      if (!consumeToken(b, CRLF)) break;
       if (!empty_element_parsed_guard_(b, "featureModelFile_1_0_0", c)) break;
     }
     return true;
   }
 
-  // '\n'|'\r\n'
-  private static boolean featureModelFile_1_0_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "featureModelFile_1_0_0_0")) return false;
-    boolean r;
-    r = consumeToken(b, "\\n");
-    if (!r) r = consumeToken(b, "\\r\\n");
-    return r;
-  }
-
-  // ('\t'|'\n'|'\r\n')* EOF
+  // ('\t'|CRLF)*
   private static boolean featureModelFile_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile_2")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = featureModelFile_2_0(b, l + 1);
-    r = r && consumeToken(b, EOF);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // ('\t'|'\n'|'\r\n')*
-  private static boolean featureModelFile_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "featureModelFile_2_0")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!featureModelFile_2_0_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "featureModelFile_2_0", c)) break;
+      if (!featureModelFile_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "featureModelFile_2", c)) break;
     }
     return true;
   }
 
-  // '\t'|'\n'|'\r\n'
-  private static boolean featureModelFile_2_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "featureModelFile_2_0_0")) return false;
+  // '\t'|CRLF
+  private static boolean featureModelFile_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "featureModelFile_2_0")) return false;
     boolean r;
     r = consumeToken(b, "\\t");
-    if (!r) r = consumeToken(b, "\\n");
-    if (!r) r = consumeToken(b, "\\r\\n");
+    if (!r) r = consumeToken(b, CRLF);
     return r;
   }
 
