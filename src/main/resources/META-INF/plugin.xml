@@ -13,10 +13,19 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+        <!-- &begin[FeatureModel] -->
         <fileType name="Feature Model File" implementationClass="se.ch.HAnS.featureModel.FeatureModelFileType"
                   fieldName="INSTANCE" language="FeatureModel" extensions="feature-model"/>
         <lang.parserDefinition language="FeatureModel"
                                implementationClass="se.ch.HAnS.featureModel.FeatureModelParserDefinition"/>
+        <!-- &end[FeatureModel] -->
+
+        <!-- &begin[FeatureToFolder] -->
+        <fileType name="Feature To Folder File" implementationClass="se.ch.HAnS.featureToFolder.FeatureToFolderFileType"
+                  fieldName="INSTANCE" language="FeatureToFolder" extensions="feature-to-folder"/>
+        <lang.parserDefinition language="FeatureModel"
+                               implementationClass="se.ch.HAnS.featureToFolder.FeatureToFolderParserDefinition"/>
+        <!-- &end[FeatureToFolder] -->
     </extensions>
 
     <actions>
