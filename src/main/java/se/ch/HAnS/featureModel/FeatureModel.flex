@@ -1,8 +1,8 @@
-package featureModel;
+package se.ch.HAnS.featureModel;
 
-import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import featureModel.psi.FeatureModelTypes;
+import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.TokenType;
 
 %%

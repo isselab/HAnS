@@ -1,4 +1,4 @@
-package featureModel;
+package se.ch.HAnS.featureModel;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
@@ -11,12 +11,10 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import featureModel.parser.FeatureModelParser;
-import featureModel.psi.FeatureModelFile;
-import featureModel.psi.FeatureModelTypes;
+import se.ch.HAnS.featureModel.parser.FeatureModelParser;
+import se.ch.HAnS.featureModel.psi.FeatureModelFile;
+import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import org.jetbrains.annotations.NotNull;
-
-import java.awt.*;
 
 public class FeatureModelParserDefinition implements ParserDefinition {
 

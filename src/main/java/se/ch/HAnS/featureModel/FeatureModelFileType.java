@@ -1,4 +1,4 @@
-package featureModel;
+package se.ch.HAnS.featureModel;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;

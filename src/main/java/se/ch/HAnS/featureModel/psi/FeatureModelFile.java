@@ -1,11 +1,10 @@
-package featureModel.psi;
+package se.ch.HAnS.featureModel.psi;
 
 import com.intellij.extapi.psi.PsiFileBase;
-import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
-import featureModel.FeatureModelFileType;
-import featureModel.FeatureModelLanguage;
+import se.ch.HAnS.featureModel.FeatureModelFileType;
+import se.ch.HAnS.featureModel.FeatureModelLanguage;
 import org.jetbrains.annotations.NotNull;
 
 public class FeatureModelFile extends PsiFileBase {

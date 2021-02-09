@@ -13,10 +13,10 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <fileType name="Feature Model File" implementationClass="featureModel.FeatureModelFileType"
+        <fileType name="Feature Model File" implementationClass="se.ch.HAnS.featureModel.FeatureModelFileType"
                   fieldName="INSTANCE" language="FeatureModel" extensions="feature-model"/>
         <lang.parserDefinition language="FeatureModel"
-                               implementationClass="featureModel.FeatureModelParserDefinition"/>
+                               implementationClass="se.ch.HAnS.featureModel.FeatureModelParserDefinition"/>
     </extensions>
 
     <actions>

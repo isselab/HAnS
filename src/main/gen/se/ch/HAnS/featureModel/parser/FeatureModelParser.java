@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
-package featureModel.parser;
+package se.ch.HAnS.featureModel.parser;
 
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static featureModel.psi.FeatureModelTypes.*;
+import static se.ch.HAnS.featureModel.psi.FeatureModelTypes.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;

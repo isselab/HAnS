@@ -1,5 +1,5 @@
 // This is a generated file. Not intended for manual editing.
-package featureModel.psi;
+package se.ch.HAnS.featureModel.psi;
 
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;

@@ -1,10 +1,10 @@
 // This is a generated file. Not intended for manual editing.
-package featureModel.psi;
+package se.ch.HAnS.featureModel.psi;
 
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
-import featureModel.psi.impl.*;
+import se.ch.HAnS.featureModel.psi.impl.*;
 
 public interface FeatureModelTypes {
 

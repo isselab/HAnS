@@ -1,4 +1,4 @@
-package featureModel;
+package se.ch.HAnS.featureModel;
 
 import com.intellij.lang.Language;
 
