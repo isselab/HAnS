@@ -31,11 +31,14 @@ public class FeatureModelParserDefinition implements ParserDefinition {
         return new FeatureModelParser();
     }
 
+    // &begin[FeatureModel::File]
     @Override
     public IFileElementType getFileNodeType() {
         return FILE;
     }
+    // &end[FeatureModel::File]
 
+    // begin[FeatureModel::Language]
     @Override
     public @NotNull TokenSet getWhitespaceTokens() {
         return WHITE_SPACES;
@@ -55,14 +58,17 @@ public class FeatureModelParserDefinition implements ParserDefinition {
     public @NotNull PsiElement createElement(ASTNode node) {
         return FeatureModelTypes.Factory.createElement(node);
     }
+    // end[FeatureModel::Language]
 
+    // &begin[FeatureModel::File]
     @Override
     public PsiFile createFile(FileViewProvider viewProvider) {
         return new FeatureModelFile(viewProvider);
     }
+    // &end[FeatureModel::File]
 
     @Override
     public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
-        return SpaceRequirements.MAY;
+        return SpaceRequirements.MAY; // &line[FeatureModel::Language]
     }
 }

@@ -13,27 +13,23 @@ public class FeatureModelFileType extends LanguageFileType {
         super(FeatureModelLanguage.INSTANCE);
     }
 
-    @NotNull
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "Feature Model File";
     }
 
-    @NotNull
     @Override
-    public String getDescription() {
+    public @NotNull String getDescription() {
         return "Feature model language file";
     }
 
-    @NotNull
     @Override
-    public String getDefaultExtension() {
+    public @NotNull String getDefaultExtension() {
         return "feature-model";
     }
 
-    @Nullable
     @Override
-    public Icon getIcon() {
+    public @Nullable Icon getIcon() {
         return null;
         //return SimpleIcons.FILE;
     }
