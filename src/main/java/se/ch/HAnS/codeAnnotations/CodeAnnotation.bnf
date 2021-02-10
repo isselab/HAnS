@@ -1,0 +1,24 @@
+{
+  parserClass="se.ch.HAnS.fileAnnotations.parser.CodeAnnotationParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="FileAnnotations"
+  psiImplClassSuffix="Impl"
+  psiPackage="se.ch.HAnS.codeAnnotations.psi"
+  psiImplPackage="se.ch.HAnS.fileAnnotations.psi.impl"
+
+  elementTypeHolderClass="se.ch.HAnS.fileAnnotations.psi.FileAnnotationsTypes"
+  elementTypeClass="se.ch.HAnS.fileAnnotations.psi.FileAnnotationsElementType"
+  tokenTypeClass="se.ch.HAnS.fileAnnotations.psi.FileAnnotationsTokenType"
+}
+
+marker ::= (beginmarker|endmarker|linemarker)
+
+beginmarker ::= BEGIN SPACE* parameter
+endmarker ::= END SPACE* parameter
+linemarker ::= LINE SPACE* parameter
+
+parameter ::= (OBRACKET SPACE* lpq ((SPACE* CS)? SPACE+ lpq)* SPACE* CBRACKET)
+
+lpq ::= FEATURENAME (SEPARATOR FEATURENAME)*
