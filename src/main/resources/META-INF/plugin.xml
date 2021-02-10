@@ -12,7 +12,6 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
         <!-- &begin[FeatureModel] -->
         <fileType name="Feature Model File" implementationClass="se.ch.HAnS.featureModel.FeatureModelFileType"
                   fieldName="INSTANCE" language="FeatureModel" extensions="feature-model"/>
@@ -20,12 +19,19 @@
                                implementationClass="se.ch.HAnS.featureModel.FeatureModelParserDefinition"/>
         <!-- &end[FeatureModel] -->
 
-        <!-- &begin[FeatureToFolder] -->
+        <!-- &begin[FileAnnotations] -->
+        <fileType name="File Annotations File" implementationClass="se.ch.HAnS.fileAnnotations.FileAnnotationsFileType"
+                  fieldName="INSTANCE" language="FileAnnotations" extensions="feature-to-file"/>
+        <lang.parserDefinition language="FileAnnotations"
+                                implementationClass="se.ch.HAnS.fileAnnotations.FileAnnotationsParserDefinition"/>
+        <!-- &end[FileAnnotations] -->
+
+        <!-- &begin[FolderAnnotations] -->
         <fileType name="Feature To Folder File" implementationClass="se.ch.HAnS.folderAnnotations.FolderAnnotationFileType"
                   fieldName="INSTANCE" language="FolderAnnotation" extensions="feature-to-folder"/>
         <lang.parserDefinition language="FolderAnnotation"
                                implementationClass="se.ch.HAnS.folderAnnotations.FolderAnnotationParserDefinition"/>
-        <!-- &end[FeatureToFolder] -->
+        <!-- &end[FolderAnnotations] -->
     </extensions>
 
     <actions>

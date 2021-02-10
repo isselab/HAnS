@@ -5,3 +5,6 @@ HAnS
     FolderAnnotation
         Language
         File
+    FileAnnotation
+        Language
+        File
