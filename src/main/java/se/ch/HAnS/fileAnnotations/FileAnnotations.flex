@@ -19,7 +19,7 @@ CRLF=[\n|\r\n]
 
 NEWLINE=[\n]
 
-CS = [\,]
+CS = [,]
 
 CM = [\"]
 
@@ -43,11 +43,11 @@ STRING = [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+)]
 
 <YYINITIAL> {DOT}                                          { yybegin(YYINITIAL); return FileAnnotationsTypes.DOT; }
 
-<YYINITIAL> {CS}                                           { yybegin(YYINITIAL); return FolderAnnotationTypes.CS; }
+<YYINITIAL> {CS}                                           { yybegin(YYINITIAL); return FileAnnotationsTypes.CS; }
 
-<YYINITIAL> {CM}                                           { yybegin(YYINITIAL); return FolderAnnotationTypes.CM; }
+<YYINITIAL> {CM}                                           { yybegin(YYINITIAL); return FileAnnotationsTypes.CM; }
 
-<YYINITIAL> {NEWLINE}                                      { yybegin(YYINITIAL); return FileAnnotationsTypes.NEWLINE; }
+<YYINITIAL> {NEWLINE}+                                     { yybegin(YYINITIAL); return FileAnnotationsTypes.NEWLINE; }
 
 <WAITING_VALUE> {CRLF}({CRLF}|{SPACE})+                    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 
