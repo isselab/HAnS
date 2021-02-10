@@ -2,4 +2,6 @@ HAnS
     FeatureModel
         Language
         File
-    FeatureToFolder
+    FolderAnnotation
+        Language
+        File

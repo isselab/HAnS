@@ -31,11 +31,14 @@ public class FolderAnnotationParserDefinition implements ParserDefinition {
         return new FolderAnnotationParser();
     }
 
+    // &begin[FolderAnnotation::File]
     @Override
     public IFileElementType getFileNodeType() {
         return FILE;
     }
+    // &end[FolderAnnotation::File]
 
+    // &begin[FolderAnnotation::Language]
     @Override
     public @NotNull TokenSet getWhitespaceTokens() {
         return WHITE_SPACES;
@@ -55,14 +58,17 @@ public class FolderAnnotationParserDefinition implements ParserDefinition {
     public @NotNull PsiElement createElement(ASTNode node) {
         return FolderAnnotationTypes.Factory.createElement(node);
     }
+    // &end[FolderAnnotation::Language]
 
+    // &begin[FolderAnnotation::File]
     @Override
     public PsiFile createFile(FileViewProvider viewProvider) {
         return new FolderAnnotationFile(viewProvider);
     }
+    // &end[FolderAnnotation::File]
 
     @Override
     public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
-        return SpaceRequirements.MAY;
+        return SpaceRequirements.MAY; // &line[FolderAnnotation::Language]
     }
 }
