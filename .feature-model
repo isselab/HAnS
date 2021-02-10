@@ -2,3 +2,9 @@ HAnS
     FeatureModel
         Language
         File
+    FolderAnnotations
+        Language
+        File
+    FileAnnotations
+        Language
+        File
