@@ -15,8 +15,12 @@
         <!-- Add your extensions here -->
         <fileType name="Feature Model File" implementationClass="se.ch.HAnS.featureModel.FeatureModelFileType"
                   fieldName="INSTANCE" language="FeatureModel" extensions="feature-model"/>
+        <fileType name="File Annotations File" implementationClass="se.ch.HAnS.fileAnnotations.FileAnnotationsFileType"
+                  fieldName="INSTANCE" language="FileAnnotations" extensions="feature-to-file"/>
         <lang.parserDefinition language="FeatureModel"
                                implementationClass="se.ch.HAnS.featureModel.FeatureModelParserDefinition"/>
+        <lang.parserDefinition language="FileAnnotations"
+                               implementationClass="se.ch.HAnS.fileAnnotations.FileAnnotationsParserDefinition"/>
     </extensions>
 
     <actions>

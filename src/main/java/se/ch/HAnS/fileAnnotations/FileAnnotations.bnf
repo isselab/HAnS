@@ -1,0 +1,30 @@
+{
+  parserClass="se.ch.HAnS.fileAnnotations.parser.FileAnnotationsParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="FileAnnotations"
+  psiImplClassSuffix="Impl"
+  psiPackage="se.ch.HAnS.fileAnnotations.psi"
+  psiImplPackage="se.ch.HAnS.fileAnnotations.psi.impl"
+
+  elementTypeHolderClass="se.ch.HAnS.fileAnnotations.psi.FileAnnotationsTypes"
+  elementTypeClass="se.ch.HAnS.fileAnnotations.psi.FileAnnotationsElementType"
+  tokenTypeClass="se.ch.HAnS.fileAnnotations.psi.FileAnnotationsTokenType"
+}
+
+fileAnnotationsFile ::= (fileAnnotation NEWLINE*)*
+
+fileAnnotation ::= fileReferences COLON? NEWLINE+ lpqReferences
+
+fileReferences ::= (fileReference (SPACE* fileReference)* SPACE*) | (fileReference (SPACE* CS SPACE* fileReference)* SPACE*)
+
+fileReference ::= (CM fileName CM) | (fileName)
+
+fileName ::= (STRING DOT STRING)|STRING
+
+lpqReferences ::= (lpq (SPACE* lpq)* SPACE*) | (lpq (SPACE* CS SPACE* lpq)* SPACE*)
+
+lpq ::= featureName (SEPARATOR featureName)*
+
+featureName ::= STRING
