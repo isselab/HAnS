@@ -1,5 +1,5 @@
 FileAnnotationsLanguage.java FileAnnotations.bnf FileAnnotations.flex FileAnnotationsLexerAdapter.java
-FileAnnotations::Language
+FileAnnotation::Language
 
 FileAnnotationsFileType.java
-FileAnnotations::File
+FileAnnotation::File

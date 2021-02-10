@@ -1,5 +1,5 @@
 FileAnnotationsFile.java
-FileAnnotations::File
+FileAnnotation::File
 
 FileAnnotationsElementType.java FileAnnotationsTokenType.java
-FileAnnotations::Language
+FileAnnotation::Language
