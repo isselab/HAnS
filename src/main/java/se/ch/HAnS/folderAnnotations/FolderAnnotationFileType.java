@@ -1,18 +1,16 @@
-package se.ch.HAnS.featureToFolder;
+package se.ch.HAnS.folderAnnotations;
 
-import javax.swing.Icon;
-
-import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class FeatureToFolderFileType extends LanguageFileType {
-    public static final FeatureToFolderFileType INSTANCE = new FeatureToFolderFileType();
+import javax.swing.*;
 
-    public FeatureToFolderFileType() {
-        super(FeatureToFolderLanguage.INSTANCE);
+public class FolderAnnotationFileType extends LanguageFileType {
+    public static final FolderAnnotationFileType INSTANCE = new FolderAnnotationFileType();
+
+    public FolderAnnotationFileType() {
+        super(FolderAnnotationLanguage.INSTANCE);
     }
 
     @Override

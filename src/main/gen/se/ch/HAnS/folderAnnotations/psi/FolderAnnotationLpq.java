@@ -1,10 +1,10 @@
 // This is a generated file. Not intended for manual editing.
-package se.ch.HAnS.featureToFolder.psi;
+package se.ch.HAnS.folderAnnotations.psi;
 
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface FeatureToFolderLpq extends PsiElement {
+public interface FolderAnnotationLpq extends PsiElement {
 
 }

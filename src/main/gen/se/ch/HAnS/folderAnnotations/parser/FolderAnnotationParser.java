@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
-package se.ch.HAnS.featureToFolder.parser;
+package se.ch.HAnS.folderAnnotations.parser;
 
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static se.ch.HAnS.featureToFolder.psi.FeatureToFolderTypes.*;
+import static se.ch.HAnS.folderAnnotations.psi.FolderAnnotationTypes.*;
 import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
@@ -12,7 +12,7 @@ import com.intellij.lang.PsiParser;
 import com.intellij.lang.LightPsiParser;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
-public class FeatureToFolderParser implements PsiParser, LightPsiParser {
+public class FolderAnnotationParser implements PsiParser, LightPsiParser {
 
   public ASTNode parse(IElementType t, PsiBuilder b) {
     parseLight(t, b);
@@ -36,9 +36,10 @@ public class FeatureToFolderParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ' '* lpq (' '* ','* ' '* lpq)* CRLF*
+  // CRLF* lpq (CRLF* CS* CRLF* lpq)* CRLF*
   static boolean featureToFolderFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureToFolderFile")) return false;
+    if (!nextTokenIs(b, "", CRLF, FEATURENAME)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = featureToFolderFile_0(b, l + 1);
@@ -49,18 +50,18 @@ public class FeatureToFolderParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ' '*
+  // CRLF*
   private static boolean featureToFolderFile_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureToFolderFile_0")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!consumeToken(b, " ")) break;
+      if (!consumeToken(b, CRLF)) break;
       if (!empty_element_parsed_guard_(b, "featureToFolderFile_0", c)) break;
     }
     return true;
   }
 
-  // (' '* ','* ' '* lpq)*
+  // (CRLF* CS* CRLF* lpq)*
   private static boolean featureToFolderFile_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureToFolderFile_2")) return false;
     while (true) {
@@ -71,7 +72,7 @@ public class FeatureToFolderParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // ' '* ','* ' '* lpq
+  // CRLF* CS* CRLF* lpq
   private static boolean featureToFolderFile_2_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureToFolderFile_2_0")) return false;
     boolean r;
@@ -84,34 +85,34 @@ public class FeatureToFolderParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ' '*
+  // CRLF*
   private static boolean featureToFolderFile_2_0_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureToFolderFile_2_0_0")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!consumeToken(b, " ")) break;
+      if (!consumeToken(b, CRLF)) break;
       if (!empty_element_parsed_guard_(b, "featureToFolderFile_2_0_0", c)) break;
     }
     return true;
   }
 
-  // ','*
+  // CS*
   private static boolean featureToFolderFile_2_0_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureToFolderFile_2_0_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!consumeToken(b, ",")) break;
+      if (!consumeToken(b, CS)) break;
       if (!empty_element_parsed_guard_(b, "featureToFolderFile_2_0_1", c)) break;
     }
     return true;
   }
 
-  // ' '*
+  // CRLF*
   private static boolean featureToFolderFile_2_0_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureToFolderFile_2_0_2")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!consumeToken(b, " ")) break;
+      if (!consumeToken(b, CRLF)) break;
       if (!empty_element_parsed_guard_(b, "featureToFolderFile_2_0_2", c)) break;
     }
     return true;
@@ -129,7 +130,7 @@ public class FeatureToFolderParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FEATURENAME ('::'FEATURENAME)*
+  // FEATURENAME (SEPARATOR FEATURENAME)*
   public static boolean lpq(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "lpq")) return false;
     if (!nextTokenIs(b, FEATURENAME)) return false;
@@ -141,7 +142,7 @@ public class FeatureToFolderParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ('::'FEATURENAME)*
+  // (SEPARATOR FEATURENAME)*
   private static boolean lpq_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "lpq_1")) return false;
     while (true) {
@@ -152,13 +153,12 @@ public class FeatureToFolderParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // '::'FEATURENAME
+  // SEPARATOR FEATURENAME
   private static boolean lpq_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "lpq_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, "::");
-    r = r && consumeToken(b, FEATURENAME);
+    r = consumeTokens(b, 0, SEPARATOR, FEATURENAME);
     exit_section_(b, m, null, r);
     return r;
   }

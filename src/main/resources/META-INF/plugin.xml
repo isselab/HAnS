@@ -21,10 +21,10 @@
         <!-- &end[FeatureModel] -->
 
         <!-- &begin[FeatureToFolder] -->
-        <fileType name="Feature To Folder File" implementationClass="se.ch.HAnS.featureToFolder.FeatureToFolderFileType"
-                  fieldName="INSTANCE" language="FeatureToFolder" extensions="feature-to-folder"/>
-        <lang.parserDefinition language="FeatureModel"
-                               implementationClass="se.ch.HAnS.featureToFolder.FeatureToFolderParserDefinition"/>
+        <fileType name="Feature To Folder File" implementationClass="se.ch.HAnS.folderAnnotations.FolderAnnotationFileType"
+                  fieldName="INSTANCE" language="FolderAnnotation" extensions="feature-to-folder"/>
+        <lang.parserDefinition language="FolderAnnotation"
+                               implementationClass="se.ch.HAnS.folderAnnotations.FolderAnnotationParserDefinition"/>
         <!-- &end[FeatureToFolder] -->
     </extensions>
 

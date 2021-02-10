@@ -1,13 +1,13 @@
-package se.ch.HAnS.featureToFolder;
+package se.ch.HAnS.folderAnnotations;
 
 import com.intellij.psi.tree.IElementType;
-import se.ch.HAnS.featureToFolder.psi.FeatureToFolderTypes;
-import com.intellij.lexer.FlexLexer;
+import se.ch.HAnS.folderAnnotations.psi.FolderAnnotationTypes;
 import com.intellij.psi.TokenType;
+import com.intellij.lexer.FlexLexer;
 
 %%
 
-%class FeatureToFolderLexer
+%class FolderAnnotationLexer
 %implements FlexLexer
 %unicode
 %function advance
@@ -17,6 +17,8 @@ import com.intellij.psi.TokenType;
 
 CRLF=[\n|\r\n]
 SPACE= [' ']
+SEPARATOR = [:]
+CS = [,]
 
 FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 
@@ -24,7 +26,9 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 
 %%
 
-<YYINITIAL> {FEATURENAME}+                                 { yybegin(YYINITIAL); return FeatureToFolderTypes.FEATURENAME; }
+<YYINITIAL> {FEATURENAME}+                                 { yybegin(YYINITIAL); return FolderAnnotationTypes.FEATURENAME; }
+<YYINITIAL> {SEPARATOR}{SEPARATOR}                         { yybegin(YYINITIAL); return FolderAnnotationTypes.SEPARATOR; }
+<YYINITIAL> {CS}                                           { yybegin(YYINITIAL); return FolderAnnotationTypes.CS; }
 
 <WAITING_VALUE> {CRLF}({CRLF}|{SPACE})+                    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 

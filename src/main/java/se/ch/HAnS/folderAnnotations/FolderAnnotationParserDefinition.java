@@ -1,4 +1,4 @@
-package se.ch.HAnS.featureToFolder;
+package se.ch.HAnS.folderAnnotations;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
@@ -12,23 +12,23 @@ import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.featureToFolder.parser.FeatureToFolderParser;
-import se.ch.HAnS.featureToFolder.psi.FeatureToFolderFile;
-import se.ch.HAnS.featureToFolder.psi.FeatureToFolderTypes;
+import se.ch.HAnS.folderAnnotations.parser.FolderAnnotationParser;
+import se.ch.HAnS.folderAnnotations.psi.FolderAnnotationFile;
+import se.ch.HAnS.folderAnnotations.psi.FolderAnnotationTypes;
 
-public class FeatureToFolderParserDefinition implements ParserDefinition {
+public class FolderAnnotationParserDefinition implements ParserDefinition {
 
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final IFileElementType FILE = new IFileElementType(FeatureToFolderLanguage.INSTANCE);
+    public static final IFileElementType FILE = new IFileElementType(FolderAnnotationLanguage.INSTANCE);
 
     @Override
     public @NotNull Lexer createLexer(Project project) {
-        return new FeatureToFolderLexerAdapter();
+        return new FolderAnnotationLexerAdapter();
     }
 
     @Override
     public PsiParser createParser(Project project) {
-        return new FeatureToFolderParser();
+        return new FolderAnnotationParser();
     }
 
     @Override
@@ -53,12 +53,12 @@ public class FeatureToFolderParserDefinition implements ParserDefinition {
 
     @Override
     public @NotNull PsiElement createElement(ASTNode node) {
-        return FeatureToFolderTypes.Factory.createElement(node);
+        return FolderAnnotationTypes.Factory.createElement(node);
     }
 
     @Override
     public PsiFile createFile(FileViewProvider viewProvider) {
-        return new FeatureToFolderFile(viewProvider);
+        return new FolderAnnotationFile(viewProvider);
     }
 
     @Override
