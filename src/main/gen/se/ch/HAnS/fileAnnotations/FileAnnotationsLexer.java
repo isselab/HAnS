@@ -92,8 +92,8 @@ class FileAnnotationsLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\13\0\26\0\41\0\41\0\26\0\26\0\54"+
-    "\0\26\0\67\0\102\0\115\0\26";
+    "\0\0\0\13\0\26\0\41\0\54\0\26\0\26\0\67"+
+    "\0\26\0\102\0\115\0\130\0\26";
 
   private static int [] zzUnpackRowMap() {
     int [] result = new int[13];
@@ -121,13 +121,13 @@ class FileAnnotationsLexer implements FlexLexer {
   private static final String ZZ_TRANS_PACKED_0 =
     "\1\3\1\4\1\5\1\6\1\7\1\4\1\10\1\11"+
     "\1\12\2\13\1\3\2\4\2\3\1\14\3\3\1\4"+
-    "\1\14\14\0\2\4\2\0\1\4\3\0\2\4\6\0"+
-    "\1\15\14\0\3\12\1\0\2\4\2\0\1\4\2\0"+
-    "\1\12\2\13\1\0\2\4\2\0\1\14\3\0\1\4"+
-    "\1\14";
+    "\1\14\14\0\2\4\2\0\1\4\3\0\2\4\1\0"+
+    "\1\4\1\5\2\0\1\4\3\0\2\4\6\0\1\15"+
+    "\14\0\3\12\1\0\2\4\2\0\1\4\2\0\1\12"+
+    "\2\13\1\0\2\4\2\0\1\14\3\0\1\4\1\14";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[88];
+    int [] result = new int[99];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -497,12 +497,12 @@ class FileAnnotationsLexer implements FlexLexer {
             // fall through
           case 13: break;
           case 4: 
-            { yybegin(YYINITIAL); return FolderAnnotationTypes.CS;
+            { yybegin(YYINITIAL); return FileAnnotationsTypes.CS;
             } 
             // fall through
           case 14: break;
           case 5: 
-            { yybegin(YYINITIAL); return FolderAnnotationTypes.CM;
+            { yybegin(YYINITIAL); return FileAnnotationsTypes.CM;
             } 
             // fall through
           case 15: break;

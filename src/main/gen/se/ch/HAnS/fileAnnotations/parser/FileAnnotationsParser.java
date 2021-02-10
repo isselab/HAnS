@@ -177,139 +177,89 @@ public class FileAnnotationsParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (fileReference (SPACE* fileReference)* SPACE*) | (fileReference (SPACE* CS SPACE* fileReference)* SPACE*)
+  // fileReference ((SPACE* CS)? SPACE* fileReference)* SPACE*
   public static boolean fileReferences(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "fileReferences")) return false;
     if (!nextTokenIs(b, "<file references>", CM, STRING)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, FILE_REFERENCES, "<file references>");
-    r = fileReferences_0(b, l + 1);
-    if (!r) r = fileReferences_1(b, l + 1);
+    r = fileReference(b, l + 1);
+    r = r && fileReferences_1(b, l + 1);
+    r = r && fileReferences_2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // fileReference (SPACE* fileReference)* SPACE*
-  private static boolean fileReferences_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fileReferences_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = fileReference(b, l + 1);
-    r = r && fileReferences_0_1(b, l + 1);
-    r = r && fileReferences_0_2(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (SPACE* fileReference)*
-  private static boolean fileReferences_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fileReferences_0_1")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!fileReferences_0_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "fileReferences_0_1", c)) break;
-    }
-    return true;
-  }
-
-  // SPACE* fileReference
-  private static boolean fileReferences_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fileReferences_0_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = fileReferences_0_1_0_0(b, l + 1);
-    r = r && fileReference(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // SPACE*
-  private static boolean fileReferences_0_1_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fileReferences_0_1_0_0")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!consumeToken(b, SPACE)) break;
-      if (!empty_element_parsed_guard_(b, "fileReferences_0_1_0_0", c)) break;
-    }
-    return true;
-  }
-
-  // SPACE*
-  private static boolean fileReferences_0_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fileReferences_0_2")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!consumeToken(b, SPACE)) break;
-      if (!empty_element_parsed_guard_(b, "fileReferences_0_2", c)) break;
-    }
-    return true;
-  }
-
-  // fileReference (SPACE* CS SPACE* fileReference)* SPACE*
+  // ((SPACE* CS)? SPACE* fileReference)*
   private static boolean fileReferences_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "fileReferences_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = fileReference(b, l + 1);
-    r = r && fileReferences_1_1(b, l + 1);
-    r = r && fileReferences_1_2(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (SPACE* CS SPACE* fileReference)*
-  private static boolean fileReferences_1_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fileReferences_1_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!fileReferences_1_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "fileReferences_1_1", c)) break;
+      if (!fileReferences_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "fileReferences_1", c)) break;
     }
     return true;
   }
 
-  // SPACE* CS SPACE* fileReference
-  private static boolean fileReferences_1_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fileReferences_1_1_0")) return false;
+  // (SPACE* CS)? SPACE* fileReference
+  private static boolean fileReferences_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fileReferences_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = fileReferences_1_1_0_0(b, l + 1);
-    r = r && consumeToken(b, CS);
-    r = r && fileReferences_1_1_0_2(b, l + 1);
+    r = fileReferences_1_0_0(b, l + 1);
+    r = r && fileReferences_1_0_1(b, l + 1);
     r = r && fileReference(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
+  // (SPACE* CS)?
+  private static boolean fileReferences_1_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fileReferences_1_0_0")) return false;
+    fileReferences_1_0_0_0(b, l + 1);
+    return true;
+  }
+
+  // SPACE* CS
+  private static boolean fileReferences_1_0_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fileReferences_1_0_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = fileReferences_1_0_0_0_0(b, l + 1);
+    r = r && consumeToken(b, CS);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
   // SPACE*
-  private static boolean fileReferences_1_1_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fileReferences_1_1_0_0")) return false;
+  private static boolean fileReferences_1_0_0_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fileReferences_1_0_0_0_0")) return false;
     while (true) {
       int c = current_position_(b);
       if (!consumeToken(b, SPACE)) break;
-      if (!empty_element_parsed_guard_(b, "fileReferences_1_1_0_0", c)) break;
+      if (!empty_element_parsed_guard_(b, "fileReferences_1_0_0_0_0", c)) break;
     }
     return true;
   }
 
   // SPACE*
-  private static boolean fileReferences_1_1_0_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fileReferences_1_1_0_2")) return false;
+  private static boolean fileReferences_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fileReferences_1_0_1")) return false;
     while (true) {
       int c = current_position_(b);
       if (!consumeToken(b, SPACE)) break;
-      if (!empty_element_parsed_guard_(b, "fileReferences_1_1_0_2", c)) break;
+      if (!empty_element_parsed_guard_(b, "fileReferences_1_0_1", c)) break;
     }
     return true;
   }
 
   // SPACE*
-  private static boolean fileReferences_1_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fileReferences_1_2")) return false;
+  private static boolean fileReferences_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fileReferences_2")) return false;
     while (true) {
       int c = current_position_(b);
       if (!consumeToken(b, SPACE)) break;
-      if (!empty_element_parsed_guard_(b, "fileReferences_1_2", c)) break;
+      if (!empty_element_parsed_guard_(b, "fileReferences_2", c)) break;
     }
     return true;
   }
@@ -350,139 +300,89 @@ public class FileAnnotationsParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (lpq (SPACE* lpq)* SPACE*) | (lpq (SPACE* CS SPACE* lpq)* SPACE*)
+  // lpq ((SPACE* CS)? SPACE* lpq)* SPACE*
   public static boolean lpqReferences(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "lpqReferences")) return false;
     if (!nextTokenIs(b, STRING)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = lpqReferences_0(b, l + 1);
-    if (!r) r = lpqReferences_1(b, l + 1);
+    r = lpq(b, l + 1);
+    r = r && lpqReferences_1(b, l + 1);
+    r = r && lpqReferences_2(b, l + 1);
     exit_section_(b, m, LPQ_REFERENCES, r);
     return r;
   }
 
-  // lpq (SPACE* lpq)* SPACE*
-  private static boolean lpqReferences_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "lpqReferences_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = lpq(b, l + 1);
-    r = r && lpqReferences_0_1(b, l + 1);
-    r = r && lpqReferences_0_2(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (SPACE* lpq)*
-  private static boolean lpqReferences_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "lpqReferences_0_1")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!lpqReferences_0_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "lpqReferences_0_1", c)) break;
-    }
-    return true;
-  }
-
-  // SPACE* lpq
-  private static boolean lpqReferences_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "lpqReferences_0_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = lpqReferences_0_1_0_0(b, l + 1);
-    r = r && lpq(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // SPACE*
-  private static boolean lpqReferences_0_1_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "lpqReferences_0_1_0_0")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!consumeToken(b, SPACE)) break;
-      if (!empty_element_parsed_guard_(b, "lpqReferences_0_1_0_0", c)) break;
-    }
-    return true;
-  }
-
-  // SPACE*
-  private static boolean lpqReferences_0_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "lpqReferences_0_2")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!consumeToken(b, SPACE)) break;
-      if (!empty_element_parsed_guard_(b, "lpqReferences_0_2", c)) break;
-    }
-    return true;
-  }
-
-  // lpq (SPACE* CS SPACE* lpq)* SPACE*
+  // ((SPACE* CS)? SPACE* lpq)*
   private static boolean lpqReferences_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "lpqReferences_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = lpq(b, l + 1);
-    r = r && lpqReferences_1_1(b, l + 1);
-    r = r && lpqReferences_1_2(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (SPACE* CS SPACE* lpq)*
-  private static boolean lpqReferences_1_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "lpqReferences_1_1")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!lpqReferences_1_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "lpqReferences_1_1", c)) break;
+      if (!lpqReferences_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "lpqReferences_1", c)) break;
     }
     return true;
   }
 
-  // SPACE* CS SPACE* lpq
-  private static boolean lpqReferences_1_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "lpqReferences_1_1_0")) return false;
+  // (SPACE* CS)? SPACE* lpq
+  private static boolean lpqReferences_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "lpqReferences_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = lpqReferences_1_1_0_0(b, l + 1);
-    r = r && consumeToken(b, CS);
-    r = r && lpqReferences_1_1_0_2(b, l + 1);
+    r = lpqReferences_1_0_0(b, l + 1);
+    r = r && lpqReferences_1_0_1(b, l + 1);
     r = r && lpq(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
+  // (SPACE* CS)?
+  private static boolean lpqReferences_1_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "lpqReferences_1_0_0")) return false;
+    lpqReferences_1_0_0_0(b, l + 1);
+    return true;
+  }
+
+  // SPACE* CS
+  private static boolean lpqReferences_1_0_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "lpqReferences_1_0_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = lpqReferences_1_0_0_0_0(b, l + 1);
+    r = r && consumeToken(b, CS);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
   // SPACE*
-  private static boolean lpqReferences_1_1_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "lpqReferences_1_1_0_0")) return false;
+  private static boolean lpqReferences_1_0_0_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "lpqReferences_1_0_0_0_0")) return false;
     while (true) {
       int c = current_position_(b);
       if (!consumeToken(b, SPACE)) break;
-      if (!empty_element_parsed_guard_(b, "lpqReferences_1_1_0_0", c)) break;
+      if (!empty_element_parsed_guard_(b, "lpqReferences_1_0_0_0_0", c)) break;
     }
     return true;
   }
 
   // SPACE*
-  private static boolean lpqReferences_1_1_0_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "lpqReferences_1_1_0_2")) return false;
+  private static boolean lpqReferences_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "lpqReferences_1_0_1")) return false;
     while (true) {
       int c = current_position_(b);
       if (!consumeToken(b, SPACE)) break;
-      if (!empty_element_parsed_guard_(b, "lpqReferences_1_1_0_2", c)) break;
+      if (!empty_element_parsed_guard_(b, "lpqReferences_1_0_1", c)) break;
     }
     return true;
   }
 
   // SPACE*
-  private static boolean lpqReferences_1_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "lpqReferences_1_2")) return false;
+  private static boolean lpqReferences_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "lpqReferences_2")) return false;
     while (true) {
       int c = current_position_(b);
       if (!consumeToken(b, SPACE)) break;
-      if (!empty_element_parsed_guard_(b, "lpqReferences_1_2", c)) break;
+      if (!empty_element_parsed_guard_(b, "lpqReferences_2", c)) break;
     }
     return true;
   }
