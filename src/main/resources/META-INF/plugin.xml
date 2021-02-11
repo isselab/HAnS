@@ -32,6 +32,12 @@
         <lang.parserDefinition language="FolderAnnotation"
                                implementationClass="se.ch.HAnS.folderAnnotations.FolderAnnotationParserDefinition"/>
         <!-- &end[FolderAnnotations] -->
+
+        <!-- &begin[CodeAnnotations] -->
+        <lang.parserDefinition language=""
+                               implementationClass="se.ch.HAnS.codeAnnotations.CodeAnnotationParserDefinition"/>
+        <!-- &end[CodeAnnotations] -->
+
     </extensions>
 
     <actions>

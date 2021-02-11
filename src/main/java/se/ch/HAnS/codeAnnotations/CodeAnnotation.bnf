@@ -1,16 +1,16 @@
 {
-  parserClass="se.ch.HAnS.fileAnnotations.parser.CodeAnnotationParser"
+  parserClass="se.ch.HAnS.codeAnnotations.parser.CodeAnnotationParser"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
-  psiClassPrefix="FileAnnotations"
+  psiClassPrefix="CodeAnnotation"
   psiImplClassSuffix="Impl"
   psiPackage="se.ch.HAnS.codeAnnotations.psi"
-  psiImplPackage="se.ch.HAnS.fileAnnotations.psi.impl"
+  psiImplPackage="se.ch.HAnS.codeAnnotations.psi.impl"
 
-  elementTypeHolderClass="se.ch.HAnS.fileAnnotations.psi.FileAnnotationsTypes"
-  elementTypeClass="se.ch.HAnS.fileAnnotations.psi.FileAnnotationsElementType"
-  tokenTypeClass="se.ch.HAnS.fileAnnotations.psi.FileAnnotationsTokenType"
+  elementTypeHolderClass="se.ch.HAnS.codeAnnotations.psi.CodeAnnotationTypes"
+  elementTypeClass="se.ch.HAnS.codeAnnotations.psi.CodeAnnotationElementType"
+  tokenTypeClass="se.ch.HAnS.codeAnnotations.psi.CodeAnnotationTokenType"
 }
 
 marker ::= (beginmarker|endmarker|linemarker)

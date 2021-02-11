@@ -1,7 +1,7 @@
-package se.ch.HAnS.fileAnnotations;
+package se.ch.HAnS.codeAnnotations;
 
 import com.intellij.psi.tree.IElementType;
-import se.ch.HAnS.fileAnnotations.psi.FileAnnotationsTypes;
+import se.ch.HAnS.codeAnnotations.psi.CodeAnnotationTypes;
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.TokenType;
 
@@ -35,14 +35,17 @@ FEATURENAME = [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+)]
 %state WAITING_VALUE
 
 %%
+<YYINITIAL> {BEGIN}                                        { yybegin(YYINITIAL); return CodeAnnotationTypes.BEGIN; }
+<YYINITIAL> {END}                                          { yybegin(YYINITIAL); return CodeAnnotationTypes.END; }
+<YYINITIAL> {LINE}                                         { yybegin(YYINITIAL); return CodeAnnotationTypes.LINE; }
 
-<YYINITIAL> {FEATURENAME}+                                 { yybegin(YYINITIAL); return CodeAnnotationTypes.STRING; }
+<YYINITIAL> {FEATURENAME}+                                 { yybegin(YYINITIAL); return CodeAnnotationTypes.FEATURENAME; }
 
 <YYINITIAL> {SEPARATOR}{SEPARATOR}                         { yybegin(YYINITIAL); return CodeAnnotationTypes.SEPARATOR; }
 
 <YYINITIAL> {CS}                                           { yybegin(YYINITIAL); return CodeAnnotationTypes.CS; }
 
-<YYINITIAL> {OBRACKET}|{SPACE}                             { yybegin(YYINITIAL); return CodeAnnotionTypes.OBRACKET; }
+<YYINITIAL> {OBRACKET}|{SPACE}                             { yybegin(YYINITIAL); return CodeAnnotationTypes.OBRACKET; }
 
 <YYINITIAL> {CBRACKET}|{SPACE}                             { yybegin(YYINITIAL); return CodeAnnotationTypes.CBRACKET; }
 
