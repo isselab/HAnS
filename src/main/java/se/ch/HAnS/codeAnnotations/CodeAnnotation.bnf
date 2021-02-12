@@ -19,6 +19,6 @@ beginmarker ::= BEGIN SPACE* parameter
 endmarker ::= END SPACE* parameter
 linemarker ::= LINE SPACE* parameter
 
-parameter ::= (OBRACKET SPACE* lpq ((SPACE* CS)? SPACE+ lpq)* SPACE* CBRACKET)
+parameter ::= (OBRACKET SPACE* lpq ((SPACE* CS)? SPACE+ lpq)* SPACE* CBRACKET) | (SPACE+ lpq ((SPACE* CS)? SPACE+ lpq)* SPACE+)
 
 lpq ::= FEATURENAME (SEPARATOR FEATURENAME)*

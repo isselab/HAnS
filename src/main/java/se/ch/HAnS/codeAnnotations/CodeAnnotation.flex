@@ -23,9 +23,9 @@ SPACE= [' ']
 
 SEPARATOR=[:]
 
-BEGIN = [&begin]
-END = [&end]
-LINE = [&line]
+BEGIN = "&begin"
+END = "&end"
+LINE = "&line"
 
 OBRACKET = ['('|'\['|'{']
 CBRACKET = [')'|'\]'|'}']
@@ -45,9 +45,9 @@ FEATURENAME = [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+)]
 
 <YYINITIAL> {CS}                                           { yybegin(YYINITIAL); return CodeAnnotationTypes.CS; }
 
-<YYINITIAL> {OBRACKET}|{SPACE}                             { yybegin(YYINITIAL); return CodeAnnotationTypes.OBRACKET; }
+<YYINITIAL> {OBRACKET}                                     { yybegin(YYINITIAL); return CodeAnnotationTypes.OBRACKET; }
 
-<YYINITIAL> {CBRACKET}|{SPACE}                             { yybegin(YYINITIAL); return CodeAnnotationTypes.CBRACKET; }
+<YYINITIAL> {CBRACKET}                                     { yybegin(YYINITIAL); return CodeAnnotationTypes.CBRACKET; }
 
 <WAITING_VALUE> {CRLF}({CRLF}|{SPACE})+                    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 
