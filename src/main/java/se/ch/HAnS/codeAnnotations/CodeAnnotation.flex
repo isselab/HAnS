@@ -49,6 +49,8 @@ FEATURENAME = [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+)]
 
 <YYINITIAL> {CBRACKET}                                     { yybegin(YYINITIAL); return CodeAnnotationTypes.CBRACKET; }
 
+<YYINITIAL> {SPACE}                                        { yybegin(YYINITIAL); return CodeAnnotationTypes.SPACE; }
+
 <WAITING_VALUE> {CRLF}({CRLF}|{SPACE})+                    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 
 <WAITING_VALUE> {SPACE}+                                   { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE; }
