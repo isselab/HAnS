@@ -18,6 +18,8 @@ import com.intellij.psi.TokenType;
 CRLF=[\n|\r\n]
 SPACE= [' ']
 
+TAB=[\t]
+
 FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 
 %state WAITING_VALUE
@@ -25,6 +27,8 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 %%
 
 <YYINITIAL> {FEATURENAME}+                                 { yybegin(YYINITIAL); return FeatureModelTypes.FEATURENAME; }
+
+<YYINITIAL> {TAB}                                          { yybegin(YYINITIAL); return FeatureModelTypes.TAB; }
 
 <WAITING_VALUE> {CRLF}({CRLF}|{SPACE})+                    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 

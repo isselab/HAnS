@@ -36,9 +36,10 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FEATURENAME | '\t' feature
+  // FEATURENAME | TAB feature
   public static boolean feature(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature")) return false;
+    if (!nextTokenIs(b, "<feature>", FEATURENAME, TAB)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, FEATURE, "<feature>");
     r = consumeToken(b, FEATURENAME);
@@ -47,19 +48,19 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // '\t' feature
+  // TAB feature
   private static boolean feature_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, "\\t");
+    r = consumeToken(b, TAB);
     r = r && feature(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   /* ********************************************************** */
-  // projectName ((CRLF)* feature)* (('\t'|CRLF)*)
+  // projectName ((CRLF)* feature)* ((TAB|CRLF)*)
   static boolean featureModelFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile")) return false;
     if (!nextTokenIs(b, FEATURENAME)) return false;
@@ -105,7 +106,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // ('\t'|CRLF)*
+  // (TAB|CRLF)*
   private static boolean featureModelFile_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile_2")) return false;
     while (true) {
@@ -116,11 +117,11 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // '\t'|CRLF
+  // TAB|CRLF
   private static boolean featureModelFile_2_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile_2_0")) return false;
     boolean r;
-    r = consumeToken(b, "\\t");
+    r = consumeToken(b, TAB);
     if (!r) r = consumeToken(b, CRLF);
     return r;
   }

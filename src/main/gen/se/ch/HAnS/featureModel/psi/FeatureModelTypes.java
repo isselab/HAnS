@@ -13,6 +13,7 @@ public interface FeatureModelTypes {
 
   IElementType CRLF = new FeatureModelTokenType("CRLF");
   IElementType FEATURENAME = new FeatureModelTokenType("FEATURENAME");
+  IElementType TAB = new FeatureModelTokenType("TAB");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
