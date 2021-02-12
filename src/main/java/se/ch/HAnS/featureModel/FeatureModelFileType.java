@@ -3,6 +3,7 @@ package se.ch.HAnS.featureModel;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import se.ch.HAnS.AnnotationIcons;
 
 import javax.swing.*;
 
@@ -30,7 +31,6 @@ public class FeatureModelFileType extends LanguageFileType {
 
     @Override
     public @Nullable Icon getIcon() {
-        return null;
-        //return SimpleIcons.FILE;
+        return AnnotationIcons.FILE;
     }
 }
