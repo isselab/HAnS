@@ -120,7 +120,7 @@ public class CodeAnnotationParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (SPACE* OBRACKET SPACE* lpq ((SPACE* CS)? SPACE+ lpq)* SPACE* CBRACKET) | (SPACE+ lpq ((SPACE* CS)? SPACE+ lpq)* SPACE+)
+  // (SPACE* OBRACKET SPACE* lpq ((SPACE* CS)? SPACE+ lpq)* SPACE* CBRACKET) | (SPACE+ lpq ((SPACE* CS)? SPACE+ lpq)* SPACE*)
   public static boolean parameter(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter")) return false;
     if (!nextTokenIs(b, "<parameter>", OBRACKET, SPACE)) return false;
@@ -248,7 +248,7 @@ public class CodeAnnotationParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // SPACE+ lpq ((SPACE* CS)? SPACE+ lpq)* SPACE+
+  // SPACE+ lpq ((SPACE* CS)? SPACE+ lpq)* SPACE*
   private static boolean parameter_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_1")) return false;
     boolean r;
@@ -343,19 +343,15 @@ public class CodeAnnotationParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // SPACE+
+  // SPACE*
   private static boolean parameter_1_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "parameter_1_3")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, SPACE);
-    while (r) {
+    while (true) {
       int c = current_position_(b);
       if (!consumeToken(b, SPACE)) break;
       if (!empty_element_parsed_guard_(b, "parameter_1_3", c)) break;
     }
-    exit_section_(b, m, null, r);
-    return r;
+    return true;
   }
 
 }
