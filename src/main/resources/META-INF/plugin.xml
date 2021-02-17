@@ -34,7 +34,7 @@
         <!-- &end[FolderAnnotations] -->
 
         <!-- &begin[CodeAnnotations] -->
-        <lang.parserDefinition language=""
+        <lang.parserDefinition language="CodeAnnotations"
                                implementationClass="se.ch.HAnS.codeAnnotations.CodeAnnotationParserDefinition"/>
         <!-- &end[CodeAnnotations] -->
 
