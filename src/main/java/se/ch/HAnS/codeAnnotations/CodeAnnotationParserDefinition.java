@@ -1,7 +1,6 @@
 package se.ch.HAnS.codeAnnotations;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.lang.Language;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiParser;
 import com.intellij.lexer.Lexer;
@@ -18,7 +17,7 @@ import se.ch.HAnS.codeAnnotations.psi.CodeAnnotationTypes;
 
 public class CodeAnnotationParserDefinition implements ParserDefinition {
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final IFileElementType FILE = new IFileElementType(Language.ANY);
+    public static final IFileElementType FILE = new IFileElementType(CodeAnnotationsLanguage.INSTANCE);
 
     @Override
     public @NotNull Lexer createLexer(Project project) {
