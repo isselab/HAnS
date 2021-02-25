@@ -54,8 +54,8 @@ class FeatureModelLexer implements FlexLexer {
 
   /* The ZZ_CMAP_A table has 256 entries */
   static final char ZZ_CMAP_A[] = zzUnpackCMap(
-    "\12\0\1\1\2\0\1\1\22\0\1\2\6\0\1\5\3\0\1\3\4\0\12\3\7\0\32\3\4\0\1\3\1\0\32"+
-    "\3\1\0\1\4\203\0");
+    "\11\0\1\3\1\1\2\0\1\1\22\0\1\2\6\0\1\6\3\0\1\4\4\0\12\4\7\0\32\4\4\0\1\4\1"+
+    "\0\32\4\1\0\1\5\203\0");
 
   /** 
    * Translates DFA states to action switch labels.
@@ -63,10 +63,10 @@ class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\2\0\1\1\1\2\2\3\1\4";
+    "\2\0\1\1\1\2\1\3\2\4\1\5";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[7];
+    int [] result = new int[8];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -91,10 +91,10 @@ class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\6\0\14\0\22\0\30\0\36\0\44";
+    "\0\0\0\7\0\16\0\25\0\16\0\34\0\43\0\52";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[7];
+    int [] result = new int[8];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -117,13 +117,13 @@ class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_TRANS = zzUnpackTrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\1\3\2\4\1\5\2\6\1\3\1\4\1\7\1\3"+
-    "\1\4\1\7\7\0\2\4\1\0\2\4\3\0\3\5"+
-    "\1\0\2\4\1\5\2\6\1\0\1\4\1\7\1\0"+
-    "\1\4\1\7";
+    "\1\3\2\4\1\5\1\6\2\7\1\3\1\4\1\10"+
+    "\2\3\1\4\1\10\10\0\2\4\2\0\2\4\4\0"+
+    "\3\6\1\0\2\4\1\0\1\6\2\7\1\0\1\4"+
+    "\1\10\2\0\1\4\1\10";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[42];
+    int [] result = new int[49];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -161,10 +161,10 @@ class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\2\0\1\11\4\1";
+    "\2\0\1\11\1\1\1\11\3\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[7];
+    int [] result = new int[8];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -481,22 +481,27 @@ class FeatureModelLexer implements FlexLexer {
             { return TokenType.BAD_CHARACTER;
             } 
             // fall through
-          case 5: break;
+          case 6: break;
           case 2: 
             { yybegin(YYINITIAL); return TokenType.WHITE_SPACE;
             } 
             // fall through
-          case 6: break;
-          case 3: 
-            { yybegin(YYINITIAL); return FeatureModelTypes.FEATURENAME;
-            } 
-            // fall through
           case 7: break;
-          case 4: 
-            { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE;
+          case 3: 
+            { yybegin(YYINITIAL); return FeatureModelTypes.TAB;
             } 
             // fall through
           case 8: break;
+          case 4: 
+            { yybegin(YYINITIAL); return FeatureModelTypes.FEATURENAME;
+            } 
+            // fall through
+          case 9: break;
+          case 5: 
+            { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE;
+            } 
+            // fall through
+          case 10: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }

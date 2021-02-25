@@ -13,8 +13,8 @@
   tokenTypeClass="se.ch.HAnS.featureModel.psi.FeatureModelTokenType"
 }
 
-featureModelFile ::= projectName ((CRLF)* feature)* (('\t'|CRLF)*)
+featureModelFile ::= projectName ((CRLF)* feature)* ((TAB|CRLF)*)
 
 projectName ::= FEATURENAME
 
-feature ::= (FEATURENAME | '\t' feature)
+feature ::= (FEATURENAME | TAB feature)
