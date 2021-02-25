@@ -31,6 +31,6 @@ public class FileAnnotationsFileType extends LanguageFileType {
 
     @Override
     public @Nullable Icon getIcon() {
-        return AnnotationIcons.FILE;
+        return AnnotationIcons.FileType;
     }
 }

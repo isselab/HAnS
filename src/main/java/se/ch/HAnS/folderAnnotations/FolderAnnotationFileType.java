@@ -3,6 +3,7 @@ package se.ch.HAnS.folderAnnotations;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import se.ch.HAnS.AnnotationIcons;
 
 import javax.swing.*;
 
@@ -30,6 +31,6 @@ public class FolderAnnotationFileType extends LanguageFileType {
 
     @Override
     public @Nullable Icon getIcon() {
-        return null;
+        return AnnotationIcons.FileType;
     }
 }
