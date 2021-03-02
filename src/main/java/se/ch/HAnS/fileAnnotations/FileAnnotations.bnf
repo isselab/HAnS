@@ -17,13 +17,13 @@ fileAnnotationsFile ::= (fileAnnotation NEWLINE*)*
 
 fileAnnotation ::= fileReferences COLON? NEWLINE+ lpqReferences
 
-fileReferences ::= (fileReference ((SPACE* CS)? SPACE* fileReference)* SPACE*)// | (fileReference (SPACE* fileReference)* SPACE*)
+fileReferences ::= (fileReference ((SPACE* CS)? SPACE* fileReference)* SPACE*)
 
 fileReference ::= (CM fileName CM) | (fileName)
 
 fileName ::= (STRING DOT STRING)|STRING
 
-lpqReferences ::= (lpq ((SPACE* CS)? SPACE* lpq)* SPACE*)// | (lpq (SPACE* lpq)* SPACE*)
+lpqReferences ::= (lpq ((SPACE* CS)? SPACE* lpq)* SPACE*)
 
 lpq ::= featureName (SEPARATOR featureName)*
 
