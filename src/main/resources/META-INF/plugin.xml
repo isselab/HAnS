@@ -38,18 +38,14 @@
                                implementationClass="se.ch.HAnS.codeAnnotations.CodeAnnotationParserDefinition"/>
         <!-- &end[CodeAnnotations] -->
         <completion.contributor language="any"
-                                implementationClass="se.ch.HAnS.autoCompletion.FeatureNameDictionaryContributor"/>
-        <toolWindow id="MyPlugin"
-                    anchor="bottom"
-                    icon="/icons/icon.png"
-                    factoryClass="com.intellij.execution.dashboard.RunDashboardToolWindowFactory"/>
+                                implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationsDictionaryContributor"/>
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
         <action
                 id="Test.Thing.Console"
-                class="se.ch.HAnS.Testing.TestByAction"
+                class="se.ch.HAnS.testing.TestByAction"
                 text="Test the Thing"
                 description="Test the thing">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
