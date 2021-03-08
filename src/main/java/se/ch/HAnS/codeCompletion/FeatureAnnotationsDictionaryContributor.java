@@ -17,7 +17,9 @@ public class FeatureAnnotationsDictionaryContributor extends CompletionContribut
     public FeatureAnnotationsDictionaryContributor() {
         extend(CompletionType.BASIC,
                 psiElement(PlainTextTokenTypes.PLAIN_TEXT),
-                new DictionaryCompletionProvider(false));
+                //new DictionaryCompletionProvider(false));
+                new FileNamesCompletionProvider(false));
+
 
         extend(CompletionType.BASIC,
                 psiElement(FolderAnnotationTypes.FEATURENAME),

@@ -18,38 +18,21 @@ import se.ch.HAnS.codeAnnotations.psi.impl.CodeAnnotationBeginmarkerImpl;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 
 public class TestByAction extends AnAction {
-
-    PsiElement tmp;
-    PsiElement second_tmp;
-    boolean search = true;
-    boolean b = false;
-
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        // testcomment
+        // test comment
         PsiFile f = e.getData(LangDataKeys.PSI_FILE);
         if (f != null) {
             f.accept(new PsiRecursiveElementWalkingVisitor() {
                 @Override
                 public void visitElement(@NotNull PsiElement element) {
-                    if (element instanceof PsiWhiteSpace && search) {
-                        second_tmp = element;
-                        search = false;
-                    }
-                    if (element.toString().equals("FeatureModelFeatureImpl(FEATURE)")) {//element instanceof PsiComment) {
+                    if (element instanceof FeatureModelFeatureImpl) {
                         Project p = ProjectManager.getInstance().getOpenProjects()[0];
 
                         if (element.getText().equals("test")) {
                             WriteCommandAction.runWriteCommandAction(p, () -> {
-                                tmp = element.copy();
-                                element.add(second_tmp);
-                                b = true;
                             });
                         }
-                    }
-                    if (b) {
-                        element.add(tmp);
-                        b = false;
                     }
                     super.visitElement(element);
                 }

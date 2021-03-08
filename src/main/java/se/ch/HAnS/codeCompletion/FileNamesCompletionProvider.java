@@ -4,21 +4,12 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileVisitor;
-import com.intellij.psi.*;
-import com.intellij.psi.search.FilenameIndex;
+import com.intellij.psi.PsiDirectory;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 
 public class FileNamesCompletionProvider extends CompletionProvider<CompletionParameters> {
     private final boolean onlyManual;
@@ -42,26 +33,12 @@ public class FileNamesCompletionProvider extends CompletionProvider<CompletionPa
             return;
         }
 
-        int lastSpace = prefix.lastIndexOf(' ');
-        if (lastSpace >= 0 && lastSpace < prefix.length() - 1) {
-            prefix = prefix.substring((lastSpace + 1));
-            dictResult = result.withPrefixMatcher(prefix);
-        } else {
-            dictResult = result;
-        }
+        dictResult = result;
 
-        Project p = ProjectManager.getInstance().getOpenProjects()[0];
-        VirtualFile @NotNull [] l = ProjectRootManager.getInstance(p).getContentSourceRoots();
-
-        addFileNames(l);
-    }
-
-    private void addFileNames(VirtualFile[] v) {
-        for (VirtualFile f : v) {
-            if (f.isDirectory()) {
-                addFileNames(f.getChildren());
-            }
-            else {
+        PsiDirectory d = parameters.getOriginalFile().getParent();
+        VirtualFile[] l = Objects.requireNonNull(d).getVirtualFile().getChildren();
+        for (VirtualFile f : l) {
+            if (!f.isDirectory()) {
                 dictResult.addElement(LookupElementBuilder.create(f.getName()));
             }
         }
