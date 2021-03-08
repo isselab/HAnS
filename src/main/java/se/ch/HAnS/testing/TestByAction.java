@@ -2,24 +2,24 @@ package se.ch.HAnS.testing;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.command.CommandProcessor;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.psi.*;
-import com.intellij.psi.impl.source.tree.PsiCommentImpl;
-import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl;
-import com.intellij.psi.impl.source.xml.XmlCommentImpl;
-import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.FilenameIndex;
+import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.codeAnnotations.psi.CodeAnnotationTypes;
-import se.ch.HAnS.codeAnnotations.psi.impl.CodeAnnotationBeginmarkerImpl;
-import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 
 public class TestByAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
+
+        Project p = ProjectManager.getInstance().getOpenProjects()[0];
+        @NotNull PsiFile @NotNull [] l = FilenameIndex.getFilesByName(p, "_.feature-model", GlobalSearchScope.projectScope(p));
+        for (PsiFile f:l) {
+            System.out.println(f);
+        }
+
+        /*
         // test comment
         PsiFile f = e.getData(LangDataKeys.PSI_FILE);
         if (f != null) {
@@ -38,5 +38,6 @@ public class TestByAction extends AnAction {
                 }
             });
         }
+        */
     }
 }

@@ -58,7 +58,7 @@ public class DictionaryCompletionProvider extends CompletionProvider<CompletionP
             f.accept(new PsiRecursiveElementWalkingVisitor() {
                 @Override
                 public void visitElement(@NotNull PsiElement element) {
-                    if (element instanceof FeatureModelFeatureImpl){// element.toString().equals("PsiElement(FeatureModelTokenType.FEATURENAME)")) {
+                    if (element instanceof FeatureModelFeatureImpl){
                         dictResult.addElement(LookupElementBuilder.create(element.getText()));
                     }
                     super.visitElement(element);
