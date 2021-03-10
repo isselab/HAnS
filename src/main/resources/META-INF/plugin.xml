@@ -40,8 +40,13 @@
         <completion.contributor language="any"
                                 implementationClass="se.ch.HAnS.autoCompletion.FeatureNameDictionaryContributor"/>
 
-        <lang.syntaxHighlighterFactory language="FeatureModel"
-                                       implementationClass="se.ch.HAnS.syntaxHighlighting.HAnSSyntaxHighlighterFactory"/>
+       <lang.syntaxHighlighterFactory language="FeatureModel"
+                                       implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/>
+
+        <lang.syntaxHighlighterFactory language="FolderAnnotation"
+                                       implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationsSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="FileAnnotations"
+                                       implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationsSyntaxHighlighterFactory"/>
 
     </extensions>
 

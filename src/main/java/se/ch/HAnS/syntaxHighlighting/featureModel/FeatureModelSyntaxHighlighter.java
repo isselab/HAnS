@@ -1,4 +1,4 @@
-package se.ch.HAnS.syntaxHighlighting;
+package se.ch.HAnS.syntaxHighlighting.featureModel;
 
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
@@ -15,10 +15,10 @@ import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
-public class HAnSSyntaxHighlighter extends SyntaxHighlighterBase {
+public class FeatureModelSyntaxHighlighter extends SyntaxHighlighterBase {
 
     public static final TextAttributesKey FEATURE =
-            createTextAttributesKey("FEATURE", DefaultLanguageHighlighterColors.KEYWORD);
+            createTextAttributesKey("FEATURE", DefaultLanguageHighlighterColors.CONSTANT);
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("HAnS_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 
