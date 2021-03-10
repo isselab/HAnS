@@ -6,12 +6,14 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.ui.JBColor;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.fileAnnotations.FileAnnotationsFileType;
 import se.ch.HAnS.folderAnnotations.FolderAnnotationFileType;
 
 import java.util.Objects;
+
 
 /**
  * Provides file names for code completion.
@@ -45,7 +47,7 @@ public class FileNamesCompletionProvider extends CompletionProvider<CompletionPa
         VirtualFile[] l = Objects.requireNonNull(d).getVirtualFile().getChildren();
         for (VirtualFile f : l) {
             if (!f.isDirectory() && f.getFileType() != FileAnnotationsFileType.INSTANCE && f.getFileType() != FolderAnnotationFileType.INSTANCE) {
-                dictResult.addElement(LookupElementBuilder.create(f.getName()));
+                dictResult.addElement(LookupElementBuilder.create(f.getName()).withItemTextForeground(JBColor.GREEN));
             }
         }
     }
