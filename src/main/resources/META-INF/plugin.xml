@@ -38,11 +38,10 @@
                                implementationClass="se.ch.HAnS.codeAnnotations.CodeAnnotationParserDefinition"/>
         <!-- &end[CodeAnnotations] -->
         <completion.contributor language="any"
-                                implementationClass="se.ch.HAnS.autoCompletion.FeatureNameDictionaryContributor"/>
+                                implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationsDictionaryContributor"/>
 
         <lang.syntaxHighlighterFactory language="FeatureModel"
                                        implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/>
-
         <lang.syntaxHighlighterFactory language="FolderAnnotation"
                                        implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationsSyntaxHighlighterFactory"/>
         <lang.syntaxHighlighterFactory language="FileAnnotations"
@@ -52,6 +51,12 @@
 
     <actions>
         <!-- Add your actions here -->
-
+        <action
+                id="Test.Thing.Console"
+                class="se.ch.HAnS.testing.TestByAction"
+                text="Test the Thing"
+                description="Test the thing">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
     </actions>
 </idea-plugin>

@@ -8,6 +8,12 @@ HAnS
     FileAnnotation
         Language
         File
+    CodeCompletion
+        FileNameProvider
+        FeatureNameProvider
+        FeatureToFileCompletion
+        FeatureToFolderCompletion
+        CodeAnnotationCompletion
     SyntaxHighlighting
         FeatureModel
         FolderAnnotation
