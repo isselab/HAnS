@@ -14,3 +14,7 @@ HAnS
         FeatureToFileCompletion
         FeatureToFolderCompletion
         CodeAnnotationCompletion
+    SyntaxHighlighting
+        FeatureModel
+        FolderAnnotation
+        FileAnnotation

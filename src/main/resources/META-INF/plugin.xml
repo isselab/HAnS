@@ -39,6 +39,14 @@
         <!-- &end[CodeAnnotations] -->
         <completion.contributor language="any"
                                 implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationsDictionaryContributor"/>
+
+        <lang.syntaxHighlighterFactory language="FeatureModel"
+                                       implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="FolderAnnotation"
+                                       implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationsSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="FileAnnotations"
+                                       implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationsSyntaxHighlighterFactory"/>
+
     </extensions>
 
     <actions>
