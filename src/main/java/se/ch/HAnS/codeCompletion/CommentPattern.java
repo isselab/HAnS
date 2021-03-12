@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 class CommentPattern extends PatternCondition<PsiElement> {
     CommentPattern() {
-        super("stringLiteralPattern()");
+        super("commentPattern()");
     }
 
     @Override

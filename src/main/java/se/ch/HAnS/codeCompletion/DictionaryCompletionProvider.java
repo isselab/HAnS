@@ -4,7 +4,6 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -15,8 +14,6 @@ import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.featureModel.psi.FeatureModelElementType;
-import se.ch.HAnS.featureModel.psi.FeatureModelTokenType;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 
 import java.util.Collection;
