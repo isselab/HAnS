@@ -8,3 +8,7 @@ HAnS
     FileAnnotation
         Language
         File
+    SyntaxHighlighting
+        FeatureModel
+        FolderAnnotation
+        FileAnnotation

@@ -40,7 +40,7 @@
         <completion.contributor language="any"
                                 implementationClass="se.ch.HAnS.autoCompletion.FeatureNameDictionaryContributor"/>
 
-       <lang.syntaxHighlighterFactory language="FeatureModel"
+        <lang.syntaxHighlighterFactory language="FeatureModel"
                                        implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/>
 
         <lang.syntaxHighlighterFactory language="FolderAnnotation"
