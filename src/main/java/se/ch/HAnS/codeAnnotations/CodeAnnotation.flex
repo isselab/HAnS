@@ -19,7 +19,7 @@ CRLF=[\n|\r\n]
 
 CS = [,]
 
-COMMENTMARKER = [.]
+COMMENTMARKER = [\S]
 
 SPACE= [' ']
 
@@ -43,8 +43,6 @@ FEATURENAME = [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+)]
 
 <YYINITIAL> {FEATURENAME}+                                 { yybegin(YYINITIAL); return CodeAnnotationTypes.FEATURENAME; }
 
-<YYINITIAL> {COMMENTMARKER}+                               { yybegin(YYINITIAL); return CodeAnnotationTypes.COMMENTMARKER; }
-
 <YYINITIAL> {SEPARATOR}{SEPARATOR}                         { yybegin(YYINITIAL); return CodeAnnotationTypes.SEPARATOR; }
 
 <YYINITIAL> {CS}                                           { yybegin(YYINITIAL); return CodeAnnotationTypes.CS; }
@@ -58,6 +56,8 @@ FEATURENAME = [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+)]
 <WAITING_VALUE> {CRLF}({CRLF}|{SPACE})+                    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 
 <WAITING_VALUE> {SPACE}+                                   { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE; }
+
+<YYINITIAL> {COMMENTMARKER}                                { yybegin(YYINITIAL); return CodeAnnotationTypes.COMMENTMARKER; }
 
 ({CRLF}|{SPACE})+                                          { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 

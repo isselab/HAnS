@@ -109,15 +109,35 @@ public class CodeAnnotationParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // COMMENTMARKER (beginmarker|endmarker|linemarker)
+  // (COMMENTMARKER|SPACE)* (beginmarker|endmarker|linemarker) (SPACE|COMMENTMARKER)*
   static boolean marker(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "marker")) return false;
-    if (!nextTokenIs(b, COMMENTMARKER)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, COMMENTMARKER);
+    r = marker_0(b, l + 1);
     r = r && marker_1(b, l + 1);
+    r = r && marker_2(b, l + 1);
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (COMMENTMARKER|SPACE)*
+  private static boolean marker_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "marker_0")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!marker_0_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "marker_0", c)) break;
+    }
+    return true;
+  }
+
+  // COMMENTMARKER|SPACE
+  private static boolean marker_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "marker_0_0")) return false;
+    boolean r;
+    r = consumeToken(b, COMMENTMARKER);
+    if (!r) r = consumeToken(b, SPACE);
     return r;
   }
 
@@ -128,6 +148,26 @@ public class CodeAnnotationParser implements PsiParser, LightPsiParser {
     r = beginmarker(b, l + 1);
     if (!r) r = endmarker(b, l + 1);
     if (!r) r = linemarker(b, l + 1);
+    return r;
+  }
+
+  // (SPACE|COMMENTMARKER)*
+  private static boolean marker_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "marker_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!marker_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "marker_2", c)) break;
+    }
+    return true;
+  }
+
+  // SPACE|COMMENTMARKER
+  private static boolean marker_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "marker_2_0")) return false;
+    boolean r;
+    r = consumeToken(b, SPACE);
+    if (!r) r = consumeToken(b, COMMENTMARKER);
     return r;
   }
 
