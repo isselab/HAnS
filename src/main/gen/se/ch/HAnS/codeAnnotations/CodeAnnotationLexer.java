@@ -54,9 +54,9 @@ class CodeAnnotationLexer implements FlexLexer {
 
   /* The ZZ_CMAP_A table has 256 entries */
   static final char ZZ_CMAP_A[] = zzUnpackCMap(
-    "\12\0\1\1\2\0\1\1\22\0\1\3\5\0\1\5\1\17\1\15\1\21\1\0\1\21\1\2\3\0\12\21\1"+
-    "\4\6\0\32\21\1\15\1\0\1\20\1\0\1\21\1\0\1\21\1\6\1\21\1\13\1\7\1\21\1\10\1"+
-    "\21\1\11\2\21\1\14\1\21\1\12\14\21\1\15\1\16\1\20\202\0");
+    "\12\0\1\1\2\0\1\1\22\0\1\4\5\0\1\6\1\20\1\16\1\22\1\0\1\22\1\2\1\0\1\3\1\0"+
+    "\12\22\1\5\6\0\32\22\1\16\1\0\1\21\1\0\1\22\1\0\1\22\1\7\1\22\1\14\1\10\1"+
+    "\22\1\11\1\22\1\12\2\22\1\15\1\22\1\13\14\22\1\16\1\17\1\21\202\0");
 
   /** 
    * Translates DFA states to action switch labels.
@@ -64,12 +64,12 @@ class CodeAnnotationLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\2\0\1\1\1\2\1\3\1\4\2\1\1\5\1\6"+
-    "\1\5\1\7\1\10\1\11\7\0\1\12\2\0\1\13"+
-    "\1\14";
+    "\2\0\1\1\1\2\1\3\1\4\1\5\2\1\1\6"+
+    "\1\7\1\6\1\10\1\11\1\12\7\0\1\13\2\0"+
+    "\1\14\1\15";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[26];
+    int [] result = new int[27];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -94,13 +94,13 @@ class CodeAnnotationLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\22\0\44\0\66\0\44\0\66\0\110\0\132"+
-    "\0\154\0\44\0\176\0\44\0\220\0\44\0\242\0\264"+
-    "\0\306\0\330\0\352\0\374\0\u010e\0\44\0\u0120\0\u0132"+
-    "\0\44\0\44";
+    "\0\0\0\23\0\46\0\71\0\46\0\114\0\71\0\137"+
+    "\0\162\0\205\0\46\0\230\0\46\0\253\0\46\0\276"+
+    "\0\321\0\344\0\367\0\u010a\0\u011d\0\u0130\0\46\0\u0143"+
+    "\0\u0156\0\46\0\46";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[26];
+    int [] result = new int[27];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -123,19 +123,19 @@ class CodeAnnotationLexer implements FlexLexer {
   private static final int [] ZZ_TRANS = zzUnpackTrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\1\3\1\4\1\5\1\6\1\7\1\10\7\11\1\12"+
-    "\2\13\1\14\1\11\1\3\1\4\1\3\1\15\12\3"+
-    "\1\4\1\15\2\3\23\0\1\4\1\0\1\4\12\0"+
-    "\2\4\6\0\1\16\23\0\1\17\1\20\4\0\1\21"+
-    "\13\0\7\11\1\0\2\11\1\0\1\11\1\0\1\4"+
-    "\1\0\1\4\2\0\7\11\1\0\2\13\1\0\1\11"+
-    "\1\0\1\4\1\0\1\15\12\0\1\4\1\15\11\0"+
-    "\1\22\24\0\1\23\20\0\1\24\20\0\1\25\24\0"+
-    "\1\26\20\0\1\27\20\0\1\30\17\0\1\31\24\0"+
-    "\1\32\7\0";
+    "\1\3\1\4\1\5\1\6\1\7\1\10\1\11\7\12"+
+    "\1\13\2\14\1\15\1\12\1\3\1\4\2\3\1\16"+
+    "\12\3\1\4\1\16\2\3\24\0\1\4\2\0\1\4"+
+    "\12\0\2\4\5\0\1\6\24\0\1\17\24\0\1\20"+
+    "\1\21\4\0\1\22\14\0\7\12\1\0\2\12\1\0"+
+    "\1\12\1\0\1\4\2\0\1\4\2\0\7\12\1\0"+
+    "\2\14\1\0\1\12\1\0\1\4\2\0\1\16\12\0"+
+    "\1\4\1\16\12\0\1\23\25\0\1\24\21\0\1\25"+
+    "\21\0\1\26\25\0\1\27\21\0\1\30\21\0\1\31"+
+    "\20\0\1\32\25\0\1\33\7\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[324];
+    int [] result = new int[361];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -173,11 +173,11 @@ class CodeAnnotationLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\2\0\1\11\1\1\1\11\4\1\1\11\1\1\1\11"+
+    "\2\0\1\11\1\1\1\11\5\1\1\11\1\1\1\11"+
     "\1\1\1\11\7\0\1\11\2\0\2\11";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[26];
+    int [] result = new int[27];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -494,62 +494,67 @@ class CodeAnnotationLexer implements FlexLexer {
             { return TokenType.BAD_CHARACTER;
             } 
             // fall through
-          case 13: break;
+          case 14: break;
           case 2: 
             { yybegin(YYINITIAL); return TokenType.WHITE_SPACE;
             } 
             // fall through
-          case 14: break;
+          case 15: break;
           case 3: 
             { yybegin(YYINITIAL); return CodeAnnotationTypes.CS;
             } 
             // fall through
-          case 15: break;
-          case 4: 
-            { yybegin(YYINITIAL); return CodeAnnotationTypes.SPACE;
-            } 
-            // fall through
           case 16: break;
-          case 5: 
-            { yybegin(YYINITIAL); return CodeAnnotationTypes.FEATURENAME;
+          case 4: 
+            { yybegin(YYINITIAL); return CodeAnnotationTypes.COMMENTMARKER;
             } 
             // fall through
           case 17: break;
-          case 6: 
-            { yybegin(YYINITIAL); return CodeAnnotationTypes.OBRACKET;
+          case 5: 
+            { yybegin(YYINITIAL); return CodeAnnotationTypes.SPACE;
             } 
             // fall through
           case 18: break;
-          case 7: 
-            { yybegin(YYINITIAL); return CodeAnnotationTypes.CBRACKET;
+          case 6: 
+            { yybegin(YYINITIAL); return CodeAnnotationTypes.FEATURENAME;
             } 
             // fall through
           case 19: break;
-          case 8: 
-            { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE;
+          case 7: 
+            { yybegin(YYINITIAL); return CodeAnnotationTypes.OBRACKET;
             } 
             // fall through
           case 20: break;
-          case 9: 
-            { yybegin(YYINITIAL); return CodeAnnotationTypes.SEPARATOR;
+          case 8: 
+            { yybegin(YYINITIAL); return CodeAnnotationTypes.CBRACKET;
             } 
             // fall through
           case 21: break;
-          case 10: 
-            { yybegin(YYINITIAL); return CodeAnnotationTypes.END;
+          case 9: 
+            { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE;
             } 
             // fall through
           case 22: break;
-          case 11: 
-            { yybegin(YYINITIAL); return CodeAnnotationTypes.LINE;
+          case 10: 
+            { yybegin(YYINITIAL); return CodeAnnotationTypes.SEPARATOR;
             } 
             // fall through
           case 23: break;
-          case 12: 
-            { yybegin(YYINITIAL); return CodeAnnotationTypes.BEGIN;
+          case 11: 
+            { yybegin(YYINITIAL); return CodeAnnotationTypes.END;
             } 
             // fall through
           case 24: break;
+          case 12: 
+            { yybegin(YYINITIAL); return CodeAnnotationTypes.LINE;
+            } 
+            // fall through
+          case 25: break;
+          case 13: 
+            { yybegin(YYINITIAL); return CodeAnnotationTypes.BEGIN;
+            } 
+            // fall through
+          case 26: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }

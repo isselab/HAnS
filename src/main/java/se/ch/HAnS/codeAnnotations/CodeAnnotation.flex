@@ -19,6 +19,8 @@ CRLF=[\n|\r\n]
 
 CS = [,]
 
+COMMENTMARKER = [.]
+
 SPACE= [' ']
 
 SEPARATOR=[:]
@@ -40,6 +42,8 @@ FEATURENAME = [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+)]
 <YYINITIAL> {LINE}                                         { yybegin(YYINITIAL); return CodeAnnotationTypes.LINE; }
 
 <YYINITIAL> {FEATURENAME}+                                 { yybegin(YYINITIAL); return CodeAnnotationTypes.FEATURENAME; }
+
+<YYINITIAL> {COMMENTMARKER}+                               { yybegin(YYINITIAL); return CodeAnnotationTypes.COMMENTMARKER; }
 
 <YYINITIAL> {SEPARATOR}{SEPARATOR}                         { yybegin(YYINITIAL); return CodeAnnotationTypes.SEPARATOR; }
 

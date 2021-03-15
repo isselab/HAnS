@@ -109,9 +109,21 @@ public class CodeAnnotationParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // beginmarker|endmarker|linemarker
+  // COMMENTMARKER (beginmarker|endmarker|linemarker)
   static boolean marker(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "marker")) return false;
+    if (!nextTokenIs(b, COMMENTMARKER)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COMMENTMARKER);
+    r = r && marker_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // beginmarker|endmarker|linemarker
+  private static boolean marker_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "marker_1")) return false;
     boolean r;
     r = beginmarker(b, l + 1);
     if (!r) r = endmarker(b, l + 1);

@@ -13,7 +13,7 @@
   tokenTypeClass="se.ch.HAnS.codeAnnotations.psi.CodeAnnotationTokenType"
 }
 
-marker ::= (beginmarker|endmarker|linemarker)
+marker ::= COMMENTMARKER (beginmarker|endmarker|linemarker)
 
 beginmarker ::= BEGIN parameter
 endmarker ::= END parameter

@@ -13,6 +13,7 @@ import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.codeAnnotations.parser.CodeAnnotationParser;
+import se.ch.HAnS.codeAnnotations.psi.CodeAnnotationFile;
 import se.ch.HAnS.codeAnnotations.psi.CodeAnnotationTypes;
 
 public class CodeAnnotationParserDefinition implements ParserDefinition {
@@ -56,7 +57,7 @@ public class CodeAnnotationParserDefinition implements ParserDefinition {
 
     @Override
     public PsiFile createFile(FileViewProvider viewProvider) {
-        return null;
+        return new CodeAnnotationFile(viewProvider);
     }
 
     @Override

@@ -16,6 +16,7 @@ public interface CodeAnnotationTypes {
 
   IElementType BEGIN = new CodeAnnotationTokenType("BEGIN");
   IElementType CBRACKET = new CodeAnnotationTokenType("CBRACKET");
+  IElementType COMMENTMARKER = new CodeAnnotationTokenType("COMMENTMARKER");
   IElementType CS = new CodeAnnotationTokenType("CS");
   IElementType END = new CodeAnnotationTokenType("END");
   IElementType FEATURENAME = new CodeAnnotationTokenType("FEATURENAME");
