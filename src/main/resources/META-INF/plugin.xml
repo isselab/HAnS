@@ -27,7 +27,7 @@
         <!-- &end[FileAnnotations] -->
 
         <!-- &begin[FolderAnnotations] -->
-        <fileType name="Folder Annotations File" implementationClass="se.ch.HAnS.folderAnnotations.FolderAnnotationFileType"
+        <fileType name="Feature To Folder File" implementationClass="se.ch.HAnS.folderAnnotations.FolderAnnotationFileType"
                   fieldName="INSTANCE" language="FolderAnnotation" extensions="feature-to-folder"/>
         <lang.parserDefinition language="FolderAnnotation"
                                implementationClass="se.ch.HAnS.folderAnnotations.FolderAnnotationParserDefinition"/>
@@ -39,8 +39,16 @@
         <lang.parserDefinition language="CodeAnnotations"
                                implementationClass="se.ch.HAnS.codeAnnotations.CodeAnnotationParserDefinition"/>
         <!-- &end[CodeAnnotations] -->
+
+        <!-- &begin[CodeCompletion] -->
         <completion.contributor language="any"
                                 implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationsDictionaryContributor"/>
+        <!-- &end[CodeCompletion] -->
+
+        <!-- &begin[LiveTemplate] -->
+        <defaultLiveTemplates file="/liveTemplates/FeatureAnnotations.xml"/>
+        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext"/>
+        <!-- &end[LiveTemplate] -->
 
         <lang.syntaxHighlighterFactory language="FeatureModel"
                                        implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/>

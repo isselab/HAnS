@@ -1,8 +1,11 @@
-CommentPattern.java
-CodeAnnotationCompletion
+CommentContext.java
+LiveTemplate
 
-DictionaryCompletionProvider.java
+FeatureNameCompletionProvider.java
 FeatureNameProvider
 
-FileNamesCompletionProvider.java
+FileNameCompletionProvider.java
 FileNameProvider
+
+KeywordCompletionProvider.java
+KeywordProvider

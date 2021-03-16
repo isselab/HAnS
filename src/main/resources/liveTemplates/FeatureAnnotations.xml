@@ -1,0 +1,32 @@
+<templateSet group="FeatureAnnotations">
+  <template name="&amp;begin" value="&amp;begin[$END$]" description="Opening block code annotation" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="COMMENT" value="true"/>
+    </context>
+  </template>
+  <template name="&amp;end" value="&amp;end[$END$]" description="Closing block code annotation" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="COMMENT" value="true"/>
+    </context>
+  </template>
+  <template name="&amp;line" value="&amp;line[$END$]" description="End of line code annotation" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="COMMENT" value="true"/>
+    </context>
+  </template>
+  <template name="begin" value="&amp;begin[$END$]" description="Opening block code annotation" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="COMMENT" value="true"/>
+    </context>
+  </template>
+  <template name="end" value="&amp;end[$END$]" description="Closing block code annotation" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="COMMENT" value="true"/>
+    </context>
+  </template>
+  <template name="line" value="&amp;line[$END$]" description="End of line code annotation" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="COMMENT" value="true"/>
+    </context>
+  </template>
+</templateSet>

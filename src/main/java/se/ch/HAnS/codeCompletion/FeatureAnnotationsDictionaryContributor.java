@@ -4,6 +4,8 @@ import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.psi.PlainTextTokenTypes;
 import com.intellij.psi.PsiComment;
+import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl;
 import se.ch.HAnS.codeAnnotations.psi.CodeAnnotationTypes;
 import se.ch.HAnS.fileAnnotations.psi.FileAnnotationsTypes;
 import se.ch.HAnS.fileAnnotations.psi.impl.FileAnnotationsFeatureNameImpl;
@@ -20,7 +22,7 @@ public class FeatureAnnotationsDictionaryContributor extends CompletionContribut
 
         extend(CompletionType.BASIC,
                 psiElement(PsiComment.class),
-                new KeywordCompletionProvider(false));
+                new KeywordCompletionProvider());
         // &end[CodeAnnotationCompletion]
 
         // &begin[FeatureToFolderCompletion]
@@ -31,7 +33,9 @@ public class FeatureAnnotationsDictionaryContributor extends CompletionContribut
 
         // &begin[FeatureToFileCompletion]
         extend(CompletionType.BASIC,
-                psiElement(FileAnnotationsTypes.STRING).andNot(psiElement(FileAnnotationsTypes.STRING).withParent(FileAnnotationsFeatureNameImpl.class)),
+                psiElement(FileAnnotationsTypes.STRING).
+                        andNot(psiElement(FileAnnotationsTypes.STRING).
+                                withParent(FileAnnotationsFeatureNameImpl.class)),
                 new FileNameCompletionProvider(false));
 
         extend(CompletionType.BASIC,

@@ -15,9 +15,11 @@ HAnS
     CodeCompletion
         FileNameProvider
         FeatureNameProvider
+        KeywordProvider
         FeatureToFileCompletion
         FeatureToFolderCompletion
         CodeAnnotationCompletion
+        LiveTemplate
     SyntaxHighlighting
         FeatureModel
         FolderAnnotation
