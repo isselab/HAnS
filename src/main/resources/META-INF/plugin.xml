@@ -27,13 +27,13 @@
         <!-- &end[FileAnnotations] -->
 
         <!-- &begin[FolderAnnotations] -->
-        <fileType name="Feature To Folder File" implementationClass="se.ch.HAnS.folderAnnotations.FolderAnnotationFileType"
-                  fieldName="INSTANCE" language="FolderAnnotation" extensions="feature-to-folder"/>
         <lang.parserDefinition language="FolderAnnotation"
                                implementationClass="se.ch.HAnS.folderAnnotations.FolderAnnotationParserDefinition"/>
         <!-- &end[FolderAnnotations] -->
 
         <!-- &begin[CodeAnnotations] -->
+        <fileType name="Code Annotation File" implementationClass="se.ch.HAnS.codeAnnotations.CodeAnnotationFileType"
+                  fieldName="INSTANCE" language="CodeAnnotations" extensions="code-annotation"/>
         <lang.parserDefinition language="CodeAnnotations"
                                implementationClass="se.ch.HAnS.codeAnnotations.CodeAnnotationParserDefinition"/>
         <!-- &end[CodeAnnotations] -->
@@ -47,6 +47,9 @@
         <lang.syntaxHighlighterFactory language="FileAnnotations"
                                        implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationsSyntaxHighlighterFactory"/>
 
+        <!-- &begin[Injection] -->
+        <multiHostInjector implementation="se.ch.HAnS.codeAnnotations.CodeAnnotationInjector"/>
+        <!-- &end[Injection] -->
     </extensions>
 
     <actions>

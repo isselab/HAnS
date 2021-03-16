@@ -8,6 +8,11 @@ HAnS
     FileAnnotation
         Language
         File
+    CodeAnnotation
+        Language
+        File
+        Injection
+            JavaStyleComment
     CodeCompletion
         FileNameProvider
         FeatureNameProvider

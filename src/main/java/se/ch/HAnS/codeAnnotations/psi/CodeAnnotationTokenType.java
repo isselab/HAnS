@@ -1,13 +1,13 @@
 package se.ch.HAnS.codeAnnotations.psi;
 
-import com.intellij.lang.Language;
 import com.intellij.psi.tree.IElementType;
 import com.sun.istack.NotNull;
 import org.jetbrains.annotations.NonNls;
+import se.ch.HAnS.codeAnnotations.CodeAnnotationLanguage;
 
 public class CodeAnnotationTokenType extends IElementType {
     public CodeAnnotationTokenType(@NotNull @NonNls String debugName) {
-        super(debugName, Language.ANY);
+        super(debugName, CodeAnnotationLanguage.INSTANCE);
     }
 
     @Override
