@@ -3,6 +3,9 @@ package se.ch.HAnS.codeCompletion;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.psi.PlainTextTokenTypes;
+import se.ch.HAnS.fileAnnotations.psi.FileAnnotationsTypes;
+import se.ch.HAnS.fileAnnotations.psi.impl.FileAnnotationsFeatureNameImpl;
+import se.ch.HAnS.fileAnnotations.psi.impl.FileAnnotationsFileReferenceImpl;
 import se.ch.HAnS.folderAnnotations.psi.FolderAnnotationTypes;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
@@ -16,7 +19,7 @@ public class FeatureAnnotationsDictionaryContributor extends CompletionContribut
 
         extend(CompletionType.BASIC,
                 psiElement().with(new CommentPattern()),
-                new DictionaryCompletionProvider(false));
+                new KeywordCompletionProvider(false));
         // &end[CodeAnnotationCompletion]
 
         // &begin[FeatureToFolderCompletion]
@@ -26,16 +29,14 @@ public class FeatureAnnotationsDictionaryContributor extends CompletionContribut
         // &end[FeatureToFolderCompletion]
 
         // &begin[FeatureToFileCompletion]
-/*
+
         extend(CompletionType.BASIC,
-                PlatformPatterns.psiElement(FileAnnotationsTypes.FEATURE_NAME),
+                psiElement(FileAnnotationsTypes.STRING),
                 new DictionaryCompletionProvider(false));
- */
-        /*
+
         extend(CompletionType.BASIC,
-                PlatformPatterns.psiElement(FileAnnotationsTypes.FILE_NAME),
+                psiElement(FileAnnotationsTypes.FILE_NAME).withParent(FileAnnotationsFileReferenceImpl.class),
                 new FileNamesCompletionProvider(false));
-         */
         // &end[FeatureToFileCompletion]
     }
 }
