@@ -3,9 +3,10 @@ package se.ch.HAnS.codeCompletion;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.psi.PlainTextTokenTypes;
+import com.intellij.psi.PsiComment;
+import se.ch.HAnS.codeAnnotations.psi.CodeAnnotationTypes;
 import se.ch.HAnS.fileAnnotations.psi.FileAnnotationsTypes;
 import se.ch.HAnS.fileAnnotations.psi.impl.FileAnnotationsFeatureNameImpl;
-import se.ch.HAnS.fileAnnotations.psi.impl.FileAnnotationsFileReferenceImpl;
 import se.ch.HAnS.folderAnnotations.psi.FolderAnnotationTypes;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
@@ -14,29 +15,28 @@ public class FeatureAnnotationsDictionaryContributor extends CompletionContribut
     public FeatureAnnotationsDictionaryContributor() {
         // &begin[CodeAnnotationCompletion]
         extend(CompletionType.BASIC,
-                psiElement(PlainTextTokenTypes.PLAIN_TEXT),
-                new DictionaryCompletionProvider(false));
+                psiElement(CodeAnnotationTypes.FEATURENAME),
+                new FeatureNameCompletionProvider(false));
 
         extend(CompletionType.BASIC,
-                psiElement().with(new CommentPattern()),
+                psiElement(PsiComment.class),
                 new KeywordCompletionProvider(false));
         // &end[CodeAnnotationCompletion]
 
         // &begin[FeatureToFolderCompletion]
         extend(CompletionType.BASIC,
                 psiElement(FolderAnnotationTypes.FEATURENAME),
-                new DictionaryCompletionProvider(false));
+                new FeatureNameCompletionProvider(false));
         // &end[FeatureToFolderCompletion]
 
         // &begin[FeatureToFileCompletion]
+        extend(CompletionType.BASIC,
+                psiElement(FileAnnotationsTypes.STRING).andNot(psiElement(FileAnnotationsTypes.STRING).withParent(FileAnnotationsFeatureNameImpl.class)),
+                new FileNameCompletionProvider(false));
 
         extend(CompletionType.BASIC,
-                psiElement(FileAnnotationsTypes.STRING),
-                new DictionaryCompletionProvider(false));
-
-        extend(CompletionType.BASIC,
-                psiElement(FileAnnotationsTypes.FILE_NAME).withParent(FileAnnotationsFileReferenceImpl.class),
-                new FileNamesCompletionProvider(false));
+                psiElement(FileAnnotationsTypes.STRING).withParent(FileAnnotationsFeatureNameImpl.class),
+                new FeatureNameCompletionProvider(false));
         // &end[FeatureToFileCompletion]
     }
 }

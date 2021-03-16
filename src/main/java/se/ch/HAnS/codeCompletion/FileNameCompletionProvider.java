@@ -19,12 +19,12 @@ import java.util.Objects;
  * Provides file names for code completion.
  * Only adds files in current folder and excludes feature annotation files.
  */
-public class FileNamesCompletionProvider extends CompletionProvider<CompletionParameters> {
+public class FileNameCompletionProvider extends CompletionProvider<CompletionParameters> {
     private final boolean onlyManual;
 
     CompletionResultSet dictResult;
 
-    public FileNamesCompletionProvider(boolean onlyManual) {
+    public FileNameCompletionProvider(boolean onlyManual) {
         this.onlyManual = onlyManual;
     }
 

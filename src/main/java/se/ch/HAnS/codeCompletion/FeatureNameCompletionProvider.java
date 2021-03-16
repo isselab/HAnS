@@ -12,16 +12,19 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.search.FilenameIndex;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.regex.Pattern;
 
-public class DictionaryCompletionProvider extends CompletionProvider<CompletionParameters> {
+public class FeatureNameCompletionProvider extends CompletionProvider<CompletionParameters> {
     private final boolean onlyManual;
 
-    public DictionaryCompletionProvider(boolean onlyManual) {
+    public FeatureNameCompletionProvider(boolean onlyManual) {
         this.onlyManual = onlyManual;
     }
 
@@ -48,9 +51,17 @@ public class DictionaryCompletionProvider extends CompletionProvider<CompletionP
 
         Project p = ProjectManager.getInstance().getOpenProjects()[0];
 
+        PsiFile[] allFilenames = FilenameIndex.getFilesByName(p, ".feature-model", GlobalSearchScope.projectScope(p));
+        PsiFile f;
+        if (allFilenames.length > 0) {
+            f = allFilenames[0];
+        }
+        else {
+            Collection<VirtualFile> c = FilenameIndex.getAllFilesByExt(p, "feature-model");
+            f = PsiManager.getInstance(p).findFile(c.iterator().next());
+        }
+
         // The following line does not work for files consisting of only extension
-        Collection<VirtualFile> c = FilenameIndex.getAllFilesByExt(p, "feature-model");
-        PsiFile f = PsiManager.getInstance(p).findFile(c.iterator().next());
         if (f != null) {
             f.accept(new PsiRecursiveElementWalkingVisitor() {
                 @Override

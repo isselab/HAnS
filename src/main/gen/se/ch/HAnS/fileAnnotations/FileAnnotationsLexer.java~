@@ -54,8 +54,8 @@ class FileAnnotationsLexer implements FlexLexer {
 
   /* The ZZ_CMAP_A table has 256 entries */
   static final char ZZ_CMAP_A[] = zzUnpackCMap(
-    "\12\0\1\2\2\0\1\1\22\0\1\5\1\0\1\4\4\0\1\12\1\0\1\10\1\0\1\10\1\3\1\0\1\7"+
-    "\1\0\12\10\1\6\6\0\32\10\4\0\1\10\1\0\32\10\1\0\1\11\203\0");
+    "\12\0\1\2\2\0\1\1\22\0\1\5\1\0\1\4\4\0\1\11\1\0\1\7\1\0\1\7\1\3\3\0\12\7\1"+
+    "\6\6\0\32\7\4\0\1\7\1\0\32\7\1\0\1\10\203\0");
 
   /** 
    * Translates DFA states to action switch labels.
@@ -63,11 +63,11 @@ class FileAnnotationsLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\2\0\1\1\1\2\1\3\1\4\1\5\1\6\1\7"+
-    "\2\10\1\11\1\12";
+    "\2\0\1\1\1\2\1\3\1\4\1\5\1\6\2\7"+
+    "\1\10\1\11";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[13];
+    int [] result = new int[12];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -92,11 +92,11 @@ class FileAnnotationsLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\13\0\26\0\41\0\54\0\26\0\26\0\67"+
-    "\0\26\0\102\0\115\0\130\0\26";
+    "\0\0\0\12\0\24\0\36\0\50\0\24\0\24\0\62"+
+    "\0\74\0\106\0\120\0\24";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[13];
+    int [] result = new int[12];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -120,14 +120,14 @@ class FileAnnotationsLexer implements FlexLexer {
 
   private static final String ZZ_TRANS_PACKED_0 =
     "\1\3\1\4\1\5\1\6\1\7\1\4\1\10\1\11"+
-    "\1\12\2\13\1\3\2\4\2\3\1\14\3\3\1\4"+
-    "\1\14\14\0\2\4\2\0\1\4\3\0\2\4\1\0"+
-    "\1\4\1\5\2\0\1\4\3\0\2\4\6\0\1\15"+
-    "\14\0\3\12\1\0\2\4\2\0\1\4\2\0\1\12"+
-    "\2\13\1\0\2\4\2\0\1\14\3\0\1\4\1\14";
+    "\2\12\1\3\2\4\2\3\1\13\2\3\1\4\1\13"+
+    "\13\0\2\4\2\0\1\4\2\0\2\4\1\0\1\4"+
+    "\1\5\2\0\1\4\2\0\2\4\6\0\1\14\12\0"+
+    "\3\11\1\0\2\4\2\0\1\4\1\0\1\11\2\12"+
+    "\1\0\2\4\2\0\1\13\2\0\1\4\1\13";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[99];
+    int [] result = new int[90];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -165,10 +165,10 @@ class FileAnnotationsLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\2\0\1\11\2\1\2\11\1\1\1\11\3\1\1\11";
+    "\2\0\1\11\2\1\2\11\4\1\1\11";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[13];
+    int [] result = new int[12];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -485,52 +485,47 @@ class FileAnnotationsLexer implements FlexLexer {
             { return TokenType.BAD_CHARACTER;
             } 
             // fall through
-          case 11: break;
+          case 10: break;
           case 2: 
             { yybegin(YYINITIAL); return TokenType.WHITE_SPACE;
             } 
             // fall through
-          case 12: break;
+          case 11: break;
           case 3: 
             { yybegin(YYINITIAL); return FileAnnotationsTypes.NEWLINE;
             } 
             // fall through
-          case 13: break;
+          case 12: break;
           case 4: 
             { yybegin(YYINITIAL); return FileAnnotationsTypes.CS;
             } 
             // fall through
-          case 14: break;
+          case 13: break;
           case 5: 
             { yybegin(YYINITIAL); return FileAnnotationsTypes.CM;
             } 
             // fall through
-          case 15: break;
+          case 14: break;
           case 6: 
             { yybegin(YYINITIAL); return FileAnnotationsTypes.COLON;
             } 
             // fall through
-          case 16: break;
+          case 15: break;
           case 7: 
-            { yybegin(YYINITIAL); return FileAnnotationsTypes.DOT;
-            } 
-            // fall through
-          case 17: break;
-          case 8: 
             { yybegin(YYINITIAL); return FileAnnotationsTypes.STRING;
             } 
             // fall through
-          case 18: break;
-          case 9: 
+          case 16: break;
+          case 8: 
             { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE;
             } 
             // fall through
-          case 19: break;
-          case 10: 
+          case 17: break;
+          case 9: 
             { yybegin(YYINITIAL); return FileAnnotationsTypes.SEPARATOR;
             } 
             // fall through
-          case 20: break;
+          case 18: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }
