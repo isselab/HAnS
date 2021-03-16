@@ -38,7 +38,7 @@ public class FeatureModelParserDefinition implements ParserDefinition {
     }
     // &end[FeatureModel::File]
 
-    // begin[FeatureModel::Language]
+    // &begin[FeatureModel::Language]
     @Override
     public @NotNull TokenSet getWhitespaceTokens() {
         return WHITE_SPACES;
@@ -58,7 +58,7 @@ public class FeatureModelParserDefinition implements ParserDefinition {
     public @NotNull PsiElement createElement(ASTNode node) {
         return FeatureModelTypes.Factory.createElement(node);
     }
-    // end[FeatureModel::Language]
+    // &end[FeatureModel::Language]
 
     // &begin[FeatureModel::File]
     @Override

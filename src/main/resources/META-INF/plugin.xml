@@ -46,6 +46,8 @@
                                        implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationsSyntaxHighlighterFactory"/>
         <lang.syntaxHighlighterFactory language="FileAnnotations"
                                        implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationsSyntaxHighlighterFactory"/>
+    <lang.syntaxHighlighterFactory language="CodeAnnotations"
+                                       implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/>
 
         <!-- &begin[Injection] -->
         <multiHostInjector implementation="se.ch.HAnS.codeAnnotations.CodeAnnotationInjector"/>
