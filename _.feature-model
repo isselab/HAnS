@@ -12,6 +12,7 @@ HAnS
         Language
         File
         Injection
+            JavaStyleComment
     CodeCompletion
         FileNameProvider
         FeatureNameProvider
