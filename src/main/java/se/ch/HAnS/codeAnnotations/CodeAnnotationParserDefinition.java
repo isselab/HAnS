@@ -18,7 +18,7 @@ import se.ch.HAnS.codeAnnotations.psi.CodeAnnotationTypes;
 
 public class CodeAnnotationParserDefinition implements ParserDefinition {
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final IFileElementType FILE = new IFileElementType(CodeAnnotationsLanguage.INSTANCE);
+    public static final IFileElementType FILE = new IFileElementType(CodeAnnotationLanguage.INSTANCE);
 
     @Override
     public @NotNull Lexer createLexer(Project project) {

@@ -8,6 +8,10 @@ HAnS
     FileAnnotation
         Language
         File
+    CodeAnnotation
+        Language
+        File
+        Injection
     CodeCompletion
         FileNameProvider
         FeatureNameProvider

@@ -11,7 +11,7 @@ public class CodeAnnotationFileType extends LanguageFileType {
     public static final CodeAnnotationFileType INSTANCE = new CodeAnnotationFileType();
 
     private CodeAnnotationFileType() {
-        super(CodeAnnotationsLanguage.INSTANCE);
+        super(CodeAnnotationLanguage.INSTANCE);
     }
 
     @Override

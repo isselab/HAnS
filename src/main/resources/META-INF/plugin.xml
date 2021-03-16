@@ -47,7 +47,9 @@
         <lang.syntaxHighlighterFactory language="FileAnnotations"
                                        implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationsSyntaxHighlighterFactory"/>
 
-        <multiHostInjector implementation="se.ch.HAnS.CodeAnnotationInjector"/>
+        <!-- &begin[Injection] -->
+        <multiHostInjector implementation="se.ch.HAnS.codeAnnotations.CodeAnnotationInjector"/>
+        <!-- &end[Injection] -->
     </extensions>
 
     <actions>

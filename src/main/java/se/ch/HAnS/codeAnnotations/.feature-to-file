@@ -1,0 +1,8 @@
+CodeAnnotationLanguage.java CodeAnnotation.bnf CodeAnnotation.flex CodeAnnotationLexerAdapter.java
+CodeAnnotation::Language
+
+CodeAnnotationFileType.java
+CodeAnnotation::File
+
+CodeAnnotationInjector.java
+Injection

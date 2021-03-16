@@ -1,26 +1,18 @@
-package se.ch.HAnS;
+package se.ch.HAnS.codeAnnotations;
 
 import com.intellij.lang.Commenter;
-import com.intellij.lang.Language;
 import com.intellij.lang.LanguageCommenters;
 import com.intellij.lang.injection.MultiHostInjector;
 import com.intellij.lang.injection.MultiHostRegistrar;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.codeAnnotations.CodeAnnotationsLanguage;
-import se.ch.HAnS.folderAnnotations.FolderAnnotationLanguage;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 class CodeAnnotationInjector implements MultiHostInjector {
-
-    // &begin[feature]
-    /* &line[feature] */
-
     @Override
     public void getLanguagesToInject(@NotNull MultiHostRegistrar registrar, @NotNull PsiElement context) {
         if (context instanceof PsiDocCommentBase) {
@@ -40,7 +32,7 @@ class CodeAnnotationInjector implements MultiHostInjector {
                 String blockCommentPrefix = commenter.getBlockCommentPrefix();
                 String blockCommentSuffix = commenter.getBlockCommentSuffix();
 
-                registrar.startInjecting(CodeAnnotationsLanguage.INSTANCE);
+                registrar.startInjecting(CodeAnnotationLanguage.INSTANCE);
                 if (psiComment.getTokenType().toString().equals("END_OF_LINE_COMMENT") && lineCommentPrefix != null) {
                     registrar.addPlace(
                             null,
