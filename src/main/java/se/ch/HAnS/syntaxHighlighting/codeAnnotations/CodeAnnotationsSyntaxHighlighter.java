@@ -19,7 +19,7 @@ public class CodeAnnotationsSyntaxHighlighter extends SyntaxHighlighterBase {
     public static final TextAttributesKey FEATURENAME =
             createTextAttributesKey("FEATURENAME", DefaultLanguageHighlighterColors.CONSTANT);
     public static final TextAttributesKey KEYWORD =
-            createTextAttributesKey("KEY", DefaultLanguageHighlighterColors.KEYWORD);
+            createTextAttributesKey("EA_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
     public static final TextAttributesKey SEPARATOR =
             createTextAttributesKey("SEPARATOR", DefaultLanguageHighlighterColors.KEYWORD);
     public static final TextAttributesKey CS =

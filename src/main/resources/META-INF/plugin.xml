@@ -45,6 +45,8 @@
         <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FolderAnnotation] -->
         <lang.syntaxHighlighterFactory language="FileAnnotations" implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FileAnnotation]-->
         <lang.syntaxHighlighterFactory language="CodeAnnotations" implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::CodeAnnotation]-->
+
+        <additionalTextAttributes scheme="Darcula" file="colorSchemes/HAnSDarcula.xml"/>
         <!-- &end[SyntaxHighlighting] -->
 
         <!-- &begin[Injection] -->

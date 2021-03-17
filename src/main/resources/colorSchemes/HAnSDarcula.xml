@@ -1,0 +1,24 @@
+<?xml version='1.0'?>
+<list>
+    <option name="EA_KEYWORD">
+        <value>
+            <option name="FOREGROUND" value="457EAC"/>
+        </value>
+    </option>
+    <option name="FEATURENAME">
+        <value>
+            <option name="FOREGROUND" value="E0128A"/>
+        </value>
+    </option>
+    <option name="FILENAME">
+        <value>
+            <option name="FOREGROUND" value="0C7C59"/>
+        </value>
+    </option>
+    <option name="SEPARATOR">
+        <value>
+            <option name="FOREGROUND" value="BBA0B2"/>
+            <option name="BACKGROUND" value="2C0735"/>
+        </value>
+    </option>
+</list>
