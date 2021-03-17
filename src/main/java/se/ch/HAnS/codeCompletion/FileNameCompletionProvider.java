@@ -9,8 +9,8 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.fileAnnotations.FileAnnotationsFileType;
-import se.ch.HAnS.folderAnnotations.FolderAnnotationFileType;
+import se.ch.HAnS.fileAnnotation.FileAnnotationFileType;
+import se.ch.HAnS.folderAnnotation.FolderAnnotationFileType;
 
 import java.util.Objects;
 
@@ -46,7 +46,7 @@ public class FileNameCompletionProvider extends CompletionProvider<CompletionPar
         PsiDirectory d = parameters.getOriginalFile().getParent();
         VirtualFile[] l = Objects.requireNonNull(d).getVirtualFile().getChildren();
         for (VirtualFile f : l) {
-            if (!f.isDirectory() && f.getFileType() != FileAnnotationsFileType.INSTANCE && f.getFileType() != FolderAnnotationFileType.INSTANCE) {
+            if (!f.isDirectory() && f.getFileType() != FileAnnotationFileType.INSTANCE && f.getFileType() != FolderAnnotationFileType.INSTANCE) {
                 dictResult.addElement(LookupElementBuilder.create(f.getName()).withItemTextForeground(JBColor.GREEN));
             }
         }
