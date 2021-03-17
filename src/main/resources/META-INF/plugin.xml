@@ -45,9 +45,9 @@
                                 implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationDictionaryContributor"/>
         <!-- &end[CodeCompletion] -->
 
-        <!-- &begin[LiveTemplate] -->
+        <!-- &begin[LiveTemplate]
         <defaultLiveTemplates file="/liveTemplates/FeatureAnnotations.xml"/>
-        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext"/>
+        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext"/> -->
         <!-- &end[LiveTemplate] -->
 
         <lang.syntaxHighlighterFactory language="FeatureModel"
