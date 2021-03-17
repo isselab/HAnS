@@ -20,30 +20,40 @@
         <!-- &end[FeatureModel] -->
 
         <!-- &begin[FileAnnotations] -->
-        <fileType name="File Annotations File" implementationClass="se.ch.HAnS.fileAnnotations.FileAnnotationsFileType"
-                  fieldName="INSTANCE" language="FileAnnotations" extensions="feature-to-file"/>
-        <lang.parserDefinition language="FileAnnotations"
-                                implementationClass="se.ch.HAnS.fileAnnotations.FileAnnotationsParserDefinition"/>
+        <fileType name="File Annotation File" implementationClass="se.ch.HAnS.fileAnnotation.FileAnnotationFileType"
+                  fieldName="INSTANCE" language="FileAnnotation" extensions="feature-to-file"/>
+        <lang.parserDefinition language="FileAnnotation"
+                                implementationClass="se.ch.HAnS.fileAnnotation.FileAnnotationParserDefinition"/>
         <!-- &end[FileAnnotations] -->
 
         <!-- &begin[FolderAnnotations] -->
+        <fileType name="Feature To Folder File" implementationClass="se.ch.HAnS.folderAnnotation.FolderAnnotationFileType"
+                  fieldName="INSTANCE" language="FolderAnnotation" extensions="feature-to-folder"/>
         <lang.parserDefinition language="FolderAnnotation"
-                               implementationClass="se.ch.HAnS.folderAnnotations.FolderAnnotationParserDefinition"/>
+                               implementationClass="se.ch.HAnS.folderAnnotation.FolderAnnotationParserDefinition"/>
         <!-- &end[FolderAnnotations] -->
 
         <!-- &begin[CodeAnnotations] -->
-        <fileType name="Code Annotation File" implementationClass="se.ch.HAnS.codeAnnotations.CodeAnnotationFileType"
+        <fileType name="Code Annotation File" implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationFileType"
                   fieldName="INSTANCE" language="CodeAnnotations" extensions="code-annotation"/>
         <lang.parserDefinition language="CodeAnnotations"
-                               implementationClass="se.ch.HAnS.codeAnnotations.CodeAnnotationParserDefinition"/>
+                               implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationParserDefinition"/>
         <!-- &end[CodeAnnotations] -->
+
+        <!-- &begin[CodeCompletion] -->
         <completion.contributor language="any"
-                                implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationsDictionaryContributor"/>
+                                implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationDictionaryContributor"/>
+        <!-- &end[CodeCompletion] -->
+
+        <!-- &begin[LiveTemplate]
+        <defaultLiveTemplates file="/liveTemplates/FeatureAnnotations.xml"/>
+        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext"/> -->
+        <!-- &end[LiveTemplate] -->
 
         <!-- &begin[SyntaxHighlighting] -->
         <lang.syntaxHighlighterFactory language="FeatureModel" implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FeatureModel]-->
-        <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FolderAnnotation] -->
-        <lang.syntaxHighlighterFactory language="FileAnnotations" implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FileAnnotation]-->
+        <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FolderAnnotation] -->
+        <lang.syntaxHighlighterFactory language="FileAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FileAnnotation]-->
         <lang.syntaxHighlighterFactory language="CodeAnnotations" implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::CodeAnnotation]-->
 
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/HAnSDarcula.xml"/>
@@ -51,7 +61,7 @@
         <!-- &end[SyntaxHighlighting] -->
 
         <!-- &begin[Injection] -->
-        <multiHostInjector implementation="se.ch.HAnS.codeAnnotations.CodeAnnotationInjector"/>
+        <multiHostInjector implementation="se.ch.HAnS.codeAnnotation.CodeAnnotationInjector"/>
         <!-- &end[Injection] -->
     </extensions>
 
