@@ -12,6 +12,7 @@ HAnS
         Language
         File
         Injection
+            JavaStyleComment
     CodeCompletion
         FileNameProvider
         FeatureNameProvider
@@ -24,3 +25,4 @@ HAnS
         FeatureModel
         FolderAnnotation
         FileAnnotation
+        CodeAnnotation

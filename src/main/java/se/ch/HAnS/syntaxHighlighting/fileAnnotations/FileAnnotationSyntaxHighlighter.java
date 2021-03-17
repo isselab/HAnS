@@ -15,18 +15,18 @@ import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAtt
 
 public class FileAnnotationSyntaxHighlighter extends SyntaxHighlighterBase {
 
-    public static final TextAttributesKey FEATURE_FILE_FEATURE =
-            createTextAttributesKey("FILE_FEATURE", DefaultLanguageHighlighterColors.CONSTANT);
+    public static final TextAttributesKey FEATURENAME =
+            createTextAttributesKey("FEATURENAME", DefaultLanguageHighlighterColors.CONSTANT);
     public static final TextAttributesKey FEATURE_FILE_SEPARATOR =
             createTextAttributesKey("SEPARATOR", DefaultLanguageHighlighterColors.KEYWORD);
     public static final TextAttributesKey FEATURE_FILE_FOLDER_CS =
             createTextAttributesKey("CS", DefaultLanguageHighlighterColors.BRACKETS);
     public static final TextAttributesKey BAD_CHARACTER =
-            createTextAttributesKey("FA_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
+            createTextAttributesKey("HAnS_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 
 
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
-    private static final TextAttributesKey[] FEATURE_FILE_FEATURE_KEYS = new TextAttributesKey[]{FEATURE_FILE_FEATURE};
+    private static final TextAttributesKey[] FEATURE_FILE_FEATURE_KEYS = new TextAttributesKey[]{FEATURENAME};
     private static final TextAttributesKey[] FEATURE_FILE_SEPARATOR_KEYS = new TextAttributesKey[]{FEATURE_FILE_SEPARATOR};
     private static final TextAttributesKey[] FEATURE_FILE_CS_KEYS = new TextAttributesKey[]{FEATURE_FILE_FOLDER_CS};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];

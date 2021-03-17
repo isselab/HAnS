@@ -18,7 +18,7 @@ import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAtt
 public class FeatureModelSyntaxHighlighter extends SyntaxHighlighterBase {
 
     public static final TextAttributesKey FEATURE =
-            createTextAttributesKey("FEATURE", DefaultLanguageHighlighterColors.CONSTANT);
+            createTextAttributesKey("FEATURENAME", DefaultLanguageHighlighterColors.CONSTANT);
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("HAnS_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 

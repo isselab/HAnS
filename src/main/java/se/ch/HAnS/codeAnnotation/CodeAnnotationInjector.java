@@ -19,9 +19,6 @@ class CodeAnnotationInjector implements MultiHostInjector {
             return;
         }
 
-        //List<String> lineCommentPrefixes = Commenter.getLineCommentPrefixes();
-        /*@NotNull List<Commenter> allCommentersForLanguage = LanguageCommenters.INSTANCE.allForLanguageOrAny(Language.ANY);*/
-
         if (context instanceof PsiComment) {
             String pattern = ".*(&begin|&line|&end).*";
             if (Pattern.matches(pattern, context.getText())) {
@@ -33,6 +30,7 @@ class CodeAnnotationInjector implements MultiHostInjector {
                 String blockCommentSuffix = commenter.getBlockCommentSuffix();
 
                 registrar.startInjecting(CodeAnnotationLanguage.INSTANCE);
+                // &begin[Injection::JavaStyleComment]
                 if (psiComment.getTokenType().toString().equals("END_OF_LINE_COMMENT") && lineCommentPrefix != null) {
                     registrar.addPlace(
                             null,
@@ -46,6 +44,7 @@ class CodeAnnotationInjector implements MultiHostInjector {
                             null,
                             (PsiLanguageInjectionHost) context,
                             TextRange.create(blockCommentPrefix.length(), psiComment.getTextLength() - blockCommentSuffix.length()));
+                // &end[Injection::JavaStyleComment]
                 } else {
                     registrar.addPlace(
                             null,
