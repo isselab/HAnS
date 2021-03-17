@@ -8,8 +8,6 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.featureModel.FeatureModelLexerAdapter;
-import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import se.ch.HAnS.folderAnnotations.FolderAnnotationLexerAdapter;
 import se.ch.HAnS.folderAnnotations.psi.FolderAnnotationTypes;
 
@@ -17,8 +15,8 @@ import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAtt
 
 public class FolderAnnotationsSyntaxHighlighter extends SyntaxHighlighterBase {
 
-    public static final TextAttributesKey FEATURE_FOLDER_FEATURE =
-            createTextAttributesKey("FOLDER_FEATURE", DefaultLanguageHighlighterColors.CONSTANT);
+    public static final TextAttributesKey FEATURENAME =
+            createTextAttributesKey("FEATURENAME", DefaultLanguageHighlighterColors.CONSTANT);
     public static final TextAttributesKey FEATURE_FOLDER_SEPARATOR =
             createTextAttributesKey("SEPARATOR", DefaultLanguageHighlighterColors.KEYWORD);
     public static final TextAttributesKey FEATURE_FOLDER_CS =
@@ -28,7 +26,7 @@ public class FolderAnnotationsSyntaxHighlighter extends SyntaxHighlighterBase {
 
 
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
-    private static final TextAttributesKey[] FEATURE_FOLDER_FEATURE_KEYS = new TextAttributesKey[]{FEATURE_FOLDER_FEATURE};
+    private static final TextAttributesKey[] FEATURE_FOLDER_FEATURE_KEYS = new TextAttributesKey[]{FEATURENAME};
     private static final TextAttributesKey[] FEATURE_FOLDER_SEPARATOR_KEYS = new TextAttributesKey[]{FEATURE_FOLDER_SEPARATOR};
     private static final TextAttributesKey[] FEATURE_FOLDER_CS_KEYS = new TextAttributesKey[]{FEATURE_FOLDER_CS};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
