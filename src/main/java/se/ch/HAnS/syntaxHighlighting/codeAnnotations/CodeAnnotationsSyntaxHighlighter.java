@@ -8,9 +8,8 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.codeAnnotations.CodeAnnotationLexerAdapter;
-import se.ch.HAnS.codeAnnotations.psi.CodeAnnotationTypes;
-import se.ch.HAnS.fileAnnotations.psi.FileAnnotationsTypes;
+import se.ch.HAnS.codeAnnotation.CodeAnnotationLexerAdapter;
+import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationTypes;
 
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
