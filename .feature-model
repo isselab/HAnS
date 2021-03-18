@@ -2,6 +2,7 @@ HAnS
     FeatureModel
         Language
         File
+        FeatureView
     FolderAnnotation
         Language
         File
