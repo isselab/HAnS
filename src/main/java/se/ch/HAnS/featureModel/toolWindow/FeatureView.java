@@ -1,5 +1,6 @@
 package se.ch.HAnS.featureModel.toolWindow;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
@@ -8,58 +9,99 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.treeStructure.Tree;
-import jnr.ffi.annotations.In;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelProjectNameImpl;
 
 import javax.swing.*;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static se.ch.HAnS.AnnotationIcons.FileType;
 
 public class FeatureView extends JPanel implements ActionListener {
 
     private Project project;
     private DefaultTreeModel tree;
     private DefaultMutableTreeNode root;
+    private JBTextField newFeature;
 
     private static String ADD_COMMAND = "add";
     private static String REMOVE_COMMAND = "remove";
     private static String CLEAR_COMMAND = "clear";
+
+    private static Logger LOGGER = Logger.getLogger("FeatureView");
 
     public FeatureView(Project project) {
         super(new BorderLayout());
         this.project = project;
 
         getFeatureNames();
+        Dimension btnDimension = new Dimension(20, 20);
+        Insets btnMargin = JBUI.insets(0,5,0,5);
 
-        JButton addButton = new JButton("Add");
+        JButton addButton = new JButton(AllIcons.General.Add);
+        addButton.setBorderPainted(false);
+        addButton.setContentAreaFilled(false);
+        addButton.setRolloverEnabled(true);
+        addButton.setMargin(btnMargin);
+        addButton.setPreferredSize(btnDimension);
         addButton.setActionCommand(ADD_COMMAND);
         addButton.addActionListener(this);
 
-        JButton removeButton = new JButton("Remove");
+        JButton removeButton = new JButton(AllIcons.General.Remove);
+        removeButton.setBorderPainted(false);
+        removeButton.setContentAreaFilled(false);
+        removeButton.setRolloverEnabled(true);
+        removeButton.setMargin(btnMargin);
+        removeButton.setPreferredSize(btnDimension);
         removeButton.setActionCommand(REMOVE_COMMAND);
         removeButton.addActionListener(this);
 
-        JButton clearButton = new JButton("Clear");
+        JButton clearButton = new JButton(AllIcons.General.Reset);
+        clearButton.setBorderPainted(false);
+        clearButton.setContentAreaFilled(false);
+        clearButton.setRolloverEnabled(true);
+        clearButton.setMargin(btnMargin);
+        clearButton.setPreferredSize(btnDimension);
         clearButton.setActionCommand(CLEAR_COMMAND);
         clearButton.addActionListener(this);
+
+        newFeature = new JBTextField();
+        newFeature.setEditable(true);
+        newFeature.setVisible(true);
 
         tree = new DefaultTreeModel(root);
         Tree left = new Tree(tree);
         add(new JScrollPane(left), BorderLayout.CENTER);
 
-        JPanel buttons = new JPanel(new GridLayout(0, 3));
+        JPanel south = new JPanel(new BorderLayout());
+
+        JPanel buttons = new JPanel(new GridLayout(0,3));
         buttons.add(addButton);
         buttons.add(removeButton);
         buttons.add(clearButton);
-        add(buttons, BorderLayout.SOUTH);
+
+        JButton FMIcon = new JButton(FileType);
+        FMIcon.setMargin(btnMargin);
+        FMIcon.setPreferredSize(btnDimension);
+        FMIcon.setBorderPainted(false);
+        FMIcon.setContentAreaFilled(false);
+
+        south.add(FMIcon,BorderLayout.WEST);
+        south.add(newFeature, BorderLayout.CENTER);
+        south.add(buttons, BorderLayout.EAST);
+
+        add(south, BorderLayout.SOUTH);
     }
 
     @Override
@@ -68,6 +110,9 @@ public class FeatureView extends JPanel implements ActionListener {
 
         if (ADD_COMMAND.equals(command)) {
             // Add button clicked
+            LOGGER.log(Level.INFO, newFeature.getText());
+
+
             addObject(null);
         } else if (REMOVE_COMMAND.equals(command)) {
             // Remove button clicked
