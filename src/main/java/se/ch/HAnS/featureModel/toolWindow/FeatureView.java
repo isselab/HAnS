@@ -136,7 +136,7 @@ public class FeatureView extends JPanel implements ActionListener{
             // Add button clicked
             LOGGER.log(Level.INFO, "newFeature" + newFeature.getText());
 
-            LOGGER.log(Level.INFO,"PSIElement");
+            LOGGER.log(Level.INFO, getSelecedItemAsPsiElement().getText());
 
             addObject(null);
         } else if (REMOVE_COMMAND.equals(command)) {
@@ -177,9 +177,12 @@ public class FeatureView extends JPanel implements ActionListener{
             f.accept(new PsiRecursiveElementWalkingVisitor() {
                 @Override
                 public void visitElement(@NotNull PsiElement element) {
-                    if (element instanceof FeatureModelFeatureImpl && element.getText().equals(selectedFeature)){
-                        result[0] = element;
+                    if (element instanceof FeatureModelFeatureImpl ){
+                        if (element.getText().equals(selectedFeature)){
+                            result[0] = element;
+                        }
                     }
+                    super.visitElement(element);
                 }
             });
         }
