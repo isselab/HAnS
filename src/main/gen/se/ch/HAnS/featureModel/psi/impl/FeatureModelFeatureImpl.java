@@ -33,4 +33,9 @@ public class FeatureModelFeatureImpl extends ASTWrapperPsiElement implements Fea
     return findChildByClass(FeatureModelFeature.class);
   }
 
+  @Override
+  public void addFeature(@NotNull String featurename) {
+    FeatureModelPsiImplUtil.addFeature(this, featurename);
+  }
+
 }

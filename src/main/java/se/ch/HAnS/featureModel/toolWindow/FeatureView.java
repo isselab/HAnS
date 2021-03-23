@@ -9,16 +9,21 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
+import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelProjectNameImpl;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,12 +33,14 @@ import java.util.logging.Logger;
 
 import static se.ch.HAnS.AnnotationIcons.FileType;
 
-public class FeatureView extends JPanel implements ActionListener {
+public class FeatureView extends JPanel implements ActionListener{
 
     private Project project;
     private DefaultTreeModel tree;
+    private Tree left;
     private DefaultMutableTreeNode root;
     private JBTextField newFeature;
+    private String selectedFeature;
 
     private static String ADD_COMMAND = "add";
     private static String REMOVE_COMMAND = "remove";
@@ -81,8 +88,25 @@ public class FeatureView extends JPanel implements ActionListener {
         newFeature.setVisible(true);
 
         tree = new DefaultTreeModel(root);
-        Tree left = new Tree(tree);
-        add(new JScrollPane(left), BorderLayout.CENTER);
+        left = new Tree(tree);
+        left.getSelectionModel().setSelectionMode
+                (TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+        //Listen for when the selection changes.
+        left.addTreeSelectionListener(e -> {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+                    left.getLastSelectedPathComponent();
+
+            if (node == null)
+                //Nothing is selected.
+                return;
+
+            selectedFeature = node.toString();
+            LOGGER.log(Level.INFO, "Selected Feature: "+selectedFeature);
+        });
+        JBScrollPane scrollPane = new JBScrollPane(left);
+
+        add(scrollPane, BorderLayout.CENTER);
 
         JPanel south = new JPanel(new BorderLayout());
 
@@ -110,8 +134,9 @@ public class FeatureView extends JPanel implements ActionListener {
 
         if (ADD_COMMAND.equals(command)) {
             // Add button clicked
-            LOGGER.log(Level.INFO, newFeature.getText());
+            LOGGER.log(Level.INFO, "newFeature" + newFeature.getText());
 
+            LOGGER.log(Level.INFO,"PSIElement");
 
             addObject(null);
         } else if (REMOVE_COMMAND.equals(command)) {
@@ -134,6 +159,31 @@ public class FeatureView extends JPanel implements ActionListener {
     public void clear() {
         getFeatureNames();
         tree.reload();
+    }
+
+    public PsiElement getSelecedItemAsPsiElement(){
+        final PsiElement[] result = {null};
+        PsiFile[] allFilenames = FilenameIndex.getFilesByName(project, ".feature-model", GlobalSearchScope.projectScope(project));
+        PsiFile f;
+        if (allFilenames.length > 0) {
+            f = allFilenames[0];
+        }
+        else {
+            Collection<VirtualFile> c = FilenameIndex.getAllFilesByExt(project, "feature-model");
+            f = PsiManager.getInstance(project).findFile(c.iterator().next());
+        }
+
+        if (f != null) {
+            f.accept(new PsiRecursiveElementWalkingVisitor() {
+                @Override
+                public void visitElement(@NotNull PsiElement element) {
+                    if (element instanceof FeatureModelFeatureImpl && element.getText().equals(selectedFeature)){
+                        result[0] = element;
+                    }
+                }
+            });
+        }
+        return result[0];
     }
 
     private void getFeatureNames() {

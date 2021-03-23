@@ -11,6 +11,8 @@
   elementTypeHolderClass="se.ch.HAnS.featureModel.psi.FeatureModelTypes"
   elementTypeClass="se.ch.HAnS.featureModel.psi.FeatureModelElementType"
   tokenTypeClass="se.ch.HAnS.featureModel.psi.FeatureModelTokenType"
+
+  psiImplUtilClass="se.ch.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil"
 }
 
 featureModelFile ::= projectName ((CRLF)* feature)* ((TAB|CRLF)*)
@@ -18,3 +20,4 @@ featureModelFile ::= projectName ((CRLF)* feature)* ((TAB|CRLF)*)
 projectName ::= FEATURENAME
 
 feature ::= (FEATURENAME | TAB feature)
+{methods=[addFeature]}

@@ -10,4 +10,6 @@ public interface FeatureModelFeature extends PsiElement {
   @Nullable
   FeatureModelFeature getFeature();
 
+  void addFeature(@NotNull String featurename);
+
 }
