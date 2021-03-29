@@ -1,63 +1,72 @@
 package se.ch.HAnS.featureModel.psi.impl;
 
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiComment;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.impl.source.tree.PsiCommentImpl;
-import com.intellij.psi.search.FilenameIndex;
-import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 
-import java.util.Collection;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FeatureModelPsiImplUtil {
 
-    public static void addFeature(@NotNull FeatureModelFeature parent, @NotNull String featurename){
-        Project project = ProjectManager.getInstance().getDefaultProject();
-        PsiFile[] allFilenames = FilenameIndex.getFilesByName(project, ".feature-model", GlobalSearchScope.projectScope(project));
-        PsiFile f;
-        if (allFilenames.length > 0) {
-            f = allFilenames[0];
-        }else {
-            Collection<VirtualFile> c = FilenameIndex.getAllFilesByExt(project, "feature-model");
-            f = PsiManager.getInstance(project).findFile(c.iterator().next());
-        }
+    private static Logger LOGGER = Logger.getLogger("utilClass");
 
-        assert f != null;
-        f.accept(new PsiRecursiveElementWalkingVisitor() {
+    public static void addFeature(@NotNull FeatureModelFeature parent, @NotNull String featurename){
+        Project project = parent.getProject();
+        PsiFile f = parent.getContainingFile();
+        VirtualFile vf = f.getVirtualFile();
+
+        LOGGER.log(Level.INFO, vf.toString());
+        parent.accept(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement element) {
-                if (element == parent){
-                    PsiComment c = new PsiCommentImpl(FeatureModelTypes.FEATURENAME, featurename);
-                    parent.add(c);
+                PsiComment c = new PsiCommentImpl(FeatureModelTypes.FEATURENAME, featurename);
+                if (element == parent && element instanceof FeatureModelFeatureImpl){
+                    LOGGER.log(Level.INFO, "element in util: " + element.getText());
+                    //((FeatureModelFeatureImpl) element).getFeature().add(c);
+
+                    element.add(c);
+                    //element.getNode().addChild(c.getNode());
                 } else {
-                    PsiComment c = new PsiCommentImpl(FeatureModelTypes.FEATURENAME, featurename);
-                    if (findProjectName(project) != null) {
-                        Objects.requireNonNull(findProjectName(project)).add(c);
+                    LOGGER.log(Level.INFO, "element:\n" + element.getText() + "\n parent: " + parent.getText());
+                    if (findProjectName(f) != null) {
+                        Objects.requireNonNull(findProjectName(f)).add(c);
                     }
                 }
+                super.visitElement(element);
             }
         });
-        if (parent == null){
 
-
-        }
+        /*f.accept(new PsiRecursiveElementWalkingVisitor() {
+            @Override
+            public void visitElement(@NotNull PsiElement element) {
+                PsiComment c = new PsiCommentImpl(FeatureModelTypes.FEATURENAME, featurename);
+                if (element == parent && element instanceof FeatureModelFeatureImpl){
+                    LOGGER.log(Level.INFO, "element in util: " + element.getText());
+                    ((FeatureModelFeatureImpl) element).getFeature().add(c);
+                    element.getNode().addChild(c.getNode());
+                    //element.add(c);
+                } else {
+                    LOGGER.log(Level.INFO, "element:\n" + element.getText() + "\n parent: " + parent.getText());
+                    if (findProjectName(f) != null) {
+                        Objects.requireNonNull(findProjectName(f)).add(c);
+                    }
+                }
+                super.visitElement(element);
+            }
+        });*/
     }
 
-    private static PsiElement findProjectName(Project project){
-        PsiFile[] allFilenames = FilenameIndex.getFilesByName(project, ".feature-model", GlobalSearchScope.projectScope(project));
-        PsiFile f;
-        if (allFilenames.length > 0) {
-            f = allFilenames[0];
-        }
-        else {
-            Collection<VirtualFile> c = FilenameIndex.getAllFilesByExt(project, "feature-model");
-            f = PsiManager.getInstance(project).findFile(c.iterator().next());
-        }
+    private static PsiElement findProjectName(PsiFile f){
 
         final PsiElement[] projectName = new FeatureModelProjectNameImpl[1];
 

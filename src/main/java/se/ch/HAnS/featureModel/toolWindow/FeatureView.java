@@ -28,6 +28,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -134,9 +136,9 @@ public class FeatureView extends JPanel implements ActionListener{
 
         if (ADD_COMMAND.equals(command)) {
             // Add button clicked
-            LOGGER.log(Level.INFO, "newFeature" + newFeature.getText());
 
-            LOGGER.log(Level.INFO, getSelecedItemAsPsiElement().getText());
+            FeatureModelFeatureImpl feature = (FeatureModelFeatureImpl) getSelecedItemAsPsiElement();
+            feature.addFeature(newFeature.getText());
 
             addObject(null);
         } else if (REMOVE_COMMAND.equals(command)) {
