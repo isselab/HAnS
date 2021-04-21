@@ -74,12 +74,10 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action
-                id="Test.Thing.Console"
-                class="se.ch.HAnS.testing.TestByAction"
-                text="Test the Thing"
-                description="Test the thing">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-        </action>
+        <group id="FeatureView" text="Feature View Actions">
+            <action id="RenameFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.RenameAction" text="Rename..." description="Rename feature"/>
+            <action id="AddFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.AddAction" text="Add..." description="Add feature" icon="AllIcons.General.Add"/>
+            <action id="DeleteFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.DeleteAction" text="Delete..." description="Delete feature" icon="AllIcons.General.Remove"/>
+        </group>
     </actions>
 </idea-plugin>

@@ -28,12 +28,12 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 
 <YYINITIAL> {FEATURENAME}+                                 { yybegin(YYINITIAL); return FeatureModelTypes.FEATURENAME; }
 
-<YYINITIAL> {TAB}                                          { yybegin(YYINITIAL); return FeatureModelTypes.TAB; }
+<WAITING_VALUE> {CRLF}+                                    { yybegin(YYINITIAL); return FeatureModelTypes.CRLF; }
 
-<WAITING_VALUE> {CRLF}({CRLF}|{SPACE})+                    { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+<WAITING_VALUE> ({SPACE}|{TAB})+                           { yybegin(YYINITIAL); return FeatureModelTypes.TAB; }
 
-<WAITING_VALUE> {SPACE}+                                   { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE; }
+{CRLF}+                                                    { yybegin(YYINITIAL); return FeatureModelTypes.CRLF; }
 
-({CRLF}|{SPACE})+                                          { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
+({SPACE}|{TAB})+                                           { yybegin(YYINITIAL); return FeatureModelTypes.TAB; }
 
 [^]                                                        { return TokenType.BAD_CHARACTER; }

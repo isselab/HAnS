@@ -28,14 +28,18 @@ public class FeatureModelFeatureImpl extends ASTWrapperPsiElement implements Fea
   }
 
   @Override
-  @Nullable
-  public FeatureModelFeature getFeature() {
-    return findChildByClass(FeatureModelFeature.class);
+  public String renameFeature() {
+    return FeatureModelPsiImplUtil.renameFeature(this);
   }
 
   @Override
-  public void addFeature(@NotNull String featurename) {
-    FeatureModelPsiImplUtil.addFeature(this, featurename);
+  public String addFeature() {
+    return FeatureModelPsiImplUtil.addFeature(this);
+  }
+
+  @Override
+  public int deleteFeature() {
+    return FeatureModelPsiImplUtil.deleteFeature(this);
   }
 
 }

@@ -7,9 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface FeatureModelFeature extends PsiElement {
 
-  @Nullable
-  FeatureModelFeature getFeature();
+  String renameFeature();
 
-  void addFeature(@NotNull String featurename);
+  String addFeature();
+
+  int deleteFeature();
 
 }

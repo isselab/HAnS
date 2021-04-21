@@ -1,86 +1,141 @@
 package se.ch.HAnS.featureModel.psi.impl;
 
-import com.intellij.ide.plugins.PluginManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiComment;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
-import com.intellij.psi.impl.source.tree.PsiCommentImpl;
+import com.intellij.psi.impl.PsiFileFactoryImpl;
 import org.jetbrains.annotations.NotNull;
+import se.ch.HAnS.featureModel.FeatureModelLanguage;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
-import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
 
-    private static Logger LOGGER = Logger.getLogger("utilClass");
+    public static String renameFeature(@NotNull FeatureModelFeature feature){
+        String newFeatureName;
+        while (true) {
+            newFeatureName = Messages.showInputDialog("Enter new name",
+                    "Rename Feature", null);
+            if (newFeatureName == null) {
+                return null;
+            }
+            if ("".equals(newFeatureName.trim())) {
+                Messages.showMessageDialog("Feature name cannot be empty",
+                        "Error", Messages.getErrorIcon());
+                continue;
+            }
+            if (!Pattern.matches("[[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]+", newFeatureName)) {
+                Messages.showMessageDialog("Feature name incorrect",
+                        "Error", Messages.getErrorIcon());
+                continue;
+            }
+            return renameInFeatureModel(feature, newFeatureName);
+        }
+    }
 
-    public static void addFeature(@NotNull FeatureModelFeature parent, @NotNull String featurename){
-        Project project = parent.getProject();
-        PsiFile f = parent.getContainingFile();
-        VirtualFile vf = f.getVirtualFile();
+    private static String renameInFeatureModel(@NotNull FeatureModelFeature feature, String newFeatureName) {
+        PsiFile f = PsiFileFactoryImpl.getInstance(
+                feature.getProject()).createFileFromText(FeatureModelLanguage.INSTANCE, "Dummy\n" + newFeatureName);
 
-        LOGGER.log(Level.INFO, vf.toString());
-        parent.accept(new PsiRecursiveElementWalkingVisitor() {
+        WriteCommandAction.runWriteCommandAction(feature.getProject(), () -> {
+            feature.replace(f.getLastChild().copy());
+        });
+
+        return newFeatureName;
+    }
+
+    public static String addFeature(@NotNull FeatureModelFeature feature){
+        String newFeatureName;
+        while (true) {
+            newFeatureName = Messages.showInputDialog("Enter name of new feature",
+                    "New Feature", null);
+            if (newFeatureName == null) {
+                return null;
+            }
+            if ("".equals(newFeatureName.trim())) {
+                Messages.showMessageDialog("Feature name cannot be empty",
+                        "Error", Messages.getErrorIcon());
+                continue;
+            }
+            if (!Pattern.matches("[[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]*", newFeatureName)) {
+                Messages.showMessageDialog("Feature name incorrect",
+                        "Error", Messages.getErrorIcon());
+                continue;
+            }
+            return addToFeatureModel(feature, newFeatureName);
+        }
+    }
+
+    private static String addToFeatureModel(@NotNull FeatureModelFeature feature, String newFeatureName) {
+        PsiFile f = PsiFileFactoryImpl.getInstance(
+                feature.getProject()).createFileFromText(
+                        FeatureModelLanguage.INSTANCE, "Dummy\n" + "\t" + String.format("%1$"+(feature.getPrevSibling().getTextLength())+"s", "") + newFeatureName);
+        WriteCommandAction.runWriteCommandAction(feature.getProject(), () -> {
+            PsiElement [] elements = f.getChildren();
+            feature.add(elements[elements.length-3].copy());
+            feature.add(elements[elements.length-2].copy());
+            feature.add(elements[elements.length-1].copy());
+        });
+
+        return newFeatureName;
+    }
+
+    public static int deleteFeature(@NotNull FeatureModelFeature feature){
+        int response = Messages.showOkCancelDialog(
+                "Are you sure you want to remove the feature from the list?",
+                "Delete Feature",
+                Messages.getOkButton(),
+                Messages.getCancelButton(),
+                Messages.getWarningIcon());
+        if (response == 0) {
+            deleteFromFeatureModelWithChildren(feature);
+        }
+        return 1;
+    }
+
+    private static void deleteFromFeatureModelWithChildren(@NotNull FeatureModelFeature feature) {
+        List<PsiElement> toDelete = new ArrayList<>();
+
+        feature.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
+            boolean add = false;
+            int indentation;
+
             @Override
             public void visitElement(@NotNull PsiElement element) {
-                PsiComment c = new PsiCommentImpl(FeatureModelTypes.FEATURENAME, featurename);
-                if (element == parent && element instanceof FeatureModelFeatureImpl){
-                    LOGGER.log(Level.INFO, "element in util: " + element.getText());
-                    //((FeatureModelFeatureImpl) element).getFeature().add(c);
-
-                    element.add(c);
-                    //element.getNode().addChild(c.getNode());
-                } else {
-                    LOGGER.log(Level.INFO, "element:\n" + element.getText() + "\n parent: " + parent.getText());
-                    if (findProjectName(f) != null) {
-                        Objects.requireNonNull(findProjectName(f)).add(c);
+                if (element instanceof FeatureModelFeatureImpl ){
+                    if (add) {
+                        if (element.getPrevSibling().getText().length() <= indentation) {
+                            add = false;
+                        }
+                        else {
+                            deleteLine(element);
+                        }
+                    }
+                    else if (element.equals(feature)){
+                        deleteLine(element);
+                        indentation = element.getPrevSibling().getText().length();
+                        add = true;
                     }
                 }
                 super.visitElement(element);
+            }
+
+            private void deleteLine(@NotNull PsiElement element) {
+                toDelete.add(element);
+                toDelete.add(element.getPrevSibling());
+                toDelete.add(element.getPrevSibling().getPrevSibling());
             }
         });
 
-        /*f.accept(new PsiRecursiveElementWalkingVisitor() {
-            @Override
-            public void visitElement(@NotNull PsiElement element) {
-                PsiComment c = new PsiCommentImpl(FeatureModelTypes.FEATURENAME, featurename);
-                if (element == parent && element instanceof FeatureModelFeatureImpl){
-                    LOGGER.log(Level.INFO, "element in util: " + element.getText());
-                    ((FeatureModelFeatureImpl) element).getFeature().add(c);
-                    element.getNode().addChild(c.getNode());
-                    //element.add(c);
-                } else {
-                    LOGGER.log(Level.INFO, "element:\n" + element.getText() + "\n parent: " + parent.getText());
-                    if (findProjectName(f) != null) {
-                        Objects.requireNonNull(findProjectName(f)).add(c);
-                    }
-                }
-                super.visitElement(element);
+        WriteCommandAction.runWriteCommandAction(feature.getProject(), () -> {
+            for (PsiElement e : toDelete) {
+                e.delete();
             }
-        });*/
-    }
-
-    private static PsiElement findProjectName(PsiFile f){
-
-        final PsiElement[] projectName = new FeatureModelProjectNameImpl[1];
-
-        if (f!=null){
-            f.accept(new PsiRecursiveElementWalkingVisitor() {
-                @Override
-                public void visitElement(@NotNull PsiElement element) {
-                    if (element instanceof FeatureModelProjectNameImpl){
-                        projectName[0] = element;
-                    }
-                }
-            });
-            return  projectName[0];
-        }
-        return null;
+        });
     }
 }

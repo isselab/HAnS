@@ -1,6 +1,8 @@
 package se.ch.HAnS.featureModel.toolWindow;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.ui.customization.CustomizationUtil;
+import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
@@ -10,17 +12,13 @@ import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.components.JBScrollPane;
-import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelProjectNameImpl;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
@@ -28,8 +26,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,24 +33,22 @@ import static se.ch.HAnS.AnnotationIcons.FileType;
 
 public class FeatureView extends JPanel implements ActionListener{
 
-    private Project project;
-    private DefaultTreeModel tree;
+    private static Project project;
+    private static DefaultTreeModel tree;
     private Tree left;
-    private DefaultMutableTreeNode root;
-    private JBTextField newFeature;
-    private String selectedFeature;
+    private DefaultMutableTreeNode root = null;
+    private static DefaultMutableTreeNode selectedFeature;
 
-    private static String ADD_COMMAND = "add";
-    private static String REMOVE_COMMAND = "remove";
-    private static String CLEAR_COMMAND = "clear";
+    private static final String ADD_COMMAND = "add";
+    private static final String REMOVE_COMMAND = "remove";
+    private static final String CLEAR_COMMAND = "clear";
 
     private static Logger LOGGER = Logger.getLogger("FeatureView");
 
     public FeatureView(Project project) {
         super(new BorderLayout());
-        this.project = project;
+        FeatureView.project = project;
 
-        getFeatureNames();
         Dimension btnDimension = new Dimension(20, 20);
         Insets btnMargin = JBUI.insets(0,5,0,5);
 
@@ -66,6 +60,7 @@ public class FeatureView extends JPanel implements ActionListener{
         addButton.setPreferredSize(btnDimension);
         addButton.setActionCommand(ADD_COMMAND);
         addButton.addActionListener(this);
+        addButton.setEnabled(false);
 
         JButton removeButton = new JButton(AllIcons.General.Remove);
         removeButton.setBorderPainted(false);
@@ -75,6 +70,7 @@ public class FeatureView extends JPanel implements ActionListener{
         removeButton.setPreferredSize(btnDimension);
         removeButton.setActionCommand(REMOVE_COMMAND);
         removeButton.addActionListener(this);
+        removeButton.setEnabled(false);
 
         JButton clearButton = new JButton(AllIcons.General.Reset);
         clearButton.setBorderPainted(false);
@@ -85,10 +81,7 @@ public class FeatureView extends JPanel implements ActionListener{
         clearButton.setActionCommand(CLEAR_COMMAND);
         clearButton.addActionListener(this);
 
-        newFeature = new JBTextField();
-        newFeature.setEditable(true);
-        newFeature.setVisible(true);
-
+        getFeatureNames();
         tree = new DefaultTreeModel(root);
         left = new Tree(tree);
         left.getSelectionModel().setSelectionMode
@@ -99,12 +92,15 @@ public class FeatureView extends JPanel implements ActionListener{
             DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                     left.getLastSelectedPathComponent();
 
-            if (node == null)
+            if (node == null) {
                 //Nothing is selected.
                 return;
+            }
 
-            selectedFeature = node.toString();
-            LOGGER.log(Level.INFO, "Selected Feature: "+selectedFeature);
+            selectedFeature = node;
+            addButton.setEnabled(true);
+            removeButton.setEnabled(true);
+            LOGGER.log(Level.INFO, "Selected Feature: " + selectedFeature.toString());
         });
         JBScrollPane scrollPane = new JBScrollPane(left);
 
@@ -124,10 +120,12 @@ public class FeatureView extends JPanel implements ActionListener{
         FMIcon.setContentAreaFilled(false);
 
         south.add(FMIcon,BorderLayout.WEST);
-        south.add(newFeature, BorderLayout.CENTER);
+        //south.add(newFeature, BorderLayout.CENTER);
         south.add(buttons, BorderLayout.EAST);
 
         add(south, BorderLayout.SOUTH);
+
+        CustomizationUtil.installPopupHandler(left, "FeatureView", ActionPlaces.getActionGroupPopupPlace("FeatureView"));
     }
 
     @Override
@@ -136,26 +134,39 @@ public class FeatureView extends JPanel implements ActionListener{
 
         if (ADD_COMMAND.equals(command)) {
             // Add button clicked
-
-            FeatureModelFeatureImpl feature = (FeatureModelFeatureImpl) getSelecedItemAsPsiElement();
-            feature.addFeature(newFeature.getText());
-
-            addObject(null);
+            addFeature();
         } else if (REMOVE_COMMAND.equals(command)) {
             // Remove button clicked
-            removeCurrentNode();
+            deleteFeature();
         } else if (CLEAR_COMMAND.equals(command)) {
             // Clear button clicked.
             clear();
         }
     }
 
-    public DefaultMutableTreeNode addObject(Object child) {
-        return null;
+    public static void renameFeature() {
+        FeatureModelFeatureImpl selected = (FeatureModelFeatureImpl) getSelectedItemAsPsiElement();
+        String s = selected.renameFeature();
+        if (s != null) {
+            selectedFeature.setUserObject(s);
+            tree.nodeChanged(selectedFeature);
+        }
     }
 
-    public void removeCurrentNode() {
-        return;
+    public static void addFeature() {
+        FeatureModelFeatureImpl selected = (FeatureModelFeatureImpl) getSelectedItemAsPsiElement();
+        String s = selected.addFeature();
+        if (s != null) {
+            tree.insertNodeInto(new DefaultMutableTreeNode(s), selectedFeature, 0);
+        }
+    }
+
+    public static void deleteFeature() {
+        FeatureModelFeatureImpl selected = (FeatureModelFeatureImpl) getSelectedItemAsPsiElement();
+        int s = selected.deleteFeature();
+        if (s == 1) {
+            tree.removeNodeFromParent(selectedFeature);
+        }
     }
 
     public void clear() {
@@ -163,7 +174,20 @@ public class FeatureView extends JPanel implements ActionListener{
         tree.reload();
     }
 
-    public PsiElement getSelecedItemAsPsiElement(){
+    public PsiFile getFeatureModel() {
+        PsiFile[] allFilenames = FilenameIndex.getFilesByName(project, ".feature-model", GlobalSearchScope.projectScope(project));
+        PsiFile f;
+        if (allFilenames.length > 0) {
+            f = allFilenames[0];
+        }
+        else {
+            Collection<VirtualFile> c = FilenameIndex.getAllFilesByExt(project, "feature-model");
+            f = PsiManager.getInstance(project).findFile(c.iterator().next());
+        }
+        return f;
+    }
+
+    public static PsiElement getSelectedItemAsPsiElement(){
         final PsiElement[] result = {null};
         PsiFile[] allFilenames = FilenameIndex.getFilesByName(project, ".feature-model", GlobalSearchScope.projectScope(project));
         PsiFile f;
@@ -180,7 +204,7 @@ public class FeatureView extends JPanel implements ActionListener{
                 @Override
                 public void visitElement(@NotNull PsiElement element) {
                     if (element instanceof FeatureModelFeatureImpl ){
-                        if (element.getText().equals(selectedFeature)){
+                        if (element.getText().equals(selectedFeature.toString())){
                             result[0] = element;
                         }
                     }
@@ -212,7 +236,13 @@ public class FeatureView extends JPanel implements ActionListener{
                 @Override
                 public void visitElement(@NotNull PsiElement element) {
                     if (element instanceof FeatureModelProjectNameImpl){
-                        root = new DefaultMutableTreeNode(element.getText());
+                        if (root == null) {
+                            root = new DefaultMutableTreeNode(element.getText());
+                        }
+                        else {
+                            root.setUserObject(element.getText());
+                            root.removeAllChildren();
+                        }
                         current = root;
 
                         no = new IndentedNode(null, 0);

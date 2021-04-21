@@ -36,31 +36,19 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FEATURENAME | TAB feature
+  // FEATURENAME
   public static boolean feature(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature")) return false;
-    if (!nextTokenIs(b, "<feature>", FEATURENAME, TAB)) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, FEATURE, "<feature>");
-    r = consumeToken(b, FEATURENAME);
-    if (!r) r = feature_1(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
-  }
-
-  // TAB feature
-  private static boolean feature_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "feature_1")) return false;
+    if (!nextTokenIs(b, FEATURENAME)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, TAB);
-    r = r && feature(b, l + 1);
-    exit_section_(b, m, null, r);
+    r = consumeToken(b, FEATURENAME);
+    exit_section_(b, m, FEATURE, r);
     return r;
   }
 
   /* ********************************************************** */
-  // projectName ((CRLF)* feature)* ((TAB|CRLF)*)
+  // projectName ((CRLF)*(TAB)* feature)* ((TAB|CRLF)*)
   static boolean featureModelFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile")) return false;
     if (!nextTokenIs(b, FEATURENAME)) return false;
@@ -73,7 +61,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // ((CRLF)* feature)*
+  // ((CRLF)*(TAB)* feature)*
   private static boolean featureModelFile_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile_1")) return false;
     while (true) {
@@ -84,12 +72,13 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (CRLF)* feature
+  // (CRLF)*(TAB)* feature
   private static boolean featureModelFile_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = featureModelFile_1_0_0(b, l + 1);
+    r = r && featureModelFile_1_0_1(b, l + 1);
     r = r && feature(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -102,6 +91,17 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
       int c = current_position_(b);
       if (!consumeToken(b, CRLF)) break;
       if (!empty_element_parsed_guard_(b, "featureModelFile_1_0_0", c)) break;
+    }
+    return true;
+  }
+
+  // (TAB)*
+  private static boolean featureModelFile_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "featureModelFile_1_0_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, TAB)) break;
+      if (!empty_element_parsed_guard_(b, "featureModelFile_1_0_1", c)) break;
     }
     return true;
   }

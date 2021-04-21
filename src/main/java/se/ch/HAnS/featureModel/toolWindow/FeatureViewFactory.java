@@ -9,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class FeatureViewFactory implements ToolWindowFactory {
 
-    public static final String ID = "This is an ID";
-
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         FeatureView tab = new FeatureView(project);
