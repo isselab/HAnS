@@ -27,4 +27,19 @@ public class FeatureModelProjectNameImpl extends ASTWrapperPsiElement implements
     else super.accept(visitor);
   }
 
+  @Override
+  public String renameFeature() {
+    return FeatureModelPsiImplUtil.renameFeature(this);
+  }
+
+  @Override
+  public String addFeature() {
+    return FeatureModelPsiImplUtil.addFeature(this);
+  }
+
+  @Override
+  public int deleteFeature() {
+    return FeatureModelPsiImplUtil.deleteFeature(this);
+  }
+
 }

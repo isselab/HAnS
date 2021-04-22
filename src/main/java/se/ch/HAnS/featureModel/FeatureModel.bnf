@@ -18,6 +18,7 @@
 featureModelFile ::= projectName ((CRLF)*(TAB)* feature)* ((TAB|CRLF)*)
 
 projectName ::= FEATURENAME
+{methods=[renameFeature addFeature deleteFeature addMiscFeature]}
 
 feature ::= FEATURENAME
 {methods=[renameFeature addFeature deleteFeature addMiscFeature]}

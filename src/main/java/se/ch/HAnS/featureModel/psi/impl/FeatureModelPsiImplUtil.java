@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
 
-    public static String renameFeature(@NotNull FeatureModelFeature feature){
+    public static String renameFeature(@NotNull PsiElement feature){
         String newFeatureName;
         while (true) {
             newFeatureName = Messages.showInputDialog("Enter new name",
@@ -38,7 +38,7 @@ public class FeatureModelPsiImplUtil {
         }
     }
 
-    private static String renameInFeatureModel(@NotNull FeatureModelFeature feature, String newFeatureName) {
+    private static String renameInFeatureModel(@NotNull PsiElement feature, String newFeatureName) {
         PsiFile f = PsiFileFactoryImpl.getInstance(
                 feature.getProject()).createFileFromText(FeatureModelLanguage.INSTANCE, "Dummy\n" + newFeatureName);
 
@@ -49,7 +49,7 @@ public class FeatureModelPsiImplUtil {
         return newFeatureName;
     }
 
-    public static String addFeature(@NotNull FeatureModelFeature feature){
+    public static String addFeature(@NotNull PsiElement feature){
         String newFeatureName;
         while (true) {
             newFeatureName = Messages.showInputDialog("Enter name of new feature",
@@ -71,7 +71,7 @@ public class FeatureModelPsiImplUtil {
         }
     }
 
-    private static String addToFeatureModel(@NotNull FeatureModelFeature feature, String newFeatureName) {
+    private static String addToFeatureModel(@NotNull PsiElement feature, String newFeatureName) {
         PsiFile f = PsiFileFactoryImpl.getInstance(
                 feature.getProject()).createFileFromText(
                         FeatureModelLanguage.INSTANCE, "Dummy\n" + "\t" + String.format("%1$"+(feature.getPrevSibling().getTextLength())+"s", "") + newFeatureName);
@@ -85,7 +85,7 @@ public class FeatureModelPsiImplUtil {
         return newFeatureName;
     }
 
-    public static int deleteFeature(@NotNull FeatureModelFeature feature){
+    public static int deleteFeature(@NotNull PsiElement feature){
         int response = Messages.showOkCancelDialog(
                 "Are you sure you want to remove the feature from the list?",
                 "Delete Feature",
@@ -98,7 +98,7 @@ public class FeatureModelPsiImplUtil {
         return 1;
     }
 
-    private static void deleteFromFeatureModelWithChildren(@NotNull FeatureModelFeature feature) {
+    private static void deleteFromFeatureModelWithChildren(@NotNull PsiElement feature) {
         List<PsiElement> toDelete = new ArrayList<>();
 
         feature.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {

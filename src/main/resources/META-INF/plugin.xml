@@ -70,6 +70,7 @@
         <toolWindow id="Feature view" secondary="true" icon="AllIcons.General.Modified" anchor="left"
                     factoryClass="se.ch.HAnS.featureModel.toolWindow.FeatureViewFactory"/>
         <!-- &end[FeatureView] -->
+        <!--<typedHandler implementation="se.ch.HAnS.featureModel.toolWindow.actions.MyTypedHandler"/>-->
     </extensions>
 
     <actions>

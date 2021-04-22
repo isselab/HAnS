@@ -13,4 +13,8 @@ public interface FeatureModelFeature extends PsiElement {
 
   int deleteFeature();
 
+  //WARNING: addMiscFeature(...) is skipped
+  //matching addMiscFeature(FeatureModelFeature, ...)
+  //methods are not found in FeatureModelPsiImplUtil
+
 }

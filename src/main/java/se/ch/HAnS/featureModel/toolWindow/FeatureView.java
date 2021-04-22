@@ -3,8 +3,12 @@ package se.ch.HAnS.featureModel.toolWindow;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ui.customization.CustomizationUtil;
 import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.newvfs.BulkFileListener;
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -21,11 +25,15 @@ import se.ch.HAnS.featureModel.psi.impl.FeatureModelProjectNameImpl;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +44,7 @@ public class FeatureView extends JPanel implements ActionListener{
     private static Project project;
     private static DefaultTreeModel tree;
     private Tree left;
-    private DefaultMutableTreeNode root = null;
+    private static DefaultMutableTreeNode root = null;
     private static DefaultMutableTreeNode selectedFeature;
 
     private static final String ADD_COMMAND = "add";
@@ -120,12 +128,22 @@ public class FeatureView extends JPanel implements ActionListener{
         FMIcon.setContentAreaFilled(false);
 
         south.add(FMIcon,BorderLayout.WEST);
-        //south.add(newFeature, BorderLayout.CENTER);
         south.add(buttons, BorderLayout.EAST);
 
         add(south, BorderLayout.SOUTH);
 
         CustomizationUtil.installPopupHandler(left, "FeatureView", ActionPlaces.getActionGroupPopupPlace("FeatureView"));
+
+        project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
+            @Override
+            public void after(@NotNull List<? extends VFileEvent> events) {
+                for (VFileEvent e : events) {
+                    if (Objects.equals(Objects.requireNonNull(e.getFile()).getExtension(), "feature-model")) {
+                        ApplicationManager.getApplication().invokeLater(FeatureView::clear);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -145,8 +163,14 @@ public class FeatureView extends JPanel implements ActionListener{
     }
 
     public static void renameFeature() {
-        FeatureModelFeatureImpl selected = (FeatureModelFeatureImpl) getSelectedItemAsPsiElement();
-        String s = selected.renameFeature();
+        PsiElement selected = getSelectedItemAsPsiElement();
+        String s = null;
+        if (selected instanceof FeatureModelProjectNameImpl) {
+            s = ((FeatureModelProjectNameImpl) selected).renameFeature();
+        }
+        else if (selected instanceof FeatureModelFeatureImpl) {
+            s = ((FeatureModelFeatureImpl) selected).renameFeature();
+        }
         if (s != null) {
             selectedFeature.setUserObject(s);
             tree.nodeChanged(selectedFeature);
@@ -154,27 +178,39 @@ public class FeatureView extends JPanel implements ActionListener{
     }
 
     public static void addFeature() {
-        FeatureModelFeatureImpl selected = (FeatureModelFeatureImpl) getSelectedItemAsPsiElement();
-        String s = selected.addFeature();
+        PsiElement selected = getSelectedItemAsPsiElement();
+        String s = null;
+        if (selected instanceof FeatureModelProjectNameImpl) {
+            s = ((FeatureModelProjectNameImpl) selected).addFeature();
+        }
+        else if (selected instanceof FeatureModelFeatureImpl) {
+            s = ((FeatureModelFeatureImpl) selected).addFeature();
+        }
         if (s != null) {
             tree.insertNodeInto(new DefaultMutableTreeNode(s), selectedFeature, 0);
         }
     }
 
     public static void deleteFeature() {
-        FeatureModelFeatureImpl selected = (FeatureModelFeatureImpl) getSelectedItemAsPsiElement();
-        int s = selected.deleteFeature();
+        PsiElement selected = getSelectedItemAsPsiElement();
+        Integer s = null;
+        if (selected instanceof FeatureModelProjectNameImpl) {
+            s = ((FeatureModelProjectNameImpl) selected).deleteFeature();
+        }
+        else if (selected instanceof FeatureModelFeatureImpl) {
+            s = ((FeatureModelFeatureImpl) selected).deleteFeature();
+        }
         if (s == 1) {
             tree.removeNodeFromParent(selectedFeature);
         }
     }
 
-    public void clear() {
+    public static void clear() {
         getFeatureNames();
         tree.reload();
     }
 
-    public PsiFile getFeatureModel() {
+    public static PsiFile getFeatureModel() {
         PsiFile[] allFilenames = FilenameIndex.getFilesByName(project, ".feature-model", GlobalSearchScope.projectScope(project));
         PsiFile f;
         if (allFilenames.length > 0) {
@@ -187,26 +223,49 @@ public class FeatureView extends JPanel implements ActionListener{
         return f;
     }
 
-    public static PsiElement getSelectedItemAsPsiElement(){
-        final PsiElement[] result = {null};
-        PsiFile[] allFilenames = FilenameIndex.getFilesByName(project, ".feature-model", GlobalSearchScope.projectScope(project));
-        PsiFile f;
-        if (allFilenames.length > 0) {
-            f = allFilenames[0];
+    public static List<String> getElementPath(DefaultMutableTreeNode node) {
+        List<String> path = new ArrayList<>();
+        for (TreeNode n:node.getPath()) {
+            path.add(n.toString());
         }
-        else {
-            Collection<VirtualFile> c = FilenameIndex.getAllFilesByExt(project, "feature-model");
-            f = PsiManager.getInstance(project).findFile(c.iterator().next());
-        }
+        return path;
+    }
 
+    public static PsiElement getSelectedItemAsPsiElement(){
+        DefaultMutableTreeNode node = selectedFeature;
+        List<String> path = getElementPath(node);
+
+        final PsiElement[] result = new PsiElement[1];
+        PsiFile f = getFeatureModel();
         if (f != null) {
             f.accept(new PsiRecursiveElementWalkingVisitor() {
+                Integer indent = null;
+
                 @Override
                 public void visitElement(@NotNull PsiElement element) {
-                    if (element instanceof FeatureModelFeatureImpl ){
-                        if (element.getText().equals(selectedFeature.toString())){
-                            result[0] = element;
+                    if (element instanceof FeatureModelProjectNameImpl && result[0] == null){
+                        if (element.getText().equals(path.get(0))){
+                            path.remove(0);
                         }
+                    }
+                    else if (element instanceof FeatureModelFeatureImpl && result[0] == null){
+                        if (indent == null) {
+                            indent = element.getPrevSibling().getTextLength();
+                            if (element.getText().equals(path.get(0))){
+                                path.remove(0);
+                                indent = null;
+                            }
+                        }
+                        else if (indent >= element.getPrevSibling().getTextLength()) {
+                            indent = element.getPrevSibling().getTextLength();
+                            if (element.getText().equals(path.get(0))){
+                                path.remove(0);
+                                indent = null;
+                            }
+                        }
+                    }
+                    if (path.isEmpty() && result[0] == null) {
+                        result[0] = element;
                     }
                     super.visitElement(element);
                 }
@@ -215,7 +274,7 @@ public class FeatureView extends JPanel implements ActionListener{
         return result[0];
     }
 
-    private void getFeatureNames() {
+    private static void getFeatureNames() {
         PsiFile[] allFilenames = FilenameIndex.getFilesByName(project, ".feature-model", GlobalSearchScope.projectScope(project));
         PsiFile f;
         if (allFilenames.length > 0) {
@@ -313,5 +372,4 @@ public class FeatureView extends JPanel implements ActionListener{
             return this.indent;
         }
     }
-
 }
