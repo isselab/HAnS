@@ -13,7 +13,7 @@ public class MyTypedHandler extends TypedHandlerDelegate {
     @Override
     public Result charTyped(char c, @NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file) {
         if (file.getVirtualFile().getExtension().equals("feature-model")) {
-            ApplicationManager.getApplication().invokeLater(FeatureView::clear);
+            ApplicationManager.getApplication().invokeLater(FeatureView.getView()::clear);
         }
         return Result.STOP;
     }

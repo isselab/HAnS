@@ -8,6 +8,6 @@ import se.ch.HAnS.featureModel.toolWindow.FeatureView;
 public class AddAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        FeatureView.addFeature();
+        FeatureView.getView().addFeature();
     }
 }

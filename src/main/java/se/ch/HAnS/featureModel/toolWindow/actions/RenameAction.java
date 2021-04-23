@@ -8,6 +8,6 @@ import se.ch.HAnS.featureModel.toolWindow.FeatureView;
 public class RenameAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        FeatureView.renameFeature();
+        FeatureView.getView().renameFeature();
     }
 }

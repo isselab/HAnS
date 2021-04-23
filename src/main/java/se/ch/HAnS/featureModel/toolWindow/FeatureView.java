@@ -41,11 +41,15 @@ import static se.ch.HAnS.AnnotationIcons.FileType;
 
 public class FeatureView extends JPanel implements ActionListener{
 
-    private static Project project;
-    private static DefaultTreeModel tree;
+    private static FeatureView view;
+
+    private Project project;
+    private DefaultTreeModel tree;
     private Tree left;
-    private static DefaultMutableTreeNode root = null;
-    private static DefaultMutableTreeNode selectedFeature;
+    private DefaultMutableTreeNode root = null;
+    private DefaultMutableTreeNode selectedFeature;
+
+    private JButton addButton, removeButton;
 
     private static final String ADD_COMMAND = "add";
     private static final String REMOVE_COMMAND = "remove";
@@ -55,41 +59,10 @@ public class FeatureView extends JPanel implements ActionListener{
 
     public FeatureView(Project project) {
         super(new BorderLayout());
-        FeatureView.project = project;
+        view = this;
+        this.project = project;
 
-        Dimension btnDimension = new Dimension(20, 20);
-        Insets btnMargin = JBUI.insets(0,5,0,5);
-
-        JButton addButton = new JButton(AllIcons.General.Add);
-        addButton.setBorderPainted(false);
-        addButton.setContentAreaFilled(false);
-        addButton.setRolloverEnabled(true);
-        addButton.setMargin(btnMargin);
-        addButton.setPreferredSize(btnDimension);
-        addButton.setActionCommand(ADD_COMMAND);
-        addButton.addActionListener(this);
-        addButton.setEnabled(false);
-
-        JButton removeButton = new JButton(AllIcons.General.Remove);
-        removeButton.setBorderPainted(false);
-        removeButton.setContentAreaFilled(false);
-        removeButton.setRolloverEnabled(true);
-        removeButton.setMargin(btnMargin);
-        removeButton.setPreferredSize(btnDimension);
-        removeButton.setActionCommand(REMOVE_COMMAND);
-        removeButton.addActionListener(this);
-        removeButton.setEnabled(false);
-
-        JButton clearButton = new JButton(AllIcons.General.Reset);
-        clearButton.setBorderPainted(false);
-        clearButton.setContentAreaFilled(false);
-        clearButton.setRolloverEnabled(true);
-        clearButton.setMargin(btnMargin);
-        clearButton.setPreferredSize(btnDimension);
-        clearButton.setActionCommand(CLEAR_COMMAND);
-        clearButton.addActionListener(this);
-
-        getFeatureNames();
+        getFeatureNames(getFeatureModel());
         tree = new DefaultTreeModel(root);
         left = new Tree(tree);
         left.getSelectionModel().setSelectionMode
@@ -114,6 +87,59 @@ public class FeatureView extends JPanel implements ActionListener{
 
         add(scrollPane, BorderLayout.CENTER);
 
+        addBottomPanel();
+
+        CustomizationUtil.installPopupHandler(left, "FeatureView", ActionPlaces.getActionGroupPopupPlace("FeatureView"));
+
+        project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
+            @Override
+            public void after(@NotNull List<? extends VFileEvent> events) {
+                for (VFileEvent e : events) {
+                    if (Objects.equals(Objects.requireNonNull(e.getFile()).getExtension(), "feature-model")) {
+                        ApplicationManager.getApplication().invokeLater(FeatureView.getView()::clear);
+                    }
+                }
+            }
+        });
+    }
+
+    public static FeatureView getView() {
+        return view;
+    }
+
+    private void addBottomPanel() {
+        Dimension btnDimension = new Dimension(20, 20);
+        Insets btnMargin = JBUI.insets(0,5,0,5);
+
+        addButton = new JButton(AllIcons.General.Add);
+        addButton.setBorderPainted(false);
+        addButton.setContentAreaFilled(false);
+        addButton.setRolloverEnabled(true);
+        addButton.setMargin(btnMargin);
+        addButton.setPreferredSize(btnDimension);
+        addButton.setActionCommand(ADD_COMMAND);
+        addButton.addActionListener(this);
+        addButton.setEnabled(false);
+
+        removeButton = new JButton(AllIcons.General.Remove);
+        removeButton.setBorderPainted(false);
+        removeButton.setContentAreaFilled(false);
+        removeButton.setRolloverEnabled(true);
+        removeButton.setMargin(btnMargin);
+        removeButton.setPreferredSize(btnDimension);
+        removeButton.setActionCommand(REMOVE_COMMAND);
+        removeButton.addActionListener(this);
+        removeButton.setEnabled(false);
+
+        JButton clearButton = new JButton(AllIcons.General.Reset);
+        clearButton.setBorderPainted(false);
+        clearButton.setContentAreaFilled(false);
+        clearButton.setRolloverEnabled(true);
+        clearButton.setMargin(btnMargin);
+        clearButton.setPreferredSize(btnDimension);
+        clearButton.setActionCommand(CLEAR_COMMAND);
+        clearButton.addActionListener(this);
+
         JPanel south = new JPanel(new BorderLayout());
 
         JPanel buttons = new JPanel(new GridLayout(0,3));
@@ -130,20 +156,7 @@ public class FeatureView extends JPanel implements ActionListener{
         south.add(FMIcon,BorderLayout.WEST);
         south.add(buttons, BorderLayout.EAST);
 
-        add(south, BorderLayout.SOUTH);
-
-        CustomizationUtil.installPopupHandler(left, "FeatureView", ActionPlaces.getActionGroupPopupPlace("FeatureView"));
-
-        project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
-            @Override
-            public void after(@NotNull List<? extends VFileEvent> events) {
-                for (VFileEvent e : events) {
-                    if (Objects.equals(Objects.requireNonNull(e.getFile()).getExtension(), "feature-model")) {
-                        ApplicationManager.getApplication().invokeLater(FeatureView::clear);
-                    }
-                }
-            }
-        });
+        this.add(south, BorderLayout.SOUTH);
     }
 
     @Override
@@ -162,7 +175,7 @@ public class FeatureView extends JPanel implements ActionListener{
         }
     }
 
-    public static void renameFeature() {
+    public void renameFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
         String s = null;
         if (selected instanceof FeatureModelProjectNameImpl) {
@@ -177,7 +190,7 @@ public class FeatureView extends JPanel implements ActionListener{
         }
     }
 
-    public static void addFeature() {
+    public void addFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
         String s = null;
         if (selected instanceof FeatureModelProjectNameImpl) {
@@ -191,7 +204,7 @@ public class FeatureView extends JPanel implements ActionListener{
         }
     }
 
-    public static void deleteFeature() {
+    public void deleteFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
         Integer s = null;
         if (selected instanceof FeatureModelProjectNameImpl) {
@@ -205,20 +218,31 @@ public class FeatureView extends JPanel implements ActionListener{
         }
     }
 
-    public static void clear() {
-        getFeatureNames();
+    public void clear() {
+        /*
+        PsiFile f = getFeatureModel();
+        if (f == null) {
+            System.out.println("No feature model");
+        }
+        else {
+            getFeatureNames(f);
+        }
+         */
+        getFeatureNames(getFeatureModel());
         tree.reload();
     }
 
-    public static PsiFile getFeatureModel() {
+    public PsiFile getFeatureModel() {
         PsiFile[] allFilenames = FilenameIndex.getFilesByName(project, ".feature-model", GlobalSearchScope.projectScope(project));
-        PsiFile f;
+        PsiFile f = null;
         if (allFilenames.length > 0) {
             f = allFilenames[0];
         }
         else {
             Collection<VirtualFile> c = FilenameIndex.getAllFilesByExt(project, "feature-model");
-            f = PsiManager.getInstance(project).findFile(c.iterator().next());
+            if (!c.isEmpty()) {
+                f = PsiManager.getInstance(project).findFile(c.iterator().next());
+            }
         }
         return f;
     }
@@ -231,7 +255,7 @@ public class FeatureView extends JPanel implements ActionListener{
         return path;
     }
 
-    public static PsiElement getSelectedItemAsPsiElement(){
+    public PsiElement getSelectedItemAsPsiElement(){
         DefaultMutableTreeNode node = selectedFeature;
         List<String> path = getElementPath(node);
 
@@ -274,17 +298,7 @@ public class FeatureView extends JPanel implements ActionListener{
         return result[0];
     }
 
-    private static void getFeatureNames() {
-        PsiFile[] allFilenames = FilenameIndex.getFilesByName(project, ".feature-model", GlobalSearchScope.projectScope(project));
-        PsiFile f;
-        if (allFilenames.length > 0) {
-            f = allFilenames[0];
-        }
-        else {
-            Collection<VirtualFile> c = FilenameIndex.getAllFilesByExt(project, "feature-model");
-            f = PsiManager.getInstance(project).findFile(c.iterator().next());
-        }
-
+    private void getFeatureNames(PsiFile f) {
         if (f != null) {
             f.accept(new PsiRecursiveElementWalkingVisitor() {
                 DefaultMutableTreeNode current;
