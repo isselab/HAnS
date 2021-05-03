@@ -17,9 +17,7 @@ import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.regex.Pattern;
 
 public class FeatureNameCompletionProvider extends CompletionProvider<CompletionParameters> {
     private final boolean onlyManual;
@@ -61,7 +59,6 @@ public class FeatureNameCompletionProvider extends CompletionProvider<Completion
             f = PsiManager.getInstance(p).findFile(c.iterator().next());
         }
 
-        // The following line does not work for files consisting of only extension
         if (f != null) {
             f.accept(new PsiRecursiveElementWalkingVisitor() {
                 @Override
