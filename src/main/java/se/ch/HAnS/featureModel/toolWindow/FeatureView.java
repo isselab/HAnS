@@ -309,13 +309,7 @@ public class FeatureView extends JPanel implements ActionListener{
                 @Override
                 public void visitElement(@NotNull PsiElement element) {
                     if (element instanceof FeatureModelProjectNameImpl){
-                        if (root == null) {
-                            root = new DefaultMutableTreeNode(element.getText());
-                        }
-                        else {
-                            root.setUserObject(element.getText());
-                            root.removeAllChildren();
-                        }
+                        root = new DefaultMutableTreeNode(element.getText());
                         current = root;
 
                         no = new IndentedNode(null, 0);

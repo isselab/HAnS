@@ -74,13 +74,14 @@ public class FeatureModelPsiImplUtil {
     private static String addToFeatureModel(@NotNull PsiElement feature, String newFeatureName) {
         PsiFile f = PsiFileFactoryImpl.getInstance(
                 feature.getProject()).createFileFromText(
-                        FeatureModelLanguage.INSTANCE, "Dummy\n" + "    " + String.format("%1$"+(feature.getPrevSibling().getTextLength())+"s", "") + newFeatureName);
+                        FeatureModelLanguage.INSTANCE, "Dummy\n" + String.format("%1$"+(feature.getPrevSibling().getTextLength() + 4)+"s", "") + newFeatureName);
         WriteCommandAction.runWriteCommandAction(feature.getProject(), () -> {
             PsiElement [] elements = f.getChildren();
-            feature.add(elements[elements.length-3].copy());
-            feature.add(elements[elements.length-2].copy());
-            feature.add(elements[elements.length-1].copy());
+            feature.add(elements[elements.length-3]);
+            feature.add(elements[elements.length-2]);
+            feature.add(elements[elements.length-1]);
         });
+        f.clearCaches();
 
         return newFeatureName;
     }
