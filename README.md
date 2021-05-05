@@ -1,29 +1,30 @@
-# README #
+# HAnS - Helping Annotate Software #
+*`Version 1.0`*
 
-This README would normally document whatever steps are necessary to get your application up and running.
+HAnS is a plugin that aims to help developers with annotating software. The annotations themselves are a proven help with
+locating features, so called feature location.
 
-### What is this repository for? ###
+HAnS-text supports:
+* Feature Annotation Languages
+    * Feature Model
+    * Feature to folder
+    * Feature to file
+    * Code annotations
+* Syntax Highlighting
+* Code Completion
+* Feature View
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+### How to install? ###
 
-### How do I get set up? ###
+* HAnS text can easily be installed as a plugin for IntelliJ. To set it up you need IntelliJ
+  2021.1 or later installed and the HAnS 1.0 plugin downloaded.
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
 
 ### Contribution guidelines ###
 
-* Writing tests
-* Code review
-* Other guidelines
+* At the moment we are not accepting any contributions.
 
 ### Who do I talk to? ###
 
-* Repo owner or admin
-* Other community or team contact
+* @Johan Martinson or @Herman Jansson
+* Other community or team contact: Mukelabai Mukelabai 

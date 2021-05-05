@@ -1,0 +1,18 @@
+{
+  parserClass="se.ch.HAnS.folderAnnotation.parser.FolderAnnotationParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="FolderAnnotation"
+  psiImplClassSuffix="Impl"
+  psiPackage="se.ch.HAnS.folderAnnotation.psi"
+  psiImplPackage="se.ch.HAnS.folderAnnotation.psi.impl"
+
+  elementTypeHolderClass="se.ch.HAnS.folderAnnotation.psi.FolderAnnotationTypes"
+  elementTypeClass="se.ch.HAnS.folderAnnotation.psi.FolderAnnotationElementType"
+  tokenTypeClass="se.ch.HAnS.folderAnnotation.psi.FolderAnnotationTokenType"
+}
+
+featureToFolderFile ::= CRLF* lpq (CRLF* CS* CRLF* lpq)* CRLF*
+
+lpq ::= FEATURENAME (SEPARATOR FEATURENAME)*

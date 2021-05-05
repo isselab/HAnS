@@ -1,0 +1,24 @@
+{
+  parserClass="se.ch.HAnS.featureModel.parser.FeatureModelParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="FeatureModel"
+  psiImplClassSuffix="Impl"
+  psiPackage="se.ch.HAnS.featureModel.psi"
+  psiImplPackage="se.ch.HAnS.featureModel.psi.impl"
+
+  elementTypeHolderClass="se.ch.HAnS.featureModel.psi.FeatureModelTypes"
+  elementTypeClass="se.ch.HAnS.featureModel.psi.FeatureModelElementType"
+  tokenTypeClass="se.ch.HAnS.featureModel.psi.FeatureModelTokenType"
+
+  psiImplUtilClass="se.ch.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil"
+}
+
+featureModelFile ::= projectName ((CRLF)*(TAB)* feature)* ((TAB|CRLF)*)
+
+projectName ::= FEATURENAME
+{methods=[renameFeature addFeature deleteFeature addMiscFeature]}
+
+feature ::= FEATURENAME
+{methods=[renameFeature addFeature deleteFeature addMiscFeature]}

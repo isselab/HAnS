@@ -1,0 +1,84 @@
+<idea-plugin>
+    <id>org.easelab.HAnS</id>
+    <name>HAnS: Helping Annotate Software</name>
+    <vendor email="johmara@student.chalmers.se" url="http://www.johmara.dev">easelab</vendor>
+
+    <description><![CDATA[
+    Providing support for editing embedded feature annotations
+    ]]></description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- &begin[FeatureModel] -->
+        <fileType name="Feature Model File" implementationClass="se.ch.HAnS.featureModel.FeatureModelFileType"
+                  fieldName="INSTANCE" language="FeatureModel" extensions="feature-model"/>
+        <lang.parserDefinition language="FeatureModel"
+                               implementationClass="se.ch.HAnS.featureModel.FeatureModelParserDefinition"/>
+        <!-- &end[FeatureModel] -->
+
+        <!-- &begin[FileAnnotations] -->
+        <fileType name="File Annotation File" implementationClass="se.ch.HAnS.fileAnnotation.FileAnnotationFileType"
+                  fieldName="INSTANCE" language="FileAnnotation" extensions="feature-to-file"/>
+        <lang.parserDefinition language="FileAnnotation"
+                                implementationClass="se.ch.HAnS.fileAnnotation.FileAnnotationParserDefinition"/>
+        <!-- &end[FileAnnotations] -->
+
+        <!-- &begin[FolderAnnotations] -->
+        <fileType name="Feature To Folder File" implementationClass="se.ch.HAnS.folderAnnotation.FolderAnnotationFileType"
+                  fieldName="INSTANCE" language="FolderAnnotation" extensions="feature-to-folder"/>
+        <lang.parserDefinition language="FolderAnnotation"
+                               implementationClass="se.ch.HAnS.folderAnnotation.FolderAnnotationParserDefinition"/>
+        <!-- &end[FolderAnnotations] -->
+
+        <!-- &begin[CodeAnnotations] -->
+        <fileType name="Code Annotation File" implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationFileType"
+                  fieldName="INSTANCE" language="CodeAnnotations" extensions="code-annotation"/>
+        <lang.parserDefinition language="CodeAnnotations"
+                               implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationParserDefinition"/>
+        <!-- &end[CodeAnnotations] -->
+
+        <!-- &begin[CodeCompletion] -->
+        <completion.contributor language="any"
+                                implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationDictionaryContributor"/>
+        <!-- &end[CodeCompletion] -->
+
+        <!-- &begin[LiveTemplate] -->
+        <!--
+        <defaultLiveTemplates file="/liveTemplates/FeatureAnnotations.xml"/>
+        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext"/>
+        -->
+        <!-- &end[LiveTemplate] -->
+
+        <!-- &begin[SyntaxHighlighting] -->
+        <lang.syntaxHighlighterFactory language="FeatureModel" implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FeatureModel]-->
+        <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FolderAnnotation] -->
+        <lang.syntaxHighlighterFactory language="FileAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FileAnnotation]-->
+        <lang.syntaxHighlighterFactory language="CodeAnnotations" implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::CodeAnnotation]-->
+
+        <additionalTextAttributes scheme="Darcula" file="colorSchemes/HAnSDarcula.xml"/>
+        <additionalTextAttributes scheme="Default" file="colorSchemes/HAnSDefault.xml"/>
+        <!-- &end[SyntaxHighlighting] -->
+
+        <!-- &begin[Injection] -->
+        <multiHostInjector implementation="se.ch.HAnS.codeAnnotation.CodeAnnotationInjector"/>
+        <!-- &end[Injection] -->
+
+        <!-- &begin[FeatureView] -->
+        <toolWindow id="Feature view" secondary="true" icon="AllIcons.General.Modified" anchor="left"
+                    factoryClass="se.ch.HAnS.featureModel.toolWindow.FeatureViewFactory"/>
+        <!-- &end[FeatureView] -->
+        <!--<typedHandler implementation="se.ch.HAnS.featureModel.toolWindow.actions.MyTypedHandler"/>-->
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+        <group id="FeatureView" text="Feature View Actions">
+            <action id="RenameFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.RenameAction" text="Rename..." description="Rename feature"/>
+            <action id="AddFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.AddAction" text="Add..." description="Add feature" icon="AllIcons.General.Add"/>
+            <action id="DeleteFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.DeleteAction" text="Delete..." description="Delete feature" icon="AllIcons.General.Remove"/>
+        </group>
+    </actions>
+</idea-plugin>

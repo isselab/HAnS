@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.7.3'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.31'
+}
+
+group 'org.easelab'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    version '2021.1.1'
+}
+patchPluginXml {
+    changeNotes """
+      <p>Suported Features:</p>
+        <ul>
+        <li>Feature Annotation Languages
+        <ul>
+        <li>Feature Model</li>
+        <li>Feature to folder</li>
+        <li>Feature to file</li>
+        <li>Code annotations</li>
+        </ul>
+        </li>
+        <li>Syntax Highlighting</li>
+        <li>Code Completion</li>
+        <li>Feature View</li>
+        </ul>"""
+}
+test {
+    useJUnitPlatform()
+}
+
+sourceSets.main.java.srcDirs 'src/main/gen'

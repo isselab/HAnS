@@ -1,0 +1,5 @@
+FolderAnnotationLanguage.java FolderAnnotation.bnf FolderAnnotation.flex FolderAnnotationLexerAdapter.java
+FolderAnnotation::Language
+
+FolderAnnotationFileType.java
+FolderAnnotation::File
