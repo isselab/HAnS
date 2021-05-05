@@ -1,0 +1,11 @@
+image: gradle:6.6.0
+
+pipelines:
+  default:
+    - parallel:
+      - step:
+          name: Build
+          caches:
+            - gradle
+          script:
+            - gradle buildPlugin
