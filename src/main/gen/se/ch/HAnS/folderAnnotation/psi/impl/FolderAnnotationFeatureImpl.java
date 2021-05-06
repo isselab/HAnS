@@ -11,26 +11,20 @@ import static se.ch.HAnS.folderAnnotation.psi.FolderAnnotationTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import se.ch.HAnS.folderAnnotation.psi.*;
 
-public class FolderAnnotationLpqImpl extends ASTWrapperPsiElement implements FolderAnnotationLpq {
+public class FolderAnnotationFeatureImpl extends ASTWrapperPsiElement implements FolderAnnotationFeature {
 
-  public FolderAnnotationLpqImpl(@NotNull ASTNode node) {
+  public FolderAnnotationFeatureImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull FolderAnnotationVisitor visitor) {
-    visitor.visitLpq(this);
+    visitor.visitFeature(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof FolderAnnotationVisitor) accept((FolderAnnotationVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public List<FolderAnnotationFeature> getFeatureList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, FolderAnnotationFeature.class);
   }
 
 }
