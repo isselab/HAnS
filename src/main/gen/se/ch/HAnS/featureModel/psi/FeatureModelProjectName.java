@@ -17,4 +17,8 @@ public interface FeatureModelProjectName extends PsiElement {
   //matching addMiscFeature(FeatureModelProjectName, ...)
   //methods are not found in FeatureModelPsiImplUtil
 
+  //WARNING: getFeatureName(...) is skipped
+  //matching getFeatureName(FeatureModelProjectName, ...)
+  //methods are not found in FeatureModelPsiImplUtil
+
 }

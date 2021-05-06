@@ -1,5 +1,6 @@
 package se.ch.HAnS.featureModel.psi.impl;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiElement;
@@ -9,12 +10,23 @@ import com.intellij.psi.impl.PsiFileFactoryImpl;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.FeatureModelLanguage;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
+import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
+
+    public static String getFeatureName(FeatureModelFeature element){
+        ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
+        if (featureNode != null) {
+            // IMPORTANT: Convert embedded escaped spaces to simple spaces
+            return featureNode.getText().replaceAll("\\\\ ", " ");
+        } else {
+            return null;
+        }
+    }
 
     public static String renameFeature(@NotNull PsiElement feature){
         String newFeatureName;

@@ -42,4 +42,9 @@ public class FeatureModelFeatureImpl extends ASTWrapperPsiElement implements Fea
     return FeatureModelPsiImplUtil.deleteFeature(this);
   }
 
+  @Override
+  public String getFeatureName() {
+    return FeatureModelPsiImplUtil.getFeatureName(this);
+  }
+
 }

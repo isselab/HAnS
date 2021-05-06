@@ -17,4 +17,6 @@ public interface FeatureModelFeature extends PsiElement {
   //matching addMiscFeature(FeatureModelFeature, ...)
   //methods are not found in FeatureModelPsiImplUtil
 
+  String getFeatureName();
+
 }
