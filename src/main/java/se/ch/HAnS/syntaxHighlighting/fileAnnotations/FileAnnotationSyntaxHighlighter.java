@@ -26,7 +26,6 @@ public class FileAnnotationSyntaxHighlighter extends SyntaxHighlighterBase {
 
 
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
-    //private static final TextAttributesKey[] FEATURE_FILE_FEATURE_KEYS = new TextAttributesKey[]{FILENAME};
     private static final TextAttributesKey[] FEATURE_FILE_SEPARATOR_KEYS = new TextAttributesKey[]{FEATURE_FILE_SEPARATOR};
     private static final TextAttributesKey[] FEATURE_FILE_CS_KEYS = new TextAttributesKey[]{FEATURE_FILE_FOLDER_CS};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
@@ -38,9 +37,7 @@ public class FileAnnotationSyntaxHighlighter extends SyntaxHighlighterBase {
 
     @Override
     public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
-        /*if (tokenType.equals(FileAnnotationTypes.STRING)){
-            return FEATURE_FILE_FEATURE_KEYS;
-        } else */if (tokenType.equals(FileAnnotationTypes.SEPARATOR)) {
+        if (tokenType.equals(FileAnnotationTypes.SEPARATOR)) {
             return FEATURE_FILE_SEPARATOR_KEYS;
         }  else if (tokenType.equals(FileAnnotationTypes.CS) ||
                 tokenType.equals(FileAnnotationTypes.DOT) ||
