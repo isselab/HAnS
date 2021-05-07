@@ -8,6 +8,7 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import org.jdom.output.support.SAXOutputProcessor;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.FeatureModelUtil;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
@@ -37,7 +38,7 @@ public class FileAnnotationAnnotator implements Annotator {
 
         List<FeatureModelFeature> features = FeatureModelUtil.findFeatures(element.getProject(), featureText);
         if (features.isEmpty()) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved property")
+            holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved property: Feature is not defined in the Feature Model")
                     .range(featureRange)
                     .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
                     // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
@@ -55,28 +56,27 @@ public class FileAnnotationAnnotator implements Annotator {
     private void annotateFileName(PsiElement element, AnnotationHolder holder) {
         FileAnnotationFileName fileName = (FileAnnotationFileName) element;
         String fileNameText = fileName.getText();
-
         TextRange fileNameRange = fileName.getTextRange();
 
-        List<PsiFile> files = Arrays.asList(element.getContainingFile().getContainingDirectory().getFiles());
+        PsiFile[] files = element.getContainingFile().getContainingDirectory().getFiles();
+        boolean nameExistsInDirectory = false;
+
         for (PsiFile file: files) {
-            System.out.println(file.getName() + " == " + fileNameText);
-            if (!(file.getName().equals(fileNameText))) {
-                holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved Property")
-                        .range(fileNameRange)
-                        .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
-                        // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
-                        //.withFix(new FeatureModelCreateNewFeature(featureText))
-                        .create();
-            } else {
-                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                        .range(fileNameRange)
-                        .textAttributes(DefaultLanguageHighlighterColors.KEYWORD)
-                        .create();
-            }
+            if (file.getName().equals(fileNameText)) nameExistsInDirectory = true;
         }
-
-
+        if (!nameExistsInDirectory) {
+            holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved Property: File don't exist in this directory")
+                    .range(fileNameRange)
+                    .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
+                    // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
+                    //.withFix(new FeatureModelCreateNewFeature(featureText))
+                    .create();
+        } else {
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(fileNameRange)
+                    .textAttributes(FileAnnotationSyntaxHighlighter.FILENAME)
+                    .create();
+        }
     }
 
     private boolean checkElementOftypeFileAnnotationFileName(@NotNull PsiElement element) {
