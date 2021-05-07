@@ -11,26 +11,20 @@ import static se.ch.HAnS.codeAnnotation.psi.CodeAnnotationTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import se.ch.HAnS.codeAnnotation.psi.*;
 
-public class CodeAnnotationBeginmarkerImpl extends ASTWrapperPsiElement implements CodeAnnotationBeginmarker {
+public class CodeAnnotationFeatureImpl extends ASTWrapperPsiElement implements CodeAnnotationFeature {
 
-  public CodeAnnotationBeginmarkerImpl(@NotNull ASTNode node) {
+  public CodeAnnotationFeatureImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CodeAnnotationVisitor visitor) {
-    visitor.visitBeginmarker(this);
+    visitor.visitFeature(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof CodeAnnotationVisitor) accept((CodeAnnotationVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public CodeAnnotationParameter getParameter() {
-    return findNotNullChildByClass(CodeAnnotationParameter.class);
   }
 
 }
