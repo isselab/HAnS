@@ -64,6 +64,8 @@
                    implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationAnnotator"/>
 
         <lang.syntaxHighlighterFactory language="CodeAnnotations" implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::CodeAnnotation]-->
+        <annotator language="CodeAnnotations"
+                   implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationAnnotator"/>
 
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/HAnSDarcula.xml"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/HAnSDefault.xml"/>
