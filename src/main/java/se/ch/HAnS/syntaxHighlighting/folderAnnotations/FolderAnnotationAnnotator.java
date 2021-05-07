@@ -29,7 +29,7 @@ public class FolderAnnotationAnnotator implements Annotator {
 
         List<FeatureModelFeature> features = FeatureModelUtil.findFeatures(element.getProject(), featureText);
         if (features.isEmpty()) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved property")
+            holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved property: Feature is not defined in the Feature Model")
                     .range(featureRange)
                     .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
                     // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
