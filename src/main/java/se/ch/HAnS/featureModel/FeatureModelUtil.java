@@ -16,7 +16,7 @@ import java.util.*;
 public class FeatureModelUtil {
     /**
      * Searches the entire project for FeatureModel language files with instances of the Simple property with the given key.
-     *
+     * TODO: Adjust for LPQ so that annotators can use the LPQs and not featurenames
      * @param project current project
      * @param featurename     to check
      * @return matching properties
