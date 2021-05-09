@@ -2,6 +2,7 @@ package se.ch.HAnS.featureModel.toolWindow;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ui.customization.CustomizationUtil;
+import com.intellij.ide.util.treeView.smartTree.TreeModel;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -15,18 +16,18 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.JBUI;
+import groovyjarjarantlr.debug.misc.JTreeASTModel;
 import org.jetbrains.annotations.NotNull;
+import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
-import se.ch.HAnS.featureModel.psi.impl.FeatureModelProjectNameImpl;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -178,12 +179,7 @@ public class FeatureView extends JPanel implements ActionListener{
     public void renameFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
         String s = null;
-        if (selected instanceof FeatureModelProjectNameImpl) {
-            s = ((FeatureModelProjectNameImpl) selected).renameFeature();
-        }
-        else if (selected instanceof FeatureModelFeatureImpl) {
-            s = ((FeatureModelFeatureImpl) selected).renameFeature();
-        }
+        s = ((FeatureModelFeatureImpl) selected).renameFeature();
         if (s != null) {
             selectedFeature.setUserObject(s);
             tree.nodeChanged(selectedFeature);
@@ -193,12 +189,7 @@ public class FeatureView extends JPanel implements ActionListener{
     public void addFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
         String s = null;
-        if (selected instanceof FeatureModelProjectNameImpl) {
-            s = ((FeatureModelProjectNameImpl) selected).addFeature();
-        }
-        else if (selected instanceof FeatureModelFeatureImpl) {
-            s = ((FeatureModelFeatureImpl) selected).addFeature();
-        }
+        s = ((FeatureModelFeatureImpl) selected).addFeature();
         if (s != null) {
             tree.insertNodeInto(new DefaultMutableTreeNode(s), selectedFeature, 0);
         }
@@ -207,12 +198,7 @@ public class FeatureView extends JPanel implements ActionListener{
     public void deleteFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
         Integer s = null;
-        if (selected instanceof FeatureModelProjectNameImpl) {
-            s = ((FeatureModelProjectNameImpl) selected).deleteFeature();
-        }
-        else if (selected instanceof FeatureModelFeatureImpl) {
-            s = ((FeatureModelFeatureImpl) selected).deleteFeature();
-        }
+        s = ((FeatureModelFeatureImpl) selected).deleteFeature();
         if (s == 1) {
             tree.removeNodeFromParent(selectedFeature);
         }
@@ -256,134 +242,27 @@ public class FeatureView extends JPanel implements ActionListener{
     }
 
     public PsiElement getSelectedItemAsPsiElement(){
-        DefaultMutableTreeNode node = selectedFeature;
-        List<String> path = getElementPath(node);
-
-        final PsiElement[] result = new PsiElement[1];
-        PsiFile f = getFeatureModel();
-        if (f != null) {
-            f.accept(new PsiRecursiveElementWalkingVisitor() {
-                Integer indent = null;
-
-                @Override
-                public void visitElement(@NotNull PsiElement element) {
-                    if (element instanceof FeatureModelProjectNameImpl && result[0] == null){
-                        if (element.getText().equals(path.get(0))){
-                            path.remove(0);
-                        }
-                    }
-                    else if (element instanceof FeatureModelFeatureImpl && result[0] == null){
-                        if (indent == null) {
-                            indent = element.getPrevSibling().getTextLength();
-                            if (element.getText().equals(path.get(0))){
-                                path.remove(0);
-                                indent = null;
-                            }
-                        }
-                        else if (indent >= element.getPrevSibling().getTextLength()) {
-                            indent = element.getPrevSibling().getTextLength();
-                            if (element.getText().equals(path.get(0))){
-                                path.remove(0);
-                                indent = null;
-                            }
-                        }
-                    }
-                    if (path.isEmpty() && result[0] == null) {
-                        result[0] = element;
-                    }
-                    super.visitElement(element);
-                }
-            });
-        }
-        return result[0];
+        return null;
     }
 
     private void getFeatureNames(PsiFile f) {
         if (f != null) {
-            f.accept(new PsiRecursiveElementWalkingVisitor() {
-                DefaultMutableTreeNode current;
-                int indent = 0;
+            PsiElement @NotNull [] children = f.getChildren();
 
-                IndentedNode no;
+            f.accept(new PsiRecursiveElementWalkingVisitor() {
+                DefaultMutableTreeNode current = null;
 
                 @Override
                 public void visitElement(@NotNull PsiElement element) {
-                    if (element instanceof FeatureModelProjectNameImpl){
-                        if (root == null) {
-                            root = new DefaultMutableTreeNode(element.getText());
-                        }
-                        else {
-                            root.setUserObject(element.getText());
-                            root.removeAllChildren();
-                        }
-                        current = root;
+                    if (element instanceof FeatureModelFeatureImpl && current == null) {
 
-                        no = new IndentedNode(null, 0);
-                    }
-                    else if (element instanceof FeatureModelFeatureImpl) {
-                        if (element.getPrevSibling().getText().length() > indent) {
-                            indent = element.getPrevSibling().getText().length();
-
-                            DefaultMutableTreeNode n = new DefaultMutableTreeNode(element.getText());
-                            current.add(n);
-                            current = n;
-
-                            no = new IndentedNode(no, element.getPrevSibling().getText().length());
-                        }
-                        else if (element.getPrevSibling().getText().length() == indent) {
-                            DefaultMutableTreeNode p = (DefaultMutableTreeNode)current.getParent();
-                            DefaultMutableTreeNode n = new DefaultMutableTreeNode(element.getText());
-                            p.add(n);
-                            current = n;
-
-                            no = new IndentedNode(no.getParent(), element.getPrevSibling().getText().length());
-                        }
-                        else {
-                            indent = element.getPrevSibling().getText().length();
-
-                            while (no.getIndent() > indent) {
-                                current = (DefaultMutableTreeNode)current.getParent();
-                                no = no.getParent();
-
-                                if (no.getIndent() == indent) {
-                                    DefaultMutableTreeNode p = (DefaultMutableTreeNode)current.getParent();
-                                    DefaultMutableTreeNode n = new DefaultMutableTreeNode(element.getText());
-                                    p.add(n);
-                                    current = n;
-
-                                    no = new IndentedNode(no.getParent(), element.getPrevSibling().getText().length());
-                                }
-                                else if (no.getIndent() < indent) {
-                                    DefaultMutableTreeNode n = new DefaultMutableTreeNode(element.getText());
-                                    current.add(n);
-                                    current = n;
-
-                                    no = new IndentedNode(no, element.getPrevSibling().getText().length());
-                                }
-                            }
-                        }
+                                //root = new DefaultMutableTreeNode(element.getText());
+                        //root = new DefaultMutableTreeNode(element.getNode().getChildren(FeatureModelTypes.FEATURE));
+                        tree = (DefaultTreeModel) element.getNode();
                     }
                     super.visitElement(element);
                 }
             });
-        }
-    }
-
-    private static class IndentedNode {
-        private final IndentedNode parent;
-        private final int indent;
-
-        public IndentedNode(IndentedNode p, int i) {
-            this.parent = p;
-            this.indent = i;
-        }
-
-        private IndentedNode getParent() {
-            return this.parent;
-        }
-
-        private int getIndent() {
-            return this.indent;
         }
     }
 }

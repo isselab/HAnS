@@ -28,6 +28,12 @@ public class FeatureModelFeatureImpl extends ASTWrapperPsiElement implements Fea
   }
 
   @Override
+  @NotNull
+  public List<FeatureModelFeature> getFeatureList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, FeatureModelFeature.class);
+  }
+
+  @Override
   public String renameFeature() {
     return FeatureModelPsiImplUtil.renameFeature(this);
   }

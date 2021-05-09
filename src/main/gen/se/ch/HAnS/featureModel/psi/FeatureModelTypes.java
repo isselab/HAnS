@@ -9,20 +9,17 @@ import se.ch.HAnS.featureModel.psi.impl.*;
 public interface FeatureModelTypes {
 
   IElementType FEATURE = new FeatureModelElementType("FEATURE");
-  IElementType PROJECT_NAME = new FeatureModelElementType("PROJECT_NAME");
 
   IElementType CRLF = new FeatureModelTokenType("CRLF");
+  IElementType DEDENT = new FeatureModelTokenType("DEDENT");
   IElementType FEATURENAME = new FeatureModelTokenType("FEATURENAME");
-  IElementType TAB = new FeatureModelTokenType("TAB");
+  IElementType INDENT = new FeatureModelTokenType("INDENT");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
       if (type == FEATURE) {
         return new FeatureModelFeatureImpl(node);
-      }
-      else if (type == PROJECT_NAME) {
-        return new FeatureModelProjectNameImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }
