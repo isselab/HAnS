@@ -4,20 +4,16 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import org.jdom.output.support.SAXOutputProcessor;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.FeatureModelUtil;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.fileAnnotation.psi.FileAnnotationFeatureName;
 import se.ch.HAnS.fileAnnotation.psi.FileAnnotationFileName;
-import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationFeature;
 import se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighter;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class FileAnnotationAnnotator implements Annotator {

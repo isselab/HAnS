@@ -15,10 +15,7 @@
   psiImplUtilClass="se.ch.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil"
 }
 
-featureModelFile ::= projectName ((CRLF)*(TAB)* feature)* ((TAB|CRLF)*)
+featureModelFile ::= (feature (feature)?)?
 
-projectName ::= FEATURENAME
-{methods=[renameFeature addFeature deleteFeature addMiscFeature getFeatureName]}
-
-feature ::= FEATURENAME
-{methods=[renameFeature addFeature deleteFeature addMiscFeature getFeatureName]}
+feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?)
+{methods=[renameFeature addFeature deleteFeature getFeatureName]}

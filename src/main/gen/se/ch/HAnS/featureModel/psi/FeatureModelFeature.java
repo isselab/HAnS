@@ -7,15 +7,14 @@ import com.intellij.psi.PsiElement;
 
 public interface FeatureModelFeature extends PsiElement {
 
+  @NotNull
+  List<FeatureModelFeature> getFeatureList();
+
   String renameFeature();
 
   String addFeature();
 
   int deleteFeature();
-
-  //WARNING: addMiscFeature(...) is skipped
-  //matching addMiscFeature(FeatureModelFeature, ...)
-  //methods are not found in FeatureModelPsiImplUtil
 
   String getFeatureName();
 

@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationFeature;
 import se.ch.HAnS.featureModel.FeatureModelUtil;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
-import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationFeature;
 import se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighter;
 
 import java.util.List;
