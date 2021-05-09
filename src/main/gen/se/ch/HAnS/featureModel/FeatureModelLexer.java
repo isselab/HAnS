@@ -398,8 +398,7 @@ class FeatureModelLexer implements FlexLexer {
   private void zzDoEOF() {
     if (!zzEOFDone) {
       zzEOFDone = true;
-        return;
-
+    
     }
   }
 
@@ -493,13 +492,15 @@ class FeatureModelLexer implements FlexLexer {
         zzDoEOF();
         switch (zzLexicalState) {
             case indent: {
-              if (indent_levels.peek() != 0) {
+              yybegin(YYINITIAL);
+        /*
+    if (indent_levels.peek() != 0) {
         indent_levels.pop();
         return FeatureModelTypes.DEDENT;
     }
     else {
         yybegin(YYINITIAL);
-    }
+    }*/
             }  // fall though
             case 13: break;
             default:

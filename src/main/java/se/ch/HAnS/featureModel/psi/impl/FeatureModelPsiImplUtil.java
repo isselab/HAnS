@@ -40,7 +40,7 @@ public class FeatureModelPsiImplUtil {
 
     private static String renameInFeatureModel(@NotNull PsiElement feature, String newFeatureName) {
         PsiFile f = PsiFileFactoryImpl.getInstance(
-                feature.getProject()).createFileFromText(FeatureModelLanguage.INSTANCE, "Dummy\n" + newFeatureName);
+                feature.getProject()).createFileFromText(FeatureModelLanguage.INSTANCE, newFeatureName);
 
         WriteCommandAction.runWriteCommandAction(feature.getProject(), () -> {
             feature.replace(f.getLastChild().copy());

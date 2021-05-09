@@ -14,7 +14,6 @@ HAnS
         File
         Injection
             JavaStyleComment
-          Heyyooo
     CodeCompletion
         FileNameProvider
         FeatureNameProvider

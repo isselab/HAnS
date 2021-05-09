@@ -50,7 +50,7 @@ public class FeatureView extends JPanel implements ActionListener{
     private DefaultMutableTreeNode root = null;
     private DefaultMutableTreeNode selectedFeature;
 
-    private JButton addButton, removeButton;
+    private JButton addButton, removeButton, clearButton;
 
     private static final String ADD_COMMAND = "add";
     private static final String REMOVE_COMMAND = "remove";
@@ -113,33 +113,13 @@ public class FeatureView extends JPanel implements ActionListener{
         Insets btnMargin = JBUI.insets(0,5,0,5);
 
         addButton = new JButton(AllIcons.General.Add);
-        addButton.setBorderPainted(false);
-        addButton.setContentAreaFilled(false);
-        addButton.setRolloverEnabled(true);
-        addButton.setMargin(btnMargin);
-        addButton.setPreferredSize(btnDimension);
-        addButton.setActionCommand(ADD_COMMAND);
-        addButton.addActionListener(this);
-        addButton.setEnabled(false);
+        addButton(btnDimension, btnMargin, addButton, ADD_COMMAND, false);
 
         removeButton = new JButton(AllIcons.General.Remove);
-        removeButton.setBorderPainted(false);
-        removeButton.setContentAreaFilled(false);
-        removeButton.setRolloverEnabled(true);
-        removeButton.setMargin(btnMargin);
-        removeButton.setPreferredSize(btnDimension);
-        removeButton.setActionCommand(REMOVE_COMMAND);
-        removeButton.addActionListener(this);
-        removeButton.setEnabled(false);
+        addButton(btnDimension, btnMargin, removeButton, REMOVE_COMMAND, false);
 
-        JButton clearButton = new JButton(AllIcons.General.Reset);
-        clearButton.setBorderPainted(false);
-        clearButton.setContentAreaFilled(false);
-        clearButton.setRolloverEnabled(true);
-        clearButton.setMargin(btnMargin);
-        clearButton.setPreferredSize(btnDimension);
-        clearButton.setActionCommand(CLEAR_COMMAND);
-        clearButton.addActionListener(this);
+        clearButton = new JButton(AllIcons.General.Reset);
+        addButton(btnDimension, btnMargin, clearButton, CLEAR_COMMAND, true);
 
         JPanel south = new JPanel(new BorderLayout());
 
@@ -158,6 +138,17 @@ public class FeatureView extends JPanel implements ActionListener{
         south.add(buttons, BorderLayout.EAST);
 
         this.add(south, BorderLayout.SOUTH);
+    }
+
+    private void addButton(Dimension btnDimension, Insets btnMargin, JButton removeButton, String removeCommand, Boolean enabled) {
+        removeButton.setBorderPainted(false);
+        removeButton.setContentAreaFilled(false);
+        removeButton.setRolloverEnabled(true);
+        removeButton.setMargin(btnMargin);
+        removeButton.setPreferredSize(btnDimension);
+        removeButton.setActionCommand(removeCommand);
+        removeButton.addActionListener(this);
+        removeButton.setEnabled(enabled);
     }
 
     @Override
@@ -246,6 +237,11 @@ public class FeatureView extends JPanel implements ActionListener{
     }
 
     private void getFeatureNames(PsiFile f) {
+        PsiElement r = f.getFirstChild();
+        root = new DefaultMutableTreeNode(r.getFirstChild().getText());
+
+        getChildren(r);
+        /*
         if (f != null) {
             PsiElement @NotNull [] children = f.getChildren();
 
@@ -263,6 +259,13 @@ public class FeatureView extends JPanel implements ActionListener{
                     super.visitElement(element);
                 }
             });
+        }
+        */
+    }
+
+    private void getChildren(PsiElement p) {
+        for (PsiElement e:p.getChildren()) {
+
         }
     }
 }
