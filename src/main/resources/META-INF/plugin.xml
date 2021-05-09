@@ -4,7 +4,7 @@
     <vendor email="johmara@student.chalmers.se" url="http://www.johmara.dev">easelab</vendor>
 
     <description><![CDATA[
-    Integrates FAXE to enable feature annotation
+    Providing support for editing embedded feature annotations
     ]]></description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html

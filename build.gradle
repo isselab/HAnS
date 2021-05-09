@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.7.2'
+    id 'org.jetbrains.intellij' version '0.7.3'
     id 'org.jetbrains.kotlin.jvm' version '1.4.31'
 }
 
@@ -19,12 +19,24 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2021.1'
+    version '2021.1.1'
 }
 patchPluginXml {
     changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+      <p>Suported Features:</p>
+        <ul>
+        <li>Feature Annotation Languages
+        <ul>
+        <li>Feature Model</li>
+        <li>Feature to folder</li>
+        <li>Feature to file</li>
+        <li>Code annotations</li>
+        </ul>
+        </li>
+        <li>Syntax Highlighting</li>
+        <li>Code Completion</li>
+        <li>Feature View</li>
+        </ul>"""
 }
 test {
     useJUnitPlatform()

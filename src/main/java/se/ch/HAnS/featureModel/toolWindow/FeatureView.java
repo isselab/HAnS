@@ -241,26 +241,6 @@ public class FeatureView extends JPanel implements ActionListener{
         root = new DefaultMutableTreeNode(r.getFirstChild().getText());
 
         getChildren(r);
-        /*
-        if (f != null) {
-            PsiElement @NotNull [] children = f.getChildren();
-
-            f.accept(new PsiRecursiveElementWalkingVisitor() {
-                DefaultMutableTreeNode current = null;
-
-                @Override
-                public void visitElement(@NotNull PsiElement element) {
-                    if (element instanceof FeatureModelFeatureImpl && current == null) {
-
-                                //root = new DefaultMutableTreeNode(element.getText());
-                        //root = new DefaultMutableTreeNode(element.getNode().getChildren(FeatureModelTypes.FEATURE));
-                        tree = (DefaultTreeModel) element.getNode();
-                    }
-                    super.visitElement(element);
-                }
-            });
-        }
-        */
     }
 
     private void getChildren(PsiElement p) {
