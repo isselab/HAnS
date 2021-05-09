@@ -54,9 +54,18 @@
 
         <!-- &begin[SyntaxHighlighting] -->
         <lang.syntaxHighlighterFactory language="FeatureModel" implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FeatureModel]-->
+
         <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FolderAnnotation] -->
+        <annotator language="FolderAnnotation"
+                   implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationAnnotator"/>
+
         <lang.syntaxHighlighterFactory language="FileAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FileAnnotation]-->
+        <annotator language="FileAnnotation"
+                   implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationAnnotator"/>
+
         <lang.syntaxHighlighterFactory language="CodeAnnotations" implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::CodeAnnotation]-->
+        <annotator language="CodeAnnotations"
+                   implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationAnnotator"/>
 
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/HAnSDarcula.xml"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/HAnSDefault.xml"/>
@@ -71,6 +80,7 @@
                     factoryClass="se.ch.HAnS.featureModel.toolWindow.FeatureViewFactory"/>
         <!-- &end[FeatureView] -->
         <!--<typedHandler implementation="se.ch.HAnS.featureModel.toolWindow.actions.MyTypedHandler"/>-->
+
     </extensions>
 
     <actions>

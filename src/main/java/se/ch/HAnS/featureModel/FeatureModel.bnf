@@ -18,4 +18,4 @@
 featureModelFile ::= (feature (feature)?)?
 
 feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?)
-{methods=[renameFeature addFeature deleteFeature]}
+{methods=[renameFeature addFeature deleteFeature getFeatureName]}

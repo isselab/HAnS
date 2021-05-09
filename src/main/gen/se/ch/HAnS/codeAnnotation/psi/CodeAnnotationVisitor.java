@@ -15,6 +15,10 @@ public class CodeAnnotationVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitFeature(@NotNull CodeAnnotationFeature o) {
+    visitPsiElement(o);
+  }
+
   public void visitLinemarker(@NotNull CodeAnnotationLinemarker o) {
     visitPsiElement(o);
   }

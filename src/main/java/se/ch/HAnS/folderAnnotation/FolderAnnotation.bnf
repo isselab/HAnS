@@ -15,4 +15,6 @@
 
 featureToFolderFile ::= CRLF* lpq (CRLF* CS* CRLF* lpq)* CRLF*
 
-lpq ::= FEATURENAME (SEPARATOR FEATURENAME)*
+lpq ::= feature (SEPARATOR feature)*
+
+feature ::= FEATURENAME

@@ -5,9 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CodeAnnotationBeginmarker extends PsiElement {
-
-  @NotNull
-  CodeAnnotationParameter getParameter();
+public interface CodeAnnotationFeature extends PsiElement {
 
 }

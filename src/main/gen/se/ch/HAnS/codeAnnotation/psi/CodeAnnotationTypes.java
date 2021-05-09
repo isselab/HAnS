@@ -10,6 +10,7 @@ public interface CodeAnnotationTypes {
 
   IElementType BEGINMARKER = new CodeAnnotationElementType("BEGINMARKER");
   IElementType ENDMARKER = new CodeAnnotationElementType("ENDMARKER");
+  IElementType FEATURE = new CodeAnnotationElementType("FEATURE");
   IElementType LINEMARKER = new CodeAnnotationElementType("LINEMARKER");
   IElementType LPQ = new CodeAnnotationElementType("LPQ");
   IElementType PARAMETER = new CodeAnnotationElementType("PARAMETER");
@@ -33,6 +34,9 @@ public interface CodeAnnotationTypes {
       }
       else if (type == ENDMARKER) {
         return new CodeAnnotationEndmarkerImpl(node);
+      }
+      else if (type == FEATURE) {
+        return new CodeAnnotationFeatureImpl(node);
       }
       else if (type == LINEMARKER) {
         return new CodeAnnotationLinemarkerImpl(node);

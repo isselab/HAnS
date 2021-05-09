@@ -16,4 +16,6 @@ public interface FeatureModelFeature extends PsiElement {
 
   int deleteFeature();
 
+  String getFeatureName();
+
 }
