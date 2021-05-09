@@ -492,17 +492,15 @@ class FeatureModelLexer implements FlexLexer {
         zzDoEOF();
         switch (zzLexicalState) {
             case indent: {
-              /*
-}
+              yybegin(YYINITIAL);
+        /*
     if (indent_levels.peek() != 0) {
         indent_levels.pop();
         return FeatureModelTypes.DEDENT;
     }
     else {
-  */
         yybegin(YYINITIAL);
-        return FeatureModelTypes.DEDENT;
-    //}
+    }*/
             }  // fall though
             case 13: break;
             default:
@@ -552,7 +550,7 @@ class FeatureModelLexer implements FlexLexer {
             }
             else if(current_line_indent != indent_levels.peek()) {
                 yypushback(1);
-                //yybegin(dedent);
+                yybegin(dedent);
                 return FeatureModelTypes.DEDENT;
             }
             else {

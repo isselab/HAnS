@@ -9,6 +9,7 @@ import java.util.Deque;
 
 %%
 
+%public
 %class FeatureModelLexer
 %implements FlexLexer
 %unicode
