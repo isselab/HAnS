@@ -2,6 +2,7 @@ package se.ch.HAnS.featureModel.toolWindow;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ui.customization.CustomizationUtil;
+import com.intellij.ide.util.treeView.smartTree.TreeModel;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -15,18 +16,18 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.ui.treeStructure.treetable.TreeTableTree;
 import com.intellij.util.ui.JBUI;
+import groovyjarjarantlr.debug.misc.JTreeASTModel;
 import org.jetbrains.annotations.NotNull;
+import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
-import se.ch.HAnS.featureModel.psi.impl.FeatureModelProjectNameImpl;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -49,7 +50,7 @@ public class FeatureView extends JPanel implements ActionListener{
     private DefaultMutableTreeNode root = null;
     private DefaultMutableTreeNode selectedFeature;
 
-    private JButton addButton, removeButton;
+    private JButton addButton, removeButton, clearButton;
 
     private static final String ADD_COMMAND = "add";
     private static final String REMOVE_COMMAND = "remove";
@@ -112,33 +113,13 @@ public class FeatureView extends JPanel implements ActionListener{
         Insets btnMargin = JBUI.insets(0,5,0,5);
 
         addButton = new JButton(AllIcons.General.Add);
-        addButton.setBorderPainted(false);
-        addButton.setContentAreaFilled(false);
-        addButton.setRolloverEnabled(true);
-        addButton.setMargin(btnMargin);
-        addButton.setPreferredSize(btnDimension);
-        addButton.setActionCommand(ADD_COMMAND);
-        addButton.addActionListener(this);
-        addButton.setEnabled(false);
+        addButton(btnDimension, btnMargin, addButton, ADD_COMMAND, false);
 
         removeButton = new JButton(AllIcons.General.Remove);
-        removeButton.setBorderPainted(false);
-        removeButton.setContentAreaFilled(false);
-        removeButton.setRolloverEnabled(true);
-        removeButton.setMargin(btnMargin);
-        removeButton.setPreferredSize(btnDimension);
-        removeButton.setActionCommand(REMOVE_COMMAND);
-        removeButton.addActionListener(this);
-        removeButton.setEnabled(false);
+        addButton(btnDimension, btnMargin, removeButton, REMOVE_COMMAND, false);
 
-        JButton clearButton = new JButton(AllIcons.General.Reset);
-        clearButton.setBorderPainted(false);
-        clearButton.setContentAreaFilled(false);
-        clearButton.setRolloverEnabled(true);
-        clearButton.setMargin(btnMargin);
-        clearButton.setPreferredSize(btnDimension);
-        clearButton.setActionCommand(CLEAR_COMMAND);
-        clearButton.addActionListener(this);
+        clearButton = new JButton(AllIcons.General.Reset);
+        addButton(btnDimension, btnMargin, clearButton, CLEAR_COMMAND, true);
 
         JPanel south = new JPanel(new BorderLayout());
 
@@ -157,6 +138,17 @@ public class FeatureView extends JPanel implements ActionListener{
         south.add(buttons, BorderLayout.EAST);
 
         this.add(south, BorderLayout.SOUTH);
+    }
+
+    private void addButton(Dimension btnDimension, Insets btnMargin, JButton removeButton, String removeCommand, Boolean enabled) {
+        removeButton.setBorderPainted(false);
+        removeButton.setContentAreaFilled(false);
+        removeButton.setRolloverEnabled(true);
+        removeButton.setMargin(btnMargin);
+        removeButton.setPreferredSize(btnDimension);
+        removeButton.setActionCommand(removeCommand);
+        removeButton.addActionListener(this);
+        removeButton.setEnabled(enabled);
     }
 
     @Override
@@ -178,12 +170,7 @@ public class FeatureView extends JPanel implements ActionListener{
     public void renameFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
         String s = null;
-        if (selected instanceof FeatureModelProjectNameImpl) {
-            s = ((FeatureModelProjectNameImpl) selected).renameFeature();
-        }
-        else if (selected instanceof FeatureModelFeatureImpl) {
-            s = ((FeatureModelFeatureImpl) selected).renameFeature();
-        }
+        s = ((FeatureModelFeatureImpl) selected).renameFeature();
         if (s != null) {
             selectedFeature.setUserObject(s);
             tree.nodeChanged(selectedFeature);
@@ -193,12 +180,7 @@ public class FeatureView extends JPanel implements ActionListener{
     public void addFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
         String s = null;
-        if (selected instanceof FeatureModelProjectNameImpl) {
-            s = ((FeatureModelProjectNameImpl) selected).addFeature();
-        }
-        else if (selected instanceof FeatureModelFeatureImpl) {
-            s = ((FeatureModelFeatureImpl) selected).addFeature();
-        }
+        s = ((FeatureModelFeatureImpl) selected).addFeature();
         if (s != null) {
             tree.insertNodeInto(new DefaultMutableTreeNode(s), selectedFeature, 0);
         }
@@ -207,12 +189,7 @@ public class FeatureView extends JPanel implements ActionListener{
     public void deleteFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
         Integer s = null;
-        if (selected instanceof FeatureModelProjectNameImpl) {
-            s = ((FeatureModelProjectNameImpl) selected).deleteFeature();
-        }
-        else if (selected instanceof FeatureModelFeatureImpl) {
-            s = ((FeatureModelFeatureImpl) selected).deleteFeature();
-        }
+        s = ((FeatureModelFeatureImpl) selected).deleteFeature();
         if (s == 1) {
             tree.removeNodeFromParent(selectedFeature);
         }
@@ -256,128 +233,19 @@ public class FeatureView extends JPanel implements ActionListener{
     }
 
     public PsiElement getSelectedItemAsPsiElement(){
-        DefaultMutableTreeNode node = selectedFeature;
-        List<String> path = getElementPath(node);
-
-        final PsiElement[] result = new PsiElement[1];
-        PsiFile f = getFeatureModel();
-        if (f != null) {
-            f.accept(new PsiRecursiveElementWalkingVisitor() {
-                Integer indent = null;
-
-                @Override
-                public void visitElement(@NotNull PsiElement element) {
-                    if (element instanceof FeatureModelProjectNameImpl && result[0] == null){
-                        if (element.getText().equals(path.get(0))){
-                            path.remove(0);
-                        }
-                    }
-                    else if (element instanceof FeatureModelFeatureImpl && result[0] == null){
-                        if (indent == null) {
-                            indent = element.getPrevSibling().getTextLength();
-                            if (element.getText().equals(path.get(0))){
-                                path.remove(0);
-                                indent = null;
-                            }
-                        }
-                        else if (indent >= element.getPrevSibling().getTextLength()) {
-                            indent = element.getPrevSibling().getTextLength();
-                            if (element.getText().equals(path.get(0))){
-                                path.remove(0);
-                                indent = null;
-                            }
-                        }
-                    }
-                    if (path.isEmpty() && result[0] == null) {
-                        result[0] = element;
-                    }
-                    super.visitElement(element);
-                }
-            });
-        }
-        return result[0];
+        return null;
     }
 
     private void getFeatureNames(PsiFile f) {
-        if (f != null) {
-            f.accept(new PsiRecursiveElementWalkingVisitor() {
-                DefaultMutableTreeNode current;
-                int indent = 0;
+        PsiElement r = f.getFirstChild();
+        root = new DefaultMutableTreeNode(r.getFirstChild().getText());
 
-                IndentedNode no;
-
-                @Override
-                public void visitElement(@NotNull PsiElement element) {
-                    if (element instanceof FeatureModelProjectNameImpl){
-                        root = new DefaultMutableTreeNode(element.getText());
-                        current = root;
-
-                        no = new IndentedNode(null, 0);
-                    }
-                    else if (element instanceof FeatureModelFeatureImpl) {
-                        if (element.getPrevSibling().getText().length() > indent) {
-                            indent = element.getPrevSibling().getText().length();
-
-                            DefaultMutableTreeNode n = new DefaultMutableTreeNode(element.getText());
-                            current.add(n);
-                            current = n;
-
-                            no = new IndentedNode(no, element.getPrevSibling().getText().length());
-                        }
-                        else if (element.getPrevSibling().getText().length() == indent) {
-                            DefaultMutableTreeNode p = (DefaultMutableTreeNode)current.getParent();
-                            DefaultMutableTreeNode n = new DefaultMutableTreeNode(element.getText());
-                            p.add(n);
-                            current = n;
-
-                            no = new IndentedNode(no.getParent(), element.getPrevSibling().getText().length());
-                        }
-                        else {
-                            indent = element.getPrevSibling().getText().length();
-
-                            while (no.getIndent() > indent) {
-                                current = (DefaultMutableTreeNode)current.getParent();
-                                no = no.getParent();
-
-                                if (no.getIndent() == indent) {
-                                    DefaultMutableTreeNode p = (DefaultMutableTreeNode)current.getParent();
-                                    DefaultMutableTreeNode n = new DefaultMutableTreeNode(element.getText());
-                                    p.add(n);
-                                    current = n;
-
-                                    no = new IndentedNode(no.getParent(), element.getPrevSibling().getText().length());
-                                }
-                                else if (no.getIndent() < indent) {
-                                    DefaultMutableTreeNode n = new DefaultMutableTreeNode(element.getText());
-                                    current.add(n);
-                                    current = n;
-
-                                    no = new IndentedNode(no, element.getPrevSibling().getText().length());
-                                }
-                            }
-                        }
-                    }
-                    super.visitElement(element);
-                }
-            });
-        }
+        getChildren(r);
     }
 
-    private static class IndentedNode {
-        private final IndentedNode parent;
-        private final int indent;
+    private void getChildren(PsiElement p) {
+        for (PsiElement e:p.getChildren()) {
 
-        public IndentedNode(IndentedNode p, int i) {
-            this.parent = p;
-            this.indent = i;
-        }
-
-        private IndentedNode getParent() {
-            return this.parent;
-        }
-
-        private int getIndent() {
-            return this.indent;
         }
     }
 }
