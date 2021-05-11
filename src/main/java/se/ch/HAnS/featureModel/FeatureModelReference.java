@@ -5,10 +5,16 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import se.ch.HAnS.AnnotationIcons;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
+import se.ch.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil;
+import se.ch.HAnS.fileAnnotation.psi.FileAnnotationLpq;
+import se.ch.HAnS.fileAnnotation.psi.impl.FileAnnotationPsiImplUtil;
+import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
+import se.ch.HAnS.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +26,14 @@ public class FeatureModelReference extends PsiReferenceBase<PsiElement> implemen
     public FeatureModelReference(@NotNull PsiElement element, TextRange textRange) {
         super(element, textRange);
         lpq = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
+    }
+
+    @Override
+    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+        FolderAnnotationPsiImplUtil.setName((FolderAnnotationLpq) myElement, newElementName);
+        //FileAnnotationPsiImplUtil.setName((FileAnnotationLpq) myElement, newElementName);
+        //CodeAnnotationPsiImplUtil.setName((CodeAnnotationLpq) myElement, newElementName);
+        return myElement;
     }
 
     @NotNull

@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.fileAnnotation.psi.FileAnnotationTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import se.ch.HAnS.fileAnnotation.psi.*;
 
-public class FileAnnotationLpqImpl extends ASTWrapperPsiElement implements FileAnnotationLpq {
+public class FileAnnotationLpqImpl extends FileAnnotationNamedElementImpl implements FileAnnotationLpq {
 
   public FileAnnotationLpqImpl(@NotNull ASTNode node) {
     super(node);
@@ -31,6 +30,21 @@ public class FileAnnotationLpqImpl extends ASTWrapperPsiElement implements FileA
   @NotNull
   public List<FileAnnotationFeatureName> getFeatureNameList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, FileAnnotationFeatureName.class);
+  }
+
+  @Override
+  public String getName() {
+    return FileAnnotationPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(String newName) {
+    return FileAnnotationPsiImplUtil.setName(this, newName);
+  }
+
+  @Override
+  public PsiElement getNameIdentifier() {
+    return FileAnnotationPsiImplUtil.getNameIdentifier(this);
   }
 
 }

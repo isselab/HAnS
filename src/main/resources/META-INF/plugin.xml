@@ -76,6 +76,10 @@
 
         <!-- &begin[Referencing] -->
         <psi.referenceContributor implementation="se.ch.HAnS.featureModel.FeatureModelReferenceContributor"/>
+        <lang.refactoringSupport language="FeatureModel"
+                                 implementationClass="se.ch.HAnS.featureModel.FeatureRefactoringSupportProvider"/>
+        <lang.findUsagesProvider language="FeatureModel"
+                                 implementationClass="se.ch.HAnS.featureModel.FeatureFindUsagesProvider"/>
         <!-- &end[Referencing] -->
 
     </extensions>

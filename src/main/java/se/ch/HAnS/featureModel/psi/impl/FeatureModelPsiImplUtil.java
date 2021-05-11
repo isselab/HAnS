@@ -3,24 +3,23 @@ package se.ch.HAnS.featureModel.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.impl.PsiFileFactoryImpl;
-import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.featureModel.FeatureModelFileType;
 import se.ch.HAnS.featureModel.FeatureModelLanguage;
 import se.ch.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
-import se.ch.HAnS.featureModel.psi.FeatureModelFile;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
-import se.ch.HAnS.folderAnnotation.FolderAnnotationFileType;
-import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationFile;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
-
 
     public static String getFeatureName(FeatureModelFeature element){
         ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
@@ -33,7 +32,6 @@ public class FeatureModelPsiImplUtil {
     }
 
     public static String getName(FeatureModelFeature feature) {
-        feature.getReferences();
         return feature.getFeatureName();
     }
 

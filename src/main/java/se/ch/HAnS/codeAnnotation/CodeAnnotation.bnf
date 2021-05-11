@@ -21,4 +21,5 @@ linemarker ::= LINE parameter
 
 parameter ::= (SPACE* OBRACKET SPACE* lpq ((SPACE* CS)? SPACE+ lpq)* SPACE* CBRACKET) | (SPACE+ lpq ((SPACE* CS)? SPACE+ lpq)* SPACE*)
 
-lpq ::= FEATURENAME (SEPARATOR FEATURENAME)*
+lpq ::= FEATURENAME (SEPARATOR FEATURENAME)*{
+mixin="se.ch.HAnS.codeAnnotation.psi.impl.CodeAnnotationNamedElementImpl"}
