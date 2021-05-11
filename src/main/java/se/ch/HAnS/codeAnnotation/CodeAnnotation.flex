@@ -3,6 +3,7 @@ package se.ch.HAnS.codeAnnotation;
 import com.intellij.psi.tree.IElementType;
 import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationTypes;
 import com.intellij.psi.TokenType;
+import com.intellij.lexer.FlexLexer;
 
 %%
 

@@ -27,6 +27,12 @@ public class FolderAnnotationLpqImpl extends FolderAnnotationNamedElementImpl im
   }
 
   @Override
+  @NotNull
+  public List<FolderAnnotationFeature> getFeatureList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, FolderAnnotationFeature.class);
+  }
+
+  @Override
   public String getName() {
     return FolderAnnotationPsiImplUtil.getName(this);
   }

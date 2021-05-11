@@ -49,7 +49,7 @@ public class FileAnnotationAnnotator implements Annotator {
 
     }
 
-    private void annotateFileName(PsiElement element, AnnotationHolder holder) {
+    private void annotateFileName(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         FileAnnotationFileName fileName = (FileAnnotationFileName) element;
         String fileNameText = fileName.getText();
         TextRange fileNameRange = fileName.getTextRange();

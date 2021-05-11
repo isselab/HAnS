@@ -26,4 +26,10 @@ public class CodeAnnotationLpqImpl extends CodeAnnotationNamedElementImpl implem
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public List<CodeAnnotationFeature> getFeatureList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, CodeAnnotationFeature.class);
+  }
+
 }
