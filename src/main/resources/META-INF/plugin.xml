@@ -10,6 +10,7 @@
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[FeatureModel] -->
@@ -40,10 +41,11 @@
                                implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationParserDefinition"/>
         <!-- &end[CodeAnnotations] -->
 
-        <!-- &begin[CodeCompletion] -->
+        <!--
+        <!- &begin[CodeCompletion]
         <completion.contributor language="any"
                                 implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationDictionaryContributor"/>
-        <!-- &end[CodeCompletion] -->
+        <!- &end[CodeCompletion] -->
 
         <!-- &begin[LiveTemplate] -->
         <!--
@@ -71,6 +73,11 @@
                     factoryClass="se.ch.HAnS.featureModel.toolWindow.FeatureViewFactory"/>
         <!-- &end[FeatureView] -->
         <!--<typedHandler implementation="se.ch.HAnS.featureModel.toolWindow.actions.MyTypedHandler"/>-->
+
+        <!-- &begin[Referencing] -->
+        <psi.referenceContributor implementation="se.ch.HAnS.featureModel.FeatureModelReferenceContributor"/>
+        <!-- &end[Referencing] -->
+
     </extensions>
 
     <actions>

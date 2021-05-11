@@ -1,29 +1,63 @@
 package se.ch.HAnS.featureModel.psi.impl;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
+import com.intellij.psi.*;
 import com.intellij.psi.impl.PsiFileFactoryImpl;
+import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
 import org.jetbrains.annotations.NotNull;
+import se.ch.HAnS.featureModel.FeatureModelFileType;
 import se.ch.HAnS.featureModel.FeatureModelLanguage;
+import se.ch.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
+import se.ch.HAnS.featureModel.psi.FeatureModelFile;
+import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
+import se.ch.HAnS.folderAnnotation.FolderAnnotationFileType;
+import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationFile;
 
 import java.util.*;
 import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
 
-    public static String getName(PsiElement feature) {
-        return feature.getText();
+
+    public static String getFeatureName(FeatureModelFeature element){
+        ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
+        if (featureNode != null) {
+            // IMPORTANT: Convert embedded escaped spaces to simple spaces
+            return featureNode.getText().replaceAll("\\\\ ", " ");
+        } else {
+            return null;
+        }
+    }
+
+    public static String getName(FeatureModelFeature feature) {
+        feature.getReferences();
+        return feature.getFeatureName();
     }
 
     public static PsiElement setName(FeatureModelFeature element, String newName) {
+        ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
+        if (featureNode != null) {
+            FeatureModelFeature feature = FeatureModelElementFactory.createFeature(element.getProject(), newName);
+            ASTNode newKeyNode = feature.getFirstChild().getNode();
+            element.getNode().replaceChild(featureNode, newKeyNode);
+        }
         return element;
     }
 
     public static PsiElement getNameIdentifier(FeatureModelFeature element) {
+        ASTNode node = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
+        if (node != null) {
+            /*FeatureModelFeature feature = (FeatureModelFeature) node.getPsi();
+            String name = "dummy.feature-to-folder";
+            FolderAnnotationFile f = (FolderAnnotationFile) PsiFileFactory.getInstance(element.getProject()).
+                    createFileFromText(name, FolderAnnotationFileType.INSTANCE, feature.getLPQ());
+            return f.getFirstChild();
+            */
+            return node.getPsi();
+        }
         return null;
     }
 

@@ -17,5 +17,7 @@
 
 featureModelFile ::= (feature (feature)?)?
 
-feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?)
-{methods=[renameFeature addFeature deleteFeature]}
+feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?) {
+mixin="se.ch.HAnS.featureModel.psi.impl.FeatureModelNamedElementImpl"
+implements="se.ch.HAnS.featureModel.psi.FeatureModelNamedElement"
+methods=[getLPQ renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName]}
