@@ -3,12 +3,9 @@ package se.ch.HAnS.featureModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
-import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.featureModel.psi.FeatureModelFile;
 
@@ -18,7 +15,7 @@ import java.util.List;
 
 public class FeatureModelUtil {
 
-    public static List<FeatureModelFeature> findFeatures(Project project, String lpq) {
+    public static List<FeatureModelFeature> findLPQs(Project project, String lpq) {
         List<FeatureModelFeature> result = new ArrayList<>();
         Collection<VirtualFile> virtualFiles =
                 FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScope.allScope(project));

@@ -10,13 +10,24 @@ import org.jetbrains.annotations.NotNull;
 
 public class KeywordCompletionProvider extends CompletionProvider<CompletionParameters> {
 
-    public KeywordCompletionProvider() {
+    private final boolean onlyManual;
+
+    public KeywordCompletionProvider(boolean onlyManual) {
+        this.onlyManual = onlyManual;
     }
 
     @Override
     protected void addCompletions(@NotNull CompletionParameters parameters,
                                   @NotNull ProcessingContext context,
                                   @NotNull CompletionResultSet result) {
+        if (parameters.isAutoPopup() && onlyManual) {
+           return;
+        }
+
+        String prefix = result.getPrefixMatcher().getPrefix();
+        if (prefix.isEmpty()) {
+            return;
+        }
 
         result.addElement(LookupElementBuilder.create("&begin").withItemTextForeground(JBColor.GREEN));
         result.addElement(LookupElementBuilder.create("&end").withItemTextForeground(JBColor.GREEN));

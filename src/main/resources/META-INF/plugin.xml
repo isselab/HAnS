@@ -41,11 +41,11 @@
                                implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationParserDefinition"/>
         <!-- &end[CodeAnnotations] -->
 
-        <!--
-        <!- &begin[CodeCompletion]
+
+        <!-- &begin[CodeCompletion] -->
         <completion.contributor language="any"
                                 implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationDictionaryContributor"/>
-        <!- &end[CodeCompletion] -->
+        <!-- &end[CodeCompletion] -->
 
         <!-- &begin[LiveTemplate] -->
         <!--

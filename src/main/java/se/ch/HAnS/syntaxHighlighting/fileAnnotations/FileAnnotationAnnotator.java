@@ -9,9 +9,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.FeatureModelUtil;
-import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.fileAnnotation.psi.FileAnnotationFeatureName;
 import se.ch.HAnS.fileAnnotation.psi.FileAnnotationFileName;
+import se.ch.HAnS.fileAnnotation.psi.FileAnnotationLpq;
 import se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighter;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 public class FileAnnotationAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof FileAnnotationFeatureName)){
+        if (!(element instanceof FileAnnotationLpq)){
             if(checkElementOftypeFileAnnotationFileName(element)){
                 annotateFileName(element, holder);
             }
@@ -27,26 +27,22 @@ public class FileAnnotationAnnotator implements Annotator {
 
         }
 
-        FileAnnotationFeatureName feature = (FileAnnotationFeatureName) element;
-        String featureText = feature.getText();
+        List<FileAnnotationFeatureName> featureNames = ((FileAnnotationLpq) element).getFeatureNameList();
+        for (FileAnnotationFeatureName feature : featureNames) {
 
-        TextRange featureRange = feature.getTextRange();
-
-        List<FeatureModelFeature> features = FeatureModelUtil.findFeatures(element.getProject(), featureText);
-        if (features.isEmpty()) {
-            holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved property: Feature is not defined in the Feature Model")
-                    .range(featureRange)
-                    .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
-                    // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
-                    //.withFix(new FeatureModelCreateNewFeature(featureText))
-                    .create();
-        } else {
-            // Found at least one property, force the text attributes to Simple syntax value character
-            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                    .range(featureRange).textAttributes(FeatureModelSyntaxHighlighter.FEATURE).create();
+            if (FeatureModelUtil.findLPQs(element.getProject(), element.getText()).isEmpty()) {
+                holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved property: Feature is not defined in the Feature Model")
+                        .range(feature.getTextRange())
+                        .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
+                        // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
+                        //.withFix(new FeatureModelCreateNewFeature(featureText))
+                        .create();
+            } else {
+                // Found at least one property, force the text attributes to Simple syntax value character
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                        .range(feature.getTextRange()).textAttributes(FeatureModelSyntaxHighlighter.FEATURE).create();
+            }
         }
-
-
     }
 
     private void annotateFileName(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
