@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.folderAnnotation.psi.FolderAnnotationTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import se.ch.HAnS.folderAnnotation.psi.*;
 
-public class FolderAnnotationLpqImpl extends ASTWrapperPsiElement implements FolderAnnotationLpq {
+public class FolderAnnotationLpqImpl extends FolderAnnotationNamedElementImpl implements FolderAnnotationLpq {
 
   public FolderAnnotationLpqImpl(@NotNull ASTNode node) {
     super(node);
@@ -28,9 +27,18 @@ public class FolderAnnotationLpqImpl extends ASTWrapperPsiElement implements Fol
   }
 
   @Override
-  @NotNull
-  public List<FolderAnnotationFeature> getFeatureList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, FolderAnnotationFeature.class);
+  public String getName() {
+    return FolderAnnotationPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(String newName) {
+    return FolderAnnotationPsiImplUtil.setName(this, newName);
+  }
+
+  @Override
+  public PsiElement getNameIdentifier() {
+    return FolderAnnotationPsiImplUtil.getNameIdentifier(this);
   }
 
 }

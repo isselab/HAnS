@@ -28,10 +28,14 @@ public class FileAnnotationVisitor extends PsiElementVisitor {
   }
 
   public void visitLpq(@NotNull FileAnnotationLpq o) {
-    visitPsiElement(o);
+    visitNamedElement(o);
   }
 
   public void visitLpqReferences(@NotNull FileAnnotationLpqReferences o) {
+    visitPsiElement(o);
+  }
+
+  public void visitNamedElement(@NotNull FileAnnotationNamedElement o) {
     visitPsiElement(o);
   }
 

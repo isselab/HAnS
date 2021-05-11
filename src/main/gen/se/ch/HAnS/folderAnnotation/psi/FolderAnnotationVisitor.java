@@ -12,6 +12,10 @@ public class FolderAnnotationVisitor extends PsiElementVisitor {
   }
 
   public void visitLpq(@NotNull FolderAnnotationLpq o) {
+    visitNamedElement(o);
+  }
+
+  public void visitNamedElement(@NotNull FolderAnnotationNamedElement o) {
     visitPsiElement(o);
   }
 

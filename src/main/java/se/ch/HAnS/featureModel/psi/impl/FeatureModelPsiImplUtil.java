@@ -9,10 +9,13 @@ import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.impl.PsiFileFactoryImpl;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.FeatureModelLanguage;
+import se.ch.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -26,6 +29,93 @@ public class FeatureModelPsiImplUtil {
         } else {
             return null;
         }
+    }
+
+    public static String getName(FeatureModelFeature feature) {
+        return feature.getFeatureName();
+    }
+
+    public static PsiElement setName(FeatureModelFeature element, String newName) {
+        ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
+        if (featureNode != null) {
+            FeatureModelFeature feature = FeatureModelElementFactory.createFeature(element.getProject(), newName);
+            ASTNode newKeyNode = feature.getFirstChild().getNode();
+            element.getNode().replaceChild(featureNode, newKeyNode);
+        }
+        return element;
+    }
+
+    public static PsiElement getNameIdentifier(FeatureModelFeature element) {
+        ASTNode node = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
+        if (node != null) {
+            /*FeatureModelFeature feature = (FeatureModelFeature) node.getPsi();
+            String name = "dummy.feature-to-folder";
+            FolderAnnotationFile f = (FolderAnnotationFile) PsiFileFactory.getInstance(element.getProject()).
+                    createFileFromText(name, FolderAnnotationFileType.INSTANCE, feature.getLPQ());
+            return f.getFirstChild();
+            */
+            return node.getPsi();
+        }
+        return null;
+    }
+
+    public static String getLPQ(PsiElement feature) {
+        List<Deque<PsiElement>> candidates = new ArrayList<>();
+
+        feature.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
+            @Override
+            public void visitElement(@NotNull PsiElement element) {
+                if (element instanceof FeatureModelFeatureImpl
+                        && element.getFirstChild().getText().equals(feature.getFirstChild().getText())){
+                    Deque<PsiElement> stack = new ArrayDeque<>();
+                    stack.add(element.getFirstChild());
+                    candidates.add(stack);
+                }
+                super.visitElement(element);
+            }
+        });
+        Deque<PsiElement> stack = new ArrayDeque<>();
+        stack.add(feature.getFirstChild());
+
+        Deque<PsiElement> result = findLPQRecursively(candidates, stack);
+
+        String lpq = null;
+
+        while (!result.isEmpty()) {
+            PsiElement top = result.pollLast();
+            if (lpq == null) {
+                lpq = top.getText();
+            }
+            else {
+                lpq = lpq.concat("::" + top.getText());
+            }
+        }
+
+        return lpq;
+    }
+
+    private static Deque<PsiElement> findLPQRecursively(List<Deque<PsiElement>> candidates, Deque<PsiElement> feature) {
+        if (candidates.size() == 1) {
+            return feature;
+        }
+
+        List<Deque<PsiElement>> remainingCandidates = new ArrayList<>();
+
+        assert feature.peek() != null;
+        PsiElement fParent = feature.peek().getParent().getParent().getFirstChild();
+
+        for (Deque<PsiElement> c:candidates) {
+            assert c.peek() != null;
+            PsiElement cParent = c.peek().getParent().getParent().getFirstChild();
+            if (cParent.getText().equals(fParent.getText())) {
+                c.push(cParent);
+                remainingCandidates.add(c);
+            }
+        }
+
+        feature.add(fParent);
+
+        return findLPQRecursively(remainingCandidates, feature);
     }
 
     public static String renameFeature(@NotNull PsiElement feature){

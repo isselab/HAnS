@@ -8,10 +8,9 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.featureModel.psi.FeatureModelTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import se.ch.HAnS.featureModel.psi.*;
 
-public class FeatureModelFeatureImpl extends ASTWrapperPsiElement implements FeatureModelFeature {
+public class FeatureModelFeatureImpl extends FeatureModelNamedElementImpl implements FeatureModelFeature {
 
   public FeatureModelFeatureImpl(@NotNull ASTNode node) {
     super(node);
@@ -34,6 +33,11 @@ public class FeatureModelFeatureImpl extends ASTWrapperPsiElement implements Fea
   }
 
   @Override
+  public String getLPQ() {
+    return FeatureModelPsiImplUtil.getLPQ(this);
+  }
+
+  @Override
   public String renameFeature() {
     return FeatureModelPsiImplUtil.renameFeature(this);
   }
@@ -46,6 +50,21 @@ public class FeatureModelFeatureImpl extends ASTWrapperPsiElement implements Fea
   @Override
   public int deleteFeature() {
     return FeatureModelPsiImplUtil.deleteFeature(this);
+  }
+
+  @Override
+  public String getName() {
+    return FeatureModelPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(String newName) {
+    return FeatureModelPsiImplUtil.setName(this, newName);
+  }
+
+  @Override
+  public PsiElement getNameIdentifier() {
+    return FeatureModelPsiImplUtil.getNameIdentifier(this);
   }
 
   @Override

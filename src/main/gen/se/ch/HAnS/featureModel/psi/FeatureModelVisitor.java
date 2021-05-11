@@ -8,6 +8,10 @@ import com.intellij.psi.PsiElement;
 public class FeatureModelVisitor extends PsiElementVisitor {
 
   public void visitFeature(@NotNull FeatureModelFeature o) {
+    visitNamedElement(o);
+  }
+
+  public void visitNamedElement(@NotNull FeatureModelNamedElement o) {
     visitPsiElement(o);
   }
 

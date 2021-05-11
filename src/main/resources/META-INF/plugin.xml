@@ -10,6 +10,7 @@
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[FeatureModel] -->
@@ -40,10 +41,11 @@
                                implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationParserDefinition"/>
         <!-- &end[CodeAnnotations] -->
 
-        <!-- &begin[CodeCompletion] -->
+        <!--
+        <!- &begin[CodeCompletion]
         <completion.contributor language="any"
                                 implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationDictionaryContributor"/>
-        <!-- &end[CodeCompletion] -->
+        <!- &end[CodeCompletion] -->
 
         <!-- &begin[LiveTemplate] -->
         <!--
@@ -54,18 +56,9 @@
 
         <!-- &begin[SyntaxHighlighting] -->
         <lang.syntaxHighlighterFactory language="FeatureModel" implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FeatureModel]-->
-
         <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FolderAnnotation] -->
-        <annotator language="FolderAnnotation"
-                   implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationAnnotator"/>
-
         <lang.syntaxHighlighterFactory language="FileAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FileAnnotation]-->
-        <annotator language="FileAnnotation"
-                   implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationAnnotator"/>
-
         <lang.syntaxHighlighterFactory language="CodeAnnotations" implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::CodeAnnotation]-->
-        <annotator language="CodeAnnotations"
-                   implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationAnnotator"/>
 
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/HAnSDarcula.xml"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/HAnSDefault.xml"/>
@@ -80,6 +73,14 @@
                     factoryClass="se.ch.HAnS.featureModel.toolWindow.FeatureViewFactory"/>
         <!-- &end[FeatureView] -->
         <!--<typedHandler implementation="se.ch.HAnS.featureModel.toolWindow.actions.MyTypedHandler"/>-->
+
+        <!-- &begin[Referencing] -->
+        <psi.referenceContributor implementation="se.ch.HAnS.featureModel.FeatureModelReferenceContributor"/>
+        <lang.refactoringSupport language="FeatureModel"
+                                 implementationClass="se.ch.HAnS.featureModel.FeatureRefactoringSupportProvider"/>
+        <lang.findUsagesProvider language="FeatureModel"
+                                 implementationClass="se.ch.HAnS.featureModel.FeatureFindUsagesProvider"/>
+        <!-- &end[Referencing] -->
 
     </extensions>
 

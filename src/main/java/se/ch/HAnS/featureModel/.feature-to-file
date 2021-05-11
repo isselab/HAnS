@@ -3,3 +3,6 @@ FeatureModel::Language
 
 FeatureModelFileType.java
 FeatureModel::File
+
+FeatureModelReference.java FeatureModelReferenceContributor.java
+Referencing
