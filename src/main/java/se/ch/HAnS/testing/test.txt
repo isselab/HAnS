@@ -1,5 +1,0 @@
-LPQs?
-Remove references
-
-Annotations in txt files
-Scan project for annotations in text
