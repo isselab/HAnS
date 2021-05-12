@@ -36,6 +36,18 @@ public class FolderAnnotationParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // FEATURENAME
+  public static boolean feature(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature")) return false;
+    if (!nextTokenIs(b, FEATURENAME)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, FEATURENAME);
+    exit_section_(b, m, FEATURE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // CRLF* lpq (CRLF* CS* CRLF* lpq)* CRLF*
   static boolean featureToFolderFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureToFolderFile")) return false;
@@ -130,19 +142,19 @@ public class FolderAnnotationParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FEATURENAME (SEPARATOR FEATURENAME)*
+  // feature (SEPARATOR feature)*
   public static boolean lpq(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "lpq")) return false;
     if (!nextTokenIs(b, FEATURENAME)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, FEATURENAME);
+    r = feature(b, l + 1);
     r = r && lpq_1(b, l + 1);
     exit_section_(b, m, LPQ, r);
     return r;
   }
 
-  // (SEPARATOR FEATURENAME)*
+  // (SEPARATOR feature)*
   private static boolean lpq_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "lpq_1")) return false;
     while (true) {
@@ -153,12 +165,13 @@ public class FolderAnnotationParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // SEPARATOR FEATURENAME
+  // SEPARATOR feature
   private static boolean lpq_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "lpq_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, SEPARATOR, FEATURENAME);
+    r = consumeToken(b, SEPARATOR);
+    r = r && feature(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }

@@ -7,6 +7,9 @@ import com.intellij.psi.PsiElement;
 
 public interface FolderAnnotationLpq extends FolderAnnotationNamedElement {
 
+  @NotNull
+  List<FolderAnnotationFeature> getFeatureList();
+
   String getName();
 
   PsiElement setName(String newName);

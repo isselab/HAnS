@@ -7,6 +7,9 @@ import com.intellij.psi.PsiElement;
 
 public interface CodeAnnotationLpq extends CodeAnnotationNamedElement {
 
+  @NotNull
+  List<CodeAnnotationFeature> getFeatureList();
+
   String getName();
 
   PsiElement setName(String newName);

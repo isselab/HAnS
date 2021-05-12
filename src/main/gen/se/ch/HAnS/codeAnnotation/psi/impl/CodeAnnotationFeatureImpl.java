@@ -8,43 +8,23 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.codeAnnotation.psi.CodeAnnotationTypes.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import se.ch.HAnS.codeAnnotation.psi.*;
 
-public class CodeAnnotationLpqImpl extends CodeAnnotationNamedElementImpl implements CodeAnnotationLpq {
+public class CodeAnnotationFeatureImpl extends ASTWrapperPsiElement implements CodeAnnotationFeature {
 
-  public CodeAnnotationLpqImpl(@NotNull ASTNode node) {
+  public CodeAnnotationFeatureImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CodeAnnotationVisitor visitor) {
-    visitor.visitLpq(this);
+    visitor.visitFeature(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof CodeAnnotationVisitor) accept((CodeAnnotationVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public List<CodeAnnotationFeature> getFeatureList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, CodeAnnotationFeature.class);
-  }
-
-  @Override
-  public String getName() {
-    return CodeAnnotationPsiImplUtil.getName(this);
-  }
-
-  @Override
-  public PsiElement setName(String newName) {
-    return CodeAnnotationPsiImplUtil.setName(this, newName);
-  }
-
-  @Override
-  public PsiElement getNameIdentifier() {
-    return CodeAnnotationPsiImplUtil.getNameIdentifier(this);
   }
 
 }

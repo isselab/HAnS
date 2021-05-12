@@ -15,8 +15,7 @@ import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAtt
 
 public class CodeAnnotationsSyntaxHighlighter extends SyntaxHighlighterBase {
 
-    public static final TextAttributesKey FEATURENAME =
-            createTextAttributesKey("FEATURENAME", DefaultLanguageHighlighterColors.CONSTANT);
+
     public static final TextAttributesKey KEYWORD =
             createTextAttributesKey("EA_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
     public static final TextAttributesKey SEPARATOR =
@@ -30,7 +29,6 @@ public class CodeAnnotationsSyntaxHighlighter extends SyntaxHighlighterBase {
 
 
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
-    private static final TextAttributesKey[] FEATURENAME_KEYS = new TextAttributesKey[]{FEATURENAME};
     private static final TextAttributesKey[] KEYWORD_KEYS = new TextAttributesKey[]{KEYWORD};
     private static final TextAttributesKey[] SEPARATOR_KEYS = new TextAttributesKey[]{SEPARATOR};
     private static final TextAttributesKey[] CS_KEYS = new TextAttributesKey[]{CS};
@@ -44,9 +42,7 @@ public class CodeAnnotationsSyntaxHighlighter extends SyntaxHighlighterBase {
 
     @Override
     public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
-        if (tokenType.equals(CodeAnnotationTypes.FEATURENAME)){
-            return FEATURENAME_KEYS;
-        } else if (tokenType.equals(CodeAnnotationTypes.BEGIN) ||
+        if (tokenType.equals(CodeAnnotationTypes.BEGIN) ||
                 tokenType.equals(CodeAnnotationTypes.END) ||
                 tokenType.equals(CodeAnnotationTypes.LINE))  {
             return KEYWORD_KEYS;

@@ -10,9 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import se.ch.HAnS.AnnotationIcons;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
-import se.ch.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil;
-import se.ch.HAnS.fileAnnotation.psi.FileAnnotationLpq;
-import se.ch.HAnS.fileAnnotation.psi.impl.FileAnnotationPsiImplUtil;
 import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
 import se.ch.HAnS.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil;
 
@@ -40,7 +37,7 @@ public class FeatureModelReference extends PsiReferenceBase<PsiElement> implemen
     @Override
     public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
         Project project = myElement.getProject();
-        final List<FeatureModelFeature> features = FeatureModelUtil.findFeatures(project, lpq);
+        final List<FeatureModelFeature> features = FeatureModelUtil.findLPQs(project, lpq);
         List<ResolveResult> results = new ArrayList<>();
         for (FeatureModelFeature feature : features) {
             results.add(new PsiElementResolveResult(feature));

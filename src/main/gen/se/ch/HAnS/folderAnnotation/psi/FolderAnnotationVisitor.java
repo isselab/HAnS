@@ -7,6 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public class FolderAnnotationVisitor extends PsiElementVisitor {
 
+  public void visitFeature(@NotNull FolderAnnotationFeature o) {
+    visitPsiElement(o);
+  }
+
   public void visitLpq(@NotNull FolderAnnotationLpq o) {
     visitNamedElement(o);
   }
