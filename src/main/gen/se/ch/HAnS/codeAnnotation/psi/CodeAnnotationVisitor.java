@@ -20,10 +20,14 @@ public class CodeAnnotationVisitor extends PsiElementVisitor {
   }
 
   public void visitLpq(@NotNull CodeAnnotationLpq o) {
-    visitPsiElement(o);
+    visitNamedElement(o);
   }
 
   public void visitParameter(@NotNull CodeAnnotationParameter o) {
+    visitPsiElement(o);
+  }
+
+  public void visitNamedElement(@NotNull CodeAnnotationNamedElement o) {
     visitPsiElement(o);
   }
 

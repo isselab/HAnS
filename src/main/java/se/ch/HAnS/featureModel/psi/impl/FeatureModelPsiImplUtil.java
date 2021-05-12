@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
 
+    // &begin[Referencing]
     public static String getFeatureName(FeatureModelFeature element){
         ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
         if (featureNode != null) {
@@ -58,6 +59,7 @@ public class FeatureModelPsiImplUtil {
         }
         return null;
     }
+    // &end[Referencing]
 
     public static String getLPQ(PsiElement feature) {
         List<Deque<PsiElement>> candidates = new ArrayList<>();

@@ -14,11 +14,10 @@ public abstract class FeatureModelNamedElementImpl extends ASTWrapperPsiElement 
         super(node);
     }
 
-    /*
     @NotNull
     @Override
     public PsiReference @NotNull [] getReferences() {
         return ReferenceProvidersRegistry.getReferencesFromProviders(this);
-    }*/
+    }
 
 }

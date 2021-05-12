@@ -27,9 +27,11 @@ fileName ::= (STRING DOT STRING)|STRING
 
 lpqReferences ::= (lpq ((SPACE* CS)? SPACE* lpq)* SPACE*)
 
+//&begin[Referencing]
 lpq ::= featureName (SEPARATOR featureName)* {
 mixin="se.ch.HAnS.fileAnnotation.psi.impl.FileAnnotationNamedElementImpl"
 implements="se.ch.HAnS.fileAnnotation.psi.FileAnnotationNamedElement"
 methods=[getName setName getNameIdentifier]}
+//&end[Referencing]
 
 featureName ::= STRING

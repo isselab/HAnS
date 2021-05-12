@@ -26,4 +26,19 @@ public class CodeAnnotationLpqImpl extends CodeAnnotationNamedElementImpl implem
     else super.accept(visitor);
   }
 
+  @Override
+  public String getName() {
+    return CodeAnnotationPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public PsiElement setName(String newName) {
+    return CodeAnnotationPsiImplUtil.setName(this, newName);
+  }
+
+  @Override
+  public PsiElement getNameIdentifier() {
+    return CodeAnnotationPsiImplUtil.getNameIdentifier(this);
+  }
+
 }

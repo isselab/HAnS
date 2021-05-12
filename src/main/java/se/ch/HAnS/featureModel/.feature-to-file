@@ -4,5 +4,5 @@ FeatureModel::Language
 FeatureModelFileType.java
 FeatureModel::File
 
-FeatureModelReference.java FeatureModelReferenceContributor.java
+FeatureFindUsagesProvider.java FeatureModelReference.java FeatureModelReferenceContributor.java FeatureRefactoringSupportProvider.java
 Referencing

@@ -8,7 +8,6 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelHighlightingLexerAdapter;
 

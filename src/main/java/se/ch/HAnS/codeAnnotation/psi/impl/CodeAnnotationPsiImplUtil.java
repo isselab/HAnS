@@ -1,16 +1,14 @@
-package se.ch.HAnS.fileAnnotation.psi.impl;
+package se.ch.HAnS.codeAnnotation.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import se.ch.HAnS.fileAnnotation.psi.FileAnnotationElementFactory;
-import se.ch.HAnS.fileAnnotation.psi.FileAnnotationLpq;
-import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationElementFactory;
-import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
+import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationElementFactory;
+import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationLpq;
 
-public class FileAnnotationPsiImplUtil {
+public class CodeAnnotationPsiImplUtil {
 
-    //&begin[Referencing]
-    public static String getName(FileAnnotationLpq feature) {
+    // &begin[Referencing]
+    public static String getName(CodeAnnotationLpq feature) {
         ASTNode featureNode = feature.getNode();
         if (featureNode != null) {
             // IMPORTANT: Convert embedded escaped spaces to simple spaces
@@ -20,23 +18,23 @@ public class FileAnnotationPsiImplUtil {
         }
     }
 
-    public static PsiElement setName(FileAnnotationLpq element, String newName) {
+    public static PsiElement setName(CodeAnnotationLpq element, String newName) {
         ASTNode featureNode = element.getNode();
         if (featureNode != null) {
-            FileAnnotationLpq feature = FileAnnotationElementFactory.createLPQ(element.getProject(), newName);
+            CodeAnnotationLpq feature = CodeAnnotationElementFactory.createLPQ(element.getProject(), newName);
             ASTNode newKeyNode = feature.getFirstChild().getNode();
             element.getNode().replaceChild(featureNode, newKeyNode);
         }
         return element;
     }
 
-    public static PsiElement getNameIdentifier(FileAnnotationLpq element) {
+    public static PsiElement getNameIdentifier(CodeAnnotationLpq element) {
         ASTNode node = element.getNode();
         if (node != null) {
             return node.getPsi();
         }
         return null;
     }
-    //&end[Referencing]
+    // &end[Referencing]
 
 }
