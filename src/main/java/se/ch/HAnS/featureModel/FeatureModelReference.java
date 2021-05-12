@@ -27,7 +27,7 @@ public class FeatureModelReference extends PsiReferenceBase<PsiElement> implemen
 
     @Override
     public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
-        FolderAnnotationPsiImplUtil.setName((FolderAnnotationLpq) myElement, newElementName);
+        //FolderAnnotationPsiImplUtil.setName((FolderAnnotationLpq) myElement, newElementName);
         //FileAnnotationPsiImplUtil.setName((FileAnnotationLpq) myElement, newElementName);
         //CodeAnnotationPsiImplUtil.setName((CodeAnnotationLpq) myElement, newElementName);
         return myElement;

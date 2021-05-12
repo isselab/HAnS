@@ -41,7 +41,6 @@
                                implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationParserDefinition"/>
         <!-- &end[CodeAnnotations] -->
 
-
         <!-- &begin[CodeCompletion] -->
         <completion.contributor language="any"
                                 implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationDictionaryContributor"/>
@@ -95,9 +94,8 @@
                                  implementationClass="se.ch.HAnS.featureModel.FeatureRefactoringSupportProvider"/>
         <lang.findUsagesProvider language="FeatureModel"
                                  implementationClass="se.ch.HAnS.featureModel.FeatureFindUsagesProvider"/>
+        <useScopeEnlarger implementation="se.ch.HAnS.FeatureAnnotationScopeEnlarger"/>
         <!-- &end[Referencing] -->
-
-
     </extensions>
 
     <actions>

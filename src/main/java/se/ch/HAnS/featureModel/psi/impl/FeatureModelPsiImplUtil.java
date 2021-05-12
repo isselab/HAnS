@@ -49,12 +49,6 @@ public class FeatureModelPsiImplUtil {
     public static PsiElement getNameIdentifier(FeatureModelFeature element) {
         ASTNode node = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
         if (node != null) {
-            /*FeatureModelFeature feature = (FeatureModelFeature) node.getPsi();
-            String name = "dummy.feature-to-folder";
-            FolderAnnotationFile f = (FolderAnnotationFile) PsiFileFactory.getInstance(element.getProject()).
-                    createFileFromText(name, FolderAnnotationFileType.INSTANCE, feature.getLPQ());
-            return f.getFirstChild();
-            */
             return node.getPsi();
         }
         return null;
