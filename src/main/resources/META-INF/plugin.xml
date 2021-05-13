@@ -54,7 +54,12 @@
         <!-- &end[LiveTemplate] -->
 
         <!-- &begin[SyntaxHighlighting] -->
-        <lang.syntaxHighlighterFactory language="FeatureModel" implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FeatureModel]-->
+        <!-- &begin[SyntaxHighlighting::FeatureModel] -->
+        <lang.syntaxHighlighterFactory language="FeatureModel"
+                                       implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/>
+        <annotator language="FeatureModel"
+                   implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelAnnotator"/>
+        <!-- &end[SyntaxHighlighting::FeatureModel] -->
 
         <!-- &begin[SyntaxHighlighting::FolderAnnotation] -->
         <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationSyntaxHighlighterFactory"/>
