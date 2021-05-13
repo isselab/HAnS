@@ -3,6 +3,8 @@ package se.ch.HAnS.fileAnnotation.psi.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import se.ch.HAnS.fileAnnotation.psi.FileAnnotationElementFactory;
+import se.ch.HAnS.fileAnnotation.psi.FileAnnotationFileName;
+import se.ch.HAnS.fileAnnotation.psi.FileAnnotationFileReference;
 import se.ch.HAnS.fileAnnotation.psi.FileAnnotationLpq;
 import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationElementFactory;
 import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationLpq;

@@ -8,9 +8,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.featureModel.psi.FeatureModelTypes.*;
+import se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl;
 import se.ch.HAnS.featureModel.psi.*;
 
-public class FeatureModelFeatureImpl extends FeatureModelNamedElementImpl implements FeatureModelFeature {
+public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl implements FeatureModelFeature {
 
   public FeatureModelFeatureImpl(@NotNull ASTNode node) {
     super(node);

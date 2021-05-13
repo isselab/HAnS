@@ -89,18 +89,20 @@
         <!--<typedHandler implementation="se.ch.HAnS.featureModel.toolWindow.actions.MyTypedHandler"/>-->
 
         <!-- &begin[Referencing] -->
-        <psi.referenceContributor implementation="se.ch.HAnS.featureModel.FeatureModelReferenceContributor"/>
+        <psi.referenceContributor implementation="se.ch.HAnS.referencing.FeatureReferenceContributor"/>
         <lang.refactoringSupport language="FeatureModel"
-                                 implementationClass="se.ch.HAnS.featureModel.FeatureRefactoringSupportProvider"/>
+                                 implementationClass="se.ch.HAnS.referencing.FeatureRefactoringSupportProvider"/>
         <lang.findUsagesProvider language="FeatureModel"
-                                 implementationClass="se.ch.HAnS.featureModel.FeatureFindUsagesProvider"/>
+                                 implementationClass="se.ch.HAnS.referencing.FeatureFindUsagesProvider"/>
         <useScopeEnlarger implementation="se.ch.HAnS.FeatureAnnotationScopeEnlarger"/>
+        <psi.referenceContributor implementation="se.ch.HAnS.referencing.FileReferenceContributor"/>
         <!-- &end[Referencing] -->
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
         <group id="FeatureView" text="Feature View Actions">
+            <action id="FindFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.FindAction" text="Find Feature" description="Find feature"/>
             <action id="RenameFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.RenameAction" text="Rename..." description="Rename feature"/>
             <action id="AddFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.AddAction" text="Add..." description="Add feature" icon="AllIcons.General.Add"/>
             <action id="DeleteFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.DeleteAction" text="Delete..." description="Delete feature" icon="AllIcons.General.Remove"/>

@@ -25,8 +25,8 @@ parameter ::= (SPACE* OBRACKET SPACE* lpq ((SPACE* CS)? SPACE+ lpq)* SPACE* CBRA
 
 // &begin[Referencing]
 lpq ::= feature (SEPARATOR feature)*{
-mixin="se.ch.HAnS.codeAnnotation.psi.impl.CodeAnnotationNamedElementImpl"
-implements="se.ch.HAnS.codeAnnotation.psi.CodeAnnotationNamedElement"
+mixin="se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
+implements="se.ch.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getName setName getNameIdentifier]}
 // &end[Referencing]
 

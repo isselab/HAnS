@@ -1,4 +1,4 @@
-package se.ch.HAnS.featureModel;
+package se.ch.HAnS.referencing;
 
 import com.intellij.lang.refactoring.RefactoringSupportProvider;
 import com.intellij.psi.PsiElement;

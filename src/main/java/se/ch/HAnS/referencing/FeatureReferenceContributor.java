@@ -1,17 +1,14 @@
-package se.ch.HAnS.featureModel;
+package se.ch.HAnS.referencing;
 
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.*;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationLpq;
-import se.ch.HAnS.codeAnnotation.psi.impl.CodeAnnotationLpqImpl;
 import se.ch.HAnS.fileAnnotation.psi.FileAnnotationLpq;
-import se.ch.HAnS.fileAnnotation.psi.impl.FileAnnotationLpqImpl;
 import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
-import se.ch.HAnS.folderAnnotation.psi.impl.FolderAnnotationLpqImpl;
 
-public class FeatureModelReferenceContributor extends PsiReferenceContributor {
+public class FeatureReferenceContributor extends PsiReferenceContributor {
 
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
@@ -21,7 +18,7 @@ public class FeatureModelReferenceContributor extends PsiReferenceContributor {
                     @Override
                     public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
                                                                            @NotNull ProcessingContext context) {
-                        return new PsiReference[]{new FeatureModelReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
+                        return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
                     }
                 });
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(FileAnnotationLpq.class),
@@ -30,7 +27,7 @@ public class FeatureModelReferenceContributor extends PsiReferenceContributor {
                     @Override
                     public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
                                                                            @NotNull ProcessingContext context) {
-                        return new PsiReference[]{new FeatureModelReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
+                        return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
                     }
                 });
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(CodeAnnotationLpq.class),
@@ -39,7 +36,7 @@ public class FeatureModelReferenceContributor extends PsiReferenceContributor {
                     @Override
                     public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
                                                                            @NotNull ProcessingContext context) {
-                        return new PsiReference[]{new FeatureModelReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
+                        return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
                     }
                 });
     }

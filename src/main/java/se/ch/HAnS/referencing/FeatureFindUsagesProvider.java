@@ -1,4 +1,4 @@
-package se.ch.HAnS.featureModel;
+package se.ch.HAnS.referencing;
 
 import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
 import com.intellij.lang.cacheBuilder.WordsScanner;

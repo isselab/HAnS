@@ -12,13 +12,24 @@ import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
 public class FileAnnotationElementFactory {
 
     public static FileAnnotationLpq createLPQ(Project project, String name) {
-        final FileAnnotationFile file = createFile(project, name);
+        final FileAnnotationFile file = createLPQFile(project, name);
         return file.findChildByClass(FileAnnotationLpq.class);
     }
 
-    public static FileAnnotationFile createFile(Project project, String text) {
+    public static FileAnnotationFile createLPQFile(Project project, String text) {
         String name = "dummy.feature-to-folder";
         return (FileAnnotationFile) PsiFileFactory.getInstance(project).
                 createFileFromText(name, FileAnnotationFileType.INSTANCE, "dummy.file\n" + text);
+    }
+
+    public static FileAnnotationFileReference createFileReference(Project project, String name) {
+        final FileAnnotationFile file = createFileReferenceFile(project, name);
+        return file.findChildByClass(FileAnnotationFileReference.class);
+    }
+
+    public static FileAnnotationFile createFileReferenceFile(Project project, String text) {
+        String name = "dummy.feature-to-folder";
+        return (FileAnnotationFile) PsiFileFactory.getInstance(project).
+                createFileFromText(name, FileAnnotationFileType.INSTANCE, text + "\ndummy");
     }
 }

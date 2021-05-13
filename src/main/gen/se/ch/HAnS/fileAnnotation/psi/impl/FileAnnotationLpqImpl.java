@@ -8,9 +8,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.fileAnnotation.psi.FileAnnotationTypes.*;
+import se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl;
 import se.ch.HAnS.fileAnnotation.psi.*;
 
-public class FileAnnotationLpqImpl extends FileAnnotationNamedElementImpl implements FileAnnotationLpq {
+public class FileAnnotationLpqImpl extends FeatureAnnotationNamedElementImpl implements FileAnnotationLpq {
 
   public FileAnnotationLpqImpl(@NotNull ASTNode node) {
     super(node);

@@ -19,7 +19,7 @@ featureModelFile ::= (feature (feature)?)?
 
 // &begin[Referencing]
 feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?) {
-mixin="se.ch.HAnS.featureModel.psi.impl.FeatureModelNamedElementImpl"
-implements="se.ch.HAnS.featureModel.psi.FeatureModelNamedElement"
+mixin="se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
+implements="se.ch.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getLPQ renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName]}
 // &end[Referencing]

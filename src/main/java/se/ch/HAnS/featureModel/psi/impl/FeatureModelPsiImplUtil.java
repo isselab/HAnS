@@ -36,7 +36,7 @@ public class FeatureModelPsiImplUtil {
         return feature.getFeatureName();
     }
 
-    public static PsiElement setName(FeatureModelFeature element, String newName) {
+    public static PsiElement setName(PsiElement element, String newName) {
         ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
         if (featureNode != null) {
             FeatureModelFeature feature = FeatureModelElementFactory.createFeature(element.getProject(), newName);

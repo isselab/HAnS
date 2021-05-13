@@ -8,9 +8,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.folderAnnotation.psi.FolderAnnotationTypes.*;
+import se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl;
 import se.ch.HAnS.folderAnnotation.psi.*;
 
-public class FolderAnnotationLpqImpl extends FolderAnnotationNamedElementImpl implements FolderAnnotationLpq {
+public class FolderAnnotationLpqImpl extends FeatureAnnotationNamedElementImpl implements FolderAnnotationLpq {
 
   public FolderAnnotationLpqImpl(@NotNull ASTNode node) {
     super(node);

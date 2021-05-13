@@ -1,4 +1,4 @@
-package se.ch.HAnS.featureModel;
+package se.ch.HAnS.referencing;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
@@ -9,25 +9,28 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import se.ch.HAnS.AnnotationIcons;
+import se.ch.HAnS.featureModel.FeatureModelUtil;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
-import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
 import se.ch.HAnS.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil;
+import se.ch.HAnS.referencing.FileReferenceUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FeatureModelReference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
+public class FeatureReference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
 
     private final String lpq;
 
-    public FeatureModelReference(@NotNull PsiElement element, TextRange textRange) {
+    public FeatureReference(@NotNull PsiElement element, TextRange textRange) {
         super(element, textRange);
         lpq = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
     }
 
     @Override
     public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
-        //FolderAnnotationPsiImplUtil.setName((FolderAnnotationLpq) myElement, newElementName);
+        System.out.println("herrrooo");
+        //FeatureModelPsiImplUtil.setName(myElement, newElementName);
+        FolderAnnotationPsiImplUtil.setName(myElement, "newElementName");
         //FileAnnotationPsiImplUtil.setName((FileAnnotationLpq) myElement, newElementName);
         //CodeAnnotationPsiImplUtil.setName((CodeAnnotationLpq) myElement, newElementName);
         return myElement;
@@ -55,6 +58,7 @@ public class FeatureModelReference extends PsiReferenceBase<PsiElement> implemen
     @NotNull
     @Override
     public Object @NotNull [] getVariants() {
+        System.out.println("feature before: " + myElement.getText());
         Project project = myElement.getProject();
         List<FeatureModelFeature> features = FeatureModelUtil.findFeatures(project);
         List<LookupElement> variants = new ArrayList<>();

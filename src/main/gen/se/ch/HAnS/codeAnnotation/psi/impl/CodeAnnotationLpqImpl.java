@@ -8,9 +8,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.codeAnnotation.psi.CodeAnnotationTypes.*;
+import se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl;
 import se.ch.HAnS.codeAnnotation.psi.*;
 
-public class CodeAnnotationLpqImpl extends CodeAnnotationNamedElementImpl implements CodeAnnotationLpq {
+public class CodeAnnotationLpqImpl extends FeatureAnnotationNamedElementImpl implements CodeAnnotationLpq {
 
   public CodeAnnotationLpqImpl(@NotNull ASTNode node) {
     super(node);
