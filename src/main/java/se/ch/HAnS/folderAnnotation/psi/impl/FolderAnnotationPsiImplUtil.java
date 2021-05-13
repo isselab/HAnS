@@ -18,12 +18,12 @@ public class FolderAnnotationPsiImplUtil {
         }
     }
 
-    public static PsiElement setName(PsiElement element, String newName) {
-        ASTNode featureNode = element.getLastChild().getNode();
+    public static FolderAnnotationLpq setName(FolderAnnotationLpq element, String newName) {
+        ASTNode featureNode = element.getNode();
         if (featureNode != null) {
             FolderAnnotationLpq feature = FolderAnnotationElementFactory.createLPQ(element.getProject(), newName);
-            ASTNode newKeyNode = feature.getLastChild().getNode();
-            element.getLastChild().getParent().getNode().replaceChild(featureNode, newKeyNode);
+            ASTNode newKeyNode = feature.getNode();
+            element.getParent().getNode().replaceChild(featureNode, newKeyNode);
         }
         return element;
     }

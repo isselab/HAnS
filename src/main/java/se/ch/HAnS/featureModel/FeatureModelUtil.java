@@ -46,5 +46,22 @@ public class FeatureModelUtil {
         }
         return result;
     }
+    
+    public static boolean isAvailableLPQ(Project project, String lpq) {
+        Collection<VirtualFile> virtualFiles =
+                FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScope.allScope(project));
+        for (VirtualFile virtualFile : virtualFiles) {
+            FeatureModelFile featureModelFile = (FeatureModelFile) PsiManager.getInstance(project).findFile(virtualFile);
+            if (featureModelFile != null) {
+                Collection<FeatureModelFeature> features = PsiTreeUtil.collectElementsOfType(featureModelFile, FeatureModelFeature.class);
+                for (FeatureModelFeature feature : features) {
+                    if (lpq.equals(feature.getLPQ())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
 }

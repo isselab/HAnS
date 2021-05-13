@@ -39,7 +39,7 @@ public class FileAnnotationLpqImpl extends FeatureAnnotationNamedElementImpl imp
   }
 
   @Override
-  public PsiElement setName(String newName) {
+  public FileAnnotationLpq setName(String newName) {
     return FileAnnotationPsiImplUtil.setName(this, newName);
   }
 

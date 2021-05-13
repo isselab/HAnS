@@ -13,7 +13,7 @@ public interface FileAnnotationLpq extends FeatureAnnotationNamedElement {
 
   String getName();
 
-  PsiElement setName(String newName);
+  FileAnnotationLpq setName(String newName);
 
   PsiElement getNameIdentifier();
 

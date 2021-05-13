@@ -13,7 +13,7 @@ public interface CodeAnnotationLpq extends FeatureAnnotationNamedElement {
 
   String getName();
 
-  PsiElement setName(String newName);
+  CodeAnnotationLpq setName(String newName);
 
   PsiElement getNameIdentifier();
 

@@ -39,7 +39,7 @@ public class FolderAnnotationLpqImpl extends FeatureAnnotationNamedElementImpl i
   }
 
   @Override
-  public PsiElement setName(String newName) {
+  public FolderAnnotationLpq setName(String newName) {
     return FolderAnnotationPsiImplUtil.setName(this, newName);
   }
 

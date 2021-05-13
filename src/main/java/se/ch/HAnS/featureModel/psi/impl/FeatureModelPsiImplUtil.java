@@ -8,10 +8,12 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.impl.PsiFileFactoryImpl;
 import org.jetbrains.annotations.NotNull;
+import se.ch.HAnS.codeAnnotation.psi.impl.CodeAnnotationPsiImplUtil;
 import se.ch.HAnS.featureModel.FeatureModelLanguage;
 import se.ch.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
+import se.ch.HAnS.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public class FeatureModelPsiImplUtil {
         return feature.getFeatureName();
     }
 
-    public static PsiElement setName(PsiElement element, String newName) {
+    public static FeatureModelFeature setName(FeatureModelFeature element, String newName) {
         ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
         if (featureNode != null) {
             FeatureModelFeature feature = FeatureModelElementFactory.createFeature(element.getProject(), newName);

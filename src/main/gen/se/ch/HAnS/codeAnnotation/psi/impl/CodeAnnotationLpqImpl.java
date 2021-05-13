@@ -39,7 +39,7 @@ public class CodeAnnotationLpqImpl extends FeatureAnnotationNamedElementImpl imp
   }
 
   @Override
-  public PsiElement setName(String newName) {
+  public CodeAnnotationLpq setName(String newName) {
     return CodeAnnotationPsiImplUtil.setName(this, newName);
   }
 

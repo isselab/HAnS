@@ -36,7 +36,7 @@ public class FeatureFindUsagesProvider implements FindUsagesProvider {
     @NotNull
     @Override
     public String getType(@NotNull PsiElement element) {
-        return "FeatureName";
+        return "Feature Name";
     }
 
     @NotNull

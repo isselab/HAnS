@@ -90,12 +90,13 @@
 
         <!-- &begin[Referencing] -->
         <psi.referenceContributor implementation="se.ch.HAnS.referencing.FeatureReferenceContributor"/>
-        <lang.refactoringSupport language="FeatureModel"
-                                 implementationClass="se.ch.HAnS.referencing.FeatureRefactoringSupportProvider"/>
+        <!--<lang.refactoringSupport language="FeatureModel"
+                                 implementationClass="se.ch.HAnS.referencing.FeatureRefactoringSupportProvider"/>-->
         <lang.findUsagesProvider language="FeatureModel"
                                  implementationClass="se.ch.HAnS.referencing.FeatureFindUsagesProvider"/>
         <useScopeEnlarger implementation="se.ch.HAnS.FeatureAnnotationScopeEnlarger"/>
         <psi.referenceContributor implementation="se.ch.HAnS.referencing.FileReferenceContributor"/>
+        <lang.namesValidator language="FeatureModel" implementationClass="se.ch.HAnS.referencing.FeatureNameValidator"/>
         <!-- &end[Referencing] -->
     </extensions>
 

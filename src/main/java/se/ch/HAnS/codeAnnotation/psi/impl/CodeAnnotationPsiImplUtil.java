@@ -4,6 +4,8 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationElementFactory;
 import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationLpq;
+import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
+import se.ch.HAnS.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil;
 
 public class CodeAnnotationPsiImplUtil {
 
@@ -18,12 +20,12 @@ public class CodeAnnotationPsiImplUtil {
         }
     }
 
-    public static PsiElement setName(CodeAnnotationLpq element, String newName) {
+    public static CodeAnnotationLpq setName(CodeAnnotationLpq element, String newName) {
         ASTNode featureNode = element.getNode();
         if (featureNode != null) {
             CodeAnnotationLpq feature = CodeAnnotationElementFactory.createLPQ(element.getProject(), newName);
-            ASTNode newKeyNode = feature.getFirstChild().getNode();
-            element.getNode().replaceChild(featureNode, newKeyNode);
+            ASTNode newKeyNode = feature.getNode();
+            element.getParent().getNode().replaceChild(featureNode, newKeyNode);
         }
         return element;
     }

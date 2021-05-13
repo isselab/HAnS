@@ -2,6 +2,7 @@ package se.ch.HAnS.fileAnnotation.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
+import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationLpq;
 import se.ch.HAnS.fileAnnotation.psi.FileAnnotationElementFactory;
 import se.ch.HAnS.fileAnnotation.psi.FileAnnotationFileName;
 import se.ch.HAnS.fileAnnotation.psi.FileAnnotationFileReference;
@@ -22,12 +23,12 @@ public class FileAnnotationPsiImplUtil {
         }
     }
 
-    public static PsiElement setName(FileAnnotationLpq element, String newName) {
+    public static FileAnnotationLpq setName(FileAnnotationLpq element, String newName) {
         ASTNode featureNode = element.getNode();
         if (featureNode != null) {
             FileAnnotationLpq feature = FileAnnotationElementFactory.createLPQ(element.getProject(), newName);
-            ASTNode newKeyNode = feature.getFirstChild().getNode();
-            element.getNode().replaceChild(featureNode, newKeyNode);
+            ASTNode newKeyNode = feature.getNode();
+            element.getParent().getNode().replaceChild(featureNode, newKeyNode);
         }
         return element;
     }

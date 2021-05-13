@@ -59,7 +59,7 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   }
 
   @Override
-  public PsiElement setName(String newName) {
+  public FeatureModelFeature setName(String newName) {
     return FeatureModelPsiImplUtil.setName(this, newName);
   }
 

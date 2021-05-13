@@ -21,7 +21,7 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   String getName();
 
-  PsiElement setName(String newName);
+  FeatureModelFeature setName(String newName);
 
   PsiElement getNameIdentifier();
 
