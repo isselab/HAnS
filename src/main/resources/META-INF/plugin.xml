@@ -119,7 +119,7 @@
         </group>
 
         <!-- &begin[NewFile] -->
-        <action id="se.ch.HAnS.actions.newFile.CreateNewFileAction"
+        <action id="CreateNewFileAction"
                 class="se.ch.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"
                 description="Create new feature mappings">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
