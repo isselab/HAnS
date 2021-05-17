@@ -122,8 +122,7 @@
         <action id="se.ch.HAnS.actions.newFile.CreateNewFileAction"
                 class="se.ch.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"
                 description="Create new feature mappings">
-            <add-to-group group-id="NewGroup" anchor="first"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl W"/>
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
         <!-- &end[NewFile] -->
     </actions>

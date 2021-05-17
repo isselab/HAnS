@@ -10,16 +10,16 @@ import se.ch.HAnS.AnnotationIcons;
 
 public class CreateNewFileAction extends CreateFileFromTemplateAction implements DumbAware {
     public CreateNewFileAction() {
-        super("Embedded Feature Annotation Files", "Create new feature mappings", AnnotationIcons.FileType);
+        super("Feature Mapping", "Create new feature mappings", AnnotationIcons.FileType);
     }
 
     @Override
     protected void buildDialog(@NotNull Project project, @NotNull PsiDirectory directory, CreateFileFromTemplateDialog.@NotNull Builder builder) {
-        builder.setTitle("Embedded Feature Annotation Files")
+        builder.setTitle("New Embedded Feature Annotation File")
                 .setValidator(null)
-                .addKind("Model", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_MODEL_FILE)
                 .addKind("Folder mapping", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_TO_FOLDER_FILE)
-                .addKind("File mapping", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_TO_FILE_FILE);
+                .addKind("File mapping", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_TO_FILE_FILE)
+                .addKind("Model", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_MODEL_FILE);
     }
 
     @Override
