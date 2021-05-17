@@ -16,15 +16,13 @@ public class CreateNewFileAction extends CreateFileFromTemplateAction implements
     @Override
     protected void buildDialog(@NotNull Project project, @NotNull PsiDirectory directory, CreateFileFromTemplateDialog.@NotNull Builder builder) {
         builder.setTitle("New Embedded Feature Annotation File")
-                .setValidator(null)
                 .addKind("Folder mapping", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_TO_FOLDER_FILE)
                 .addKind("File mapping", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_TO_FILE_FILE)
                 .addKind("Model", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_MODEL_FILE);
     }
 
     @Override
-    protected String getActionName(PsiDirectory directory, String newName, String templateName) {
-        if (newName == null) newName = "";
+    protected String getActionName(PsiDirectory directory, @NotNull String newName, String templateName) {
         return "Create" + newName;
     }
 
