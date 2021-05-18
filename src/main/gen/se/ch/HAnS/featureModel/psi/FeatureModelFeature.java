@@ -5,13 +5,16 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import se.ch.HAnS.referencing.FeatureAnnotationNamedElement;
+import java.util.Deque;
 
 public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   @NotNull
   List<FeatureModelFeature> getFeatureList();
 
-  String getLPQ();
+  String getLPQText();
+
+  Deque<PsiElement> getLPQStack();
 
   String renameFeature();
 

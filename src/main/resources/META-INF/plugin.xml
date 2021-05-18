@@ -96,7 +96,7 @@
                                  implementationClass="se.ch.HAnS.referencing.FeatureFindUsagesProvider"/>
         <useScopeEnlarger implementation="se.ch.HAnS.FeatureAnnotationScopeEnlarger"/>
         <psi.referenceContributor implementation="se.ch.HAnS.referencing.FileReferenceContributor"/>
-        <lang.namesValidator language="FeatureModel" implementationClass="se.ch.HAnS.referencing.FeatureNameValidator"/>
+        <renameInputValidator implementation="se.ch.HAnS.referencing.FeatureNameInputValidator"/>
         <!-- &end[Referencing] -->
     </extensions>
 

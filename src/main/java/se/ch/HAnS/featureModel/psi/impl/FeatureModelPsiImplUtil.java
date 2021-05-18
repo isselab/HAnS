@@ -6,19 +6,21 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.PsiFileFactoryImpl;
+import com.intellij.psi.search.searches.ReferencesSearch;
+import com.intellij.refactoring.RefactoringBundle;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.codeAnnotation.psi.impl.CodeAnnotationPsiImplUtil;
 import se.ch.HAnS.featureModel.FeatureModelLanguage;
+import se.ch.HAnS.featureModel.FeatureModelUtil;
 import se.ch.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
+import se.ch.HAnS.featureModel.psi.FeatureModelFile;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import se.ch.HAnS.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
@@ -39,13 +41,51 @@ public class FeatureModelPsiImplUtil {
     }
 
     public static FeatureModelFeature setName(FeatureModelFeature element, String newName) {
-        ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
-        if (featureNode != null) {
-            FeatureModelFeature feature = FeatureModelElementFactory.createFeature(element.getProject(), newName);
-            ASTNode newKeyNode = feature.getFirstChild().getNode();
-            element.getNode().replaceChild(featureNode, newKeyNode);
+        if (FeatureModelUtil.getOrigin() == element) {
+            List<PsiElement> elementsToRename = getElementsToRename(element, newName);
+
+            for (PsiElement e : elementsToRename) {
+                for (PsiReference reference : ReferencesSearch.search(e)) {
+                    reference.handleElementRename(newName);
+                }
+            }
+
+            ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
+            if (featureNode != null) {
+                FeatureModelFeature feature = FeatureModelElementFactory.createFeature(element.getProject(), newName);
+                ASTNode newKeyNode = feature.getFirstChild().getNode();
+                element.getNode().replaceChild(featureNode, newKeyNode);
+            }
+            FeatureModelUtil.reset();
+        }
+        else {
+            ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
+            if (featureNode != null) {
+                FeatureModelFeature feature = FeatureModelElementFactory.createFeature(element.getProject(), newName);
+                ASTNode newKeyNode = feature.getFirstChild().getNode();
+                element.getNode().replaceChild(featureNode, newKeyNode);
+            }
         }
         return element;
+    }
+
+    private static List<PsiElement> getElementsToRename(FeatureModelFeature element, String newName) {
+        List<PsiElement> elementsToRename= new ArrayList<>();
+        element.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
+            @Override
+            public void visitElement(@NotNull PsiElement e) {
+                if (e instanceof FeatureModelFeatureImpl){
+                    if (((FeatureModelFeatureImpl) e).getLPQText().contains(newName)) {
+                        elementsToRename.add(e);
+                    }
+                    else if (((FeatureModelFeatureImpl) e).getLPQText().contains(element.getNode().getText())) {
+                        elementsToRename.add(e);
+                    }
+                }
+                super.visitElement(e);
+            }
+        });
+        return elementsToRename;
     }
 
     public static PsiElement getNameIdentifier(FeatureModelFeature element) {
@@ -57,7 +97,28 @@ public class FeatureModelPsiImplUtil {
     }
     // &end[Referencing]
 
-    public static String getLPQ(PsiElement feature) {
+    public static String getLPQText(PsiElement feature) {
+        Deque<PsiElement> lpqStack = getLPQStack(feature);
+        String lpq = null;
+
+        if (lpqStack == null) {
+            return null;
+        }
+
+        while (!lpqStack.isEmpty()) {
+            PsiElement top = lpqStack.pop();
+            if (lpq == null) {
+                lpq = top.getText();
+            }
+            else {
+                lpq = lpq.concat("::" + top.getText());
+            }
+        }
+
+        return lpq;
+    }
+
+    public static Deque<PsiElement> getLPQStack(PsiElement feature) {
         List<Deque<PsiElement>> candidates = new ArrayList<>();
 
         feature.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
@@ -75,25 +136,11 @@ public class FeatureModelPsiImplUtil {
         Deque<PsiElement> stack = new ArrayDeque<>();
         stack.add(feature.getFirstChild());
 
-        Deque<PsiElement> result = findLPQRecursively(candidates, stack);
-
-        String lpq = null;
-
-        while (!result.isEmpty()) {
-            PsiElement top = result.pollLast();
-            if (lpq == null) {
-                lpq = top.getText();
-            }
-            else {
-                lpq = lpq.concat("::" + top.getText());
-            }
-        }
-
-        return lpq;
+        return findLPQRecursively(candidates, stack);
     }
 
-    private static Deque<PsiElement> findLPQRecursively(List<Deque<PsiElement>> candidates, Deque<PsiElement> feature) {
-        if (candidates.size() == 1) {
+    private static Deque<PsiElement> findLPQRecursively(List<Deque<PsiElement>> candidates,Deque<PsiElement> feature) {
+        if (candidates.size() == 1 || Objects.requireNonNull(feature.peek()).getParent().getParent() instanceof PsiFile) {
             return feature;
         }
 
@@ -111,7 +158,7 @@ public class FeatureModelPsiImplUtil {
             }
         }
 
-        feature.add(fParent);
+        feature.push(fParent);
 
         return findLPQRecursively(remainingCandidates, feature);
     }

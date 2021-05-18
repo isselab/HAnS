@@ -19,15 +19,22 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.*;
+import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.refactoring.RefactoringBundle;
+import com.intellij.refactoring.rename.RenameDialog;
+import com.intellij.refactoring.ui.RefactoringDialog;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
+import se.ch.HAnS.featureModel.FeatureModelFileType;
 import se.ch.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
+import se.ch.HAnS.featureModel.psi.FeatureModelFile;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 
@@ -179,12 +186,16 @@ public class FeatureView extends JPanel implements ActionListener{
     }
 
     public void renameFeature() {
+        RenameDialog d = new RenameDialog(project, getFeatureModel(), getFeatureModel(), null);
+        d.show();
+        //RefactoringBundle.message("rename.0.and.its.usages.to", "'" + "Heyyyoooo" + "'");
+        /*
         PsiElement selected = getSelectedItemAsPsiElement();
         String s = ((FeatureModelFeatureImpl) selected).renameFeature();
         if (s != null) {
             selectedFeature.setUserObject(s);
             tree.nodeChanged(selectedFeature);
-        }
+        }*/
     }
 
     public void addFeature() {
