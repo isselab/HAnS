@@ -27,13 +27,9 @@ public class FeatureViewFactory implements ToolWindowFactory {
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         StructureViewFactoryImpl s = new StructureViewFactoryImpl(project);
         FileEditor e = FileEditorManager.getInstance(project).getAllEditors()[0];
-
         PsiFile f = findFeatureModel(project);
 
         @NotNull StructureViewComponent tab = new StructureViewComponent(e, new FeatureViewModel(f), project, true);
-
-
-        CustomizationUtil.installPopupHandler(tab, "FeatureView", ActionPlaces.getActionGroupPopupPlace("FeatureView"));
 
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         Content content = contentFactory.createContent(tab, "", false);
@@ -53,7 +49,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
             }
         }
 
-        return f == null? findFeatureModel(project) : f;
+        return f;
     }
 
 }

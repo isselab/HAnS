@@ -105,11 +105,17 @@
     </extensions>
 
     <actions>
+        <action id="RenameFeature"
+                class="se.ch.HAnS.actions.RenameAction"
+                text="Rename..."
+                description="Rename feature">
+            <add-to-group group-id="StructureViewPopupMenu" anchor="first"/>
+        </action>
         <action id="AddFeature"
                 class="se.ch.HAnS.actions.AddAction"
                 text="Add..." description="Add feature"
                 icon="AllIcons.General.Add">
-            <add-to-group group-id="StructureViewPopupMenu" anchor="first"/>
+            <add-to-group group-id="StructureViewPopupMenu" anchor="after" relative-to-action="RenameFeature"/>
         </action>
         <action id="DeleteFeature"
                 class="se.ch.HAnS.actions.DeleteAction"
