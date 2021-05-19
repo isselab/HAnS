@@ -1,42 +1,24 @@
 package se.ch.HAnS.featureModel.toolWindow;
 
 import com.intellij.find.FindManager;
-import com.intellij.find.actions.FindUsagesAction;
-import com.intellij.find.findUsages.FindUsagesHandler;
-import com.intellij.find.findUsages.FindUsagesManager;
-import com.intellij.find.findUsages.FindUsagesOptions;
-import com.intellij.find.findUsages.FindUsagesUtil;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ui.customization.CustomizationUtil;
-import com.intellij.lang.ASTNode;
-import com.intellij.model.psi.PsiSymbolReference;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.*;
-import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.searches.ReferencesSearch;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.refactoring.RefactoringBundle;
 import com.intellij.refactoring.rename.RenameDialog;
-import com.intellij.refactoring.ui.RefactoringDialog;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.featureModel.FeatureModelFileType;
-import se.ch.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
-import se.ch.HAnS.featureModel.psi.FeatureModelFile;
-import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
-import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -186,8 +168,7 @@ public class FeatureView extends JPanel implements ActionListener{
     }
 
     public void renameFeature() {
-        RenameDialog d = new RenameDialog(project, getFeatureModel(), getFeatureModel(), null);
-        d.show();
+        ((FeatureModelFeature) selectedFeature.getUserObject()).renameFeature();
         //RefactoringBundle.message("rename.0.and.its.usages.to", "'" + "Heyyyoooo" + "'");
         /*
         PsiElement selected = getSelectedItemAsPsiElement();
@@ -201,7 +182,7 @@ public class FeatureView extends JPanel implements ActionListener{
     public void addFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
         String s = null;
-        s = ((FeatureModelFeatureImpl) selected).addFeature();
+        s = ((FeatureModelFeature) selected).addFeature();
         if (s != null) {
             tree.insertNodeInto(new DefaultMutableTreeNode(s), selectedFeature, 0);
         }
@@ -210,7 +191,7 @@ public class FeatureView extends JPanel implements ActionListener{
     public void deleteFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
         Integer s = null;
-        s = ((FeatureModelFeatureImpl) selected).deleteFeature();
+        s = ((FeatureModelFeature) selected).deleteFeature();
         if (s == 1) {
             tree.removeNodeFromParent(selectedFeature);
         }

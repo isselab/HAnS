@@ -34,8 +34,14 @@ public class FeatureReference extends PsiReferenceBase<PsiElement> {
 
     @Override
     public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
-        FeatureModelFeature referencedElement = (FeatureModelFeature) myElement.getReferences()[0].resolve();
-        String newLPQ = FeatureModelUtil.getLPQ(referencedElement, newElementName);
+        String newLPQ;
+        if (myElement.getReferences()[0].resolve() == FeatureReferenceUtil.getOrigin()
+                || FeatureReferenceUtil.getOrigin() == null) {
+            newLPQ = FeatureReferenceUtil.getLPQ((FeatureModelFeature) myElement.getReferences()[0].resolve(), newElementName);
+        }
+        else {
+            newLPQ = newElementName;
+        }
 
         if (myElement instanceof FolderAnnotationLpq) {
             FolderAnnotationPsiImplUtil.setName((FolderAnnotationLpq) myElement, newLPQ);

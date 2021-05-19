@@ -9,16 +9,14 @@ import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.PsiFileFactoryImpl;
 import com.intellij.psi.search.searches.ReferencesSearch;
-import com.intellij.refactoring.RefactoringBundle;
+import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.codeAnnotation.psi.impl.CodeAnnotationPsiImplUtil;
 import se.ch.HAnS.featureModel.FeatureModelLanguage;
 import se.ch.HAnS.featureModel.FeatureModelUtil;
 import se.ch.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
-import se.ch.HAnS.featureModel.psi.FeatureModelFile;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
-import se.ch.HAnS.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil;
+import se.ch.HAnS.referencing.FeatureReferenceUtil;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -41,14 +39,10 @@ public class FeatureModelPsiImplUtil {
     }
 
     public static FeatureModelFeature setName(FeatureModelFeature element, String newName) {
-        if (FeatureModelUtil.getOrigin() == element) {
-            List<PsiElement> elementsToRename = getElementsToRename(element, newName);
+        if (FeatureReferenceUtil.getOrigin() == element || FeatureReferenceUtil.getOrigin() == null) {
+            FeatureReferenceUtil.getLPQ(element, newName);
 
-            for (PsiElement e : elementsToRename) {
-                for (PsiReference reference : ReferencesSearch.search(e)) {
-                    reference.handleElementRename(newName);
-                }
-            }
+            FeatureReferenceUtil.setElementsToRename(element, newName);
 
             ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
             if (featureNode != null) {
@@ -56,7 +50,10 @@ public class FeatureModelPsiImplUtil {
                 ASTNode newKeyNode = feature.getFirstChild().getNode();
                 element.getNode().replaceChild(featureNode, newKeyNode);
             }
-            FeatureModelUtil.reset();
+
+            FeatureReferenceUtil.rename();
+
+            FeatureReferenceUtil.reset();
         }
         else {
             ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
@@ -74,11 +71,11 @@ public class FeatureModelPsiImplUtil {
         element.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement e) {
-                if (e instanceof FeatureModelFeatureImpl){
-                    if (((FeatureModelFeatureImpl) e).getLPQText().contains(newName)) {
+                if (e instanceof FeatureModelFeature){
+                    if (((FeatureModelFeature) e).getLPQText().contains(newName)) {
                         elementsToRename.add(e);
                     }
-                    else if (((FeatureModelFeatureImpl) e).getLPQText().contains(element.getNode().getText())) {
+                    else if (((FeatureModelFeature) e).getLPQText().contains(element.getNode().getText())) {
                         elementsToRename.add(e);
                     }
                 }
@@ -124,7 +121,7 @@ public class FeatureModelPsiImplUtil {
         feature.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement element) {
-                if (element instanceof FeatureModelFeatureImpl
+                if (element instanceof FeatureModelFeature
                         && element.getFirstChild().getText().equals(feature.getFirstChild().getText())){
                     Deque<PsiElement> stack = new ArrayDeque<>();
                     stack.add(element.getFirstChild());
@@ -163,7 +160,7 @@ public class FeatureModelPsiImplUtil {
         return findLPQRecursively(remainingCandidates, feature);
     }
 
-    public static String renameFeature(@NotNull PsiElement feature){
+    public static String renameFeature(@NotNull FeatureModelFeature feature){
         String newFeatureName;
         while (true) {
             newFeatureName = Messages.showInputDialog("Enter new name",
@@ -185,13 +182,12 @@ public class FeatureModelPsiImplUtil {
         }
     }
 
-    private static String renameInFeatureModel(@NotNull PsiElement feature, String newFeatureName) {
-        PsiFile f = PsiFileFactoryImpl.getInstance(
-                feature.getProject()).createFileFromText(FeatureModelLanguage.INSTANCE, newFeatureName);
+    private static String renameInFeatureModel(@NotNull FeatureModelFeature feature, String newFeatureName) {
+        for (PsiReference reference : ReferencesSearch.search(feature)) {
+            reference.handleElementRename(newFeatureName);
+        }
 
-        WriteCommandAction.runWriteCommandAction(feature.getProject(), () -> {
-            feature.replace(f.getLastChild().copy());
-        });
+        feature.setName(newFeatureName);
 
         return newFeatureName;
     }
@@ -255,7 +251,7 @@ public class FeatureModelPsiImplUtil {
 
             @Override
             public void visitElement(@NotNull PsiElement element) {
-                if (element instanceof FeatureModelFeatureImpl ){
+                if (element instanceof FeatureModelFeature){
                     if (add) {
                         if (element.getPrevSibling().getText().length() <= indentation) {
                             add = false;
