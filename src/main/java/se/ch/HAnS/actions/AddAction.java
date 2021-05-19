@@ -1,13 +1,13 @@
-package se.ch.HAnS.featureModel.toolWindow.actions;
+package se.ch.HAnS.actions;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.featureModel.toolWindow.FeatureView;
+import se.ch.HAnS.featureView.FeatureView;
 
-public class DeleteAction extends AnAction {
+public class AddAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        FeatureView.getView().deleteFeature();
+        FeatureView.getView().addFeature();
     }
 }

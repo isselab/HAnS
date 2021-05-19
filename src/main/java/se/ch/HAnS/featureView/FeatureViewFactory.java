@@ -1,8 +1,9 @@
-package se.ch.HAnS.featureModel.toolWindow;
+package se.ch.HAnS.featureView;
 
-import com.intellij.ide.structureView.StructureView;
 import com.intellij.ide.structureView.impl.StructureViewFactoryImpl;
 import com.intellij.ide.structureView.newStructureView.StructureViewComponent;
+import com.intellij.ide.ui.customization.CustomizationUtil;
+import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
@@ -16,7 +17,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.structure.FeatureViewModel;
+import se.ch.HAnS.featureView.FeatureViewModel;
 
 import java.util.Collection;
 
@@ -40,6 +41,9 @@ public class FeatureViewFactory implements ToolWindowFactory {
         }
 
         @NotNull StructureViewComponent tab = new StructureViewComponent(e, new FeatureViewModel(f), project, true);
+
+
+        CustomizationUtil.installPopupHandler(tab, "FeatureView", ActionPlaces.getActionGroupPopupPlace("FeatureView"));
 
         //FeatureView tab = new FeatureView(project);
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
