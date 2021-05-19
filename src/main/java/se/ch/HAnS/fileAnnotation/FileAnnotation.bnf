@@ -11,6 +11,8 @@
   elementTypeHolderClass="se.ch.HAnS.fileAnnotation.psi.FileAnnotationTypes"
   elementTypeClass="se.ch.HAnS.fileAnnotation.psi.FileAnnotationElementType"
   tokenTypeClass="se.ch.HAnS.fileAnnotation.psi.FileAnnotationTokenType"
+
+  psiImplUtilClass="se.ch.HAnS.fileAnnotation.psi.impl.FileAnnotationPsiImplUtil"
 }
 
 fileAnnotationFile ::= (fileAnnotation NEWLINE*)*
@@ -19,12 +21,18 @@ fileAnnotation ::= fileReferences COLON? NEWLINE+ lpqReferences
 
 fileReferences ::= (fileReference ((SPACE* CS)? SPACE* fileReference)* SPACE*)
 
-fileReference ::= (CM fileName CM) | (fileName)
+fileReference ::= (CM fileName CM) | (fileName){
+mixin="se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"}
 
 fileName ::= (STRING DOT STRING)|STRING
 
 lpqReferences ::= (lpq ((SPACE* CS)? SPACE* lpq)* SPACE*)
 
-lpq ::= featureName (SEPARATOR featureName)*
+//&begin[Referencing]
+lpq ::= featureName (SEPARATOR featureName)* {
+mixin="se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
+implements="se.ch.HAnS.referencing.FeatureAnnotationNamedElement"
+methods=[getName setName getNameIdentifier]}
+//&end[Referencing]
 
 featureName ::= STRING

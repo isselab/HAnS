@@ -2,10 +2,10 @@
 
 package se.ch.HAnS.folderAnnotation;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationTypes;
 import com.intellij.psi.TokenType;
-import com.intellij.lexer.FlexLexer;
 
 
 /**

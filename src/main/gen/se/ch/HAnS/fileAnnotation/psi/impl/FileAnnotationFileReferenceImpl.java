@@ -8,10 +8,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.fileAnnotation.psi.FileAnnotationTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl;
 import se.ch.HAnS.fileAnnotation.psi.*;
 
-public class FileAnnotationFileReferenceImpl extends ASTWrapperPsiElement implements FileAnnotationFileReference {
+public class FileAnnotationFileReferenceImpl extends FeatureAnnotationNamedElementImpl implements FileAnnotationFileReference {
 
   public FileAnnotationFileReferenceImpl(@NotNull ASTNode node) {
     super(node);

@@ -13,20 +13,11 @@ import static com.intellij.patterns.PlatformPatterns.psiElement;
 public class FeatureAnnotationDictionaryContributor extends CompletionContributor {
     public FeatureAnnotationDictionaryContributor() {
         // &begin[CodeAnnotationCompletion]
-        extend(CompletionType.BASIC,
-                psiElement(CodeAnnotationTypes.FEATURENAME),
-                new FeatureNameCompletionProvider(false));
-
-        extend(CompletionType.BASIC,
+/*        extend(CompletionType.BASIC,
                 psiElement(PsiComment.class),
-                new KeywordCompletionProvider());
+                new KeywordCompletionProvider(false));*/
         // &end[CodeAnnotationCompletion]
 
-        // &begin[FeatureToFolderCompletion]
-        extend(CompletionType.BASIC,
-                psiElement(FolderAnnotationTypes.FEATURENAME),
-                new FeatureNameCompletionProvider(false));
-        // &end[FeatureToFolderCompletion]
 
         // &begin[FeatureToFileCompletion]
         extend(CompletionType.BASIC,
@@ -34,10 +25,6 @@ public class FeatureAnnotationDictionaryContributor extends CompletionContributo
                         andNot(psiElement(FileAnnotationTypes.STRING).
                                 withParent(FileAnnotationFeatureNameImpl.class)),
                 new FileNameCompletionProvider(false));
-
-        extend(CompletionType.BASIC,
-                psiElement(FileAnnotationTypes.STRING).withParent(FileAnnotationFeatureNameImpl.class),
-                new FeatureNameCompletionProvider(false));
         // &end[FeatureToFileCompletion]
     }
 }

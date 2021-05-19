@@ -8,10 +8,11 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.featureModel.psi.FeatureModelTypes.*;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl;
 import se.ch.HAnS.featureModel.psi.*;
+import java.util.Deque;
 
-public class FeatureModelFeatureImpl extends ASTWrapperPsiElement implements FeatureModelFeature {
+public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl implements FeatureModelFeature {
 
   public FeatureModelFeatureImpl(@NotNull ASTNode node) {
     super(node);
@@ -34,8 +35,18 @@ public class FeatureModelFeatureImpl extends ASTWrapperPsiElement implements Fea
   }
 
   @Override
-  public String renameFeature() {
-    return FeatureModelPsiImplUtil.renameFeature(this);
+  public String getLPQText() {
+    return FeatureModelPsiImplUtil.getLPQText(this);
+  }
+
+  @Override
+  public Deque<PsiElement> getLPQStack() {
+    return FeatureModelPsiImplUtil.getLPQStack(this);
+  }
+
+  @Override
+  public void renameFeature() {
+    FeatureModelPsiImplUtil.renameFeature(this);
   }
 
   @Override
@@ -46,6 +57,21 @@ public class FeatureModelFeatureImpl extends ASTWrapperPsiElement implements Fea
   @Override
   public int deleteFeature() {
     return FeatureModelPsiImplUtil.deleteFeature(this);
+  }
+
+  @Override
+  public String getName() {
+    return FeatureModelPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public FeatureModelFeature setName(String newName) {
+    return FeatureModelPsiImplUtil.setName(this, newName);
+  }
+
+  @Override
+  public PsiElement getNameIdentifier() {
+    return FeatureModelPsiImplUtil.getNameIdentifier(this);
   }
 
   @Override

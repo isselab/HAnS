@@ -10,6 +10,7 @@
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[FeatureModel] -->
@@ -53,19 +54,30 @@
         <!-- &end[LiveTemplate] -->
 
         <!-- &begin[SyntaxHighlighting] -->
-        <lang.syntaxHighlighterFactory language="FeatureModel" implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FeatureModel]-->
+        <!-- &begin[SyntaxHighlighting::FeatureModel] -->
+        <lang.syntaxHighlighterFactory language="FeatureModel"
+                                       implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/>
+        <annotator language="FeatureModel"
+                   implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelAnnotator"/>
+        <!-- &end[SyntaxHighlighting::FeatureModel] -->
 
-        <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FolderAnnotation] -->
+        <!-- &begin[SyntaxHighlighting::FolderAnnotation] -->
+        <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationSyntaxHighlighterFactory"/>
         <annotator language="FolderAnnotation"
                    implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationAnnotator"/>
+        <!-- &end[SyntaxHighlighting::FolderAnnotation] -->
 
+        <!-- &begin[SyntaxHighlighting::FileAnnotation] -->
         <lang.syntaxHighlighterFactory language="FileAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FileAnnotation]-->
         <annotator language="FileAnnotation"
                    implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationAnnotator"/>
+        <!-- &end[SyntaxHighlighting::FileAnnotation] -->
 
+        <!-- &begin[SyntaxHighlighting::CodeAnnotation] -->
         <lang.syntaxHighlighterFactory language="CodeAnnotations" implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::CodeAnnotation]-->
         <annotator language="CodeAnnotations"
                    implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationAnnotator"/>
+        <!-- &end[SyntaxHighlighting::CodeAnnotation] -->
 
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/HAnSDarcula.xml"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/HAnSDefault.xml"/>
@@ -81,11 +93,22 @@
         <!-- &end[FeatureView] -->
         <!--<typedHandler implementation="se.ch.HAnS.featureModel.toolWindow.actions.MyTypedHandler"/>-->
 
+        <!-- &begin[Referencing] -->
+        <psi.referenceContributor implementation="se.ch.HAnS.referencing.FeatureReferenceContributor"/>
+        <!--<lang.refactoringSupport language="FeatureModel"
+                                 implementationClass="se.ch.HAnS.referencing.FeatureRefactoringSupportProvider"/>-->
+        <lang.findUsagesProvider language="FeatureModel"
+                                 implementationClass="se.ch.HAnS.referencing.FeatureFindUsagesProvider"/>
+        <useScopeEnlarger implementation="se.ch.HAnS.FeatureAnnotationScopeEnlarger"/>
+        <psi.referenceContributor implementation="se.ch.HAnS.referencing.FileReferenceContributor"/>
+        <renameInputValidator implementation="se.ch.HAnS.referencing.FeatureNameInputValidator"/>
+        <!-- &end[Referencing] -->
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
         <group id="FeatureView" text="Feature View Actions">
+            <action id="FindFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.FindAction" text="Find Feature" description="Find feature"/>
             <action id="RenameFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.RenameAction" text="Rename..." description="Rename feature"/>
             <action id="AddFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.AddAction" text="Add..." description="Add feature" icon="AllIcons.General.Add"/>
             <action id="DeleteFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.DeleteAction" text="Delete..." description="Delete feature" icon="AllIcons.General.Remove"/>

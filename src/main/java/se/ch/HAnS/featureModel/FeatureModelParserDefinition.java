@@ -27,13 +27,13 @@ public class FeatureModelParserDefinition implements ParserDefinition {
     }
 
     @Override
-    public PsiParser createParser(Project project) {
+    public @NotNull PsiParser createParser(Project project) {
         return new FeatureModelParser();
     }
 
     // &begin[FeatureModel::File]
     @Override
-    public IFileElementType getFileNodeType() {
+    public @NotNull IFileElementType getFileNodeType() {
         return FILE;
     }
     // &end[FeatureModel::File]
@@ -62,13 +62,13 @@ public class FeatureModelParserDefinition implements ParserDefinition {
 
     // &begin[FeatureModel::File]
     @Override
-    public PsiFile createFile(FileViewProvider viewProvider) {
+    public @NotNull PsiFile createFile(@NotNull FileViewProvider viewProvider) {
         return new FeatureModelFile(viewProvider);
     }
     // &end[FeatureModel::File]
 
     @Override
-    public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
+    public @NotNull SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
         return SpaceRequirements.MAY; // &line[FeatureModel::Language]
     }
 }

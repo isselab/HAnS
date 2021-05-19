@@ -11,6 +11,8 @@
   elementTypeHolderClass="se.ch.HAnS.codeAnnotation.psi.CodeAnnotationTypes"
   elementTypeClass="se.ch.HAnS.codeAnnotation.psi.CodeAnnotationElementType"
   tokenTypeClass="se.ch.HAnS.codeAnnotation.psi.CodeAnnotationTokenType"
+
+  psiImplUtilClass="se.ch.HAnS.codeAnnotation.psi.impl.CodeAnnotationPsiImplUtil"
 }
 
 marker ::= (COMMENTMARKER|SPACE)* (beginmarker|endmarker|linemarker) (SPACE|COMMENTMARKER)*
@@ -21,6 +23,11 @@ linemarker ::= LINE parameter
 
 parameter ::= (SPACE* OBRACKET SPACE* lpq ((SPACE* CS)? SPACE+ lpq)* SPACE* CBRACKET) | (SPACE+ lpq ((SPACE* CS)? SPACE+ lpq)* SPACE*)
 
-lpq ::= feature (SEPARATOR feature)*
+// &begin[Referencing]
+lpq ::= feature (SEPARATOR feature)*{
+mixin="se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
+implements="se.ch.HAnS.referencing.FeatureAnnotationNamedElement"
+methods=[getName setName getNameIdentifier]}
+// &end[Referencing]
 
 feature ::= FEATURENAME

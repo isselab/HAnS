@@ -3,11 +3,12 @@ HAnS
         Language
         File
         FeatureView
+        Referencing
     FolderAnnotation
         Language
         File
     FileAnnotation
-        Language
+        Languages
         File
     CodeAnnotation
         Language
