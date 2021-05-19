@@ -35,8 +35,9 @@ public class FeatureReference extends PsiReferenceBase<PsiElement> {
     @Override
     public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         String newLPQ;
-        if (myElement.getReferences()[0].resolve() == FeatureReferenceUtil.getOrigin()
-                || FeatureReferenceUtil.getOrigin() == null) {
+        if ((myElement.getReferences()[0].resolve() == FeatureReferenceUtil.getOrigin()
+                || FeatureReferenceUtil.getOrigin() == null)
+                && !FeatureReferenceUtil.getAddingOrDeleting()) {
             newLPQ = FeatureReferenceUtil.getLPQ((FeatureModelFeature) myElement.getReferences()[0].resolve(), newElementName);
         }
         else {

@@ -19,6 +19,7 @@ public class FeatureReferenceUtil {
 
     private static String lpq = null;
     private static PsiElement origin = null;
+    private static boolean addingOrDeleting = false;
 
     private static Map<FeatureModelFeature, List<PsiReference>> mapToRename = new HashMap<>();
 
@@ -35,9 +36,14 @@ public class FeatureReferenceUtil {
         return origin;
     }
 
+    public static boolean getAddingOrDeleting() {
+        return addingOrDeleting;
+    }
+
     public static void reset() {
         lpq = null;
         origin = null;
+        addingOrDeleting = false;
     }
 
     public static Map<FeatureModelFeature, List<PsiReference>> getElementsToRename() {
@@ -79,7 +85,7 @@ public class FeatureReferenceUtil {
         }
     }
 
-    public static void setElementsToRename(FeatureModelFeature element, String newName) {
+    public static void setElementsToRenameWhenRenaming(FeatureModelFeature element, String newName) {
         Map<FeatureModelFeature, List<PsiReference>> toRename = new HashMap<>();
 
         List<FeatureModelFeature> elementsToRename = getElementsToRenameWhenRenaming(element, newName);
@@ -112,6 +118,24 @@ public class FeatureReferenceUtil {
             }
         });
         return elementsToRename;
+    }
+
+    public static void setElementsToRenameWhenAdding(FeatureModelFeature element, String newName) {
+        Map<FeatureModelFeature, List<PsiReference>> toRename = new HashMap<>();
+
+        List<FeatureModelFeature> elementsToRename = getElementsToRenameWhenAdding(element, newName);
+
+        for (FeatureModelFeature e : elementsToRename) {
+            List<PsiReference> referencedElements = new ArrayList<>();
+            for (PsiReference reference : ReferencesSearch.search(e)) {
+                referencedElements.add(reference);
+            }
+            toRename.put(e, referencedElements);
+        }
+
+        addingOrDeleting = true;
+
+        mapToRename = toRename;
     }
 
     private static List<FeatureModelFeature> getElementsToRenameWhenAdding(FeatureModelFeature element, String newName) {

@@ -169,32 +169,14 @@ public class FeatureView extends JPanel implements ActionListener{
 
     public void renameFeature() {
         ((FeatureModelFeature) selectedFeature.getUserObject()).renameFeature();
-        //RefactoringBundle.message("rename.0.and.its.usages.to", "'" + "Heyyyoooo" + "'");
-        /*
-        PsiElement selected = getSelectedItemAsPsiElement();
-        String s = ((FeatureModelFeatureImpl) selected).renameFeature();
-        if (s != null) {
-            selectedFeature.setUserObject(s);
-            tree.nodeChanged(selectedFeature);
-        }*/
     }
 
     public void addFeature() {
-        PsiElement selected = getSelectedItemAsPsiElement();
-        String s = null;
-        s = ((FeatureModelFeature) selected).addFeature();
-        if (s != null) {
-            tree.insertNodeInto(new DefaultMutableTreeNode(s), selectedFeature, 0);
-        }
+        ((FeatureModelFeature) selectedFeature.getUserObject()).addFeature();
     }
 
     public void deleteFeature() {
-        PsiElement selected = getSelectedItemAsPsiElement();
-        Integer s = null;
-        s = ((FeatureModelFeature) selected).deleteFeature();
-        if (s == 1) {
-            tree.removeNodeFromParent(selectedFeature);
-        }
+        ((FeatureModelFeature) selectedFeature.getUserObject()).deleteFeature();
     }
 
     public void clear() {
