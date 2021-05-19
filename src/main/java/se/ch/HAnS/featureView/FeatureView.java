@@ -1,9 +1,9 @@
-package se.ch.HAnS.featureModel.toolWindow;
+package se.ch.HAnS.featureView;
 
 import com.intellij.find.FindManager;
 import com.intellij.icons.AllIcons;
-import com.intellij.ide.ui.customization.CustomizationUtil;
-import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.ide.util.treeView.smartTree.SmartTreeStructure;
+import com.intellij.ide.util.treeView.smartTree.TreeModel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -13,8 +13,6 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.*;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.refactoring.rename.RenameDialog;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
@@ -22,15 +20,12 @@ import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static se.ch.HAnS.AnnotationIcons.FileType;
@@ -40,7 +35,7 @@ public class FeatureView extends JPanel implements ActionListener{
     private static FeatureView view;
 
     private Project project;
-    private DefaultTreeModel tree;
+    private TreeModel tree;
     private Tree left;
     private DefaultMutableTreeNode root = null;
     private DefaultMutableTreeNode selectedFeature;
@@ -57,11 +52,12 @@ public class FeatureView extends JPanel implements ActionListener{
         super(new BorderLayout());
         view = this;
         this.project = project;
-
         getFeatureNames(getFeatureModel());
-        tree = new DefaultTreeModel(root);
-        left = new Tree(tree);
-        left.getSelectionModel().setSelectionMode
+        //tree = new DefaultTreeModel(root);
+        tree = new FeatureViewModel(getFeatureModel());
+        //left = new Tree(tree);
+        SmartTreeStructure left = new SmartTreeStructure(project, new FeatureViewModel(getFeatureModel()));
+        /*left.getSelectionModel().setSelectionMode
                 (TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         //Listen for when the selection changes.
@@ -78,14 +74,14 @@ public class FeatureView extends JPanel implements ActionListener{
             addButton.setEnabled(true);
             removeButton.setEnabled(true);
             LOGGER.log(Level.INFO, "Selected Feature: " + selectedFeature.toString());
-        });
-        JBScrollPane scrollPane = new JBScrollPane(left);
+        });*/
+        //JBScrollPane scrollPane = new JBScrollPane(left);
 
-        add(scrollPane, BorderLayout.CENTER);
+        //add(scrollPane, BorderLayout.CENTER);
 
         addBottomPanel();
 
-        CustomizationUtil.installPopupHandler(left, "FeatureView", ActionPlaces.getActionGroupPopupPlace("FeatureView"));
+        //CustomizationUtil.installPopupHandler(left, "FeatureView", ActionPlaces.getActionGroupPopupPlace("FeatureView"));
 
         project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
             @Override
@@ -190,7 +186,7 @@ public class FeatureView extends JPanel implements ActionListener{
         }
          */
         getFeatureNames(getFeatureModel());
-        tree.reload();
+        //tree.reload();
     }
 
     public PsiFile getFeatureModel() {

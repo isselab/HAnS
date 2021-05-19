@@ -5,6 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 import se.ch.HAnS.referencing.FeatureAnnotationNamedElement;
+import com.intellij.navigation.ItemPresentation;
 import java.util.Deque;
 
 public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
@@ -18,7 +19,7 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   void renameFeature();
 
-  String addFeature();
+  void addFeature();
 
   int deleteFeature();
 
@@ -29,5 +30,7 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
   PsiElement getNameIdentifier();
 
   String getFeatureName();
+
+  ItemPresentation getPresentation();
 
 }

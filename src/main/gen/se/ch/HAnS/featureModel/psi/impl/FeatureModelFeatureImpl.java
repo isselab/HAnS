@@ -10,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.featureModel.psi.FeatureModelTypes.*;
 import se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl;
 import se.ch.HAnS.featureModel.psi.*;
+import com.intellij.navigation.ItemPresentation;
 import java.util.Deque;
 
 public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl implements FeatureModelFeature {
@@ -50,8 +51,8 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   }
 
   @Override
-  public String addFeature() {
-    return FeatureModelPsiImplUtil.addFeature(this);
+  public void addFeature() {
+    FeatureModelPsiImplUtil.addFeature(this);
   }
 
   @Override
@@ -77,6 +78,11 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   @Override
   public String getFeatureName() {
     return FeatureModelPsiImplUtil.getFeatureName(this);
+  }
+
+  @Override
+  public ItemPresentation getPresentation() {
+    return FeatureModelPsiImplUtil.getPresentation(this);
   }
 
 }
