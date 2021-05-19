@@ -51,8 +51,8 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   }
 
   @Override
-  public String addFeature() {
-    return FeatureModelPsiImplUtil.addFeature(this);
+  public void addFeature() {
+    FeatureModelPsiImplUtil.addFeature(this);
   }
 
   @Override

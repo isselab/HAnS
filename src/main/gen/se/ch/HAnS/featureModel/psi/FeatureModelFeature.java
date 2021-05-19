@@ -19,7 +19,7 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   void renameFeature();
 
-  String addFeature();
+  void addFeature();
 
   int deleteFeature();
 

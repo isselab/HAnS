@@ -188,13 +188,13 @@ public class FeatureModelPsiImplUtil {
         dialog.show();
     }
 
-    public static String addFeature(@NotNull FeatureModelFeature feature){
+    public static void addFeature(@NotNull FeatureModelFeature feature){
         String newFeatureName;
         outer: while (true) {
             newFeatureName = Messages.showInputDialog("Enter name of new feature.",
                     "New Feature", null);
             if (newFeatureName == null) {
-                return null;
+                return;
             }
             if ("".equals(newFeatureName.trim())) {
                 Messages.showMessageDialog("Feature name cannot be empty.",
@@ -216,7 +216,7 @@ public class FeatureModelPsiImplUtil {
                     }
                 }
             }
-            return addToFeatureModel(feature, newFeatureName);
+            addToFeatureModel(feature, newFeatureName);
         }
     }
 
