@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'org.easelab'
-version '1.0'
+version '1.1'
 
 repositories {
     mavenCentral()
@@ -35,7 +35,13 @@ patchPluginXml {
         </ul>
         </li>
         <li>Syntax Highlighting</li>
+        <ul>
+            <li>Context based</li>
+        </ul>
         <li>Code Completion</li>
+        <ul>
+            <li>With referencing</li>
+        </ul>
         <li>Feature View</li>
         </ul>"""
 }

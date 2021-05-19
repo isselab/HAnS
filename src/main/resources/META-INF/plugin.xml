@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>org.easelab.HAnS</id>
+    <id>${PLUGIN_ID}</id>
     <name>HAnS: Helping Annotate Software</name>
     <vendor email="johmara@student.chalmers.se" url="http://www.johmara.dev">easelab</vendor>
 
@@ -43,15 +43,8 @@
 
         <!-- &begin[CodeCompletion] -->
         <completion.contributor language="any"
-                                implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationDictionaryContributor"/>
+                                implementationClass="se.ch.HAnS.codeCompletion.FileCompletionContributor"/>
         <!-- &end[CodeCompletion] -->
-
-        <!-- &begin[LiveTemplate] -->
-        <!--
-        <defaultLiveTemplates file="/liveTemplates/FeatureAnnotations.xml"/>
-        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext"/>
-        -->
-        <!-- &end[LiveTemplate] -->
 
         <!-- &begin[SyntaxHighlighting] -->
         <!-- &begin[SyntaxHighlighting::FeatureModel] -->
@@ -100,6 +93,15 @@
         <psi.referenceContributor implementation="se.ch.HAnS.referencing.FileReferenceContributor"/>
         <renameInputValidator implementation="se.ch.HAnS.referencing.FeatureNameInputValidator"/>
         <!-- &end[Referencing] -->
+
+        <!-- &begin[FileTemplate] -->
+        <fileTemplateGroup implementation="se.ch.HAnS.actions.newFile.EFAFileTemplateManager"/>
+        <!-- &end[FileTemplate] -->
+        <!-- &begin[LiveTemplate] -->
+        <defaultLiveTemplates file="/liveTemplates/EFA.xml"/>
+        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.AnyContext"/>
+        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext"/>
+        <!-- &end[LiveTemplate] -->
     </extensions>
 
     <actions>
@@ -116,5 +118,13 @@
                 icon="AllIcons.General.Remove">
             <add-to-group group-id="StructureViewPopupMenu" anchor="after" relative-to-action="AddFeature"/>
         </action>
+
+        <!-- &begin[NewFile] -->
+        <action id="CreateNewFileAction"
+                class="se.ch.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"
+                description="Create new feature mappings">
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
+        </action>
+        <!-- &end[NewFile] -->
     </actions>
 </idea-plugin>
