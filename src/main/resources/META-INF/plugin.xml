@@ -97,6 +97,9 @@
         <renameInputValidator implementation="se.ch.HAnS.referencing.FeatureNameInputValidator"/>
         <!-- &end[Referencing] -->
 
+        <!-- &begin[FileTemplate] -->
+        <fileTemplateGroup implementation="se.ch.HAnS.actions.newFile.EFAFileTemplateManager"/>
+        <!-- &end[FileTemplate] -->
         <!-- &begin[LiveTemplate] -->
         <defaultLiveTemplates file="/liveTemplates/EFA.xml"/>
         <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.AnyContext"/>
@@ -112,5 +115,13 @@
             <action id="AddFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.AddAction" text="Add..." description="Add feature" icon="AllIcons.General.Add"/>
             <action id="DeleteFeature" class="se.ch.HAnS.featureModel.toolWindow.actions.DeleteAction" text="Delete..." description="Delete feature" icon="AllIcons.General.Remove"/>
         </group>
+
+        <!-- &begin[NewFile] -->
+        <action id="CreateNewFileAction"
+                class="se.ch.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"
+                description="Create new feature mappings">
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
+        </action>
+        <!-- &end[NewFile] -->
     </actions>
 </idea-plugin>

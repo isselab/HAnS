@@ -23,8 +23,10 @@ HAnS
         FeatureToFolderCompletion
         CodeAnnotationCompletion
         LiveTemplate
+        FileTemplate
     SyntaxHighlighting
         FeatureModel
         FolderAnnotation
         FileAnnotation
         CodeAnnotation
+    NewFile
