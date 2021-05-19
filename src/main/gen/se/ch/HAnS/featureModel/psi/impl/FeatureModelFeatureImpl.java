@@ -10,6 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static se.ch.HAnS.featureModel.psi.FeatureModelTypes.*;
 import se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl;
 import se.ch.HAnS.featureModel.psi.*;
+import java.util.Deque;
 
 public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl implements FeatureModelFeature {
 
@@ -34,13 +35,18 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   }
 
   @Override
-  public String getLPQ() {
-    return FeatureModelPsiImplUtil.getLPQ(this);
+  public String getLPQText() {
+    return FeatureModelPsiImplUtil.getLPQText(this);
   }
 
   @Override
-  public String renameFeature() {
-    return FeatureModelPsiImplUtil.renameFeature(this);
+  public Deque<PsiElement> getLPQStack() {
+    return FeatureModelPsiImplUtil.getLPQStack(this);
+  }
+
+  @Override
+  public void renameFeature() {
+    FeatureModelPsiImplUtil.renameFeature(this);
   }
 
   @Override

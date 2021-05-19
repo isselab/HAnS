@@ -7,6 +7,7 @@ import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.TokenType;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 
 
@@ -509,7 +510,7 @@ public class FeatureModelLexer implements FlexLexer {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
-            { indent_levels.push(0); yybegin(feature);
+            { yypushback(1); indent_levels.push(0); yybegin(feature);
             } 
             // fall through
           case 9: break;

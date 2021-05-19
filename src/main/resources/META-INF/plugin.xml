@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>org.easelab.HAnS</id>
+    <id>${PLUGIN_ID}</id>
     <name>HAnS: Helping Annotate Software</name>
     <vendor email="johmara@student.chalmers.se" url="http://www.johmara.dev">easelab</vendor>
 
@@ -13,45 +13,38 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- &begin[FeatureModel] -->
+        <!-- &begin[HAnS::FeatureModel] -->
         <fileType name="Feature Model File" implementationClass="se.ch.HAnS.featureModel.FeatureModelFileType"
                   fieldName="INSTANCE" language="FeatureModel" extensions="feature-model"/>
         <lang.parserDefinition language="FeatureModel"
                                implementationClass="se.ch.HAnS.featureModel.FeatureModelParserDefinition"/>
-        <!-- &end[FeatureModel] -->
+        <!-- &end[HAnS::FeatureModel] -->
 
-        <!-- &begin[FileAnnotations] -->
+        <!-- &begin[HAnS::FileAnnotation] -->
         <fileType name="File Annotation File" implementationClass="se.ch.HAnS.fileAnnotation.FileAnnotationFileType"
                   fieldName="INSTANCE" language="FileAnnotation" extensions="feature-to-file"/>
         <lang.parserDefinition language="FileAnnotation"
                                 implementationClass="se.ch.HAnS.fileAnnotation.FileAnnotationParserDefinition"/>
-        <!-- &end[FileAnnotations] -->
+        <!-- &end[HAnS::FileAnnotation] -->
 
-        <!-- &begin[FolderAnnotations] -->
+        <!-- &begin[HAnS::FolderAnnotation] -->
         <fileType name="Feature To Folder File" implementationClass="se.ch.HAnS.folderAnnotation.FolderAnnotationFileType"
                   fieldName="INSTANCE" language="FolderAnnotation" extensions="feature-to-folder"/>
         <lang.parserDefinition language="FolderAnnotation"
                                implementationClass="se.ch.HAnS.folderAnnotation.FolderAnnotationParserDefinition"/>
-        <!-- &end[FolderAnnotations] -->
+        <!-- &end[HAnS::FolderAnnotation] -->
 
-        <!-- &begin[CodeAnnotations] -->
+        <!-- &begin[HAnS::CodeAnnotation] -->
         <fileType name="Code Annotation File" implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationFileType"
                   fieldName="INSTANCE" language="CodeAnnotations" extensions="code-annotation"/>
         <lang.parserDefinition language="CodeAnnotations"
                                implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationParserDefinition"/>
-        <!-- &end[CodeAnnotations] -->
+        <!-- &end[HAnS::CodeAnnotation] -->
 
         <!-- &begin[CodeCompletion] -->
         <completion.contributor language="any"
-                                implementationClass="se.ch.HAnS.codeCompletion.FeatureAnnotationDictionaryContributor"/>
+                                implementationClass="se.ch.HAnS.codeCompletion.FileCompletionContributor"/>
         <!-- &end[CodeCompletion] -->
-
-        <!-- &begin[LiveTemplate] -->
-        <!--
-        <defaultLiveTemplates file="/liveTemplates/FeatureAnnotations.xml"/>
-        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext"/>
-        -->
-        <!-- &end[LiveTemplate] -->
 
         <!-- &begin[SyntaxHighlighting] -->
         <!-- &begin[SyntaxHighlighting::FeatureModel] -->
@@ -101,12 +94,17 @@
                                  implementationClass="se.ch.HAnS.referencing.FeatureFindUsagesProvider"/>
         <useScopeEnlarger implementation="se.ch.HAnS.FeatureAnnotationScopeEnlarger"/>
         <psi.referenceContributor implementation="se.ch.HAnS.referencing.FileReferenceContributor"/>
-        <lang.namesValidator language="FeatureModel" implementationClass="se.ch.HAnS.referencing.FeatureNameValidator"/>
+        <renameInputValidator implementation="se.ch.HAnS.referencing.FeatureNameInputValidator"/>
         <!-- &end[Referencing] -->
 
         <!-- &begin[FileTemplate] -->
         <fileTemplateGroup implementation="se.ch.HAnS.actions.newFile.EFAFileTemplateManager"/>
         <!-- &end[FileTemplate] -->
+        <!-- &begin[LiveTemplate] -->
+        <defaultLiveTemplates file="/liveTemplates/EFA.xml"/>
+        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.AnyContext"/>
+        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext"/>
+        <!-- &end[LiveTemplate] -->
     </extensions>
 
     <actions>

@@ -23,7 +23,7 @@ public class CodeAnnotationAnnotator implements Annotator {
         List<CodeAnnotationFeature> featureNames = ((CodeAnnotationLpq) element).getFeatureList();
         for (CodeAnnotationFeature feature : featureNames) {
 
-            if (FeatureModelUtil.findLPQs(element.getProject(), element.getText()).isEmpty()) {
+            if (FeatureModelUtil.findLPQ(element.getProject(), element.getText()).isEmpty()) {
                 holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved property: Feature is not defined in the Feature Model")
                         .range(feature.getTextRange())
                         .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
