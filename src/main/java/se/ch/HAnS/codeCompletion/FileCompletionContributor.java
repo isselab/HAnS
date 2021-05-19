@@ -9,12 +9,12 @@ import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 public class FileCompletionContributor extends CompletionContributor {
     public FileCompletionContributor() {
-        // &begin[FeatureToFileCompletion]
+        // &begin[FileNameProvider]
         extend(CompletionType.BASIC,
                 psiElement(FileAnnotationTypes.STRING).
                         andNot(psiElement(FileAnnotationTypes.STRING).
                                 withParent(FileAnnotationFeatureNameImpl.class)),
                 new FileNameCompletionProvider(false));
-        // &end[FeatureToFileCompletion]
+        // &end[FileNameProvider]
     }
 }

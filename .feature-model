@@ -8,7 +8,7 @@ HAnS
         Language
         File
     FileAnnotation
-        Languages
+        Language
         File
     CodeAnnotation
         Language
@@ -17,16 +17,11 @@ HAnS
             JavaStyleComment
     CodeCompletion
         FileNameProvider
-        FeatureNameProvider
-        KeywordProvider
-        FeatureToFileCompletion
-        FeatureToFolderCompletion
-        CodeAnnotationCompletion
         LiveTemplate
-        FileTemplate
     SyntaxHighlighting
         FeatureModel
         FolderAnnotation
         FileAnnotation
         CodeAnnotation
-    NewFile
+    FileTemplate
+        NewFile
