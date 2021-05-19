@@ -24,7 +24,6 @@ public class FeatureModelAnnotator implements Annotator {
         }
 
         Query<PsiReference> psiReferences = ReferencesSearch.search(feature);
-        System.out.println(psiReferences.findFirst() + " and element is: " + feature.getFeatureName());
         if (psiReferences.findFirst() == null) {
             holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Feature is never used")
                     .range(feature.getFirstChild().getTextRange())

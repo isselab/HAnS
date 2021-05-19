@@ -28,6 +28,19 @@ public class FeatureViewFactory implements ToolWindowFactory {
         StructureViewFactoryImpl s = new StructureViewFactoryImpl(project);
         FileEditor e = FileEditorManager.getInstance(project).getAllEditors()[0];
 
+        PsiFile f = findFeatureModel(project);
+
+        @NotNull StructureViewComponent tab = new StructureViewComponent(e, new FeatureViewModel(f), project, true);
+
+
+        CustomizationUtil.installPopupHandler(tab, "FeatureView", ActionPlaces.getActionGroupPopupPlace("FeatureView"));
+
+        ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
+        Content content = contentFactory.createContent(tab, "", false);
+        toolWindow.getContentManager().addContent(content);
+    }
+
+    private PsiFile findFeatureModel(@NotNull Project project){
         PsiFile[] allFilenames = FilenameIndex.getFilesByName(project, ".feature-model", GlobalSearchScope.projectScope(project));
         PsiFile f = null;
         if (allFilenames.length > 0) {
@@ -40,15 +53,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
             }
         }
 
-        @NotNull StructureViewComponent tab = new StructureViewComponent(e, new FeatureViewModel(f), project, true);
-
-
-        CustomizationUtil.installPopupHandler(tab, "FeatureView", ActionPlaces.getActionGroupPopupPlace("FeatureView"));
-
-        //FeatureView tab = new FeatureView(project);
-        ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-        Content content = contentFactory.createContent(tab, "", false);
-        toolWindow.getContentManager().addContent(content);
+        return f == null? findFeatureModel(project) : f;
     }
 
 }
