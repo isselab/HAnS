@@ -1,11 +1,5 @@
-CommentContext.java
+CommentContext.java, AnyContext.java
 LiveTemplate
-
-FeatureNameCompletionProvider.java
-FeatureNameProvider
 
 FileNameCompletionProvider.java
 FileNameProvider
-
-KeywordCompletionProvider.java
-KeywordProvider
