@@ -9,12 +9,15 @@ import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.PsiFileFactoryImpl;
 import com.intellij.psi.search.searches.ReferencesSearch;
+import com.intellij.refactoring.rename.RenameDialog;
+import com.intellij.refactoring.rename.RenameWithOptionalReferencesDialog;
 import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.FeatureModelLanguage;
 import se.ch.HAnS.featureModel.FeatureModelUtil;
 import se.ch.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
+import se.ch.HAnS.featureModel.psi.FeatureModelFile;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import se.ch.HAnS.referencing.FeatureReferenceUtil;
 
@@ -160,9 +163,12 @@ public class FeatureModelPsiImplUtil {
         return findLPQRecursively(remainingCandidates, feature);
     }
 
-    public static String renameFeature(@NotNull FeatureModelFeature feature){
+    public static void renameFeature(@NotNull FeatureModelFeature feature){
+        RenameDialog dialog = new RenameDialog(feature.getProject(), feature, null, null);
+        dialog.show();
+        /*
         String newFeatureName;
-        while (true) {
+        outer: while (true) {
             newFeatureName = Messages.showInputDialog("Enter new name",
                     "Rename Feature", null);
             if (newFeatureName == null) {
@@ -178,19 +184,31 @@ public class FeatureModelPsiImplUtil {
                         "Error", Messages.getErrorIcon());
                 continue;
             }
+            else {
+                PsiElement[] l = feature.getParent().getChildren();
+                for (PsiElement e : l) {
+                    if (e.getFirstChild().getText().equals(newFeatureName)) {
+                        Messages.showMessageDialog("Feature name already exists",
+                                "Error", Messages.getErrorIcon());
+                        continue outer;
+                    }
+                }
+            }
             return renameInFeatureModel(feature, newFeatureName);
-        }
+        }*/
     }
-
+/*
     private static String renameInFeatureModel(@NotNull FeatureModelFeature feature, String newFeatureName) {
-        for (PsiReference reference : ReferencesSearch.search(feature)) {
-            reference.handleElementRename(newFeatureName);
-        }
+        WriteCommandAction.runWriteCommandAction(feature.getProject(), () -> {
+            for (PsiReference reference : ReferencesSearch.search(feature)) {
+                reference.handleElementRename(newFeatureName);
+            }
 
-        feature.setName(newFeatureName);
+            feature.setName(newFeatureName);
+        });
 
         return newFeatureName;
-    }
+    }*/
 
     public static String addFeature(@NotNull PsiElement feature){
         String newFeatureName;

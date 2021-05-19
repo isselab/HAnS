@@ -45,8 +45,8 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   }
 
   @Override
-  public String renameFeature() {
-    return FeatureModelPsiImplUtil.renameFeature(this);
+  public void renameFeature() {
+    FeatureModelPsiImplUtil.renameFeature(this);
   }
 
   @Override

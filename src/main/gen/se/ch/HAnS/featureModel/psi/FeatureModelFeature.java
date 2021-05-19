@@ -16,7 +16,7 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   Deque<PsiElement> getLPQStack();
 
-  String renameFeature();
+  void renameFeature();
 
   String addFeature();
 

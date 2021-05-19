@@ -239,15 +239,16 @@ public class FeatureView extends JPanel implements ActionListener{
     }
 
     private void getFeatureNames(PsiFile f) {
-        PsiElement r = f.getFirstChild();
-        root = new DefaultMutableTreeNode(r.getFirstChild().getText());
-
-        getChildren(r);
+        FeatureModelFeature e = (FeatureModelFeature) f.getFirstChild();
+        root = new DefaultMutableTreeNode(e.getFirstChild());
+        getChildren(e, root);
     }
 
-    private void getChildren(PsiElement p) {
-        for (PsiElement e:p.getChildren()) {
-
+    private void getChildren(FeatureModelFeature p, DefaultMutableTreeNode node) {
+        for (FeatureModelFeature e:p.getFeatureList()) {
+            DefaultMutableTreeNode child = new DefaultMutableTreeNode(e);
+            node.add(child);
+            getChildren(e, child);
         }
     }
 }
