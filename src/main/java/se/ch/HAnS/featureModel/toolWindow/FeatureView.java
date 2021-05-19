@@ -1,32 +1,24 @@
 package se.ch.HAnS.featureModel.toolWindow;
 
+import com.intellij.find.FindManager;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ui.customization.CustomizationUtil;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
-import com.intellij.psi.search.FileTypeIndex;
+import com.intellij.psi.*;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.refactoring.rename.RenameDialog;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
-import se.ch.HAnS.featureModel.FeatureModelFileType;
-import se.ch.HAnS.featureModel.FeatureModelReference;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
-import se.ch.HAnS.featureModel.psi.FeatureModelFile;
-import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -170,32 +162,21 @@ public class FeatureView extends JPanel implements ActionListener{
         }
     }
 
-    public void renameFeature() {
+    public void findFeature() {
         PsiElement selected = getSelectedItemAsPsiElement();
-        String s = null;
-        s = ((FeatureModelFeatureImpl) selected).renameFeature();
-        if (s != null) {
-            selectedFeature.setUserObject(s);
-            tree.nodeChanged(selectedFeature);
-        }
+        FindManager.getInstance(selected.getProject()).findUsages(selected);
+    }
+
+    public void renameFeature() {
+        ((FeatureModelFeature) selectedFeature.getUserObject()).renameFeature();
     }
 
     public void addFeature() {
-        PsiElement selected = getSelectedItemAsPsiElement();
-        String s = null;
-        s = ((FeatureModelFeatureImpl) selected).addFeature();
-        if (s != null) {
-            tree.insertNodeInto(new DefaultMutableTreeNode(s), selectedFeature, 0);
-        }
+        ((FeatureModelFeature) selectedFeature.getUserObject()).addFeature();
     }
 
     public void deleteFeature() {
-        PsiElement selected = getSelectedItemAsPsiElement();
-        Integer s = null;
-        s = ((FeatureModelFeatureImpl) selected).deleteFeature();
-        if (s == 1) {
-            tree.removeNodeFromParent(selectedFeature);
-        }
+        ((FeatureModelFeature) selectedFeature.getUserObject()).deleteFeature();
     }
 
     public void clear() {
@@ -240,15 +221,16 @@ public class FeatureView extends JPanel implements ActionListener{
     }
 
     private void getFeatureNames(PsiFile f) {
-        PsiElement r = f.getFirstChild();
-        root = new DefaultMutableTreeNode(r.getFirstChild().getText());
-
-        getChildren(r);
+        FeatureModelFeature e = (FeatureModelFeature) f.getFirstChild();
+        root = new DefaultMutableTreeNode(e.getFirstChild());
+        getChildren(e, root);
     }
 
-    private void getChildren(PsiElement p) {
-        for (PsiElement e:p.getChildren()) {
-
+    private void getChildren(FeatureModelFeature p, DefaultMutableTreeNode node) {
+        for (FeatureModelFeature e:p.getFeatureList()) {
+            DefaultMutableTreeNode child = new DefaultMutableTreeNode(e);
+            node.add(child);
+            getChildren(e, child);
         }
     }
 }

@@ -30,7 +30,7 @@ public class FileAnnotationAnnotator implements Annotator {
         List<FileAnnotationFeatureName> featureNames = ((FileAnnotationLpq) element).getFeatureNameList();
         for (FileAnnotationFeatureName feature : featureNames) {
 
-            if (FeatureModelUtil.findLPQs(element.getProject(), element.getText()).isEmpty()) {
+            if (FeatureModelUtil.findLPQ(element.getProject(), element.getText()).isEmpty()) {
                 holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved property: Feature is not defined in the Feature Model")
                         .range(feature.getTextRange())
                         .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)

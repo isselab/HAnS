@@ -1,4 +1,4 @@
-package se.ch.HAnS.featureModel;
+package se.ch.HAnS.referencing;
 
 import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
 import com.intellij.lang.cacheBuilder.WordsScanner;
@@ -8,7 +8,6 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelHighlightingLexerAdapter;
 
@@ -37,7 +36,7 @@ public class FeatureFindUsagesProvider implements FindUsagesProvider {
     @NotNull
     @Override
     public String getType(@NotNull PsiElement element) {
-        return "FeatureName";
+        return "Feature Name";
     }
 
     @NotNull

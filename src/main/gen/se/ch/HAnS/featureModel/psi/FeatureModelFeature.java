@@ -4,15 +4,19 @@ package se.ch.HAnS.featureModel.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import se.ch.HAnS.referencing.FeatureAnnotationNamedElement;
+import java.util.Deque;
 
-public interface FeatureModelFeature extends FeatureModelNamedElement {
+public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   @NotNull
   List<FeatureModelFeature> getFeatureList();
 
-  String getLPQ();
+  String getLPQText();
 
-  String renameFeature();
+  Deque<PsiElement> getLPQStack();
+
+  void renameFeature();
 
   String addFeature();
 
@@ -20,7 +24,7 @@ public interface FeatureModelFeature extends FeatureModelNamedElement {
 
   String getName();
 
-  PsiElement setName(String newName);
+  FeatureModelFeature setName(String newName);
 
   PsiElement getNameIdentifier();
 

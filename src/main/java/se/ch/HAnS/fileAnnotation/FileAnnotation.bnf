@@ -21,15 +21,18 @@ fileAnnotation ::= fileReferences COLON? NEWLINE+ lpqReferences
 
 fileReferences ::= (fileReference ((SPACE* CS)? SPACE* fileReference)* SPACE*)
 
-fileReference ::= (CM fileName CM) | (fileName)
+fileReference ::= (CM fileName CM) | (fileName){
+mixin="se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"}
 
 fileName ::= (STRING DOT STRING)|STRING
 
 lpqReferences ::= (lpq ((SPACE* CS)? SPACE* lpq)* SPACE*)
 
+//&begin[Referencing]
 lpq ::= featureName (SEPARATOR featureName)* {
-mixin="se.ch.HAnS.fileAnnotation.psi.impl.FileAnnotationNamedElementImpl"
-implements="se.ch.HAnS.fileAnnotation.psi.FileAnnotationNamedElement"
+mixin="se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
+implements="se.ch.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getName setName getNameIdentifier]}
+//&end[Referencing]
 
 featureName ::= STRING

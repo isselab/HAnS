@@ -4,6 +4,7 @@ package se.ch.HAnS.codeAnnotation.psi;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
+import se.ch.HAnS.referencing.FeatureAnnotationNamedElement;
 
 public class CodeAnnotationVisitor extends PsiElementVisitor {
 
@@ -24,11 +25,15 @@ public class CodeAnnotationVisitor extends PsiElementVisitor {
   }
 
   public void visitLpq(@NotNull CodeAnnotationLpq o) {
-    visitPsiElement(o);
+    visitFeatureAnnotationNamedElement(o);
   }
 
   public void visitParameter(@NotNull CodeAnnotationParameter o) {
     visitPsiElement(o);
+  }
+
+  public void visitFeatureAnnotationNamedElement(@NotNull FeatureAnnotationNamedElement o) {
+    visitElement(o);
   }
 
   public void visitPsiElement(@NotNull PsiElement o) {

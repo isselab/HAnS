@@ -4,15 +4,16 @@ package se.ch.HAnS.folderAnnotation.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import se.ch.HAnS.referencing.FeatureAnnotationNamedElement;
 
-public interface FolderAnnotationLpq extends FolderAnnotationNamedElement {
+public interface FolderAnnotationLpq extends FeatureAnnotationNamedElement {
 
   @NotNull
   List<FolderAnnotationFeature> getFeatureList();
 
   String getName();
 
-  PsiElement setName(String newName);
+  FolderAnnotationLpq setName(String newName);
 
   PsiElement getNameIdentifier();
 

@@ -4,10 +4,17 @@ package se.ch.HAnS.codeAnnotation.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import se.ch.HAnS.referencing.FeatureAnnotationNamedElement;
 
-public interface CodeAnnotationLpq extends PsiElement {
+public interface CodeAnnotationLpq extends FeatureAnnotationNamedElement {
 
   @NotNull
   List<CodeAnnotationFeature> getFeatureList();
+
+  String getName();
+
+  CodeAnnotationLpq setName(String newName);
+
+  PsiElement getNameIdentifier();
 
 }

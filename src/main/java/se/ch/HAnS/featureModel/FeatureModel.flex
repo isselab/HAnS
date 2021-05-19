@@ -5,6 +5,7 @@ import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.TokenType;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 
 %%
@@ -43,7 +44,7 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 %s dedent
 
 %%
-<YYINITIAL>.         { indent_levels.push(0); yybegin(feature); }
+<YYINITIAL>.         { yypushback(1); indent_levels.push(0); yybegin(feature); }
 
 <indent>{SPACE}      { current_line_indent++; }
 <indent>{INDENT}     { current_line_indent = (current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1); }
@@ -112,5 +113,4 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
         yybegin(indent);
         return FeatureModelTypes.FEATURENAME;
 }
-
 [^]    { return TokenType.BAD_CHARACTER; }

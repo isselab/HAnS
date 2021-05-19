@@ -17,9 +17,11 @@
 
 featureToFolderFile ::= CRLF* lpq (CRLF* CS* CRLF* lpq)* CRLF*
 
+//&begin[Referencing]
 lpq ::= feature (SEPARATOR feature)* {
-mixin="se.ch.HAnS.folderAnnotation.psi.impl.FolderAnnotationNamedElementImpl"
-implements="se.ch.HAnS.folderAnnotation.psi.FolderAnnotationNamedElement"
+mixin="se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
+implements="se.ch.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getName setName getNameIdentifier]}
+//&end[Referencing]
 
 feature ::= FEATURENAME

@@ -1,14 +1,16 @@
-package se.ch.HAnS.folderAnnotation.psi.impl;
+package se.ch.HAnS.codeAnnotation.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationElementFactory;
+import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationElementFactory;
+import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationLpq;
 import se.ch.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
+import se.ch.HAnS.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil;
 
-public class FolderAnnotationPsiImplUtil {
+public class CodeAnnotationPsiImplUtil {
 
-    //&end[Referencing]
-    public static String getName(FolderAnnotationLpq feature) {
+    // &begin[Referencing]
+    public static String getName(CodeAnnotationLpq feature) {
         ASTNode featureNode = feature.getNode();
         if (featureNode != null) {
             // IMPORTANT: Convert embedded escaped spaces to simple spaces
@@ -18,23 +20,23 @@ public class FolderAnnotationPsiImplUtil {
         }
     }
 
-    public static FolderAnnotationLpq setName(FolderAnnotationLpq element, String newName) {
+    public static CodeAnnotationLpq setName(CodeAnnotationLpq element, String newName) {
         ASTNode featureNode = element.getNode();
         if (featureNode != null) {
-            FolderAnnotationLpq feature = FolderAnnotationElementFactory.createLPQ(element.getProject(), newName);
+            CodeAnnotationLpq feature = CodeAnnotationElementFactory.createLPQ(element.getProject(), newName);
             ASTNode newKeyNode = feature.getNode();
             element.getParent().getNode().replaceChild(featureNode, newKeyNode);
         }
         return element;
     }
 
-    public static PsiElement getNameIdentifier(FolderAnnotationLpq element) {
+    public static PsiElement getNameIdentifier(CodeAnnotationLpq element) {
         ASTNode node = element.getNode();
         if (node != null) {
             return node.getPsi();
         }
         return null;
     }
-    //&end[Referencing]
+    // &end[Referencing]
 
 }
