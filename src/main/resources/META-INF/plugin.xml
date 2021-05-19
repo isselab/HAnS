@@ -103,6 +103,9 @@
         <psi.referenceContributor implementation="se.ch.HAnS.referencing.FileReferenceContributor"/>
         <renameInputValidator implementation="se.ch.HAnS.referencing.FeatureNameInputValidator"/>
         <!-- &end[Referencing] -->
+
+        <lang.psiStructureViewFactory language="FeatureModel"
+                                      implementationClass="se.ch.HAnS.structure.FeatureViewFactory"/>
     </extensions>
 
     <actions>

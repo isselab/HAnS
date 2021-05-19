@@ -3,6 +3,7 @@ package se.ch.HAnS.featureModel.toolWindow;
 import com.intellij.find.FindManager;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.ui.customization.CustomizationUtil;
+import com.intellij.ide.util.treeView.smartTree.SmartTreeStructure;
 import com.intellij.openapi.actionSystem.ActionPlaces;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -19,6 +20,7 @@ import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
+import se.ch.HAnS.structure.FeatureViewModel;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -57,10 +59,10 @@ public class FeatureView extends JPanel implements ActionListener{
         super(new BorderLayout());
         view = this;
         this.project = project;
-
         getFeatureNames(getFeatureModel());
         tree = new DefaultTreeModel(root);
         left = new Tree(tree);
+        //SmartTreeStructure left = new SmartTreeStructure(project, new FeatureViewModel(getFeatureModel()));
         left.getSelectionModel().setSelectionMode
                 (TreeSelectionModel.SINGLE_TREE_SELECTION);
 

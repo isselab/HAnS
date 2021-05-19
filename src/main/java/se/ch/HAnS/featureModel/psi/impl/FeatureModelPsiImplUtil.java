@@ -1,6 +1,7 @@
 package se.ch.HAnS.featureModel.psi.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.ui.Messages;
@@ -8,16 +9,41 @@ import com.intellij.psi.*;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.refactoring.rename.RenameDialog;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import se.ch.HAnS.AnnotationIcons;
 import se.ch.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 import se.ch.HAnS.referencing.FeatureReference;
 import se.ch.HAnS.referencing.FeatureReferenceUtil;
 
+import javax.swing.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
+
+    public static ItemPresentation getPresentation(final FeatureModelFeature element) {
+        return new ItemPresentation() {
+            @Nullable
+            @Override
+            public String getPresentableText() {
+                return element.getName();
+            }
+
+            @Nullable
+            @Override
+            public String getLocationString() {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public Icon getIcon(boolean unused) {
+                return null;
+            }
+        };
+    }
 
     // &begin[Referencing]
     public static String getFeatureName(FeatureModelFeature element){
