@@ -217,6 +217,7 @@ public class FeatureModelPsiImplUtil {
                 }
             }
             addToFeatureModel(feature, newFeatureName);
+            return;
         }
     }
 
@@ -233,7 +234,7 @@ public class FeatureModelPsiImplUtil {
             indent = feature.getPrevSibling().getTextLength() + 4;
         }
 
-        FeatureReferenceUtil.setElementsToRenameWhenAdding(feature, newFeatureName);
+        //FeatureReferenceUtil.setElementsToRenameWhenAdding(feature, newFeatureName);
 
         if (document != null) {
             String documentText = document.getText();
@@ -247,8 +248,8 @@ public class FeatureModelPsiImplUtil {
             WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
         }
 
-        FeatureReferenceUtil.rename();
-        FeatureReferenceUtil.reset();
+        //FeatureReferenceUtil.rename();
+        //FeatureReferenceUtil.reset();
 
         return newFeatureName;
     }
@@ -267,43 +268,20 @@ public class FeatureModelPsiImplUtil {
     }
 
     private static void deleteFromFeatureModelWithChildren(@NotNull PsiElement feature) {
-        List<PsiElement> toDelete = new ArrayList<>();
+        Document document = PsiDocumentManager.getInstance(feature.getProject()).getDocument(feature.getContainingFile());
+        int startOffset = feature.getTextOffset();
+        int endOffset = feature.getTextOffset() + feature.getNode().getTextLength();
 
-        feature.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
-            boolean add = false;
-            int indentation;
-
-            @Override
-            public void visitElement(@NotNull PsiElement element) {
-                if (element instanceof FeatureModelFeature){
-                    if (add) {
-                        if (element.getPrevSibling().getText().length() <= indentation) {
-                            add = false;
-                        }
-                        else {
-                            deleteLine(element);
-                        }
-                    }
-                    else if (element.equals(feature)){
-                        deleteLine(element);
-                        indentation = element.getPrevSibling().getText().length();
-                        add = true;
-                    }
-                }
-                super.visitElement(element);
-            }
-
-            private void deleteLine(@NotNull PsiElement element) {
-                toDelete.add(element);
-                toDelete.add(element.getPrevSibling());
-                toDelete.add(element.getPrevSibling().getPrevSibling());
-            }
-        });
-
-        WriteCommandAction.runWriteCommandAction(feature.getProject(), () -> {
-            for (PsiElement e : toDelete) {
-                e.delete();
-            }
-        });
+        if (document != null) {
+            String documentText = document.getText();
+            String sub = documentText.substring(0, startOffset);
+            String remainder = documentText.substring(endOffset);
+            String newContent = sub.concat(remainder);
+            Runnable r = () -> {
+                document.setReadOnly(false);
+                document.setText(newContent);
+            };
+            WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
+        }
     }
 }
