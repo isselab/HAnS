@@ -10,10 +10,7 @@ import se.ch.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.featureModel.psi.FeatureModelTypes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FeatureReferenceUtil {
 
@@ -88,9 +85,12 @@ public class FeatureReferenceUtil {
     public static void setElementsToRenameWhenRenaming(FeatureModelFeature element, String newName) {
         Map<FeatureModelFeature, List<PsiReference>> toRename = new HashMap<>();
 
+        System.out.println("Will rename");
+
         List<FeatureModelFeature> elementsToRename = getElementsToRenameWhenRenaming(element, newName);
 
         for (FeatureModelFeature e : elementsToRename) {
+            System.out.println(e.getLPQText());
             List<PsiReference> referencedElements = new ArrayList<>();
             for (PsiReference reference : ReferencesSearch.search(e)) {
                 referencedElements.add(reference);
@@ -110,7 +110,7 @@ public class FeatureReferenceUtil {
                     if (((FeatureModelFeature) e).getLPQText().contains(newName)) {
                         elementsToRename.add((FeatureModelFeature) e);
                     }
-                    else if (((FeatureModelFeature) e).getLPQText().contains(element.getNode().getText())) {
+                    else if (((FeatureModelFeature) e).getLPQText().contains(Objects.requireNonNull(element.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getText())) {
                         elementsToRename.add((FeatureModelFeature) e);
                     }
                 }
