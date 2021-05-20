@@ -4,11 +4,20 @@ package se.ch.HAnS.folderAnnotation.psi;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
+import se.ch.HAnS.referencing.FeatureAnnotationNamedElement;
 
 public class FolderAnnotationVisitor extends PsiElementVisitor {
 
-  public void visitLpq(@NotNull FolderAnnotationLpq o) {
+  public void visitFeature(@NotNull FolderAnnotationFeature o) {
     visitPsiElement(o);
+  }
+
+  public void visitLpq(@NotNull FolderAnnotationLpq o) {
+    visitFeatureAnnotationNamedElement(o);
+  }
+
+  public void visitFeatureAnnotationNamedElement(@NotNull FeatureAnnotationNamedElement o) {
+    visitElement(o);
   }
 
   public void visitPsiElement(@NotNull PsiElement o) {

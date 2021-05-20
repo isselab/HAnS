@@ -2,7 +2,6 @@ HAnS
     FeatureModel
         Language
         File
-        FeatureView
     FolderAnnotation
         Language
         File
@@ -16,14 +15,13 @@ HAnS
             JavaStyleComment
     CodeCompletion
         FileNameProvider
-        FeatureNameProvider
-        KeywordProvider
-        FeatureToFileCompletion
-        FeatureToFolderCompletion
-        CodeAnnotationCompletion
         LiveTemplate
     SyntaxHighlighting
         FeatureModel
         FolderAnnotation
         FileAnnotation
         CodeAnnotation
+    Referencing
+    FeatureView
+    FileTemplate
+        NewFile

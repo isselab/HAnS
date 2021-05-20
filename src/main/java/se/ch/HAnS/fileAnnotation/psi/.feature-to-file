@@ -3,3 +3,6 @@ FileAnnotation::File
 
 FileAnnotationElementType.java FileAnnotationTokenType.java
 FileAnnotation::Language
+
+FileAnnotationElementFactory.java FileAnnotationNamedElement.java
+Referencing

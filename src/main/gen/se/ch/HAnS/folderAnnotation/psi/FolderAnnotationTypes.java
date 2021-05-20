@@ -8,6 +8,7 @@ import se.ch.HAnS.folderAnnotation.psi.impl.*;
 
 public interface FolderAnnotationTypes {
 
+  IElementType FEATURE = new FolderAnnotationElementType("FEATURE");
   IElementType LPQ = new FolderAnnotationElementType("LPQ");
 
   IElementType CRLF = new FolderAnnotationTokenType("CRLF");
@@ -18,7 +19,10 @@ public interface FolderAnnotationTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-      if (type == LPQ) {
+      if (type == FEATURE) {
+        return new FolderAnnotationFeatureImpl(node);
+      }
+      else if (type == LPQ) {
         return new FolderAnnotationLpqImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);

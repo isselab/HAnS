@@ -4,17 +4,33 @@ package se.ch.HAnS.featureModel.psi;
 import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import se.ch.HAnS.referencing.FeatureAnnotationNamedElement;
+import com.intellij.navigation.ItemPresentation;
+import java.util.Deque;
 
-public interface FeatureModelFeature extends PsiElement {
+public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
-  String renameFeature();
+  @NotNull
+  List<FeatureModelFeature> getFeatureList();
 
-  String addFeature();
+  String getLPQText();
+
+  Deque<PsiElement> getLPQStack();
+
+  void renameFeature();
+
+  void addFeature();
 
   int deleteFeature();
 
-  //WARNING: addMiscFeature(...) is skipped
-  //matching addMiscFeature(FeatureModelFeature, ...)
-  //methods are not found in FeatureModelPsiImplUtil
+  String getName();
+
+  FeatureModelFeature setName(String newName);
+
+  PsiElement getNameIdentifier();
+
+  String getFeatureName();
+
+  ItemPresentation getPresentation();
 
 }

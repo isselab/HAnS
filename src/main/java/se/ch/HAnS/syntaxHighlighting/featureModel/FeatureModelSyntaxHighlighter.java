@@ -29,7 +29,7 @@ public class FeatureModelSyntaxHighlighter extends SyntaxHighlighterBase {
 
     @Override
     public @NotNull Lexer getHighlightingLexer() {
-        return new FeatureModelLexerAdapter();
+        return new FeatureModelHighlightingLexerAdapter();
     }
 
     @Override

@@ -15,10 +15,11 @@
   psiImplUtilClass="se.ch.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil"
 }
 
-featureModelFile ::= projectName ((CRLF)*(TAB)* feature)* ((TAB|CRLF)*)
+featureModelFile ::= (feature (feature)?)?
 
-projectName ::= FEATURENAME
-{methods=[renameFeature addFeature deleteFeature addMiscFeature]}
-
-feature ::= FEATURENAME
-{methods=[renameFeature addFeature deleteFeature addMiscFeature]}
+// &begin[Referencing]
+feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?) {
+mixin="se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
+implements="se.ch.HAnS.referencing.FeatureAnnotationNamedElement"
+methods=[getLPQText getLPQStack renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName getPresentation]}
+// &end[Referencing]

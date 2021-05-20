@@ -11,8 +11,17 @@
   elementTypeHolderClass="se.ch.HAnS.folderAnnotation.psi.FolderAnnotationTypes"
   elementTypeClass="se.ch.HAnS.folderAnnotation.psi.FolderAnnotationElementType"
   tokenTypeClass="se.ch.HAnS.folderAnnotation.psi.FolderAnnotationTokenType"
+
+  psiImplUtilClass="se.ch.HAnS.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil"
 }
 
 featureToFolderFile ::= CRLF* lpq (CRLF* CS* CRLF* lpq)* CRLF*
 
-lpq ::= FEATURENAME (SEPARATOR FEATURENAME)*
+//&begin[Referencing]
+lpq ::= feature (SEPARATOR feature)* {
+mixin="se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
+implements="se.ch.HAnS.referencing.FeatureAnnotationNamedElement"
+methods=[getName setName getNameIdentifier]}
+//&end[Referencing]
+
+feature ::= FEATURENAME

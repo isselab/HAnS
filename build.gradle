@@ -19,7 +19,8 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2021.1.1'
+    version '2021.1'
+    plugins 'java'
 }
 patchPluginXml {
     changeNotes """
@@ -34,7 +35,13 @@ patchPluginXml {
         </ul>
         </li>
         <li>Syntax Highlighting</li>
+        <ul>
+            <li>Context based</li>
+        </ul>
         <li>Code Completion</li>
+        <ul>
+            <li>With referencing</li>
+        </ul>
         <li>Feature View</li>
         </ul>"""
 }

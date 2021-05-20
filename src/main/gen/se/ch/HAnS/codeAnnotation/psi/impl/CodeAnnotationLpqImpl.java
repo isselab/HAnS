@@ -1,13 +1,17 @@
 // This is a generated file. Not intended for manual editing.
 package se.ch.HAnS.codeAnnotation.psi.impl;
 
+import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
+import static se.ch.HAnS.codeAnnotation.psi.CodeAnnotationTypes.*;
+import se.ch.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl;
 import se.ch.HAnS.codeAnnotation.psi.*;
 
-public class CodeAnnotationLpqImpl extends ASTWrapperPsiElement implements CodeAnnotationLpq {
+public class CodeAnnotationLpqImpl extends FeatureAnnotationNamedElementImpl implements CodeAnnotationLpq {
 
   public CodeAnnotationLpqImpl(@NotNull ASTNode node) {
     super(node);
@@ -21,6 +25,27 @@ public class CodeAnnotationLpqImpl extends ASTWrapperPsiElement implements CodeA
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof CodeAnnotationVisitor) accept((CodeAnnotationVisitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @NotNull
+  public List<CodeAnnotationFeature> getFeatureList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, CodeAnnotationFeature.class);
+  }
+
+  @Override
+  public String getName() {
+    return CodeAnnotationPsiImplUtil.getName(this);
+  }
+
+  @Override
+  public CodeAnnotationLpq setName(String newName) {
+    return CodeAnnotationPsiImplUtil.setName(this, newName);
+  }
+
+  @Override
+  public PsiElement getNameIdentifier() {
+    return CodeAnnotationPsiImplUtil.getNameIdentifier(this);
   }
 
 }
