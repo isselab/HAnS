@@ -49,7 +49,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
             }
         }
 
-        return f;
+        return f == null? findFeatureModel(project) : f;
     }
 
 }
