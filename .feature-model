@@ -2,8 +2,6 @@ HAnS
     FeatureModel
         Language
         File
-        FeatureView
-        Referencing
     FolderAnnotation
         Language
         File
@@ -23,5 +21,7 @@ HAnS
         FolderAnnotation
         FileAnnotation
         CodeAnnotation
+    Referencing
+    FeatureView
     FileTemplate
         NewFile
