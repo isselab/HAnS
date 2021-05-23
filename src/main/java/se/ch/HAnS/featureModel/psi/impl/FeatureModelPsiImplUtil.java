@@ -227,7 +227,12 @@ public class FeatureModelPsiImplUtil {
 
         int indent;
 
-        if (feature.getPrevSibling() instanceof FeatureModelFeature) {
+        System.out.println(newFeatureName);
+
+        if (feature.getParent() instanceof PsiFile) {
+            indent = 4;
+        }
+        else if (feature.getPrevSibling() instanceof FeatureModelFeature) {
             indent = feature.getPrevSibling().getLastChild().getTextLength() + 4; // TODO: Make indentation setting dependent
         }
         else {

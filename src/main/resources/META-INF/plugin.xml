@@ -81,7 +81,7 @@
         <!-- &end[Injection] -->
 
         <!-- &begin[FeatureView] -->
-        <toolWindow id="Feature view" secondary="true" icon="AllIcons.General.Modified" anchor="left"
+        <toolWindow id="Feature Model View" secondary="true" icon="AllIcons.General.Modified" anchor="left"
                     factoryClass="se.ch.HAnS.featureView.FeatureViewFactory"/>
         <!-- &end[FeatureView] -->
 
