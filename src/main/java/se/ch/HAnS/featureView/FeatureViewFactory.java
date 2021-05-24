@@ -17,6 +17,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import org.jetbrains.annotations.NotNull;
+import se.ch.HAnS.AnnotationIcons;
 import se.ch.HAnS.featureView.FeatureViewModel;
 
 import java.util.Collection;
@@ -34,6 +35,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         Content content = contentFactory.createContent(tab, "", false);
         toolWindow.getContentManager().addContent(content);
+        toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
     }
 
     private PsiFile findFeatureModel(@NotNull Project project){

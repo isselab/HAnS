@@ -15,7 +15,7 @@ public class EFAFileTemplateManager implements FileTemplateGroupDescriptorFactor
     @Override
     public FileTemplateGroupDescriptor getFileTemplatesDescriptor() {
         FileTemplateGroupDescriptor group = new FileTemplateGroupDescriptor("EFA - HAnS", AnnotationIcons.PluginIcon);
-        group.addTemplate(new FileTemplateDescriptor(FEATURE_MODEL_FILE, AnnotationIcons.FileType));
+        group.addTemplate(new FileTemplateDescriptor(FEATURE_MODEL_FILE, AnnotationIcons.FeatureModelIcon));
         group.addTemplate(new FileTemplateDescriptor(FEATURE_TO_FOLDER_FILE, AnnotationIcons.FileType));
         group.addTemplate(new FileTemplateDescriptor(FEATURE_TO_FILE_FILE, AnnotationIcons.FileType));
         return group;

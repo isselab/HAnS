@@ -18,7 +18,7 @@ public class CreateNewFileAction extends CreateFileFromTemplateAction implements
         builder.setTitle("New Embedded Feature Annotation File")
                 .addKind("Folder mapping", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_TO_FOLDER_FILE)
                 .addKind("File mapping", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_TO_FILE_FILE)
-                .addKind("Model", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_MODEL_FILE);
+                .addKind("Model", AnnotationIcons.FeatureModelIcon, EFAFileTemplateManager.FEATURE_MODEL_FILE);
     }
 
     @Override

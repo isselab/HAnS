@@ -31,6 +31,6 @@ public class FeatureModelFileType extends LanguageFileType {
 
     @Override
     public @Nullable Icon getIcon() {
-        return AnnotationIcons.FileType;
+        return AnnotationIcons.FeatureModelIcon;
     }
 }

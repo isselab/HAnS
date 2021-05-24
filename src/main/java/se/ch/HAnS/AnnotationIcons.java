@@ -7,6 +7,7 @@ import javax.swing.*;
 public class AnnotationIcons {
 
     public static final Icon FileType = IconLoader.getIcon("/icons/featureAnnotationLogo.svg", AnnotationIcons.class);
+    public static final Icon FeatureModelIcon = IconLoader.getIcon("/icons/fmIcon.svg", AnnotationIcons.class);
     public static final Icon PluginIcon = IconLoader.getIcon("icons/pluginIcon.svg", AnnotationIcons.class);
 
 }
