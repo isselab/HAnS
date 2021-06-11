@@ -26,6 +26,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+        toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
         StructureViewFactoryImpl s = new StructureViewFactoryImpl(project);
         FileEditor e = FileEditorManager.getInstance(project).getAllEditors()[0];
         PsiFile f = findFeatureModel(project);
@@ -35,7 +36,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         Content content = contentFactory.createContent(tab, "", false);
         toolWindow.getContentManager().addContent(content);
-        toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
+
     }
 
     private PsiFile findFeatureModel(@NotNull Project project){
