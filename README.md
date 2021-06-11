@@ -4,11 +4,7 @@
 HAnS is a plugin that aims to help developers with annotating software. The annotations themselves are a proven help with
 locating features, so called feature location.
 
-<figure class="video_container">
-  <video controls>
-    <source src="materials/HAnS-Demo.mp4" type="video/mp4">
-  </video>
-</figure>
+[Demo video](https://youtu.be/cx_-ZshHLgA)
 
 HAnS-text supports:
 * Feature Annotation Languages
