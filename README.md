@@ -6,6 +6,12 @@ locating features, so called feature location.
 
 [Demo video](https://youtu.be/cx_-ZshHLgA)
 
+<figure class="video_container">
+  <video controls>
+    <source src="materials/HAnS-Demo.mp4" type="video/mp4">
+  </video>
+</figure>
+
 HAnS-text supports:
 * Feature Annotation Languages
 * Syntax Highlighting
