@@ -1,3 +1,18 @@
+/*
+Copyright 2021 Herman Jansson & Johan Martinson
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package se.ch.HAnS.featureView;
 
 import com.intellij.ide.structureView.impl.StructureViewFactoryImpl;
@@ -26,6 +41,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+        toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
         StructureViewFactoryImpl s = new StructureViewFactoryImpl(project);
         FileEditor e = FileEditorManager.getInstance(project).getAllEditors()[0];
         PsiFile f = findFeatureModel(project);
@@ -35,7 +51,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         Content content = contentFactory.createContent(tab, "", false);
         toolWindow.getContentManager().addContent(content);
-        toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
+
     }
 
     private PsiFile findFeatureModel(@NotNull Project project){
