@@ -1,5 +1,5 @@
 /*
-Copyright [2021] [Herman Jansson & Johan Martinson]
+Copyright 2021 Herman Jansson & Johan Martinson
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
