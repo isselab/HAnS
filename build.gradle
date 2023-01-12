@@ -1,11 +1,11 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.7.3'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.31'
+    id 'org.jetbrains.intellij' version '1.11.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.0'
 }
 
 group 'org.easelab'
-version '1.0'
+version '1.1'
 
 repositories {
     mavenCentral()
@@ -19,11 +19,11 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2021.1'
-    plugins 'java'
+    version = '2022.2.4'
+    plugins = ['java']
 }
 patchPluginXml {
-    changeNotes """
+    changeNotes = """
       <p>Suported Features:</p>
         <ul>
         <li>Feature Annotation Languages

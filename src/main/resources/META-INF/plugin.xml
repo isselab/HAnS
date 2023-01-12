@@ -16,7 +16,7 @@ limitations under the License.
 <idea-plugin>
     <id>${PLUGIN_ID}</id>
     <name>HAnS: Helping Annotate Software</name>
-    <vendor email="johmara@student.chalmers.se" url="http://www.johmara.dev">easelab</vendor>
+    <vendor email="johan.t.martinson+HAnS@gmail.com" url="https://bitbucket.org/easelab/hans-text/">Johan Martinson and Herman Jansson</vendor>
 
     <description><![CDATA[
     Providing support for editing embedded feature annotations
