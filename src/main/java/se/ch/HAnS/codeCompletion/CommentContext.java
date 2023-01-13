@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 public class CommentContext extends TemplateContextType {
 
     public CommentContext() {
-        super("COMMENT", "Comment");
+        super("Comment");
     }
 
     @Override

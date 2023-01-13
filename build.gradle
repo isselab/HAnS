@@ -19,8 +19,8 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = '2022.2.4'
-    plugins = ['java']
+    version = '2022.3.1'
+    plugins = []
 }
 patchPluginXml {
     changeNotes = """

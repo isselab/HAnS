@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class AnyContext extends TemplateContextType {
     protected AnyContext() {
-        super("ANY", "Any");
+        super("Any");
     }
 
     @Override

@@ -25,7 +25,7 @@ limitations under the License.
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.java</depends>
+    <!--<depends>com.intellij.modules.java</depends>-->
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[HAnS::FeatureModel] -->
@@ -101,11 +101,11 @@ limitations under the License.
         <!-- &end[FeatureView] -->
 
         <!-- &begin[Referencing] -->
-        <psi.referenceContributor implementation="se.ch.HAnS.referencing.FeatureReferenceContributor"/>
+        <psi.referenceContributor implementation="se.ch.HAnS.referencing.FeatureReferenceContributor" language=""/>
         <lang.findUsagesProvider language="FeatureModel"
                                  implementationClass="se.ch.HAnS.referencing.FeatureFindUsagesProvider"/>
         <useScopeEnlarger implementation="se.ch.HAnS.FeatureAnnotationScopeEnlarger"/>
-        <psi.referenceContributor implementation="se.ch.HAnS.referencing.FileReferenceContributor"/>
+        <psi.referenceContributor implementation="se.ch.HAnS.referencing.FileReferenceContributor" language=""/>
         <renameInputValidator implementation="se.ch.HAnS.referencing.FeatureNameInputValidator"/>
         <!-- &end[Referencing] -->
 
@@ -114,8 +114,8 @@ limitations under the License.
         <!-- &end[FileTemplate] -->
         <!-- &begin[LiveTemplate] -->
         <defaultLiveTemplates file="/liveTemplates/EFA.xml"/>
-        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.AnyContext"/>
-        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext"/>
+        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
+        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
     </extensions>
 
