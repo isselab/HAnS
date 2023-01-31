@@ -27,9 +27,12 @@ import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 public class FeatureViewModel extends StructureViewModelBase implements
         StructureViewModel.ElementInfoProvider {
 
+    //*************Version2.0**************
     public FeatureViewModel(PsiFile psiFile) {
-        super(psiFile, new FeatureViewElement((FeatureModelFeatureImpl) psiFile.getFirstChild()));
+        super(psiFile, new FeatureViewElement(psiFile));
     }
+    //*******************************/
+
 
     @NotNull
     public Sorter[] getSorters() {

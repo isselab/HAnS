@@ -25,6 +25,7 @@ import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationFeature;
 import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationLpq;
 import se.ch.HAnS.featureModel.FeatureModelUtil;
 import se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighter;
+import se.ch.HAnS.unassignedFeature.UnassignedFeatureQuickFix;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class CodeAnnotationAnnotator implements Annotator {
                         .range(feature.getTextRange())
                         .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
                         // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
+                        .withFix(new UnassignedFeatureQuickFix(element.getText())) //*******QuickFix*********
                         //.withFix(new FeatureModelCreateNewFeature(featureText))
                         .create();
             } else {

@@ -20,6 +20,8 @@ import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.smartTree.SortableTreeElement;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.psi.NavigatablePsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
 import se.ch.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
@@ -29,11 +31,13 @@ import java.util.List;
 
 public class FeatureViewElement implements StructureViewTreeElement, SortableTreeElement {
 
-    private final FeatureModelFeatureImpl myElement;
+    //***************Version2.0*****************
+    private final NavigatablePsiElement myElement;
 
-    public FeatureViewElement(FeatureModelFeatureImpl element) {
+    public FeatureViewElement(NavigatablePsiElement element) {
         this.myElement = element;
     }
+    //************************************
 
     @Override
     public Object getValue() {
@@ -69,6 +73,8 @@ public class FeatureViewElement implements StructureViewTreeElement, SortableTre
         return presentation != null ? presentation : new PresentationData();
     }
 
+    /*/ Original HAnS-text
+
     @NotNull
     @Override
     public TreeElement @NotNull [] getChildren() {
@@ -81,6 +87,20 @@ public class FeatureViewElement implements StructureViewTreeElement, SortableTre
             return treeElements.toArray(new TreeElement[0]);
         }
         return EMPTY_ARRAY;
+        }*/
+    //********************Version2.0**********************
+    @Override
+    public TreeElement @NotNull [] getChildren() {
+        List<FeatureModelFeature> properties = PsiTreeUtil.getChildrenOfTypeAsList(myElement, FeatureModelFeature.class);
+        if (!properties.isEmpty()) {
+            List<TreeElement> treeElements = new ArrayList<>();
+            for (FeatureModelFeature feature : properties) {
+                treeElements.add(new FeatureViewElement((FeatureModelFeatureImpl) feature));
+            }
+            return treeElements.toArray(new TreeElement[0]);
+        }
+        return EMPTY_ARRAY;
     }
-
 }
+//**********************************************
+
