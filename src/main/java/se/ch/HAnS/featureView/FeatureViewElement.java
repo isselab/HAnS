@@ -31,13 +31,11 @@ import java.util.List;
 
 public class FeatureViewElement implements StructureViewTreeElement, SortableTreeElement {
 
-    //***************Version2.0*****************
     private final NavigatablePsiElement myElement;
 
     public FeatureViewElement(NavigatablePsiElement element) {
         this.myElement = element;
     }
-    //************************************
 
     @Override
     public Object getValue() {
@@ -73,22 +71,6 @@ public class FeatureViewElement implements StructureViewTreeElement, SortableTre
         return presentation != null ? presentation : new PresentationData();
     }
 
-    /*/ Original HAnS-text
-
-    @NotNull
-    @Override
-    public TreeElement @NotNull [] getChildren() {
-        myElement.getFeatureList();
-        if (!myElement.getFeatureList().isEmpty()) {
-            List<TreeElement> treeElements = new ArrayList<>();
-            for (FeatureModelFeature feature : myElement.getFeatureList()) {
-                treeElements.add(new FeatureViewElement((FeatureModelFeatureImpl) feature));
-            }
-            return treeElements.toArray(new TreeElement[0]);
-        }
-        return EMPTY_ARRAY;
-        }*/
-    //********************Version2.0**********************
     @Override
     public TreeElement @NotNull [] getChildren() {
         List<FeatureModelFeature> properties = PsiTreeUtil.getChildrenOfTypeAsList(myElement, FeatureModelFeature.class);
@@ -102,5 +84,3 @@ public class FeatureViewElement implements StructureViewTreeElement, SortableTre
         return EMPTY_ARRAY;
     }
 }
-//**********************************************
-

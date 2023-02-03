@@ -25,3 +25,5 @@ HAnS
     FeatureView
     FileTemplate
         NewFile
+	UnassignedFeature
+	    QuickFix

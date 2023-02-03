@@ -44,7 +44,7 @@ public class CodeAnnotationAnnotator implements Annotator {
                         .range(feature.getTextRange())
                         .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
                         // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
-                        .withFix(new UnassignedFeatureQuickFix(element.getText())) //*******QuickFix*********
+                        .withFix(new UnassignedFeatureQuickFix(element.getText())) // &line[QuickFix]
                         //.withFix(new FeatureModelCreateNewFeature(featureText))
                         .create();
             } else {
