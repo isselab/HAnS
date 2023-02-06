@@ -25,6 +25,7 @@ import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationFeature;
 import se.ch.HAnS.codeAnnotation.psi.CodeAnnotationLpq;
 import se.ch.HAnS.featureModel.FeatureModelUtil;
 import se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighter;
+import se.ch.HAnS.unassignedFeature.UnassignedFeatureQuickFix;
 
 import java.util.List;
 
@@ -42,8 +43,7 @@ public class CodeAnnotationAnnotator implements Annotator {
                 holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved property: Feature is not defined in the Feature Model")
                         .range(feature.getTextRange())
                         .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
-                        // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
-                        //.withFix(new FeatureModelCreateNewFeature(featureText))
+                        .withFix(new UnassignedFeatureQuickFix(element.getText())) // &line[Quickfix]
                         .create();
             } else {
                 // Found at least one property, force the text attributes to Simple syntax value character

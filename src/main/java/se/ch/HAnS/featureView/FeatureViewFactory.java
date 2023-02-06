@@ -42,7 +42,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
         var fileEditor = FileEditorManager.getInstance(project).getAllEditors()[0];
         var psiFile = findFeatureModel(project);
 
-        @NotNull StructureViewComponent tab = new StructureViewComponent(fileEditor, new FeatureViewModel(psiFile), project, true);
+        @NotNull StructureViewComponent tab = new StructureViewComponent(fileEditor, new FeatureViewModel(psiFile), project, false);
 
         ContentFactory contentFactory = ContentFactory.getInstance();
         Content content = contentFactory.createContent(tab, "", false);
