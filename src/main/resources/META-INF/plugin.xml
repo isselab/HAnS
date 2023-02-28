@@ -28,6 +28,8 @@ limitations under the License.
     <!--<depends>com.intellij.modules.java</depends>-->
 
     <extensions defaultExtensionNs="com.intellij">
+        <psi.treeChangeListener implementation="se.ch.HAnS.CustomDocumentListener"/>
+
         <!-- &begin[HAnS::FeatureModel] -->
         <fileType name="Feature Model File" implementationClass="se.ch.HAnS.featureModel.FeatureModelFileType"
                   fieldName="INSTANCE" language="FeatureModel" extensions="feature-model"/>
