@@ -27,6 +27,12 @@ limitations under the License.
     <depends>com.intellij.modules.platform</depends>
     <!--<depends>com.intellij.modules.java</depends>-->
 
+    <!-- &begin[ColorSettingsPage] -->
+    <extensions defaultExtensionNs="com.intellij">
+        <colorSettingsPage implementation="se.ch.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
+    </extensions>
+    <!-- &end[ColorSettingsPage] -->
+
     <extensions defaultExtensionNs="com.intellij">
         <psi.treeChangeListener implementation="se.ch.HAnS.CustomDocumentListener"/>
 
