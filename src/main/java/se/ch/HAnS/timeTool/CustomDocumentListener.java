@@ -1,4 +1,4 @@
-package se.ch.HAnS;
+package se.ch.HAnS.timeTool;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
@@ -15,7 +15,6 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     public CustomDocumentListener(Project project) {
         this.project = project;
     }
-
 
     @Override
     public void beforeChildAddition(@NotNull PsiTreeChangeEvent event) {
@@ -46,8 +45,6 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     public void beforePropertyChange(@NotNull PsiTreeChangeEvent event) {
 
     }
-
-
 
     @Override
     public void childAdded(@NotNull PsiTreeChangeEvent event) {

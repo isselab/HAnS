@@ -34,7 +34,7 @@ limitations under the License.
     <!-- &end[ColorSettingsPage] -->
 
     <extensions defaultExtensionNs="com.intellij">
-        <psi.treeChangeListener implementation="se.ch.HAnS.CustomDocumentListener"/>
+        <psi.treeChangeListener implementation="se.ch.HAnS.timeTool.CustomDocumentListener"/>
 
         <!-- &begin[HAnS::FeatureModel] -->
         <fileType name="Feature Model File" implementationClass="se.ch.HAnS.featureModel.FeatureModelFileType"
