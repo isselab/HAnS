@@ -21,6 +21,7 @@ HAnS
         FolderAnnotation
         FileAnnotation
         CodeAnnotation
+        ColorSettingsPage
     Referencing
     FeatureView
     FileTemplate

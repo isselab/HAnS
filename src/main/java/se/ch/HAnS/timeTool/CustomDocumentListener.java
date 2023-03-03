@@ -1,4 +1,4 @@
-package se.ch.HAnS;
+package se.ch.HAnS.timeTool;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -103,7 +103,6 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             }
         });
     }
-
 
     @Override
     public void beforeChildAddition(@NotNull PsiTreeChangeEvent event) {
