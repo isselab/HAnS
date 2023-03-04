@@ -20,12 +20,14 @@ import java.util.Date;
 
 public class CustomDocumentListener implements PsiTreeChangeListener {
     private final Project project;
+    private final LogWriter logWriter;
     int time = 0;
     private long lastLogTime = 0;
     private boolean featureModelLogged = false;
 
     public CustomDocumentListener(Project project) {
         this.project = project;
+        logWriter = new LogWriter("log.txt", System.getProperty("user.home") + "/Desktop" );
 
         EditorFactory.getInstance().getEventMulticaster().addDocumentListener(new DocumentListener() {
             @Override
@@ -38,15 +40,9 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                         Date now = new Date();
                         java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                         String timestamp = dateFormat.format(now);
-                        try {
-                            File logFile = new File(System.getProperty("user.home") + "/Desktop/log.txt");
-                            FileWriter writer = new FileWriter(logFile, true);
-                            writer.write(fileName + " edit a '&line[]' annotation text at " + timestamp + "\n");
-                            writer.close();
-                            lastLogTime = currentTime;
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+
+                        logWriter.writeToLog(fileName + " edit a '&line[]' annotation text at " + timestamp + "\n");
+                        lastLogTime = currentTime;
                     }
                 }
                 if (text.contains("&begin[]") && text.contains("&end[]")) {
@@ -56,15 +52,8 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                         java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                         String timestamp = dateFormat.format(now);
 
-                        try {
-                            File logFile = new File(System.getProperty("user.home") + "/Desktop/log.txt");
-                            FileWriter writer = new FileWriter(logFile, true);
-                            writer.write(fileName + " edit a '&begin[]' and '&end[]' annotation text at " + timestamp + "\n");
-                            writer.close();
-                            lastLogTime = currentTime;
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        logWriter.writeToLog(fileName + " edit a '&begin[]' and '&end[]' annotation text at " + timestamp + "\n");
+                        lastLogTime = currentTime;
                     }
                 }
                 VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
@@ -81,22 +70,16 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                             java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                             String timestamp = dateFormat.format(now);
 
-                            try {
-                                File logFile = new File(System.getProperty("user.home") + "/Desktop/log.txt");
-                                FileWriter writer = new FileWriter(logFile, true);
-                                writer.write(fileName + " was edited at " + timestamp + "\n");
-                                writer.close();
-                                featureModelLogged = true;
-                                // Schedule a task to reset featureModelLogged after 2 seconds
-                                ApplicationManager.getApplication().invokeLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        featureModelLogged = false;
-                                    }
-                                }, ModalityState.NON_MODAL);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            logWriter.writeToLog(fileName + " was edited at " + timestamp + "\n");
+                            featureModelLogged = true;
+
+                            // Schedule a task to reset featureModelLogged after 2 seconds
+                            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    featureModelLogged = false;
+                                }
+                            }, ModalityState.NON_MODAL);
                         }
                     }
                 });
@@ -143,15 +126,8 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         String timestamp = dateFormat.format(now);
         if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
-            try {
-                time = +10;
-                File logFile = new File(System.getProperty("user.home") + "/Desktop/log.txt");
-                FileWriter writer = new FileWriter(logFile, true);
-                writer.write(fileName + " was created at " + timestamp + "\n");
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            time = +10;
+            logWriter.writeToLog(fileName + " was created at " + timestamp + "\n");
         }
     }
 
@@ -165,15 +141,8 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
         if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
-            try {
-                time = +4;
-                File logFile = new File(System.getProperty("user.home") + "/Desktop/log.txt");
-                FileWriter writer = new FileWriter(logFile, true);
-                writer.write(fileName + " was removed at " + timestamp + "\n");
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            time += 4;
+            logWriter.writeToLog(fileName + " was removed at " + timestamp + "\n");
         }
     }
 
@@ -198,23 +167,14 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         Date now = new Date();
         java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         String timestamp = dateFormat.format(now);
+        logWriter.writeToLog("PSI element changed at " + timestamp + "\n");
 
-        try {
-            File logFile = new File(System.getProperty("user.home") + "/Desktop/log.txt");
-            FileWriter writer = new FileWriter(logFile, true);
-            writer.write("PSI element changed at " + timestamp + "\n");
-
-            if (element instanceof PsiFile file) {
-                writer.write("File name: " + file.getName() + " was modified.\n");
-            } else if (element instanceof PsiDirectory directory) {
-                writer.write("Directory name: " + directory.getName() + " was modified.\n");
-            } else {
-                writer.write("Element name: " + element.toString() + " was modified.\n");
-            }
-
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (element instanceof PsiFile file) {
+            logWriter.writeToLog("File name: " + file.getName() + " was modified.\n");
+        } else if (element instanceof PsiDirectory directory) {
+            logWriter.writeToLog("Directory name: " + directory.getName() + " was modified.\n");
+        } else {
+            logWriter.writeToLog("Element name: " + element.toString() + " was modified.\n");
         }
     }
 }
