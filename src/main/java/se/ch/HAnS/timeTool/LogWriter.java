@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 public class LogWriter {
-    private final File logFile;
+    private final File logFile;     // The file which all logs are stored in
     private Writer writer;
 
     public LogWriter(String name, String path){
@@ -19,6 +19,7 @@ public class LogWriter {
         }
     }
 
+    // Appends the logfile with a string
     public void writeToLog(String message){
         try {
             writer.write(message);
