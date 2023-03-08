@@ -21,13 +21,15 @@ import java.util.Date;
 public class CustomDocumentListener implements PsiTreeChangeListener {
     private final Project project;
     private final LogWriter logWriter;
+
+    private final CustomTimer timer;
     int time = 0;
-    private long lastLogTime = 0;
     private boolean featureModelLogged = false;
 
     public CustomDocumentListener(Project project) {
         this.project = project;
         logWriter = new LogWriter("log.txt", System.getProperty("user.home") + "/Desktop" );
+        timer = new CustomTimer();
 
         EditorFactory.getInstance().getEventMulticaster().addDocumentListener(new DocumentListener() {
             @Override
@@ -35,25 +37,19 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                 String text = event.getDocument().getText();
                 String fileName = event.getDocument().toString();
                 if (text.contains("&line[]")) {
-                    long currentTime = System.currentTimeMillis();
-                    if (currentTime - lastLogTime > 5000) {  // wait 5 seconds before logging again
-                        Date now = new Date();
-                        java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                        String timestamp = dateFormat.format(now);
+                    if (timer.canLog(5000)) {  // wait 5 seconds before logging again
+                        String timestamp = timer.getCurrentDate();
 
                         logWriter.writeToLog(fileName + " edit a '&line[]' annotation text at " + timestamp + "\n");
-                        lastLogTime = currentTime;
+                        timer.updateLastLogged();
                     }
                 }
                 if (text.contains("&begin[]") && text.contains("&end[]")) {
-                    long currentTime = System.currentTimeMillis();
-                    if (currentTime - lastLogTime > 5000) {  // wait 5 seconds before logging again
-                        Date now = new Date();
-                        java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                        String timestamp = dateFormat.format(now);
+                    if (timer.canLog(5000)) {  // wait 5 seconds before logging again
+                        String timestamp = timer.getCurrentDate();
 
                         logWriter.writeToLog(fileName + " edit a '&begin[]' and '&end[]' annotation text at " + timestamp + "\n");
-                        lastLogTime = currentTime;
+                        timer.updateLastLogged();
                     }
                 }
                 VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
@@ -66,9 +62,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                         VirtualFile file = event.getFile();
                         String fileName = file.getName();
                         if (fileName.endsWith(".feature-model") && !featureModelLogged) {
-                            Date now = new Date();
-                            java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                            String timestamp = dateFormat.format(now);
+                            String timestamp = timer.getCurrentDate();
 
                             logWriter.writeToLog(fileName + " was edited at " + timestamp + "\n");
                             featureModelLogged = true;
@@ -121,12 +115,11 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     public void childAdded(@NotNull PsiTreeChangeEvent event) {
         PsiElement psiElement = event.getChild();
         String fileName = psiElement.getContainingFile().getName();
-        Date now = new Date();
-        java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String timestamp = dateFormat.format(now);
+
+        String timestamp = timer.getCurrentDate();
         if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
-            time = +10;
+            time += 10;
             logWriter.writeToLog(fileName + " was created at " + timestamp + "\n");
         }
     }
@@ -135,9 +128,8 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     public void childRemoved(@NotNull PsiTreeChangeEvent event) {
         PsiElement psiElement = event.getChild();
         String fileName = psiElement.getContainingFile().getName();
-        Date now = new Date();
-        java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String timestamp = dateFormat.format(now);
+
+        String timestamp = timer.getCurrentDate();
 
         if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
@@ -164,9 +156,8 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     @Override
     public void propertyChanged(@NotNull PsiTreeChangeEvent event) {
         PsiElement element = event.getElement();
-        Date now = new Date();
-        java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String timestamp = dateFormat.format(now);
+
+        String timestamp = timer.getCurrentDate();
         logWriter.writeToLog("PSI element changed at " + timestamp + "\n");
 
         if (element instanceof PsiFile file) {
