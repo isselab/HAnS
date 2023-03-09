@@ -28,8 +28,8 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             @Override
             public void documentChanged(@NotNull DocumentEvent event) {
                 String text = event.getDocument().getText();
-
                 String fileName = event.getDocument().toString();
+
                 if (text.contains("&line[]")) {
                     if (timer.canLog(5000)) {  // wait 5 seconds before logging again
                         String timestamp = timer.getCurrentDate();
@@ -37,14 +37,16 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                         logWriter.writeToLog(fileName + " edit a '&line[]' annotation text at " + timestamp + "\n");
                         timer.updateLastLogged();
                     }
-                }
-                if (text.contains("&begin[]") && text.contains("&end[]")) {
+                } else if (text.contains("&begin[]") && text.contains("&end[]")) {
                     if (timer.canLog(5000)) {  // wait 5 seconds before logging again
                         String timestamp = timer.getCurrentDate();
-
                         logWriter.writeToLog(fileName + " edit a '&begin[]' and '&end[]' annotation text at " + timestamp + "\n");
                         timer.updateLastLogged();
                     }
+                } else if (timer.canLog(5000)) {
+                    String timestamp = timer.getCurrentDate();
+                    logWriter.writeToLog(fileName + " edit a code line at " +  timestamp + "\n");
+                    timer.updateLastLogged();
                 }
                 VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
                     @Override
@@ -150,14 +152,17 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         PsiElement element = event.getElement();
 
         String timestamp = timer.getCurrentDate();
-        logWriter.writeToLog("PSI element changed at " + timestamp + "\n");
+        if(timer.canLog(5000)){
+            logWriter.writeToLog("PSI element changed at " + timestamp + "\n");
 
-        if (element instanceof PsiFile file) {
-            logWriter.writeToLog("File name: " + file.getName() + " was modified.\n");
-        } else if (element instanceof PsiDirectory directory) {
-            logWriter.writeToLog("Directory name: " + directory.getName() + " was modified.\n");
-        } else {
-            logWriter.writeToLog("Element name: " + element.toString() + " was modified.\n");
+            if (element instanceof PsiFile file) {
+                logWriter.writeToLog("File name: " + file.getName() + " was modified.\n");
+            } else if (element instanceof PsiDirectory directory) {
+                logWriter.writeToLog("Directory name: " + directory.getName() + " was modified.\n");
+            } else {
+                logWriter.writeToLog("Element name: " + element.toString() + " was modified.\n");
+            }
+            timer.updateLastLogged();
         }
     }
 }
