@@ -13,28 +13,22 @@ import com.intellij.openapi.vfs.*;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Date;
-
 public class CustomDocumentListener implements PsiTreeChangeListener {
     private final Project project;
     private final LogWriter logWriter;
-
     private final CustomTimer timer;
-    int time = 0;
     private boolean featureModelLogged = false;
 
     public CustomDocumentListener(Project project) {
         this.project = project;
-        logWriter = new LogWriter("log.txt", System.getProperty("user.home") + "/Desktop" );
+        logWriter = new LogWriter(System.getProperty("user.home") + "/Desktop", "log.txt");
         timer = new CustomTimer();
 
         EditorFactory.getInstance().getEventMulticaster().addDocumentListener(new DocumentListener() {
             @Override
             public void documentChanged(@NotNull DocumentEvent event) {
                 String text = event.getDocument().getText();
+
                 String fileName = event.getDocument().toString();
                 if (text.contains("&line[]")) {
                     if (timer.canLog(5000)) {  // wait 5 seconds before logging again
@@ -119,7 +113,6 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         String timestamp = timer.getCurrentDate();
         if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
-            time += 10;
             logWriter.writeToLog(fileName + " was created at " + timestamp + "\n");
         }
     }
@@ -133,7 +126,6 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
         if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
-            time += 4;
             logWriter.writeToLog(fileName + " was removed at " + timestamp + "\n");
         }
     }

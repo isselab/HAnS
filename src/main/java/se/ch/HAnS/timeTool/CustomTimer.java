@@ -7,15 +7,13 @@ public class CustomTimer {
     final int LOG_INTERVAL = 20000; // How long time in milliseconds needs to be passed since the last logged time
     private long lastLogged = 0; // Last time something was logged
 
-    // Returns true if enough time has passed to log again, else return false
-    public boolean canLog(){
-        long currentTime = System.currentTimeMillis();
-        return (currentTime - lastLogged) >= LOG_INTERVAL;
-    }
+    LogWriter logWriter = new LogWriter("log.txt", System.getProperty("user.home") + "/Desktop");
 
     // Returns true if enough time has passed since the time passed to the function, else returns false
     public boolean canLog(int interval){    // interval is time in milliseconds
         long currentTime = System.currentTimeMillis();
+        boolean test = (currentTime - lastLogged) >= interval;
+        logWriter.writeToLog(String.valueOf(test));
         return (currentTime - lastLogged) >= interval;
     }
 

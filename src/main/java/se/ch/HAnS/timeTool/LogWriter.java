@@ -3,30 +3,25 @@ package se.ch.HAnS.timeTool;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 
 public class LogWriter {
-    private final File logFile;     // The file which all logs are stored in
-    private Writer writer;
+    private File logFile;
 
-    public LogWriter(String name, String path){
+    public LogWriter(String path, String name){
         this.logFile = new File(path + "/" + name);
 
-        try{
-            this.writer = new FileWriter(logFile, true);
+    }
+
+    public void writeToLog(String message){
+        try {
+            FileWriter writer = new FileWriter(logFile, true);
+            writer.write(message);
+            writer.flush();
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
 
-    // Appends the logfile with a string
-    public void writeToLog(String message){
-        try {
-            writer.write(message);
-            writer.close();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
     }
 
 }
