@@ -33,16 +33,19 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                 if (timer.canLog(5000)) {
                     // log when "line[]" annotation is edited
                     if (text.contains("&line[]")) {
+                        logWriter.writeToJson(fileName, "&line[]", timer.getCurrentDate());
                         logWriter.writeToLog(" editing a &line[] at " + timer.getCurrentDate() + "\n");
                         timer.updateLastLogged();
                     }
                     // log when "begin[]" and "end[]" annotations are edited
                     else if (text.contains("&begin[]") || text.contains("&end[]")) {
+                        logWriter.writeToJson(fileName, "&begin[] and/or &end[]", timer.getCurrentDate());
                         logWriter.writeToLog(" editing a &begin[] and &end[] at " + timer.getCurrentDate() + "\n");
                         timer.updateLastLogged();
                     }
                     // log when a code line is edited
                     else if (changeLength > 0 && !text.substring(offset, offset + changeLength).matches("\\s*") && !fileName.contains(".feature-model")) {
+                        logWriter.writeToJson(fileName, "code", timer.getCurrentDate());
                         logWriter.writeToLog(" editing a code line at " + timer.getCurrentDate() + "\n");
                         timer.updateLastLogged();
                     }
@@ -64,10 +67,11 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                 VirtualFile file = event.getFile();
                 String fileName = file.getName();
                 if (fileName.endsWith(".feature-model") && !featureModelLogged) {
-                    String timestamp = timer.getCurrentDate();
 
-                    logWriter.writeToLog(fileName + " was edited at " + timestamp + "\n");
+                    logWriter.writeToJson(fileName, ".feature-model", timer.getCurrentDate());
+                    logWriter.writeToLog(fileName + " was edited at " + timer.getCurrentDate() + "\n");
                     featureModelLogged = true;
+                    timer.updateLastLogged();
 
                     ApplicationManager.getApplication().invokeLater(new Runnable() {
                         @Override
@@ -115,10 +119,10 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         PsiElement psiElement = event.getChild();
         String fileName = psiElement.getContainingFile().getName();
 
-        String timestamp = timer.getCurrentDate();
         if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
-            logWriter.writeToLog(fileName + " was created at " + timestamp + "\n");
+            logWriter.writeToJson(fileName, "feature-to-file or .feature-to-folder", timer.getCurrentDate());
+            logWriter.writeToLog(fileName + " was created at " + timer.getCurrentDate() + "\n");
         }
     }
 
@@ -127,11 +131,10 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         PsiElement psiElement = event.getChild();
         String fileName = psiElement.getContainingFile().getName();
 
-        String timestamp = timer.getCurrentDate();
-
         if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
-            logWriter.writeToLog(fileName + " was removed at " + timestamp + "\n");
+            logWriter.writeToJson(fileName, "feature-to-file or .feature-to-folder", timer.getCurrentDate());
+            logWriter.writeToLog(fileName + " was removed at " + timer.getCurrentDate() + "\n");
         }
     }
 
