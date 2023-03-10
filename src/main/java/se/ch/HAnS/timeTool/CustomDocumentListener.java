@@ -24,20 +24,26 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         EditorFactory.getInstance().getEventMulticaster().addDocumentListener(new DocumentListener() {
             @Override
             public void documentChanged(@NotNull DocumentEvent event) {
-                String text = event.getDocument().getText();
-                String fileName = event.getDocument().toString();
-                // log when "line[]" annotation is edited
-                if (timer.canLog(5000) && !fileName.contains(".feature-model")){
+                String text = event.getDocument().getText(); // get text from a document
+                String fileName = event.getDocument().toString(); // can add this inside the writeToLog method to get file location
+                int length = event.getDocument().getTextLength(); // get length of the document
+                int offset = event.getOffset(); // get offset of the change
+                int changeLength = event.getNewLength(); // get length of the change
+
+                if (timer.canLog(5000)) {
+                    // log when "line[]" annotation is edited
                     if (text.contains("&line[]")) {
-                        logWriter.writeToLog(fileName + " editing a &line[] at " +  timer.getCurrentDate() + "\n");
+                        logWriter.writeToLog(" editing a &line[] at " + timer.getCurrentDate() + "\n");
                         timer.updateLastLogged();
-                        // log when "begin[]" and "end[]" annotations are edited
-                    } else if (text.contains("&begin[]") || text.contains("&end[]")) {
-                        logWriter.writeToLog(fileName + " editing a &begin[] or an &end[] at " +  timer.getCurrentDate() + "\n");
+                    }
+                    // log when "begin[]" and "end[]" annotations are edited
+                    else if (text.contains("&begin[]") || text.contains("&end[]")) {
+                        logWriter.writeToLog(" editing a &begin[] and &end[] at " + timer.getCurrentDate() + "\n");
                         timer.updateLastLogged();
-                        // editing a file
-                    } else if (!text.matches("\\s*")) { // check if the added text is not just whitespace
-                        logWriter.writeToLog(fileName + " editing a code line at " +  timer.getCurrentDate() + "\n");
+                    }
+                    // log when a code line is edited
+                    else if (changeLength > 0 && !text.substring(offset, offset + changeLength).matches("\\s*") && !fileName.contains(".feature-model")) {
+                        logWriter.writeToLog(" editing a code line at " + timer.getCurrentDate() + "\n");
                         timer.updateLastLogged();
                     }
                 }
@@ -73,6 +79,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             }
         });
     }
+
     @Override
     public void beforeChildAddition(@NotNull PsiTreeChangeEvent event) {
 
