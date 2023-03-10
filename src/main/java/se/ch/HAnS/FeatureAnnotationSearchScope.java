@@ -27,10 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 
 public class FeatureAnnotationSearchScope extends GlobalSearchScope {
-
     private final FileIndexFacade myFileIndexFacade;
     private final Project p;
-
     public FeatureAnnotationSearchScope(Project project) {
         super(project);
         this.p = project;
