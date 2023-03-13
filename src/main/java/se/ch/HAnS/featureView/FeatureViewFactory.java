@@ -24,9 +24,12 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.AnnotationIcons;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.Collection;
 
 import static com.intellij.psi.PsiManager.getInstance;
@@ -39,15 +42,48 @@ public class FeatureViewFactory implements ToolWindowFactory {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
-        var fileEditor = FileEditorManager.getInstance(project).getAllEditors()[0];
+        var fileEditorManager = FileEditorManager.getInstance(project);
+        var fileEditor = fileEditorManager.getSelectedEditor();
         var psiFile = findFeatureModel(project);
 
-        @NotNull StructureViewComponent tab = new StructureViewComponent(fileEditor, new FeatureViewModel(psiFile), project, false);
+        JComponent component;
+        if (psiFile != null)
+            component = new StructureViewComponent(fileEditor, new FeatureViewModel(psiFile), project, false);
+        else {
+            component = getNoFeatureModelFoundPanel();
+        }
 
         ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(tab, "", false);
-        toolWindow.getContentManager().addContent(content);
+        Content content = contentFactory.createContent(component, "", false);
+        var contentManager = toolWindow.getContentManagerIfCreated();
+        if (contentManager != null)
+            contentManager.addContent(content);
 
+    }
+
+    @NotNull
+    private static JPanel getNoFeatureModelFoundPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.anchor = GridBagConstraints.CENTER;
+        constraints.insets = JBUI.insets(10);
+        JLabel label = new JLabel("No feature-model could be found");
+        var button = new JButton("Create feature-model", AnnotationIcons.FeatureModelIcon);
+        button.addActionListener(e -> {
+            System.out.println("Create File here");
+            // TODO: Create action that creates a new file
+        });
+        JLabel temporaryLabel = new JLabel("Action for button is not yet implemented");
+
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        panel.add(label, constraints);
+        constraints.gridy = 2;
+        panel.add(button, constraints);
+        constraints.gridy = 4;
+        panel.add(temporaryLabel);
+        return panel;
     }
 
     private PsiFile findFeatureModel(@NotNull Project project) {
