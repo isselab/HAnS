@@ -18,6 +18,7 @@ package se.ch.HAnS.actions;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.project.Project;
 import com.intellij.refactoring.rename.RenameDialog;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.featureModel.psi.FeatureModelFeature;
@@ -30,6 +31,14 @@ public class RenameAction extends AnAction {
         if (e.getData(LangDataKeys.PSI_ELEMENT) instanceof FeatureModelFeature) {
             RenameDialog dialog = new RenameDialog(Objects.requireNonNull(e.getProject()), Objects.requireNonNull(e.getData(LangDataKeys.PSI_ELEMENT)), null, null);
             dialog.show();
+        }
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        var array = e.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
+        if(array != null) {
+            e.getPresentation().setEnabled(array.length == 1);
         }
     }
 }

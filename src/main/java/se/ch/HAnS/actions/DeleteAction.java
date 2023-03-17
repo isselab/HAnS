@@ -31,4 +31,12 @@ public class DeleteAction extends AnAction {
             }
         }
     }
+
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        var array = e.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
+        if(array != null) {
+            e.getPresentation().setEnabled(array.length == 1);
+        }
+    }
 }
