@@ -17,6 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CustomDocumentListener implements PsiTreeChangeListener {
+    final int LOG_INTERVAL = 0; // Milliseconds between being able to log
     private final Project project;
     private final LogWriter logWriter;
     private final CustomTimer timer;
@@ -109,6 +110,10 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childAdded(@NotNull PsiTreeChangeEvent event) {
+        if(!timer.canLog(LOG_INTERVAL)){
+            return;
+        }
+
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement psiElement = event.getChild();
         String fileName = psiElement.getContainingFile().getName();
@@ -117,17 +122,23 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             if (isAnnotationComment(comment)) {
                 logWriter.writeToJson(fileName, "annotation", comment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " added an annotation at " + timer.getCurrentDate() + "\n");
+                timer.updateLastLogged();
             }
         }
         if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
             logWriter.writeToJson(fileName, "annotation","feature-to-file or .feature-to-folder", timer.getCurrentDate());
             logWriter.writeToLog(fileName + " was created at " + timer.getCurrentDate() + "\n");
+            timer.updateLastLogged();
         }
     }
 
     @Override
     public void childRemoved(@NotNull PsiTreeChangeEvent event) {
+        if(!timer.canLog(LOG_INTERVAL)){
+            return;
+        }
+
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement psiElement = event.getChild();
         String fileName = psiElement.getContainingFile().getName();
@@ -137,6 +148,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             if (isAnnotationComment(comment)) {
                 logWriter.writeToJson(fileName, "annotation", comment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " removed an annotation at " + timer.getCurrentDate() + "\n");
+                timer.updateLastLogged();
             }
         }
 
@@ -144,11 +156,16 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
             logWriter.writeToJson(fileName, "annotation", "feature-to-file or .feature-to-folder", timer.getCurrentDate());
             logWriter.writeToLog(fileName + " was removed at " + timer.getCurrentDate() + "\n");
+            timer.updateLastLogged();
         }
     }
 
     @Override
     public void childReplaced(@NotNull PsiTreeChangeEvent event) {
+        if(!timer.canLog(LOG_INTERVAL)){
+            return;
+        }
+
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement oldChild = event.getOldChild();
         PsiElement newChild = event.getNewChild();
@@ -160,6 +177,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             if (isAnnotationComment(oldComment) || isAnnotationComment(newComment)) {
                 logWriter.writeToJson(fileName, "annotation", newComment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " replaced an annotation at " + timer.getCurrentDate() + "\n");
+                timer.updateLastLogged();
             }
         }
     }
