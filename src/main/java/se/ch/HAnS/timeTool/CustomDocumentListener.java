@@ -45,7 +45,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                     PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
                     if (psiFile != null) {
                         String fileName = psiFile.getName();
-                        logWriter.writeToJson(fileName, deletedText, timer.getCurrentDate());
+                        logWriter.writeToJson(fileName, "annotation", deletedText, timer.getCurrentDate());
                         logWriter.writeToLog("A annotation in a file was removed at " + timer.getCurrentDate() + "\n");
                     }
                 }
@@ -63,7 +63,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         String fileName = psiFile.getName();
         // If the file is a .feature-model file, and it hasn't been logged yet, log the change
         if (fileName.endsWith(".feature-model") && !featureModelLogged) {
-            logWriter.writeToJson(fileName, ".feature-model", timer.getCurrentDate());
+            logWriter.writeToJson(fileName, "annotation",".feature-model", timer.getCurrentDate());
             logWriter.writeToLog(fileName + " was edited at " + timer.getCurrentDate() + "\n");
             featureModelLogged = true;
             timer.updateLastLogged();
@@ -115,13 +115,13 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         if (psiElement instanceof PsiComment) {
             PsiComment comment = (PsiComment) psiElement;
             if (isAnnotationComment(comment)) {
-                logWriter.writeToJson(fileName, comment.getText(), timer.getCurrentDate());
+                logWriter.writeToJson(fileName, "annotation", comment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " added an annotation at " + timer.getCurrentDate() + "\n");
             }
         }
         if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
-            logWriter.writeToJson(fileName, "feature-to-file or .feature-to-folder", timer.getCurrentDate());
+            logWriter.writeToJson(fileName, "annotation","feature-to-file or .feature-to-folder", timer.getCurrentDate());
             logWriter.writeToLog(fileName + " was created at " + timer.getCurrentDate() + "\n");
         }
     }
@@ -135,14 +135,14 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         if (psiElement instanceof PsiComment) {
             PsiComment comment = (PsiComment) psiElement;
             if (isAnnotationComment(comment)) {
-                logWriter.writeToJson(fileName, comment.getText(), timer.getCurrentDate());
+                logWriter.writeToJson(fileName, "annotation", comment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " removed an annotation at " + timer.getCurrentDate() + "\n");
             }
         }
 
         if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
                 fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
-            logWriter.writeToJson(fileName, "feature-to-file or .feature-to-folder", timer.getCurrentDate());
+            logWriter.writeToJson(fileName, "annotation", "feature-to-file or .feature-to-folder", timer.getCurrentDate());
             logWriter.writeToLog(fileName + " was removed at " + timer.getCurrentDate() + "\n");
         }
     }
@@ -158,7 +158,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             PsiComment oldComment = (PsiComment) oldChild;
             PsiComment newComment = (PsiComment) newChild;
             if (isAnnotationComment(oldComment) || isAnnotationComment(newComment)) {
-                logWriter.writeToJson(fileName, newComment.getText(), timer.getCurrentDate());
+                logWriter.writeToJson(fileName, "annotation", newComment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " replaced an annotation at " + timer.getCurrentDate() + "\n");
             }
         }

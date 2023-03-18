@@ -16,14 +16,17 @@ public class LogWriter {
     private File jsonLog;
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
+    // Class that represents each logged object
     private static class Log {
         private String filename;
         private String type;
+        private String details;
         private String timestamp;
 
-        public Log(String filename, String type, String timestamp) {
+        public Log(String filename, String type, String details, String timestamp) {
             this.filename = filename;
             this.type = type;
+            this.details = details;
             this.timestamp = timestamp;
         }
     }
@@ -33,6 +36,7 @@ public class LogWriter {
         this.jsonLog = new File(path + "/log.json");
     }
 
+    // Writes to .txt file (delete this method later)
     public void writeToLog(String message){
         try {
             FileWriter writer = new FileWriter(logFile, true);
@@ -45,9 +49,9 @@ public class LogWriter {
     }
 
     // Writes a log to the json-file
-    public void writeToJson(String filename, String type, String timestamp){
+    public void writeToJson(String filename,String type, String details, String timestamp){
         // Create a Log object with the given parameters
-        Log log = new Log(filename, type, timestamp);
+        Log log = new Log(filename, type, details, timestamp);
 
         try {
             // Create a FileWriter object to write to the JSON file
