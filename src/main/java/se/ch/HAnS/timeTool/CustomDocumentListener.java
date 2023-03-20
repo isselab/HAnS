@@ -28,6 +28,19 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         logWriter = new LogWriter(System.getProperty("user.home") + "/Desktop", "log.txt");
         timer = new CustomTimer();
 
+        // A VirtualFileListener to track the creation and deletion of files
+        VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
+            @Override
+            public void fileCreated(@NotNull VirtualFileEvent event) {
+                onFileCreated(event);
+            }
+
+            @Override
+            public void fileDeleted(@NotNull VirtualFileEvent event) {
+                onFileDeleted(event);
+            }
+        }, new EditorTracker(project));
+
         // A DocumentListener to detect changes in documents
         EditorFactory.getInstance().getEventMulticaster().addDocumentListener(new DocumentListener() {
 
@@ -46,7 +59,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                     PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
                     if (psiFile != null) {
                         String fileName = psiFile.getName();
-                        logWriter.writeToJson(fileName, "annotation", deletedText, timer.getCurrentDate());
+                        logWriter.writeToJson(fileName, "annotation", "Deleted annotation: " + deletedText, timer.getCurrentDate());
                         logWriter.writeToLog("A annotation in a file was removed at " + timer.getCurrentDate() + "\n");
                     }
                 }
@@ -137,14 +150,6 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                 timer.updateLastLogged();
             }
         }
-
-        /* Old code, doesn't work any more
-        if (fileName.equals(".feature-to-file") && psiElement instanceof PsiFile ||
-                fileName.equals(".feature-to-folder") && psiElement instanceof PsiFile) {
-            logWriter.writeToJson(fileName, "annotation","feature-to-file or .feature-to-folder", timer.getCurrentDate());
-            logWriter.writeToLog(fileName + " was created at " + timer.getCurrentDate() + "\n");
-            timer.updateLastLogged();
-        } */
     }
 
     @Override
@@ -226,6 +231,26 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void propertyChanged(@NotNull PsiTreeChangeEvent event) {
+    }
+
+    // This method checks if the file created ends with ".feature-to-file" or ".feature-to-folder"
+    private void onFileCreated(@NotNull VirtualFileEvent event) {
+        String fileName = event.getFileName();
+
+        if (fileName.endsWith(".feature-to-file") || fileName.endsWith(".feature-to-folder")) {
+            logWriter.writeToJson(fileName, "creation", fileName, timer.getCurrentDate());
+            logWriter.writeToLog(fileName + " was created at " + timer.getCurrentDate() + "\n");
+        }
+    }
+
+    // This method checks if the file deleted ends with ".feature-to-file" or ".feature-to-folder"
+    private void onFileDeleted(@NotNull VirtualFileEvent event) {
+        String fileName = event.getFileName();
+
+        if (fileName.endsWith(".feature-to-file") || fileName.endsWith(".feature-to-folder")) {
+            logWriter.writeToJson(fileName, "deletion", fileName, timer.getCurrentDate());
+            logWriter.writeToLog(fileName + " was deleted at " + timer.getCurrentDate() + "\n");
+        }
     }
 
     // The EditorTracker class is used to track editor events and clean up resources when the project is disposed
