@@ -119,11 +119,21 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement psiElement = event.getChild();
         String fileName = psiElement.getContainingFile().getName();
+
         if (psiElement instanceof PsiComment) {
             PsiComment comment = (PsiComment) psiElement;
             if (isAnnotationComment(comment)) {
                 logWriter.writeToJson(fileName, "annotation", comment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " added an annotation at " + timer.getCurrentDate() + "\n");
+                timer.updateLastLogged();
+            }
+        }
+
+        if (!(psiElement instanceof PsiComment) && !(isAnnotationFile(fileName))){
+            char[] elementTextArr = psiElement.textToCharArray();
+            char newestChar = elementTextArr[elementTextArr.length - 1];
+            if(isCode(newestChar)){
+                logWriter.writeToJson(fileName, "code", String.valueOf(elementTextArr), timer.getCurrentDate());
                 timer.updateLastLogged();
             }
         }
@@ -186,6 +196,22 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     private boolean isAnnotationComment(PsiComment comment) {
         String text = comment.getText();
         return text.startsWith("// &");
+    }
+
+    // checks if the newest written character is code
+    private boolean isCode(char c){
+        if (c == '/'){return false;}
+        if (c == ' '){return false;}
+        if (c =='\n'){return false;}
+        return true;
+    }
+
+    // checks if a string has an annotation file ending
+    private boolean isAnnotationFile(String s){
+        if (s.endsWith(".feature-model")){return true;}
+        if (s.endsWith(".feature-to-file")){return true;}
+        if (s.endsWith(".feature-to-folder")){return true;}
+        return false;
     }
 
     @Override
