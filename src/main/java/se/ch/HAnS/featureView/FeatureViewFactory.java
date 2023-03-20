@@ -16,21 +16,28 @@ limitations under the License.
 package se.ch.HAnS.featureView;
 
 import com.intellij.ide.structureView.newStructureView.StructureViewComponent;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.PsiFile;
-import com.intellij.ui.content.Content;
-import com.intellij.ui.content.ContentFactory;
+import com.intellij.ui.content.*;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import se.ch.HAnS.AnnotationIcons;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Objects;
 
 import static com.intellij.psi.PsiManager.getInstance;
 import static com.intellij.psi.search.FilenameIndex.getAllFilesByExt;
@@ -53,28 +60,26 @@ public class FeatureViewFactory implements ToolWindowFactory {
             component = getNoFeatureModelFoundPanel();
         }
 
+
         ContentFactory contentFactory = ContentFactory.getInstance();
         Content content = contentFactory.createContent(component, "", false);
         var contentManager = toolWindow.getContentManagerIfCreated();
-        if (contentManager != null)
+        if (contentManager != null) {
             contentManager.addContent(content);
+        }
+
 
     }
 
     @NotNull
-    private static JPanel getNoFeatureModelFoundPanel() {
+    private JPanel getNoFeatureModelFoundPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = JBUI.insets(10);
         JLabel label = new JLabel("No feature-model could be found");
         var button = new JButton("Create feature-model", AnnotationIcons.FeatureModelIcon);
-        button.addActionListener(e -> {
-            System.out.println("Create File here");
-            // TODO: Create action that creates a new file
-        });
-        JLabel temporaryLabel = new JLabel("Action for button is not yet implemented");
+        button.addActionListener(e -> createFeatureModelFileWithDialog());
 
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -82,8 +87,45 @@ public class FeatureViewFactory implements ToolWindowFactory {
         constraints.gridy = 2;
         panel.add(button, constraints);
         constraints.gridy = 4;
-        panel.add(temporaryLabel);
         return panel;
+    }
+
+    private void createFeatureModelFileWithDialog() {
+        // Get the project instance from the ProjectManager
+        Project project = ProjectManager.getInstance().getOpenProjects()[0];
+
+        // Get feature name from user via DialogBox
+        String content = Messages.showInputDialog(project, "Root feature:", project.getBasePath(), null, "Enter_Root_Feature_Name", null);
+
+        //Skip creating file if dialog box is cancelled
+        if(content != null) {
+
+            // wrap file creation into WriteCommandAction
+            WriteCommandAction.runWriteCommandAction(project, () -> {
+                // Get the base directory of the project
+                String basePath = project.getBasePath();
+                if (basePath != null) {
+                    try {
+                        // Create a new file in the base directory
+                        VirtualFile featureModelFile = Objects.requireNonNull(VfsUtil.createDirectoryIfMissing(basePath))
+                                .createChildData(this, ".feature-model");
+
+                        //Get name of feature to fill feature model file
+                        byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
+                        featureModelFile.setBinaryContent(contentBytes);
+
+                        //Remove current content from the ToolWindow and replace it with the normal feature view model
+                        ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Feature Model View");
+                        ContentManager contentManager = Objects.requireNonNull(toolWindow).getContentManager();
+                        contentManager.removeAllContents(true);
+                        createToolWindowContent(project, toolWindow);
+
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 
     private PsiFile findFeatureModel(@NotNull Project project) {
