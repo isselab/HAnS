@@ -1,8 +1,6 @@
 package se.ch.HAnS.timeTool;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
@@ -21,7 +19,6 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     private final Project project;
     private final LogWriter logWriter;
     private final CustomTimer timer;
-    private boolean featureModelLogged = false;
 
     public CustomDocumentListener(Project project) {
         this.project = project;
@@ -75,19 +72,21 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     // This method processes the file change events and logs specific changes based on the file type
     private void processFileChange(PsiFile psiFile) {
         String fileName = psiFile.getName();
-        if (!timer.canLog(500)){return;}  // If not enough time has passed to log, returns early
+        if (!timer.canLog(500)) {
+            return;
+        }  // If not enough time has passed to log, returns early
 
         if (fileName.endsWith(".feature-model")) {
-            logWriter.writeToJson(fileName, "annotation",".feature-model", timer.getCurrentDate());
+            logWriter.writeToJson(fileName, "annotation", ".feature-model", timer.getCurrentDate());
             timer.updateLastLogged();
         }
 
-        if (fileName.endsWith(".feature-to-file")){
+        if (fileName.endsWith(".feature-to-file")) {
             logWriter.writeToJson(fileName, "annotation", "feature-to-file", timer.getCurrentDate());
             timer.updateLastLogged();
         }
 
-        if (fileName.endsWith(".feature-to-folder")){
+        if (fileName.endsWith(".feature-to-folder")) {
             logWriter.writeToJson(fileName, "annotation", "feature-to-folder", timer.getCurrentDate());
             timer.updateLastLogged();
         }
@@ -127,7 +126,9 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childAdded(@NotNull PsiTreeChangeEvent event) {
-        if(!timer.canLog(LOG_INTERVAL)){ return; }     // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) {
+            return;
+        }     // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement psiElement = event.getChild();
@@ -142,10 +143,10 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             }
         }
 
-        if (!(psiElement instanceof PsiComment) && !(isAnnotationFile(fileName))){
+        if (!(psiElement instanceof PsiComment) && !(isAnnotationFile(fileName))) {
             char[] elementTextArr = psiElement.textToCharArray();
             char newestChar = elementTextArr[elementTextArr.length - 1];
-            if(isCode(newestChar)){
+            if (isCode(newestChar)) {
                 logWriter.writeToJson(fileName, "code", String.valueOf(elementTextArr), timer.getCurrentDate());
                 timer.updateLastLogged();
             }
@@ -154,7 +155,9 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childRemoved(@NotNull PsiTreeChangeEvent event) {
-        if(!timer.canLog(LOG_INTERVAL)){ return; }     // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) {
+            return;
+        }     // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement psiElement = event.getChild();
@@ -179,7 +182,9 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childReplaced(@NotNull PsiTreeChangeEvent event) {
-        if(!timer.canLog(LOG_INTERVAL)){ return; }     // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) {
+            return;
+        }     // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement oldChild = event.getOldChild();
@@ -204,18 +209,30 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     }
 
     // checks if the newest written character is code
-    private boolean isCode(char c){
-        if (c == '/'){return false;}
-        if (c == ' '){return false;}
-        if (c =='\n'){return false;}
+    private boolean isCode(char c) {
+        if (c == '/') {
+            return false;
+        }
+        if (c == ' ') {
+            return false;
+        }
+        if (c == '\n') {
+            return false;
+        }
         return true;
     }
 
     // checks if a string has an annotation file ending
-    private boolean isAnnotationFile(String s){
-        if (s.endsWith(".feature-model")){return true;}
-        if (s.endsWith(".feature-to-file")){return true;}
-        if (s.endsWith(".feature-to-folder")){return true;}
+    private boolean isAnnotationFile(String s) {
+        if (s.endsWith(".feature-model")) {
+            return true;
+        }
+        if (s.endsWith(".feature-to-file")) {
+            return true;
+        }
+        if (s.endsWith(".feature-to-folder")) {
+            return true;
+        }
         return false;
     }
 
