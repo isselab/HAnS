@@ -11,6 +11,9 @@ import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,11 +22,19 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     private final Project project;
     private final LogWriter logWriter;
     private final CustomTimer timer;
+    private long firstLoggedTime = -1;
+    private long latestLoggedTime = -1;
+    private long lastAnnotationLoggedTime = -1;
+    private long totalTimeAnnotation = 0;
 
     public CustomDocumentListener(Project project) {
         this.project = project;
         logWriter = new LogWriter(System.getProperty("user.home") + "/Desktop", "log.txt");
         timer = new CustomTimer();
+
+        // Schedule a task to check for annotation time periodically
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.scheduleAtFixedRate(this::checkAnnotationTime, 0, 1, TimeUnit.SECONDS);
 
         // A VirtualFileListener to track the creation and deletion of files
         VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
@@ -72,9 +83,11 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     // This method processes the file change events and logs specific changes based on the file type
     private void processFileChange(PsiFile psiFile) {
         String fileName = psiFile.getName();
-        if (!timer.canLog(10)) {return;}  // If not enough time has passed to log, returns early
+        if (!timer.canLog(10)) {
+            return;
+        }  // If not enough time has passed to log, returns early
 
-        if (isAnnotationFile(fileName)){
+        if (isAnnotationFile(fileName)) {
             logWriter.writeToJson(fileName, "annotation", fileName + " changed", timer.getCurrentDate());
             timer.updateLastLogged();
         }
@@ -112,7 +125,9 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childAdded(@NotNull PsiTreeChangeEvent event) {
-        if (!timer.canLog(LOG_INTERVAL)) {return;}     // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) {
+            return;
+        }     // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement psiElement = event.getChild();
@@ -124,13 +139,24 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                 logWriter.writeToJson(fileName, "annotation", comment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " added an annotation at " + timer.getCurrentDate() + "\n");
                 timer.updateLastLogged();
+                timer.resetIdleTime();
+
+                // Update firstLoggedTime and latestLoggedTime
+                long currentTime = System.currentTimeMillis();
+                if (firstLoggedTime == -1) {
+                    firstLoggedTime = currentTime;
+                }
+                latestLoggedTime = currentTime;
+                lastAnnotationLoggedTime = currentTime;
             }
         }
     }
 
     @Override
     public void childRemoved(@NotNull PsiTreeChangeEvent event) {
-        if (!timer.canLog(LOG_INTERVAL)) {return;}     // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) {
+            return;
+        }     // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement psiElement = event.getChild();
@@ -142,13 +168,24 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                 logWriter.writeToJson(fileName, "annotation", comment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " removed an annotation at " + timer.getCurrentDate() + "\n");
                 timer.updateLastLogged();
+                timer.resetIdleTime();
+
+                // Update firstLoggedTime and latestLoggedTime
+                long currentTime = System.currentTimeMillis();
+                if (firstLoggedTime == -1) {
+                    firstLoggedTime = currentTime;
+                }
+                latestLoggedTime = currentTime;
+                lastAnnotationLoggedTime = currentTime;
             }
         }
     }
 
     @Override
     public void childReplaced(@NotNull PsiTreeChangeEvent event) {
-        if (!timer.canLog(LOG_INTERVAL)) {return;}     // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) {
+            return;
+        }     // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement oldChild = event.getOldChild();
@@ -162,6 +199,15 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                 logWriter.writeToJson(fileName, "annotation", newComment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " replaced an annotation at " + timer.getCurrentDate() + "\n");
                 timer.updateLastLogged();
+                timer.resetIdleTime();
+
+                // Update firstLoggedTime and latestLoggedTime
+                long currentTime = System.currentTimeMillis();
+                if (firstLoggedTime == -1) {
+                    firstLoggedTime = currentTime;
+                }
+                latestLoggedTime = currentTime;
+                lastAnnotationLoggedTime = currentTime;
             }
         }
     }
@@ -231,6 +277,26 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         if (fileName.endsWith(".feature-model") || fileName.endsWith(".feature-to-file") || fileName.endsWith(".feature-to-folder")) {
             logWriter.writeToJson(fileName, "annotation", fileName + " deleted", timer.getCurrentDate());
             logWriter.writeToLog(fileName + " was deleted at " + timer.getCurrentDate() + "\n");
+        }
+    }
+
+    /*
+     * This method checks so that if there has been no annotation activity for more than 10 seconds, it logs the
+     * total time spent during that annotation session, and resets the time variables and updates the log files
+     */
+    private void checkAnnotationTime() {
+        long currentTime = System.currentTimeMillis();
+        if (lastAnnotationLoggedTime != -1 && currentTime - lastAnnotationLoggedTime >= 10000) {
+            if (firstLoggedTime != -1 && latestLoggedTime != -1) {
+                long totalTime = latestLoggedTime - firstLoggedTime;
+                totalTimeAnnotation += totalTime; // Update totalTimeAnnotation
+                logWriter.writeToJson("Total_time_session", "annotation", totalTime + " ms", timer.getCurrentDate());
+                logWriter.writeToLog("Total time spent annotating: " + totalTime + " ms" + "\n");
+                logWriter.writeToJson("Total_time_annotation", "annotation", totalTimeAnnotation + " ms", timer.getCurrentDate());
+            }
+            firstLoggedTime = -1;
+            latestLoggedTime = -1;
+            lastAnnotationLoggedTime = -1;
         }
     }
 
