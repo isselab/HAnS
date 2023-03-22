@@ -161,4 +161,9 @@ limitations under the License.
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
     </actions>
+    <application-components>
+        <component>
+            <implementation-class>se.ch.HAnS.timeTool.SessionTracker</implementation-class>
+        </component>
+    </application-components>
 </idea-plugin>

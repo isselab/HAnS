@@ -22,6 +22,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     private final Project project;
     private final LogWriter logWriter;
     private final CustomTimer timer;
+    private final SessionTracker sessionTracker;
     private long firstLoggedTime = -1;
     private long latestLoggedTime = -1;
     private long lastAnnotationLoggedTime = -1;
@@ -31,6 +32,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         this.project = project;
         logWriter = new LogWriter(System.getProperty("user.home") + "/Desktop", "log.txt");
         timer = new CustomTimer();
+        sessionTracker = new SessionTracker();
 
         // Schedule a task to check for annotation time periodically
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -125,9 +127,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childAdded(@NotNull PsiTreeChangeEvent event) {
-        if (!timer.canLog(LOG_INTERVAL)) {
-            return;
-        }     // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) { return; }    // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement psiElement = event.getChild();
@@ -154,9 +154,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childRemoved(@NotNull PsiTreeChangeEvent event) {
-        if (!timer.canLog(LOG_INTERVAL)) {
-            return;
-        }     // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) { return; }    // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement psiElement = event.getChild();
@@ -183,9 +181,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childReplaced(@NotNull PsiTreeChangeEvent event) {
-        if (!timer.canLog(LOG_INTERVAL)) {
-            return;
-        }     // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) { return; }    // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement oldChild = event.getOldChild();
@@ -290,9 +286,10 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             if (firstLoggedTime != -1 && latestLoggedTime != -1) {
                 long totalTime = latestLoggedTime - firstLoggedTime;
                 totalTimeAnnotation += totalTime; // Update totalTimeAnnotation
+                logWriter.writeToLog("Total time spent annotating in that session: " + totalTime + " ms" + "\n");
                 logWriter.writeToJson("Total_time_session", "annotation", totalTime + " ms", timer.getCurrentDate());
-                logWriter.writeToLog("Total time spent annotating: " + totalTime + " ms" + "\n");
                 logWriter.writeToJson("Total_time_annotation", "annotation", totalTimeAnnotation + " ms", timer.getCurrentDate());
+                logWriter.writeToJson("Total_time_developing", "annotation", sessionTracker.getTotalActiveTime() + " ms", timer.getCurrentDate());
             }
             firstLoggedTime = -1;
             latestLoggedTime = -1;
