@@ -136,19 +136,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         if (psiElement instanceof PsiComment) {
             PsiComment comment = (PsiComment) psiElement;
             if (isAnnotationComment(comment)) {
-                String annotationType = getAnnotationType(comment.getText());
-                logWriter.writeToJson(fileName, annotationType, comment.getText(), timer.getCurrentDate());
-                logWriter.writeToLog(fileName + " added an annotation at " + timer.getCurrentDate() + "\n");
-                timer.updateLastLogged();
-                timer.resetIdleTime();
-
-                // Update firstLoggedTime and latestLoggedTime
-                long currentTime = System.currentTimeMillis();
-                if (firstLoggedTime == -1) {
-                    firstLoggedTime = currentTime;
-                }
-                latestLoggedTime = currentTime;
-                lastAnnotationLoggedTime = currentTime;
+                handleAnnotationCommentEvent(comment, "added", fileName);
             }
         }
     }
@@ -164,19 +152,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         if (psiElement instanceof PsiComment) {
             PsiComment comment = (PsiComment) psiElement;
             if (isAnnotationComment(comment)) {
-                String annotationType = getAnnotationType(comment.getText());
-                logWriter.writeToJson(fileName, annotationType, comment.getText(), timer.getCurrentDate());
-                logWriter.writeToLog(fileName + " removed an annotation at " + timer.getCurrentDate() + "\n");
-                timer.updateLastLogged();
-                timer.resetIdleTime();
-
-                // Update firstLoggedTime and latestLoggedTime
-                long currentTime = System.currentTimeMillis();
-                if (firstLoggedTime == -1) {
-                    firstLoggedTime = currentTime;
-                }
-                latestLoggedTime = currentTime;
-                lastAnnotationLoggedTime = currentTime;
+                handleAnnotationCommentEvent(comment, "removed", fileName);
             }
         }
     }
@@ -194,55 +170,9 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             PsiComment oldComment = (PsiComment) oldChild;
             PsiComment newComment = (PsiComment) newChild;
             if (isAnnotationComment(oldComment) || isAnnotationComment(newComment)) {
-                String annotationType = getAnnotationType(newComment.getText());
-                logWriter.writeToJson(fileName, annotationType, newComment.getText(), timer.getCurrentDate());
-                logWriter.writeToLog(fileName + " replaced an annotation at " + timer.getCurrentDate() + "\n");
-                timer.updateLastLogged();
-                timer.resetIdleTime();
-
-                // Update firstLoggedTime and latestLoggedTime
-                long currentTime = System.currentTimeMillis();
-                if (firstLoggedTime == -1) {
-                    firstLoggedTime = currentTime;
-                }
-                latestLoggedTime = currentTime;
-                lastAnnotationLoggedTime = currentTime;
+                handleAnnotationCommentEvent(newComment, "replaced", fileName);
             }
         }
-    }
-
-    // This method checks if the given PsiComment object is an annotation comment (so if it starts with "// &")
-    private boolean isAnnotationComment(PsiComment comment) {
-        String text = comment.getText();
-        return text.startsWith("// &");
-    }
-
-    // checks if the newest written character is code
-    private boolean isCode(char c) {
-        if (c == '/') {
-            return false;
-        }
-        if (c == ' ') {
-            return false;
-        }
-        if (c == '\n') {
-            return false;
-        }
-        return true;
-    }
-
-    // checks if a string has an annotation file ending
-    private boolean isAnnotationFile(String s) {
-        if (s.endsWith(".feature-model")) {
-            return true;
-        }
-        if (s.endsWith(".feature-to-file")) {
-            return true;
-        }
-        if (s.endsWith(".feature-to-folder")) {
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -257,6 +187,42 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void propertyChanged(@NotNull PsiTreeChangeEvent event) {
+    }
+
+    private void handleAnnotationCommentEvent(PsiComment comment, String eventType, String fileName) {
+        String annotationType = getAnnotationType(comment.getText());
+        logWriter.writeToJson(fileName, annotationType, comment.getText(), timer.getCurrentDate());
+        logWriter.writeToLog(fileName + " " + eventType + " an annotation at " + timer.getCurrentDate() + "\n");
+        timer.updateLastLogged();
+        timer.resetIdleTime();
+
+        // Update firstLoggedTime and latestLoggedTime
+        long currentTime = System.currentTimeMillis();
+        if (firstLoggedTime == -1) {
+            firstLoggedTime = currentTime;
+        }
+        latestLoggedTime = currentTime;
+        lastAnnotationLoggedTime = currentTime;
+    }
+
+    // This method checks if the given PsiComment object is an annotation comment (so if it starts with "// &")
+    private boolean isAnnotationComment(PsiComment comment) {
+        String text = comment.getText();
+        return text.startsWith("// &");
+    }
+
+    // checks if a string has an annotation file ending
+    private boolean isAnnotationFile(String s) {
+        if (s.endsWith(".feature-model")) {
+            return true;
+        }
+        if (s.endsWith(".feature-to-file")) {
+            return true;
+        }
+        if (s.endsWith(".feature-to-folder")) {
+            return true;
+        }
+        return false;
     }
 
     // This method checks if the file created ends with ".feature-to-file" or ".feature-to-folder"
@@ -311,6 +277,8 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             return "uncertain annotation";
         }
     }
+
+
 
     // The EditorTracker class is used to track editor events and clean up resources when the project is disposed
     static class EditorTracker implements Disposable {
