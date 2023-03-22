@@ -37,33 +37,6 @@ public final class SessionTracker {
             }
         });
 
-        // Add an editor mouse motion listener to update the lastActiveTime when a user has moved their mouse on IntelliJ
-        eventMulticaster.addEditorMouseMotionListener(new EditorMouseMotionListener() {
-            @Override
-            public void mouseMoved(@NotNull EditorMouseEvent e) {
-                EditorMouseMotionListener.super.mouseMoved(e);
-                lastActiveTime = System.currentTimeMillis();
-            }
-        });
-
-        /*
-         * Add an AWT event listener to monitor key events for all components and
-         * update the lastActiveTime when a user has clicked a key on their keyboard
-         */
-        Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-            @Override
-            public void eventDispatched(AWTEvent event) {
-                if (event instanceof KeyEvent) {
-                    KeyEvent keyEvent = (KeyEvent) event;
-                    // If a key is pressed or released, update the lastActiveTime
-                    if (keyEvent.getID() == KeyEvent.KEY_PRESSED || keyEvent.getID() == KeyEvent.KEY_RELEASED) {
-                        lastActiveTime = System.currentTimeMillis();
-                    }
-                }
-            }
-        }, KeyEvent.KEY_EVENT_MASK);
-
-
         // Add an AWT event listener to monitor focus events for all components
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
             @Override

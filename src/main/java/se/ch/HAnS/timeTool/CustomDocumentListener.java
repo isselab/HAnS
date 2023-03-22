@@ -136,7 +136,8 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         if (psiElement instanceof PsiComment) {
             PsiComment comment = (PsiComment) psiElement;
             if (isAnnotationComment(comment)) {
-                logWriter.writeToJson(fileName, "annotation", comment.getText(), timer.getCurrentDate());
+                String annotationType = getAnnotationType(comment.getText());
+                logWriter.writeToJson(fileName, annotationType, comment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " added an annotation at " + timer.getCurrentDate() + "\n");
                 timer.updateLastLogged();
                 timer.resetIdleTime();
@@ -163,7 +164,8 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         if (psiElement instanceof PsiComment) {
             PsiComment comment = (PsiComment) psiElement;
             if (isAnnotationComment(comment)) {
-                logWriter.writeToJson(fileName, "annotation", comment.getText(), timer.getCurrentDate());
+                String annotationType = getAnnotationType(comment.getText());
+                logWriter.writeToJson(fileName, annotationType, comment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " removed an annotation at " + timer.getCurrentDate() + "\n");
                 timer.updateLastLogged();
                 timer.resetIdleTime();
@@ -192,7 +194,8 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             PsiComment oldComment = (PsiComment) oldChild;
             PsiComment newComment = (PsiComment) newChild;
             if (isAnnotationComment(oldComment) || isAnnotationComment(newComment)) {
-                logWriter.writeToJson(fileName, "annotation", newComment.getText(), timer.getCurrentDate());
+                String annotationType = getAnnotationType(newComment.getText());
+                logWriter.writeToJson(fileName, annotationType, newComment.getText(), timer.getCurrentDate());
                 logWriter.writeToLog(fileName + " replaced an annotation at " + timer.getCurrentDate() + "\n");
                 timer.updateLastLogged();
                 timer.resetIdleTime();
@@ -294,6 +297,18 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
             firstLoggedTime = -1;
             latestLoggedTime = -1;
             lastAnnotationLoggedTime = -1;
+        }
+    }
+    // This method helps us determine the annotation type that is being written
+    private String getAnnotationType(String annotationText) {
+        if (annotationText.startsWith("// &l")) {
+            return "line[] annotation";
+        } else if (annotationText.startsWith("// &e")) {
+            return "end[] annotation";
+        } else if (annotationText.startsWith("// &b")) {
+            return "begin[] annotation";
+        } else {
+            return "uncertain annotation";
         }
     }
 
