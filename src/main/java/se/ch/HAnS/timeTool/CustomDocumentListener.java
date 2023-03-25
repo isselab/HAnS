@@ -23,16 +23,15 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     private final LogWriter logWriter;
     private final CustomTimer timer;
     private final SessionTracker sessionTracker;
-    private long firstLoggedTime = -1;
-    private long latestLoggedTime = -1;
-    private long lastAnnotationLoggedTime = -1;
-    private long totalTimeAnnotation = 0;
+
+    private final AnnotationEventHandler annotationEventHandler;
 
     public CustomDocumentListener(Project project) {
         this.project = project;
         logWriter = new LogWriter(System.getProperty("user.home") + "/Desktop", "log.txt");
         timer = new CustomTimer();
         sessionTracker = new SessionTracker();
+        this.annotationEventHandler = new AnnotationEventHandler(project, logWriter, timer);
 
         // Schedule a task to check for annotation time periodically
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -82,19 +81,6 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         }, new EditorTracker(project));
     }
 
-    // This method processes the file change events and logs specific changes based on the file type
-    private void processFileChange(PsiFile psiFile) {
-        String fileName = psiFile.getName();
-        if (!timer.canLog(10)) {
-            return;
-        }  // If not enough time has passed to log, returns early
-
-        if (isAnnotationFile(fileName)) {
-            logWriter.writeToJson(fileName, "annotation", fileName + " changed", timer.getCurrentDate());
-            timer.updateLastLogged();
-        }
-    }
-
     @Override
     public void beforeChildAddition(@NotNull PsiTreeChangeEvent event) {
 
@@ -127,7 +113,9 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childAdded(@NotNull PsiTreeChangeEvent event) {
-        if (!timer.canLog(LOG_INTERVAL)) { return; }    // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) {
+            return;
+        }    // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement psiElement = event.getChild();
@@ -143,7 +131,9 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childRemoved(@NotNull PsiTreeChangeEvent event) {
-        if (!timer.canLog(LOG_INTERVAL)) { return; }    // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) {
+            return;
+        }    // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement psiElement = event.getChild();
@@ -159,7 +149,9 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childReplaced(@NotNull PsiTreeChangeEvent event) {
-        if (!timer.canLog(LOG_INTERVAL)) { return; }    // If not enough time has passed to log, returns early
+        if (!timer.canLog(LOG_INTERVAL)) {
+            return;
+        }    // If not enough time has passed to log, returns early
 
         processFileChange(Objects.requireNonNull(event.getFile()));
         PsiElement oldChild = event.getOldChild();
@@ -189,40 +181,10 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     public void propertyChanged(@NotNull PsiTreeChangeEvent event) {
     }
 
-    private void handleAnnotationCommentEvent(PsiComment comment, String eventType, String fileName) {
-        String annotationType = getAnnotationType(comment.getText());
-        logWriter.writeToJson(fileName, annotationType, comment.getText(), timer.getCurrentDate());
-        logWriter.writeToLog(fileName + " " + eventType + " an annotation at " + timer.getCurrentDate() + "\n");
-        timer.updateLastLogged();
-        timer.resetIdleTime();
-
-        // Update firstLoggedTime and latestLoggedTime
-        long currentTime = System.currentTimeMillis();
-        if (firstLoggedTime == -1) {
-            firstLoggedTime = currentTime;
-        }
-        latestLoggedTime = currentTime;
-        lastAnnotationLoggedTime = currentTime;
-    }
-
     // This method checks if the given PsiComment object is an annotation comment (so if it starts with "// &")
     private boolean isAnnotationComment(PsiComment comment) {
         String text = comment.getText();
         return text.startsWith("// &");
-    }
-
-    // checks if a string has an annotation file ending
-    private boolean isAnnotationFile(String s) {
-        if (s.endsWith(".feature-model")) {
-            return true;
-        }
-        if (s.endsWith(".feature-to-file")) {
-            return true;
-        }
-        if (s.endsWith(".feature-to-folder")) {
-            return true;
-        }
-        return false;
     }
 
     // This method checks if the file created ends with ".feature-to-file" or ".feature-to-folder"
@@ -245,40 +207,23 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         }
     }
 
+    // This method handles annotation comment events such as adding, removing, or replacing of an annotation comment
+    private void handleAnnotationCommentEvent(PsiComment comment, String eventType, String fileName) {
+        annotationEventHandler.handleAnnotationCommentEvent(comment, eventType, fileName);
+    }
+
     /*
      * This method checks so that if there has been no annotation activity for more than 10 seconds, it logs the
      * total time spent during that annotation session, and resets the time variables and updates the log files
      */
     private void checkAnnotationTime() {
-        long currentTime = System.currentTimeMillis();
-        if (lastAnnotationLoggedTime != -1 && currentTime - lastAnnotationLoggedTime >= 10000) {
-            if (firstLoggedTime != -1 && latestLoggedTime != -1) {
-                long totalTime = latestLoggedTime - firstLoggedTime;
-                totalTimeAnnotation += totalTime; // Update totalTimeAnnotation
-                logWriter.writeToLog("Total time spent annotating in that session: " + totalTime + " ms" + "\n");
-                logWriter.writeToJson("Total_time_session", "annotation", totalTime + " ms", timer.getCurrentDate());
-                logWriter.writeToJson("Total_time_annotation", "annotation", totalTimeAnnotation + " ms", timer.getCurrentDate());
-                logWriter.writeToJson("Total_time_developing", "annotation", sessionTracker.getTotalActiveTime() + " ms", timer.getCurrentDate());
-            }
-            firstLoggedTime = -1;
-            latestLoggedTime = -1;
-            lastAnnotationLoggedTime = -1;
-        }
-    }
-    // This method helps us determine the annotation type that is being written
-    private String getAnnotationType(String annotationText) {
-        if (annotationText.startsWith("// &l")) {
-            return "line[] annotation";
-        } else if (annotationText.startsWith("// &e")) {
-            return "end[] annotation";
-        } else if (annotationText.startsWith("// &b")) {
-            return "begin[] annotation";
-        } else {
-            return "uncertain annotation";
-        }
+        annotationEventHandler.checkAnnotationTime();
     }
 
-
+    // This method processes the file change events and logs specific changes based on the file type
+    private void processFileChange(PsiFile psiFile) {
+        annotationEventHandler.processFileChange(psiFile);
+    }
 
     // The EditorTracker class is used to track editor events and clean up resources when the project is disposed
     static class EditorTracker implements Disposable {
