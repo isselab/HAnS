@@ -12,18 +12,11 @@ public class AnnotationEventHandler {
     private static final String LINE_ANNOTATION = "// &l";
     private static final String END_ANNOTATION = "// &e";
     private static final String BEGIN_ANNOTATION = "// &b";
-    private static final String UNCERTAIN_ANNOTATION = "// &";
 
     private static final String FEATURE_MODEL = ".feature-model";
     private static final String FEATURE_TO_FILE = ".feature-to-file";
     private static final String FEATURE_TO_FOLDER = ".feature-to-folder";
-
-    private static long firstLoggedTime = -1;
-    private static long latestLoggedTime = -1;
-    private static long lastAnnotationLoggedTime = -1;
-    private static long totalTimeAnnotation = 0;
     final int LOG_INTERVAL = 0; // Milliseconds between being able to log
-
     private long lineAnnotationCurrentSessionTime = 0;
     private long lineAnnotationTotalTime = 0;
     private long lineAnnotationStartTime = -1;
@@ -47,30 +40,48 @@ public class AnnotationEventHandler {
         this.timer = timer;
     }
 
-    public boolean isAnnotationComment(PsiComment comment) {
-        String text = comment.getText();
-        return text.startsWith(UNCERTAIN_ANNOTATION);
-    }
 
-    public String getAnnotationType(String annotationText) {
-        if (annotationText.startsWith(LINE_ANNOTATION)) {
-            return "line[] annotation";
-        } else if (annotationText.startsWith(END_ANNOTATION)) {
-            return "end[] annotation";
-        } else if (annotationText.startsWith(BEGIN_ANNOTATION)) {
-            return "begin[] annotation";
-        } else {
-            return "uncertain annotation";
+
+     // This method checks so that if there has been no annotation activity for more than 10 seconds, it logs the
+     // total time spent during that annotation session, and resets the time variables and updates the log files
+
+    public void checkAnnotationTime() {
+        long currentTime = System.currentTimeMillis();
+        int idleTime = 10000;
+
+        if (lineAnnotationStartTime != -1 && currentTime - lineAnnotationStartTime >= idleTime) {
+            logWriter.writeToJson("annotation_line", "&line", lineAnnotationCurrentSessionTime + " ms", timer.getCurrentDate());
+            lineAnnotationCurrentSessionTime = 0;
+            lineAnnotationStartTime = -1;
+        }
+
+        if (blockAnnotationStartTime != -1 && currentTime - blockAnnotationStartTime >= idleTime) {
+            logWriter.writeToJson("annotation_block", "&block", blockAnnotationCurrentSessionTime + " ms", timer.getCurrentDate());
+            blockAnnotationCurrentSessionTime = 0;
+            blockAnnotationStartTime = -1;
+        }
+        if (featureToFileStartTime != -1 && currentTime - featureToFileStartTime >= idleTime) {
+            logWriter.writeToJson(".feature-to-file", "annotation", featureToFileCurrentSession + " ms", timer.getCurrentDate());
+            featureToFileCurrentSession = 0;
+            featureToFileStartTime = -1;
+        }
+        if (featureToFolderStartTime != -1 && currentTime - featureToFolderStartTime >= idleTime) {
+            logWriter.writeToJson(".feature-to-folder", "annotation", featureToFolderCurrentSession + " ms", timer.getCurrentDate());
+            featureToFolderCurrentSession = 0;
+            featureToFolderStartTime = -1;
+        }
+        if (featureModelStartTime != -1 && currentTime - featureModelStartTime >= idleTime) {
+            logWriter.writeToJson(".feature-model", "annotation", featureModelCurrentSession + " ms", timer.getCurrentDate());
+            featureModelCurrentSession = 0;
+            featureModelStartTime = -1;
         }
     }
+
 
     // This method handles annotation comment events such as adding, removing, or replacing of an annotation comment
     public void handleAnnotationCommentEvent(PsiComment comment, String eventType, String fileName) {
         String annotationType = getAnnotationType(comment.getText());
-        logWriter.writeToJson(fileName, annotationType, comment.getText(), timer.getCurrentDate());
-        logWriter.writeToLog(fileName + " " + eventType + " an annotation at " + timer.getCurrentDate() + "\n");
-        timer.updateLastLogged();
-        timer.resetIdleTime();
+        //logWriter.writeToJson(fileName, annotationType, comment.getText(), timer.getCurrentDate());
 
         long currentTime = System.currentTimeMillis();
 
@@ -87,64 +98,6 @@ public class AnnotationEventHandler {
                 blockAnnotationCurrentSessionTime += currentTime - blockAnnotationStartTime;
             }
             blockAnnotationStartTime = currentTime;
-        } else if (fileName.endsWith(".feature-to-file")) {
-            if (featureToFileStartTime != -1) {
-                featureToFileTotalTime += currentTime - featureToFileStartTime;
-                featureToFileCurrentSession += currentTime - featureToFileStartTime;
-            }
-            featureToFileStartTime = currentTime;
-        } else if (fileName.endsWith(".feature-to-folder")) {
-            if (featureToFolderStartTime != -1) {
-                featureToFolderTotalTime += currentTime - featureToFolderStartTime;
-                featureToFolderCurrentSession += currentTime - featureToFolderStartTime;
-            }
-            featureToFolderStartTime = currentTime;
-        } else if (fileName.endsWith(".feature-model")) {
-            if (featureModelStartTime != -1) {
-                featureModelTotalTime += currentTime - featureModelStartTime;
-                featureModelCurrentSession += currentTime - featureModelStartTime;
-            }
-            featureModelStartTime = currentTime;
-        }
-    }
-
-    /*
-     * This method checks so that if there has been no annotation activity for more than 10 seconds, it logs the
-     * total time spent during that annotation session, and resets the time variables and updates the log files
-     */
-    public void checkAnnotationTime() {
-        long currentTime = System.currentTimeMillis();
-
-        if (lineAnnotationStartTime != -1 && currentTime - lineAnnotationStartTime >= 10000) {
-            logWriter.writeToJson("Session_time_annotation_line", "annotation", lineAnnotationCurrentSessionTime + " ms", timer.getCurrentDate());
-            logWriter.writeToJson("Total_time_annotation_line", "annotation", lineAnnotationTotalTime + " ms", timer.getCurrentDate());
-            lineAnnotationCurrentSessionTime = 0;
-            lineAnnotationStartTime = -1;
-        }
-
-        if (blockAnnotationStartTime != -1 && currentTime - blockAnnotationStartTime >= 10000) {
-            logWriter.writeToJson("Session_time_annotation_block", "annotation", blockAnnotationCurrentSessionTime + " ms", timer.getCurrentDate());
-            logWriter.writeToJson("Total_time_annotation_block", "annotation", blockAnnotationTotalTime + " ms", timer.getCurrentDate());
-            blockAnnotationCurrentSessionTime = 0;
-            blockAnnotationStartTime = -1;
-        }
-        if (featureToFileStartTime != -1 && currentTime - featureToFileStartTime >= 10000) {
-            logWriter.writeToJson("Session_time_feature-to-file", "annotation", featureToFileCurrentSession + " ms", timer.getCurrentDate());
-            logWriter.writeToJson("Total_time_annotation_feature-to-file", "annotation", featureToFileTotalTime + " ms", timer.getCurrentDate());
-            featureToFileCurrentSession = 0;
-            featureToFileStartTime = -1;
-        }
-        if (featureToFolderStartTime != -1 && currentTime - featureToFolderStartTime >= 10000) {
-            logWriter.writeToJson("Session_time_feature-to-folder", "annotation", featureToFolderCurrentSession + " ms", timer.getCurrentDate());
-            logWriter.writeToJson("Total_time_annotation_feature-to-folder", "annotation", featureToFolderTotalTime + " ms", timer.getCurrentDate());
-            featureToFolderCurrentSession = 0;
-            featureToFolderStartTime = -1;
-        }
-        if (featureModelStartTime != -1 && currentTime - featureModelStartTime >= 10000) {
-            logWriter.writeToJson("Session_time_feature-model", "annotation", featureModelCurrentSession + " ms", timer.getCurrentDate());
-            logWriter.writeToJson("Total_time_annotation_feature-model", "annotation", featureModelTotalTime + " ms", timer.getCurrentDate());
-            featureModelCurrentSession = 0;
-            featureModelStartTime = -1;
         }
     }
 
@@ -155,18 +108,8 @@ public class AnnotationEventHandler {
         }  // If not enough time has passed to log, returns early
 
         if (isAnnotationFile(fileName)) {
-            logWriter.writeToJson(fileName, "annotation", fileName + " changed", timer.getCurrentDate());
-            timer.updateLastLogged();
-            timer.resetIdleTime();
-
-            // Update firstLoggedTime and latestLoggedTime
+            //logWriter.writeToJson(fileName, "annotation", fileName + " changed", timer.getCurrentDate());
             long currentTime = System.currentTimeMillis();
-            if (firstLoggedTime == -1) {
-                firstLoggedTime = currentTime;
-            }
-            latestLoggedTime = currentTime;
-            lastAnnotationLoggedTime = currentTime;
-            checkAnnotationTime();
 
             if (fileName.endsWith(".feature-to-file")) {
                 if (featureToFileStartTime != -1) {
@@ -197,6 +140,37 @@ public class AnnotationEventHandler {
                 || fileName.endsWith(FEATURE_TO_FILE)
                 || fileName.endsWith(FEATURE_TO_FOLDER);
     }
+
+    public String getAnnotationType(String annotationText) {
+        if (annotationText.startsWith(LINE_ANNOTATION)) {
+            return "line[] annotation";
+        } else if (annotationText.startsWith(END_ANNOTATION)) {
+            return "end[] annotation";
+        } else if (annotationText.startsWith(BEGIN_ANNOTATION)) {
+            return "begin[] annotation";
+        } else {
+            return "uncertain annotation";
+        }
+    }
+
+    public long getLineAnnotationTotalTime() {
+        return lineAnnotationTotalTime;
+    }
+
+    public long getBlockAnnotationTotalTime() {
+        return blockAnnotationTotalTime;
+    }
+
+    public long getFeatureToFileTotalTime() {
+        return featureToFileTotalTime;
+    }
+
+    public long getFeatureToFolderTotalTime() {
+        return featureToFolderTotalTime;
+    }
+
+    public long getFeatureModelTotalTime() {
+        return featureModelTotalTime;
+    }
+
 }
-
-

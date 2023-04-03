@@ -1,21 +1,16 @@
 package se.ch.HAnS.timeTool;
 
 import com.intellij.openapi.components.Service;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.event.*;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.event.AWTEventListener;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 @Service
 public final class SessionTracker {
     // Threshold time (in milliseconds) for considering the user as idle
-    private static final int IDLE_THRESHOLD_MS = 5 * 60 * 1000; // 5 minutes
+    private static final int IDLE_THRESHOLD_MS = 30 * 1000; // 30 seconds
 
     // Last recorded active time
     private long lastActiveTime;
@@ -23,6 +18,7 @@ public final class SessionTracker {
     private long totalActiveTime;
 
     public SessionTracker() {
+        System.out.println("SessionTracker instantiated.");
         setupListeners();
     }
 

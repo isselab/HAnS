@@ -34,8 +34,6 @@ limitations under the License.
     <!-- &end[ColorSettingsPage] -->
 
     <extensions defaultExtensionNs="com.intellij">
-        <psi.treeChangeListener implementation="se.ch.HAnS.timeTool.CustomDocumentListener"/>
-
         <!-- &begin[HAnS::FeatureModel] -->
         <fileType name="Feature Model File" implementationClass="se.ch.HAnS.featureModel.FeatureModelFileType"
                   fieldName="INSTANCE" language="FeatureModel" extensions="feature-model"/>
@@ -125,6 +123,7 @@ limitations under the License.
         <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
+        <psi.treeChangeListener implementation="se.ch.HAnS.timeTool.CustomDocumentListener"/>
     </extensions>
 
     <actions>
@@ -166,4 +165,10 @@ limitations under the License.
             <implementation-class>se.ch.HAnS.timeTool.SessionTracker</implementation-class>
         </component>
     </application-components>
+
+    <project-components>
+        <component>
+            <implementation-class>se.ch.HAnS.timeTool.ProjectCloseListener</implementation-class>
+        </component>
+    </project-components>
 </idea-plugin>

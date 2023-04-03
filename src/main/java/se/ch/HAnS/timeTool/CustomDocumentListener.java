@@ -28,7 +28,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     public CustomDocumentListener(Project project) {
         this.project = project;
-        logWriter = new LogWriter(System.getProperty("user.home") + "/Desktop", "log.txt");
+        logWriter = new LogWriter(project, System.getProperty("user.home") + "/Desktop", "log.txt");
         timer = new CustomTimer();
         sessionTracker = new SessionTracker();
         this.annotationEventHandler = new AnnotationEventHandler(project, logWriter, timer);
@@ -61,15 +61,15 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
                 String deletedText = document.getText().substring(event.getOffset(), event.getOffset() + event.getOldLength());
 
                 // Check if the deleted text matches the annotation pattern, including possible leading whitespaces
-                Pattern pattern = Pattern.compile("^\\s*//\\s*&");
+                Pattern pattern = Pattern.compile("^\\s*//\\s*&(.+?)\\[");
                 Matcher matcher = pattern.matcher(deletedText);
                 if (matcher.find()) {
+                    String annotationName = matcher.group(1).trim();
                     // Get the PsiFile associated with the document and retrieve its fileName
                     PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
                     if (psiFile != null) {
                         String fileName = psiFile.getName();
-                        logWriter.writeToJson(fileName, "annotation", "Deleted annotation: " + deletedText, timer.getCurrentDate());
-                        logWriter.writeToLog("A annotation in a file was removed at " + timer.getCurrentDate() + "\n");
+                        logWriter.writeToJson(fileName, annotationName, "Deleted annotation: " + deletedText, timer.getCurrentDate());
                     }
                 }
             }
@@ -169,7 +169,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
     @Override
     public void childrenChanged(@NotNull PsiTreeChangeEvent event) {
-        processFileChange(Objects.requireNonNull(event.getFile()));
+
     }
 
     @Override
@@ -237,5 +237,14 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         public void dispose() {
             // Cleanup or unregister resources when the project is disposed
         }
+    }
+
+    public void logTotalTime() {
+        logWriter.writeTotalTimeToJson("&line", annotationEventHandler.getLineAnnotationTotalTime() + " ms");
+        logWriter.writeTotalTimeToJson("&block", annotationEventHandler.getBlockAnnotationTotalTime() + " ms");
+        logWriter.writeTotalTimeToJson(".feature-to-file", annotationEventHandler.getFeatureToFileTotalTime() + " ms");
+        logWriter.writeTotalTimeToJson(".feature-to-folder", annotationEventHandler.getFeatureToFolderTotalTime() + " ms");
+        logWriter.writeTotalTimeToJson(".feature-model", annotationEventHandler.getFeatureModelTotalTime() + " ms");
+        logWriter.writeTotalTimeToJson("Developing time", sessionTracker.getTotalActiveTime() + " ms");
     }
 }
