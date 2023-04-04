@@ -1,10 +1,7 @@
 package se.ch.HAnS.timeTool;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.*;
 import com.intellij.psi.*;
@@ -14,8 +11,7 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class CustomDocumentListener implements PsiTreeChangeListener {
     final int LOG_INTERVAL = 0; // Milliseconds between being able to log
@@ -38,48 +34,12 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         scheduledExecutorService.scheduleAtFixedRate(this::checkAnnotationTime, 0, 1, TimeUnit.SECONDS);
 
         // A VirtualFileListener to track the creation and deletion of files
-        VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
-            @Override
-            public void fileCreated(@NotNull VirtualFileEvent event) {
-                onFileCreated(event);
-            }
-
-            @Override
-            public void fileDeleted(@NotNull VirtualFileEvent event) {
-                onFileDeleted(event);
-            }
-        }, new EditorTracker(project));
+        VirtualFileManager.getInstance().addVirtualFileListener(new CustomVirtualFileListener(logWriter, timer), new EditorTracker(project));
 
         // A DocumentListener to detect changes in documents
-        EditorFactory.getInstance().getEventMulticaster().addDocumentListener(new DocumentListener() {
-
-            // This method is called before a change is made to the document
-            @Override
-            public void beforeDocumentChange(@NotNull DocumentEvent event) {
-                // Get the text that was deleted in the document change event
-                Document document = event.getDocument();
-                String deletedText = document.getText().substring(event.getOffset(), event.getOffset() + event.getOldLength());
-
-                // Check if the deleted text matches the annotation pattern, including possible leading whitespaces
-                Pattern pattern = Pattern.compile("^\\s*//\\s*&(.+?)\\[");
-                Matcher matcher = pattern.matcher(deletedText);
-                if (matcher.find()) {
-                    String annotationName = matcher.group(1).trim();
-                    // Get the PsiFile associated with the document and retrieve its fileName
-                    PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
-                    if (psiFile != null) {
-                        String fileName = psiFile.getName();
-                        logWriter.writeToJson(fileName, annotationName, "Deleted annotation: " + deletedText, timer.getCurrentDate());
-                    }
-                }
-            }
-
-            // This method is called after the document has been changed
-            @Override
-            public void documentChanged(@NotNull DocumentEvent event) {
-            }
-        }, new EditorTracker(project));
+        EditorFactory.getInstance().getEventMulticaster().addDocumentListener(new CustomDocumentEventListener(project, logWriter, timer), new EditorTracker(project));
     }
+
 
     @Override
     public void beforeChildAddition(@NotNull PsiTreeChangeEvent event) {
@@ -185,26 +145,6 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     private boolean isAnnotationComment(PsiComment comment) {
         String text = comment.getText();
         return text.startsWith("// &");
-    }
-
-    // This method checks if the file created ends with ".feature-to-file" or ".feature-to-folder"
-    private void onFileCreated(@NotNull VirtualFileEvent event) {
-        String fileName = event.getFileName();
-
-        if (fileName.endsWith(".feature-model") || fileName.endsWith(".feature-to-file") || fileName.endsWith(".feature-to-folder")) {
-            logWriter.writeToJson(fileName, "annotation", fileName + " created", timer.getCurrentDate());
-            logWriter.writeToLog(fileName + " was created at " + timer.getCurrentDate() + "\n");
-        }
-    }
-
-    // This method checks if the file deleted ends with ".feature-to-file" or ".feature-to-folder"
-    private void onFileDeleted(@NotNull VirtualFileEvent event) {
-        String fileName = event.getFileName();
-
-        if (fileName.endsWith(".feature-model") || fileName.endsWith(".feature-to-file") || fileName.endsWith(".feature-to-folder")) {
-            logWriter.writeToJson(fileName, "annotation", fileName + " deleted", timer.getCurrentDate());
-            logWriter.writeToLog(fileName + " was deleted at " + timer.getCurrentDate() + "\n");
-        }
     }
 
     // This method handles annotation comment events such as adding, removing, or replacing of an annotation comment
