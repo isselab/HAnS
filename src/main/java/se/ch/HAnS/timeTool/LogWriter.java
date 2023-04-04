@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import com.intellij.openapi.project.Project;
+import net.minidev.json.JSONArray;
 
 
 import java.io.FileWriter;
@@ -97,6 +98,17 @@ public class LogWriter {
             gson.toJson(totalTimeLog, writer);
             writer.write(System.lineSeparator()); // Add a new line to separate log entries
             writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void writeToJson(JSONArray sessionTimes) {
+        try {
+            String desktopPath = System.getProperty("user.home") + "/Desktop/";
+            FileWriter file = new FileWriter(desktopPath + "log.json");
+            file.write(sessionTimes.toJSONString());
+            file.flush();
+            file.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

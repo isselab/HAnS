@@ -31,7 +31,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
 
         // Schedule a task to check for annotation time periodically
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.scheduleAtFixedRate(this::checkAnnotationTime, 0, 1, TimeUnit.SECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(this::logAndResetAnnotationSessionIfInactive, 0, 1, TimeUnit.SECONDS);
 
         // A VirtualFileListener to track the creation and deletion of files
         VirtualFileManager.getInstance().addVirtualFileListener(new CustomVirtualFileListener(logWriter, timer), new EditorTracker(project));
@@ -152,12 +152,10 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         annotationEventHandler.handleAnnotationCommentEvent(comment, eventType, fileName);
     }
 
-    /*
-     * This method checks so that if there has been no annotation activity for more than 10 seconds, it logs the
-     * total time spent during that annotation session, and resets the time variables and updates the log files
-     */
-    private void checkAnnotationTime() {
-        annotationEventHandler.checkAnnotationTime();
+    // This method checks so that if there has been no annotation activity for more than 10 seconds, it logs the
+    // total time spent during that annotation session, and resets the time variables and updates the log files
+    private void logAndResetAnnotationSessionIfInactive() {
+        annotationEventHandler.logAndResetAnnotationSessionIfInactive();
     }
 
     // This method processes the file change events and logs specific changes based on the file type

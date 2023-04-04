@@ -3,11 +3,14 @@ package se.ch.HAnS.timeTool;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiFile;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
 public class AnnotationEventHandler {
     private final Project project;
     private final LogWriter logWriter;
     private final CustomTimer timer;
+    private final JSONArray sessionTimes;
 
     private static final String LINE_ANNOTATION = "// &l";
     private static final String END_ANNOTATION = "// &e";
@@ -38,6 +41,7 @@ public class AnnotationEventHandler {
         this.project = project;
         this.logWriter = logWriter;
         this.timer = timer;
+        this.sessionTimes = new JSONArray();
     }
 
 
@@ -45,33 +49,43 @@ public class AnnotationEventHandler {
      // This method checks so that if there has been no annotation activity for more than 10 seconds, it logs the
      // total time spent during that annotation session, and resets the time variables and updates the log files
 
-    public void checkAnnotationTime() {
+    public void logAndResetAnnotationSessionIfInactive() {
         long currentTime = System.currentTimeMillis();
         int idleTime = 10000;
 
         if (lineAnnotationStartTime != -1 && currentTime - lineAnnotationStartTime >= idleTime) {
             logWriter.writeToJson("annotation_line", "&line", lineAnnotationCurrentSessionTime + " ms", timer.getCurrentDate());
+            storeSessionTime("&line", lineAnnotationCurrentSessionTime);
+            logWriter.writeToJson(sessionTimes);
             lineAnnotationCurrentSessionTime = 0;
             lineAnnotationStartTime = -1;
         }
 
         if (blockAnnotationStartTime != -1 && currentTime - blockAnnotationStartTime >= idleTime) {
             logWriter.writeToJson("annotation_block", "&block", blockAnnotationCurrentSessionTime + " ms", timer.getCurrentDate());
+            storeSessionTime("&block", blockAnnotationCurrentSessionTime);
+            logWriter.writeToJson(sessionTimes);
             blockAnnotationCurrentSessionTime = 0;
             blockAnnotationStartTime = -1;
         }
         if (featureToFileStartTime != -1 && currentTime - featureToFileStartTime >= idleTime) {
             logWriter.writeToJson(".feature-to-file", "annotation", featureToFileCurrentSession + " ms", timer.getCurrentDate());
+            storeSessionTime(".feature-to-file", featureToFileCurrentSession);
+            logWriter.writeToJson(sessionTimes);
             featureToFileCurrentSession = 0;
             featureToFileStartTime = -1;
         }
         if (featureToFolderStartTime != -1 && currentTime - featureToFolderStartTime >= idleTime) {
             logWriter.writeToJson(".feature-to-folder", "annotation", featureToFolderCurrentSession + " ms", timer.getCurrentDate());
+            storeSessionTime(".feature-to-folder", featureToFolderCurrentSession);
+            logWriter.writeToJson(sessionTimes);
             featureToFolderCurrentSession = 0;
             featureToFolderStartTime = -1;
         }
         if (featureModelStartTime != -1 && currentTime - featureModelStartTime >= idleTime) {
             logWriter.writeToJson(".feature-model", "annotation", featureModelCurrentSession + " ms", timer.getCurrentDate());
+            storeSessionTime(".feature-model", featureModelCurrentSession);
+            logWriter.writeToJson(sessionTimes);
             featureModelCurrentSession = 0;
             featureModelStartTime = -1;
         }
@@ -173,4 +187,11 @@ public class AnnotationEventHandler {
         return featureModelTotalTime;
     }
 
+    private void storeSessionTime(String type, long duration) {
+        JSONObject sessionObject = new JSONObject();
+        sessionObject.put("type", type);
+        sessionObject.put("duration", duration);
+
+        sessionTimes.add(sessionObject);
+    }
 }
