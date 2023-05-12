@@ -1,4 +1,4 @@
-package se.ch.HAnS.timeTool;
+package se.ch.HAnS.annotationLogger;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -16,7 +16,7 @@ public class MongoDBHandler {
         String connectionString = "mongodb+srv://testUser:IsThisWorking@cluster0.81u6phl.mongodb.net/?retryWrites=true&w=majority";
         mongoClient = MongoClients.create(connectionString);
         database = mongoClient.getDatabase("sampleDB");
-        collection = database.getCollection("sampleCollection");
+        collection = database.getCollection("test3");
     }
 
     public void close() {

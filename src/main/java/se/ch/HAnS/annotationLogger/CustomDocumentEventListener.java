@@ -1,4 +1,4 @@
-package se.ch.HAnS.timeTool;
+package se.ch.HAnS.annotationLogger;
 
 import com.intellij.openapi.vfs.VirtualFileEvent;
 import com.intellij.openapi.vfs.VirtualFileListener;

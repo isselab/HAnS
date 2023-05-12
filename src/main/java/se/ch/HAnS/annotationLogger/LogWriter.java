@@ -1,4 +1,4 @@
-package se.ch.HAnS.timeTool;
+package se.ch.HAnS.annotationLogger;
 
 
 import java.io.*;
@@ -102,10 +102,24 @@ public class LogWriter {
             e.printStackTrace();
         }
     }
+
+    public void writeToJsonCurrentTime(String currentTime) {
+        try {
+            // Create a FileWriter object to write to the JSON file
+            FileWriter writer = new FileWriter(jsonLog, true); // "true" appends to file rather than overwriting
+
+            // Convert the TotalTimeLog object to JSON and write it to the file
+            gson.toJson("Timestamp: " + currentTime, writer);
+            writer.write(System.lineSeparator()); // Add a new line to separate log entries
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void writeToJson(JSONArray sessionTimes) {
         try {
-            String desktopPath = System.getProperty("user.home") + "/Desktop/";
-            FileWriter file = new FileWriter(desktopPath + "log.json");
+            String tempDirectoryPath = System.getProperty("java.io.tmpdir");
+            FileWriter file = new FileWriter(tempDirectoryPath + "log.json");
             file.write(sessionTimes.toJSONString());
             file.flush();
             file.close();
@@ -113,5 +127,4 @@ public class LogWriter {
             e.printStackTrace();
         }
     }
-
 }

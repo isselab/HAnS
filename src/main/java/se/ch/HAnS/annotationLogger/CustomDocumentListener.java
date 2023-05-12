@@ -1,19 +1,23 @@
-package se.ch.HAnS.timeTool;
+package se.ch.HAnS.annotationLogger;
 
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.*;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
-public class CustomDocumentListener implements PsiTreeChangeListener {
+public class CustomDocumentListener implements PsiTreeChangeListener, Disposable {
+    private static CustomDocumentListener instance;
     final int LOG_INTERVAL = 0; // Milliseconds between being able to log
     private final Project project;
     private final LogWriter logWriter;
@@ -21,23 +25,41 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
     private final SessionTracker sessionTracker;
 
     private final AnnotationEventHandler annotationEventHandler;
+    private static final Key<CustomDocumentListener> CUSTOM_DOCUMENT_LISTENER_KEY = Key.create("CustomDocumentListener");
+    private static final HashMap<Project, CustomDocumentListener> instances = new HashMap<>();
 
-    public CustomDocumentListener(Project project) {
+    private CustomDocumentListener(Project project) {
+        System.out.println("CustomDocumentListener initialized for: " + project.getName() + " (Instance: " + this.hashCode() + ")");
         this.project = project;
-        logWriter = new LogWriter(project, System.getProperty("user.home") + "/Desktop", "log.txt");
+        logWriter = new LogWriter(project, System.getProperty("java.io.tmpdir") , "log.txt");
         timer = new CustomTimer();
-        sessionTracker = new SessionTracker();
+        sessionTracker = ApplicationManager.getApplication().getService(SessionTracker.class);
         this.annotationEventHandler = new AnnotationEventHandler(project, logWriter, timer);
+        EditorTracker editorTracker = new EditorTracker(project);
+
+        // Register CustomDocumentListener as a PsiTreeChangeListener associate it with a Disposable
+        PsiManager.getInstance(project).addPsiTreeChangeListener(this, this);
 
         // Schedule a task to check for annotation time periodically
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(this::logAndResetAnnotationSessionIfInactive, 0, 1, TimeUnit.SECONDS);
 
         // A VirtualFileListener to track the creation and deletion of files
-        VirtualFileManager.getInstance().addVirtualFileListener(new CustomVirtualFileListener(logWriter, timer), new EditorTracker(project));
+        VirtualFileManager.getInstance().addVirtualFileListener(new CustomVirtualFileListener(logWriter, timer), editorTracker);
 
         // A DocumentListener to detect changes in documents
-        EditorFactory.getInstance().getEventMulticaster().addDocumentListener(new CustomDocumentEventListener(project, logWriter, timer), new EditorTracker(project));
+        EditorFactory.getInstance().getEventMulticaster().addDocumentListener(new CustomDocumentEventListener(project, logWriter, timer), editorTracker);
+    }
+    // Method to get the singleton instance of CustomDocumentListener
+    public static CustomDocumentListener getInstance(Project project) {
+        if (!instances.containsKey(project)) {
+            synchronized (CustomDocumentListener.class) {
+                if (!instances.containsKey(project)) {
+                    instances.put(project, new CustomDocumentListener(project));
+                }
+            }
+        }
+        return instances.get(project);
     }
 
 
@@ -163,6 +185,11 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         annotationEventHandler.processFileChange(psiFile);
     }
 
+    @Override
+    public void dispose() {
+
+    }
+
     // The EditorTracker class is used to track editor events and clean up resources when the project is disposed
     static class EditorTracker implements Disposable {
         private final Project project;
@@ -183,6 +210,13 @@ public class CustomDocumentListener implements PsiTreeChangeListener {
         logWriter.writeTotalTimeToJson(".feature-to-file", annotationEventHandler.getFeatureToFileTotalTime() + " ms");
         logWriter.writeTotalTimeToJson(".feature-to-folder", annotationEventHandler.getFeatureToFolderTotalTime() + " ms");
         logWriter.writeTotalTimeToJson(".feature-model", annotationEventHandler.getFeatureModelTotalTime() + " ms");
+        logWriter.writeTotalTimeToJson("Total annotation time", annotationEventHandler.getTotalTime()+ " ms");
         logWriter.writeTotalTimeToJson("Developing time", sessionTracker.getTotalActiveTime() + " ms");
+        logWriter.writeToJsonCurrentTime(timer.getCurrentDate());
     }
+
+    public static void clearInstance(Project project) {
+        project.putUserData(CUSTOM_DOCUMENT_LISTENER_KEY, null);
+    }
+
 }

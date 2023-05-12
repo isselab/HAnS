@@ -30,6 +30,10 @@ limitations under the License.
     <!-- &begin[ColorSettingsPage] -->
     <extensions defaultExtensionNs="com.intellij">
         <colorSettingsPage implementation="se.ch.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
+        <applicationService serviceImplementation="se.ch.HAnS.annotationLogger.SessionTracker"/>
+        <projectService serviceImplementation="se.ch.HAnS.annotationLogger.ProjectCloseService"/>
+        <postStartupActivity implementation="se.ch.HAnS.annotationLogger.PluginStartupActivity"/>
+        <applicationConfigurable instance="se.ch.HAnS.annotationLogger.HansAnnotationLoggingPage"/>
     </extensions>
     <!-- &end[ColorSettingsPage] -->
 
@@ -123,7 +127,7 @@ limitations under the License.
         <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
-        <psi.treeChangeListener implementation="se.ch.HAnS.timeTool.CustomDocumentListener"/>
+        <psi.treeChangeListener implementation="se.ch.HAnS.annotationLogger.CustomDocumentListener"/>
     </extensions>
 
     <actions>
@@ -160,15 +164,5 @@ limitations under the License.
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
     </actions>
-    <application-components>
-        <component>
-            <implementation-class>se.ch.HAnS.timeTool.SessionTracker</implementation-class>
-        </component>
-    </application-components>
 
-    <project-components>
-        <component>
-            <implementation-class>se.ch.HAnS.timeTool.ProjectCloseListener</implementation-class>
-        </component>
-    </project-components>
 </idea-plugin>
