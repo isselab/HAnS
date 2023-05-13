@@ -36,7 +36,12 @@ public class ProjectCloseListener implements ProjectManagerListener{
         System.out.println("ProjectCloseListener: Project closing for: " + project.getName() + " (CustomDocumentListener Instance: " + customDocumentListener.hashCode() + ")");
         customDocumentListener.logTotalTime();
         List<String> logContents = Collections.singletonList(readLogFile());
-        mongoDBHandler.insertLogFile(project.getName(), logContents.toString());
+        try {
+            HansAnnotationLoggingPage.LogStrategy logStrategy = loggingPage.getLogStrategy(project);
+            logStrategy.log(logContents.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println("Log contents sent to the database.");
         resetLogFile();
         System.out.println("Log file reset.");
