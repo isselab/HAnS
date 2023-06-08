@@ -4,7 +4,7 @@
 The annotation logger is a tool in the HAnS plugin designed to measure the time spent on various activities in a codebase. It captures and logs the time spent on different annotation types and user activities in a project related to the HaNS plugin.
 
 ## How It Works
-The plugin works by listening for certain events in the codebase such as adding, removing, or replacing annotation comments, as well as keystrokes and mouse events indicating user activity. The plugin periodically checks for idle time and logs the total time spent during active sessions. When a session is considered idle, the plugin resets the session time and updates the log files. Here are all the classes used for the annotation logger:
+The annotation logger works by listening for certain events in the code such as adding, removing, or replacing annotations, as well as keystrokes and mouse events indicating user activity. The plugin periodically checks for idle time and logs the total time spent during active sessions. When a session is considered idle, the plugin resets the session time and updates the log files. Here are all the classes used for the annotation logger:
 
 - The `CustomDocumentListener` class is an important part of the Time Logging Plugin. This class is responsible for listening to changes in the codebase's PSI (Program Structure Interface) Tree. These changes can include the addition, removal, or replacement of annotation comments.
 
@@ -46,6 +46,6 @@ The plugin works by listening for certain events in the codebase such as adding,
 ## How to Use
 The logging tool is activated off when using the HAnS plugin. To use it, simply press the settings icon at the top left of intelliJ:
 
-![](materials\HansSettingPage.png)
+![](\materials\HansSettingPage.png)
 
 Then press `settings`, and finally at the bottom of the new screen there should be a `HAnS Annotation Logging` tab. Just click on that tab and then simply select where you want store the annotation file.
