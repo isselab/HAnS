@@ -9,7 +9,10 @@ import java.awt.event.MouseEvent;
 
 import java.time.Instant;
 import java.time.Duration;
-
+/**
+ * This class is responsible for tracking user's active session. It listens to user's mouse and key events and
+ * calculates the total active time of the user by considering a threshold of idle time.
+ */
 @Service
 public final class SessionTracker {
     // Threshold time (in milliseconds) for considering the user as idle
@@ -20,12 +23,18 @@ public final class SessionTracker {
     // Total time the user has been active
     private long totalActiveTime;
 
+    /**
+     * Constructs a new SessionTracker and initializes it's fields.
+     */
     public SessionTracker() {
         System.out.println("SessionTracker instantiated.");
         lastActiveTime = Instant.now();  // Initialise the lastActiveTime
         setupListeners();
     }
 
+    /**
+     * Sets up the listeners for mouse and key events. The listeners update the total active time when an event is dispatched.
+     */
     private void setupListeners() {
         Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
             @Override
@@ -43,11 +52,18 @@ public final class SessionTracker {
         }, MouseEvent.MOUSE_EVENT_MASK | KeyEvent.KEY_EVENT_MASK);
     }
 
-    // Getter method to get the total active time
+    /**
+     * Returns the total active time of the user.
+     *
+     * @return The total active time in milliseconds.
+     */
     public long getTotalActiveTime() {
         return totalActiveTime;
     }
-    // Reset method for when we close the project
+
+    /**
+     * Resets the total active time of the user.
+     */
     public void resetTotalActiveTime() {
         totalActiveTime = 0;
     }

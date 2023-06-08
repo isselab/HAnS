@@ -7,10 +7,15 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Class representing the configuration page for Hans Annotation Logging.
+ */
 public class HansAnnotationLoggingPage implements Configurable {
     private JPanel panel;
     private JRadioButton mongodbOption;
@@ -21,6 +26,9 @@ public class HansAnnotationLoggingPage implements Configurable {
     //private PropertiesComponent properties;
     private static final String LOGGING_PREF_KEY = "loggingPref";
 
+    private JButton chooseDirectoryButton;
+    private JLabel selectedDirectoryLabel;
+    private static final String LOGGING_DIRECTORY_KEY = "loggingDirectory";
 
 
     @Nls(capitalization = Nls.Capitalization.Title)
@@ -29,7 +37,11 @@ public class HansAnnotationLoggingPage implements Configurable {
         return "Hans Annotation Logging";
     }
 
-    // Creates and setting up the GUI components for the logging settings page (also initializes the necessary components like the buttons and checkboxes)
+    /**
+     * Creates and initializes the GUI components for the logging settings page.
+     *
+     * @return the created component.
+     */
     @Nullable
     @Override
     public JComponent createComponent() {
@@ -46,13 +58,35 @@ public class HansAnnotationLoggingPage implements Configurable {
         panel.add(localOption);
         panel.add(noLoggingOption);
 
-        System.out.println("Properties initialized");
+        System.out.println("properties initialized");
         properties = PropertiesComponent.getInstance();
+
+        chooseDirectoryButton = new JButton("Choose Directory");
+        selectedDirectoryLabel = new JLabel();
+
+        panel.add(chooseDirectoryButton);
+        panel.add(selectedDirectoryLabel);
+
+        chooseDirectoryButton.addActionListener(e -> {
+            JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+            jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+            int returnValue = jfc.showOpenDialog(null);
+            if (returnValue == JFileChooser.APPROVE_OPTION) {
+                String selectedDirectory = jfc.getSelectedFile().getAbsolutePath();
+                selectedDirectoryLabel.setText(selectedDirectory);
+                properties.setValue(LOGGING_DIRECTORY_KEY, selectedDirectory);
+            }
+        });
 
         return panel;
     }
 
-    // This method checks if any changes have been made on the logging settings page that have not been saved yet, it then compares it then compares the current setting on the page with the one stored in the project(if there is a difference == return true, if not == return false)
+    /**
+     * Checks if any changes have been made on the logging settings page that have not been saved yet.
+     *
+     * @return true if changes were made, otherwise false.
+     */
     @Override
     public boolean isModified() {
         String selected = mongodbOption.isSelected() ? "mongodb" : localOption.isSelected() ? "local" : "none";
@@ -60,14 +94,22 @@ public class HansAnnotationLoggingPage implements Configurable {
         return !selected.equals(current);
     }
 
-    // This method is called whenever a user clicks "apply/apply" on the settings page, it then saves and changes the new current setting on the settings page to the current project.
+    /**
+     * Called when the user clicks "apply/apply" on the settings page,
+     * saves and applies the selected settings to the current project.
+     *
+     * @throws ConfigurationException if there was a problem with the configuration
+     */
     @Override
     public void apply() throws ConfigurationException {
         String selected = mongodbOption.isSelected() ? "mongodb" : localOption.isSelected() ? "local" : "none";
         properties.setValue(LOGGING_PREF_KEY, selected);
     }
 
-    // This method is called when the user clicks "reset/cancel" on the settings page. This method just resets the setting on the page to match the current settings stored in the project,
+    /**
+     * Called when the user clicks "reset/cancel" on the settings page.
+     * Resets the settings on the page to match the current settings stored in the project.
+     */
     @Override
     public void reset() {
         String current = properties.getValue(LOGGING_PREF_KEY, "none");
@@ -82,15 +124,24 @@ public class HansAnnotationLoggingPage implements Configurable {
                 noLoggingOption.setSelected(true);
         }
     }
-    // This method is called when the settings page is closed. It's used to clean up resources used by the settings page
+
+    /**
+     * Called when the settings page is closed. Used to clean up resources used by the settings page.
+     */
     @Override
     public void disposeUIResources() {
-
     }
 
+    /**
+     * Interface for different logging strategies.
+     */
     public interface LogStrategy {
         void log(String message);
     }
+
+    /**
+     * Class representing a logging strategy using MongoDB.
+     */
     public static class MongoDBLogStrategy implements LogStrategy {
         private Project project;
         private MongoDBHandler handler;
@@ -106,6 +157,10 @@ public class HansAnnotationLoggingPage implements Configurable {
             handler.insertLogFile(project.getName(), message);
         }
     }
+
+    /**
+     * Class representing a local logging strategy.
+     */
     public static class LocalLogStrategy implements LogStrategy {
         private LogWriter logWriter;
 
@@ -118,6 +173,10 @@ public class HansAnnotationLoggingPage implements Configurable {
             logWriter.writeToLog(message);
         }
     }
+
+    /**
+     * Class representing a logging strategy that does not perform any logging.
+     */
     public static class NoLoggingStrategy implements LogStrategy {
         @Override
         public void log(String message) {
@@ -125,6 +184,12 @@ public class HansAnnotationLoggingPage implements Configurable {
         }
     }
 
+    /**
+     * Returns the current logging strategy based on the current settings.
+     *
+     * @param project the current project
+     * @return the current logging strategy
+     */
     public LogStrategy getLogStrategy(Project project) {
         if (properties == null) {
             System.out.println("Properties is null");
@@ -139,8 +204,8 @@ public class HansAnnotationLoggingPage implements Configurable {
                 System.out.println("Returning MongoDBLogStrategy");
                 return new MongoDBLogStrategy(project);
             case "local":
-                System.out.println("Returning LocalLogStrategy");
-                return new LocalLogStrategy(new LogWriter(project, System.getProperty("user.home") + "/Desktop", "annotationLogger.json"));
+                String logDirectory = properties.getValue(LOGGING_DIRECTORY_KEY, System.getProperty("user.home"));
+                return new LocalLogStrategy(new LogWriter(project, logDirectory, "annotationLogger.json"));
             default:
                 System.out.println("Returning NoLoggingStrategy");
                 return new NoLoggingStrategy();
