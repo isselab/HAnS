@@ -34,7 +34,7 @@ public class HansAnnotationLoggingPage implements Configurable {
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
-        return "Hans Annotation Logging";
+        return "AnnotationLogger Page";
     }
 
     /**

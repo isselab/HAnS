@@ -46,6 +46,10 @@ The annotation logger works by listening for certain events in the code such as 
 ## How to Use
 The logging tool is activated off when using the HAnS plugin. To use it, simply press the settings icon at the top left of intelliJ:
 
-![](\materials\HansSettingPage.png)
+![](Picture\HansSettingPage.png)
 
-Then press `settings`, and finally at the bottom of the new screen there should be a `HAnS Annotation Logging` tab. Just click on that tab and then simply select where you want store the annotation file.
+Then press `settings`, and finally at the bottom of the new screen there should be a `AnnotationLogger Page` tab. 
+
+![](Picture\AnnotationLoggerPage.png)
+
+Just click on that tab and then simply select where you want store the annotation file.
