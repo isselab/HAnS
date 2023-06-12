@@ -15,6 +15,7 @@
  **/
 
 package se.ch.HAnS.syntaxHighlighting;
+import com.intellij.lang.Language;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.*;
@@ -57,8 +58,8 @@ public class HansColorSettingsPage implements ColorSettingsPage {
         return """
                 <comment marker>//</comment marker> <EA_key>&begin</EA_key>[<feature>FeatureName</feature>]
                 Codeblock
-                <comment marker>//</comment marker> <EA_Key>&end</EA_Key>[<feature>FeatureName</feature>]
-                Line of Code <comment marker>//</comment marker> <EA_Key>&Line</EA_Key>[<feature>FeatureName</feature>::<feature>SubFeature</feature>]
+                <comment marker>//</comment marker> <EA_key>&end</EA_key>[<feature>FeatureName</feature>]
+                Line of Code <comment marker>//</comment marker> <EA_key>&line</EA_key>[<feature>FeatureName</feature>::<feature>SubFeature</feature>]
                 <filename>Filename.any</filename>
                 <bad character>Bad-character</bad character>
                 <bad value>Bad-value</bad value>
