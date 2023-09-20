@@ -22,6 +22,7 @@ import com.intellij.lang.injection.MultiHostRegistrar;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,12 +41,42 @@ class CodeAnnotationInjector implements MultiHostInjector {
                 final PsiComment psiComment = (PsiComment) context;
 
                 Commenter commenter = LanguageCommenters.INSTANCE.forLanguage(psiComment.getLanguage());
+
+                if (commenter == null)
+                    commenter = new Commenter() {
+                        @Override
+                        public @Nullable String getLineCommentPrefix() {
+                            return "//";
+                        }
+
+                        @Override
+                        public @Nullable String getBlockCommentPrefix() {
+                            return "/*";
+                        }
+
+                        @Override
+                        public @Nullable String getBlockCommentSuffix() {
+                            return "*/";
+                        }
+
+                        @Override
+                        public @Nullable String getCommentedBlockCommentPrefix() {
+                            return null;
+                        }
+
+                        @Override
+                        public @Nullable String getCommentedBlockCommentSuffix() {
+                            return null;
+                        }
+                    };
+
                 String lineCommentPrefix = commenter.getLineCommentPrefix();
                 String blockCommentPrefix = commenter.getBlockCommentPrefix();
                 String blockCommentSuffix = commenter.getBlockCommentSuffix();
 
                 registrar.startInjecting(CodeAnnotationLanguage.INSTANCE);
                 // &begin[JavaStyleComment]
+
                 if (psiComment.getTokenType().toString().equals("END_OF_LINE_COMMENT") && lineCommentPrefix != null) {
                     registrar.addPlace(
                             null,

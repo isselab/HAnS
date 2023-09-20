@@ -28,8 +28,10 @@ import java.util.Objects;
 public class RenameAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        if (e.getData(LangDataKeys.PSI_ELEMENT) instanceof FeatureModelFeature) {
-            RenameDialog dialog = new RenameDialog(Objects.requireNonNull(e.getProject()), Objects.requireNonNull(e.getData(LangDataKeys.PSI_ELEMENT)), null, null);
+        var data = e.getData(LangDataKeys.PSI_ELEMENT);
+        var project = e.getProject();
+        if (data instanceof FeatureModelFeature && project != null) {
+            var dialog = new RenameDialog(project, data, null, null);
             dialog.show();
         }
     }
