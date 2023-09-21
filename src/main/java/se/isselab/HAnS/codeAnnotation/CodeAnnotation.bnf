@@ -1,0 +1,48 @@
+/*
+Copyright 2021 Herman Jansson & Johan Martinson
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+{
+  parserClass="se.isselab.HAnS.codeAnnotation.parser.CodeAnnotationParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="CodeAnnotation"
+  psiImplClassSuffix="Impl"
+  psiPackage="se.isselab.HAnS.codeAnnotation.psi"
+  psiImplPackage="se.isselab.HAnS.codeAnnotation.psi.impl"
+
+  elementTypeHolderClass="se.isselab.HAnS.codeAnnotation.psi.CodeAnnotationTypes"
+  elementTypeClass="se.isselab.HAnS.codeAnnotation.psi.CodeAnnotationElementType"
+  tokenTypeClass="se.isselab.HAnS.codeAnnotation.psi.CodeAnnotationTokenType"
+
+  psiImplUtilClass="se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationPsiImplUtil"
+}
+
+marker ::= (COMMENTMARKER|SPACE)* (beginmarker|endmarker|linemarker) (SPACE|COMMENTMARKER)*
+
+beginmarker ::= BEGIN parameter
+endmarker ::= END parameter
+linemarker ::= LINE parameter
+
+parameter ::= (SPACE* OBRACKET SPACE* lpq ((SPACE* CS)? SPACE+ lpq)* SPACE* CBRACKET) | (SPACE+ lpq ((SPACE* CS)? SPACE+ lpq)* SPACE*)
+
+// &begin[Referencing]
+lpq ::= feature (SEPARATOR feature)*{
+mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
+implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"
+methods=[getName setName getNameIdentifier]}
+// &end[Referencing]
+
+feature ::= FEATURENAME
