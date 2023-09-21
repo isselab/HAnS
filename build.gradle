@@ -1,10 +1,25 @@
-plugins {
-    id 'java'
-    id 'org.jetbrains.intellij' version '1.15.0'
+import org.jetbrains.changelog.Changelog
+import org.jetbrains.changelog.ChangelogSectionUrlBuilder
+import org.jetbrains.changelog.ExtensionsKt
+
+def properties(String key) {
+    return providers.gradleProperty(key)
 }
 
-group 'org.easelab'
-version '1.1'
+def environment(String key) {
+    return providers.environmentVariable(key)
+}
+
+plugins {
+    id 'java'
+    alias libs.plugins.gradleIntelliJPlugin // Gradle IntelliJ Plugin
+    alias libs.plugins.changelog // Gradle Changelog Plugin
+}
+
+apply plugin: 'org.jetbrains.changelog'
+
+group = properties('pluginGroup').get()
+version = properties('pluginVersion').get()
 
 repositories {
     mavenCentral()
@@ -17,36 +32,80 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = '2023.2'
-    //type = 'RD'
-    plugins = []
-    pluginName = 'HAnS'
+    pluginName = properties("pluginName")
+    version = properties("platformVersion")
+    type = properties("platformType")
+
+    // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
+    plugins = properties('platformPlugins').map { it.split(',').collect { it.trim() }.findAll { !it.isEmpty() } }
 }
+
+runIde {
+    autoReloadPlugins = true
+}
+
 patchPluginXml {
-    changeNotes = """
-      <p>Suported Features:</p>
-        <ul>
-        <li>Feature Annotation Languages
-        <ul>
-        <li>Feature Model</li>
-        <li>Feature to folder</li>
-        <li>Feature to file</li>
-        <li>Code annotations</li>
-        </ul>
-        </li>
-        <li>Syntax Highlighting</li>
-        <ul>
-            <li>Context based</li>
-        </ul>
-        <li>Code Completion</li>
-        <ul>
-            <li>With referencing</li>
-        </ul>
-        <li>Feature View</li>
-        </ul>"""
+    pluginId = properties('pluginId')
+    sinceBuild = properties('pluginSinceBuild')
+    untilBuild = properties('pluginUntilBuild')
+
+    // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
+    pluginDescription = providers.fileContents(layout.projectDirectory.file('README.md')).asText.map {
+        def start = '<!-- Plugin description -->'
+        def end = '<!-- Plugin description end -->'
+
+        def lines = it.lines().toList()
+        if (!lines.containsAll([start, end])) {
+            throw new GradleException("Plugin description section not found in README.md:\n$start ... $end")
+        }
+
+        def desc = lines.subList(lines.indexOf(start) + 1, lines.indexOf(end)).join('\n')
+        ExtensionsKt.markdownToHTML(desc, '\n')
+    }
+
+    changeNotes = provider {
+        changelog.renderItem(
+                changelog
+                        .getUnreleased()
+                        .withHeader(false)
+                        .withEmptySections(false)
+                        .withLinks(true)
+                        .withSummary(true),
+                Changelog.OutputType.HTML
+        )
+    }
 }
+
 test {
     useJUnitPlatform()
+}
+
+listProductsReleases {
+    types =  properties('platformTypes').map { it.split(',').collect { it.trim() }.findAll { !it.isEmpty() } }
+}
+
+signPlugin {
+    certificateChain = environment("CERTIFICATE_CHAIN")
+    privateKey = environment("PRIVATE_KEY")
+    password = environment("PRIVATE_KEY_PASSWORD")
+}
+
+publishPlugin {
+    dependsOn("patchChangelog")
+    token = environment("PUBLISH_TOKEN")
+}
+
+
+changelog {
+    path = file("CHANGELOG.md").canonicalPath
+    repositoryUrl = properties('pluginRepositoryUrl')
+    header = "${-> version.get()} - ${ExtensionsKt.date("yyyy-MM-dd")}"
+    itemPrefix = "-"
+    keepUnreleasedSection = true
+    unreleasedTerm = "Unreleased"
+    groups = ["Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"]
+    lineSeparator = "\n"
+    combinePreReleases = true
 }
 
 sourceSets.main.java.srcDirs 'src/main/gen'
