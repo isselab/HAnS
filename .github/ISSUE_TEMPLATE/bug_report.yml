@@ -34,16 +34,16 @@ body:
   - type: input
     id: version
     attributes:
-      label: Gradle IntelliJ Plugin version
-      placeholder: 1.16.0
+      label: Plugin version
+      placeholder: 0.0.1
     validations:
       required: true
 
   - type: input
     id: gradle
     attributes:
-      label: Gradle version
-      placeholder: 8.2.1
+      label: Intellij version
+      placeholder: 2023.02
     validations:
       required: true
 
@@ -55,9 +55,3 @@ body:
         - macOS
         - Linux
         - Windows
-
-  - type: input
-    id: url
-    attributes:
-      label: Link to build, i.e. failing GitHub Action job
-      placeholder: https://github.com/username/project/actions/runs/1234567890
