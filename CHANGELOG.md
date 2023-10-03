@@ -1,6 +1,23 @@
 # Changelog
 
 ## [Unreleased]
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- QuickFix added to file and folder annotations
+- Bug issue tracker setup
+
+### Security
+
+## [0.0.1] - 2023-10-03
+
 First Release to marketplace
 
 ### Added
@@ -20,13 +37,5 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
-
-[Unreleased]: https://github.com/isselab/HAnS/commits
-
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.1...HEAD
+[0.0.1]: https://github.com/isselab/HAnS/commits/v0.0.1

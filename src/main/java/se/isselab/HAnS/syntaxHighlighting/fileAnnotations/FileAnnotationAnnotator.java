@@ -15,6 +15,9 @@ limitations under the License.
 */
 package se.isselab.HAnS.syntaxHighlighting.fileAnnotations;
 
+import com.intellij.codeInsight.daemon.quickFix.CreateFilePathFix;
+import com.intellij.codeInsight.daemon.quickFix.NewFileLocation;
+import com.intellij.codeInsight.daemon.quickFix.TargetDirectory;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -28,14 +31,15 @@ import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFeatureName;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileName;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationLpq;
 import se.isselab.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighter;
-
+import se.isselab.HAnS.unassignedFeature.UnassignedFeatureQuickFix;
+import java.util.Arrays;
 import java.util.List;
 
 public class FileAnnotationAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (!(element instanceof FileAnnotationLpq)){
-            if(checkElementOftypeFileAnnotationFileName(element)){
+            if(checkElementOfTypeFileAnnotationFileName(element)){
                 annotateFileName(element, holder);
             }
             return;
@@ -49,8 +53,7 @@ public class FileAnnotationAnnotator implements Annotator {
                 holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved property: Feature is not defined in the Feature Model")
                         .range(feature.getTextRange())
                         .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
-                        // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
-                        //.withFix(new FeatureModelCreateNewFeature(featureText))
+                        .withFix(new UnassignedFeatureQuickFix(element.getText())) // &line[Quickfix]
                         .create();
             } else {
                 // Found at least one property, force the text attributes to Simple syntax value character
@@ -65,18 +68,19 @@ public class FileAnnotationAnnotator implements Annotator {
         String fileNameText = fileName.getText();
         TextRange fileNameRange = fileName.getTextRange();
 
-        PsiFile[] files = element.getContainingFile().getContainingDirectory().getFiles();
+        var directory = element.getContainingFile().getContainingDirectory();
+        PsiFile[] files = directory.getFiles();
         boolean nameExistsInDirectory = false;
 
         for (PsiFile file: files) {
             if (file.getName().equals(fileNameText)) nameExistsInDirectory = true;
         }
         if (!nameExistsInDirectory) {
+            var targetDirectories = Arrays.stream(new TargetDirectory[]{new TargetDirectory(directory)}).toList();
             holder.newAnnotation(HighlightSeverity.ERROR, "Unresolved Property: File don't exist in this directory")
                     .range(fileNameRange)
                     .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
-                    // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
-                    //.withFix(new FeatureModelCreateNewFeature(featureText))
+                    .withFix(new CreateFilePathFix(element, new NewFileLocation(targetDirectories, fileNameText))) // &line[Quickfix]
                     .create();
         } else {
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
@@ -86,7 +90,7 @@ public class FileAnnotationAnnotator implements Annotator {
         }
     }
 
-    private boolean checkElementOftypeFileAnnotationFileName(@NotNull PsiElement element) {
+    private boolean checkElementOfTypeFileAnnotationFileName(@NotNull PsiElement element) {
         return element instanceof FileAnnotationFileName;
     }
 }
