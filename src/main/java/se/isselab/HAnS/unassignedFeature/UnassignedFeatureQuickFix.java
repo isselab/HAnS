@@ -69,7 +69,7 @@ public class UnassignedFeatureQuickFix extends BaseIntentionAction {
     @Override
     public void invoke(@NotNull final Project project, final Editor editor, PsiFile file) throws
             IncorrectOperationException {
-        ApplicationManager.getApplication().invokeLater(() -> {
+        ApplicationManager.getApplication().invokeLaterOnWriteThread(() -> {
             Collection<VirtualFile> virtualFiles =
                     FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScope.allScope(project));
             if (virtualFiles.size() == 1) {
