@@ -43,7 +43,7 @@ body:
     id: gradle
     attributes:
       label: Intellij version
-      placeholder: 2023.02
+      placeholder: 2023.02.*
     validations:
       required: true
 
