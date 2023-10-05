@@ -3,8 +3,9 @@
 ## [Unreleased]
 
 ### Added
-
+ - Contributors.md
 ### Changed
+ - Reformat the readme
 
 ### Deprecated
 

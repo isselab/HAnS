@@ -2,6 +2,7 @@
 ![Build](https://github.com/isselab/HAnS/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/22759.svg)](https://plugins.jetbrains.com/plugin/22759)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/22759.svg)](https://plugins.jetbrains.com/plugin/22759)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 <!-- Plugin description -->
 HAnS is a plugin that aims to help developers with annotating software assets with features.
@@ -56,15 +57,32 @@ The repository have policies in place (similar to other Git repositories) where 
 If you have experience with plugin development or want to help out by becoming a member of the review team, 
 please reach out and contact any member in the existing team. 
 
-Information on which people to contact/are currently are in the review team can be found here:
-+ [@Johan Martinson](https://www.github.com/johmara)
-+ [@Herman Jansson](https://github.com/janssonherman)
+##### Current review group
+[![jhc github](https://img.shields.io/badge/GitHub-johmara-181717.svg?style=flat&logo=github)](https://www.github.com/johmara)
+[![jhc github](https://img.shields.io/badge/GitHub-janssonherman-181717.svg?style=flat&logo=github)](https://www.github.com/janssonherman)
 
 #### Code Quality
 Given that the plugin will have a widespread use and most likely be used repeatedly, it is essential that the code is of quality. 
 For that reason we have policies in place where reviewers are required to review and accept the code before it is 
 accepted into the main branch.
 
-### Who do I talk to? ###
-* [@Johan Martinson](https://www.github.com/johmara) or [@Herman Jansson](https://github.com/janssonherman)
-* Other community or team contact: Mukelabai Mukelabai 
+### Who do I talk to? 
+[![jhc github](https://img.shields.io/badge/GitHub-johmara-181717.svg?style=flat&logo=github)](https://www.github.com/johmara)
+[![jhc github](https://img.shields.io/badge/GitHub-janssonherman-181717.svg?style=flat&logo=github)](https://www.github.com/janssonherman)
+
+#### Research group
+[![jhc github](https://img.shields.io/badge/GitHub-isselab-181717.svg?style=flat&logo=github)](https://www.github.com/isselab)
+[![](https://img.shields.io/website.svg?down_color=red&down_message=down&up_color=green&up_message=isselab.org&url=http%3A%2F%2Fshields.io)](https://www.isselab.org)
+#### Chair of Software Engineering   
+[![Chair of Software Engineering](https://img.shields.io/website.svg?down_color=red&down_message=down&up_color=green&up_message=se.ruhr-uni-bochum.de&url=http%3A%2F%2Fshields.io)](http://se.rub.de)
+
+#### Papers published:
+##### 2021
+- Master Thesis by Johan Martinson & Herman Jansson  
+  [![Johan & Herman](https://zenodo.org/badge/DOI/20.500.12380/302926.svg)](https://doi.org/20.500.12380/302926)
+- HAnS: IDE-based editing support for embedded feature annotations by Johan Martinson, Herman Jansson, Mukelabai Mukelabai, Thorsten Berger, Alexandre Bergel, and Truong Ho-Quang.  
+  [![](https://zenodo.org/badge/DOI/10.1145/3461002.3473072.svg)](https://doi.org/10.1145/3461002.3473072)
+
+
+### [Contributors](CONTRIBUTORS.md)
+
