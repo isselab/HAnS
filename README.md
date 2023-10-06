@@ -40,31 +40,25 @@ The features of HAnS are:
 You are free to contribute to this repository.
 
 #### Getting started
- + Fork the repository.
- + Start adding your code for your new feature or bugfix
+ + Fork the repository
+ + Start adding your contribution as an annotated feature in the code
  + Build and Test
- + make a pull request
+ + Make a pull request
 
 To build and test you new snippet run the gradle [runIde] task.
 
 Pull requests should be named like this: *`folder`*-*`featureName`*-*`contributor`*-*`description`*.
 
-Folder can be either *`Feature`* or *`Bug`*. Featurename should be one that is already in the featuremodel or some new featurename.
+Folder can be either *`Feature`* or *`Bug`*. FeatureName should be one that is already in the featuremodel or some new featureName.
 Lastly contributor is your git name and the description should be a short description of the new feature or the bug.
 
 #### As a reviewer
-The repository have policies in place (similar to other Git repositories) where we have a team of members that are responsible for ensuring the code quality of the features before they can be merged to the main/master branch. 
-If you have experience with plugin development or want to help out by becoming a member of the review team, 
-please reach out and contact any member in the existing team. 
+The repository has policies in place (similar to other Git repositories) for which a team of members is responsible for ensuring the code quality of the features before they can be merged to the main branch. 
+If you have experience with plugin development or want to help out by becoming a member of the review team, please reach out and contact any member in the existing team. 
 
 ##### Current review group
 [![jhc github](https://img.shields.io/badge/GitHub-johmara-181717.svg?style=flat&logo=github)](https://www.github.com/johmara)
 [![jhc github](https://img.shields.io/badge/GitHub-janssonherman-181717.svg?style=flat&logo=github)](https://www.github.com/janssonherman)
-
-#### Code Quality
-Given that the plugin will have a widespread use and most likely be used repeatedly, it is essential that the code is of quality. 
-For that reason we have policies in place where reviewers are required to review and accept the code before it is 
-accepted into the main branch.
 
 ### Who do I talk to? 
 [![jhc github](https://img.shields.io/badge/GitHub-johmara-181717.svg?style=flat&logo=github)](https://www.github.com/johmara)
