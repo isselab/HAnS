@@ -49,11 +49,11 @@ To build and test you new snippet run the gradle [runIde] task.
 
 Pull requests should be named like this: *`folder`*-*`featureName`*-*`contributor`*-*`description`*.
 
-Folder can be either *`Feature`* or *`Bug`*. FeatureName should be one that is already in the featuremodel or some new feature name.
+Folder can be either *`Feature`* or *`Bug`*. FeatureName should be one that is already in the featuremodel or some new featureName.
 Lastly contributor is your git name and the description should be a short description of the new feature or the bug.
 
 #### As a reviewer
-The repository has policies in place (similar to other Git repositories) for which a team of members is responsible for ensuring the code quality of the features before they can be merged to the main/master branch. 
+The repository has policies in place (similar to other Git repositories) for which a team of members is responsible for ensuring the code quality of the features before they can be merged to the main branch. 
 If you have experience with plugin development or want to help out by becoming a member of the review team, please reach out and contact any member in the existing team. 
 
 ##### Current review group
