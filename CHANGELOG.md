@@ -3,19 +3,31 @@
 ## [Unreleased]
 
 ### Added
- - Contributors.md
+
 ### Changed
- - Reformat the readme
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
-- QuickFix added to file and folder annotations
-- Bug issue tracker setup
 
 ### Security
+
+## [0.0.2] - 2023-10-06
+
+### Added
+
+- Contributors.md
+
+### Changed
+
+- Reformat the readme
+
+### Fixed
+
+- QuickFix added to file and folder annotations
+- Bug issue tracker setup
 
 ## [0.0.1] - 2023-10-03
 
@@ -38,5 +50,6 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/isselab/HAnS/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/isselab/HAnS/commits/v0.0.1
