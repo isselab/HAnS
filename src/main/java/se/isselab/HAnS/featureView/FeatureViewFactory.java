@@ -57,7 +57,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
         if (psiFile != null)
             component = new StructureViewComponent(fileEditor, new FeatureViewModel(psiFile), project, false);
         else {
-            component = getNoFeatureModelFoundPanel();
+            component = getNoFeatureModelFoundPanel(project);
         }
 
 
@@ -72,14 +72,14 @@ public class FeatureViewFactory implements ToolWindowFactory {
     }
 
     @NotNull
-    private JPanel getNoFeatureModelFoundPanel() {
+    private JPanel getNoFeatureModelFoundPanel(Project project) {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.anchor = GridBagConstraints.CENTER;
         constraints.insets = JBUI.insets(10);
         JLabel label = new JLabel("No feature-model could be found");
         var button = new JButton("Create feature-model", AnnotationIcons.FeatureModelIcon);
-        button.addActionListener(e -> createFeatureModelFileWithDialog());
+        button.addActionListener(e -> createFeatureModelFileWithDialog(project));
 
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -90,12 +90,9 @@ public class FeatureViewFactory implements ToolWindowFactory {
         return panel;
     }
 
-    private void createFeatureModelFileWithDialog() {
-        // Get the project instance from the ProjectManager
-        Project project = ProjectManager.getInstance().getOpenProjects()[0];
-
+    private void createFeatureModelFileWithDialog(Project project) {
         // Get feature name from user via DialogBox
-        String content = Messages.showInputDialog(project, "Root feature:", project.getBasePath(), null, "Enter_Root_Feature_Name", null);
+        String content = Messages.showInputDialog(project, "Root feature:", project.getBasePath(), AnnotationIcons.FeatureModelIcon, "Enter_Root_Feature_Name", null);
 
         //Skip creating file if dialog box is cancelled
         if(content != null) {
