@@ -15,11 +15,11 @@ jobs:
         uses: pozil/auto-assign-issue@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          assignees: isselab/hans-reviewers
+          assignees: hans-reviewers
           numOfAssignee: 1
       - name: 'Auto-assign issue'
         uses: pozil/auto-assign-issue@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          assignees: isselab/hans-devs
+          assignees: hans-reviewers
           numOfAssignee: 1
