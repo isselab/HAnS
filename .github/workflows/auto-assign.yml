@@ -1,19 +1,18 @@
 name: Auto Assign
+
 on:
-  issues:
-    types: [opened]
   pull_request:
-    types: [opened]
+    types: [opened, edited, synchronize, reopened]
+
 jobs:
-  run:
+  auto-assign:
     runs-on: ubuntu-latest
     permissions:
       issues: write
-      pull-requests: write
     steps:
-      - name: 'Auto-assign pull-request'
+      - name: 'Auto-assign PR'
         uses: pozil/auto-assign-issue@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          assignees: isselab/hans-reviewers
+          repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          teams: isselab/hans-reviewers
           numOfAssignee: 1
