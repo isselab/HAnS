@@ -16,3 +16,4 @@ jobs:
           repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           teams: hans-reviewers
           numOfAssignee: 1
+          teamIsPullRequestReviewer: true
