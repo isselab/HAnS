@@ -14,6 +14,6 @@ jobs:
         uses: pozil/auto-assign-issue@v1.13.0
         with:
           repo-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          teams: isselab/hans-reviewers
+          teams: hans-reviewers
           numOfAssignee: 1
           teamIsPullRequestReviewer: true
