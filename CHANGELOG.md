@@ -5,7 +5,13 @@
 ### Added
 
 ### Changed
-
+- Upgrade Gradle Wrapper to 8.4
+- Gradle - use JetBrains Runtime
+- Change since/until build to 223-233.* (2022.3-2023.3.*)
+- Dependencies - upgrade org.jetbrains.intellij to 1.16.0
+- Dependencies - upgrade org.jetbrains.kotlin.jvm to 1.9.10
+- Dependencies (GitHub Actions) - upgrade actions/checkout to 4
+- Dependencies (GitHub Actions) - upgrade JetBrains/qodana-action to v2023.2.6
 ### Deprecated
 
 ### Removed
