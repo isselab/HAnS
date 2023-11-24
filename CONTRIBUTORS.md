@@ -5,7 +5,7 @@
 | Fadi Abunaj      | [![Fadi github](https://img.shields.io/badge/GitHub-Civilangem0-181717.svg?style=flat&logo=github)](https://www.github.com/Civilangem0)   |
 | Love Rymo        | [![Love github](https://img.shields.io/badge/GitHub-Love--Ry1-181717.svg?style=flat&logo=github)](https://www.github.com/Love-Ry1)        |
 | David Stechow    | [![David github](https://img.shields.io/badge/GitHub-HerrKermet-181717.svg?style=flat&logo=github)](https://www.github.com/HerrKermet)     |
-| Philipp Kusmierz | [![Philipp github](https://img.shields.io/badge/GitHub-Uranophan-181717.svg?style=flat&logo=github)](https://www.github.com/Uranophan)                       |
+| Philipp Kusmierz | [![Philipp github](https://img.shields.io/badge/GitHub-Kuzzi04-181717.svg?style=flat&logo=github)](https://www.github.com/Kuzzi04)                       |
 
 
 | Project Contributors | [![isselab github](https://img.shields.io/badge/GitHub-isselab-181717.svg?style=flat&logo=github)](https://www.github.com/isselab)             |
