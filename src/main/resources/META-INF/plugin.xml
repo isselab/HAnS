@@ -119,6 +119,7 @@ limitations under the License.
         <!-- &end[LiveTemplate] -->
     </extensions>
 
+
     <actions>
         <action id="RenameFeature"
                 class="se.isselab.HAnS.actions.RenameAction"
@@ -139,7 +140,6 @@ limitations under the License.
                 icon="AllIcons.General.Remove">
             <add-to-group group-id="StructureViewPopupMenu" anchor="after" relative-to-action="AddFeature"/>
         </action>
-
         <!-- &begin[NewFile] -->
         <action id="CreateNewFileAction"
                 class="se.isselab.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"
@@ -151,6 +151,10 @@ limitations under the License.
         <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
+        </action>
+        <action id="se.isselab.HAnS.TestClass" class="se.isselab.HAnS.TestClass" text="Test Action"
+                description="Testing">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
     </actions>
 </idea-plugin>
