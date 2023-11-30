@@ -119,16 +119,10 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
+
+        <projectService serviceImplementation="se.isselab.HAnS.TestService" serviceInterface="se.isselab.HAnS.MyServiceInterface"/>
     </extensions>
 
-    <extensionPoints>
-        <extensionPoint
-            name="featureExtension"
-            beanClass="se.isselab.HAnS.featureExtension.FeatureExtensionEP">
-            <with attribute="implementation" implements="se.isselab.HAnS.featureExtension.FeatureExtension"/>
-        </extensionPoint>
-
-    </extensionPoints>
 
     <actions>
         <action id="RenameFeature"
@@ -150,7 +144,6 @@ limitations under the License.
                 icon="AllIcons.General.Remove">
             <add-to-group group-id="StructureViewPopupMenu" anchor="after" relative-to-action="AddFeature"/>
         </action>
-
         <!-- &begin[NewFile] -->
         <action id="CreateNewFileAction"
                 class="se.isselab.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"
@@ -162,6 +155,10 @@ limitations under the License.
         <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
+        </action>
+        <action id="se.isselab.HAnS.TestClass" class="se.isselab.HAnS.TestClass" text="Test Action"
+                description="Testing">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
     </actions>
 </idea-plugin>
