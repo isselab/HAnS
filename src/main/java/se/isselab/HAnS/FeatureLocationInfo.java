@@ -85,6 +85,8 @@ public class FeatureLocationInfo {
                 openedFile.accept(new PsiRecursiveElementVisitor() {
                     @Override
                     public void visitComment(@NotNull PsiComment comment) {
+
+                        /*
                         //checking for the start of a block feature
                         if(comment.getText().contains(beginSuffix + "[")) {
                             //get feature name
@@ -138,6 +140,8 @@ public class FeatureLocationInfo {
                                 }
                             }
                         }
+                        */
+
                         super.visitComment(comment);
                     }
                 });
@@ -164,5 +168,8 @@ public class FeatureLocationInfo {
             return null;
         }
     }
+
+
+
 
 }
