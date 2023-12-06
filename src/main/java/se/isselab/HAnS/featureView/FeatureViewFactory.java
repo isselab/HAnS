@@ -46,12 +46,15 @@ import static com.intellij.psi.search.GlobalSearchScope.projectScope;
 
 public class FeatureViewFactory implements ToolWindowFactory {
 
+    private static PsiFile featureModel;
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
         var fileEditorManager = FileEditorManager.getInstance(project);
         var fileEditor = fileEditorManager.getSelectedEditor();
         var psiFile = findFeatureModel(project);
+        // for testing
+        featureModel = psiFile;
 
         JComponent component;
         if (psiFile != null)
@@ -141,5 +144,9 @@ public class FeatureViewFactory implements ToolWindowFactory {
         }
 
         return psiFile;
+    }
+
+    public static PsiFile getFeatureModel() {
+        return featureModel;
     }
 }
