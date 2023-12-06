@@ -60,6 +60,7 @@ public class FeatureLocationManager {
 
                 //TODO THESIS
                 // check .getVirtualFile for null exception which can occur in certain cases
+                // get relative path to source
                 featureFileMapping.enqueue(element.getContainingFile().getVirtualFile().getPath(), getLine(commentElement, project), type);
             }
             featureFileMapping.buildFromQueue();
