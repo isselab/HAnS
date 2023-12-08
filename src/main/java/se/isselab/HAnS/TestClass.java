@@ -19,11 +19,14 @@ public class TestClass extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
 
-        ProgressIndicator progressIndicator = new EmptyProgressIndicator();
-        ProgressManager.getInstance().runProcess(testClassAction(e.getProject()), progressIndicator);
+        //ProgressIndicator progressIndicator = new EmptyProgressIndicator();
+        //ProgressManager.getInstance().runProcess(testClassAction(e.getProject()), progressIndicator);
+
+
+
         
-        // TODO THESIS: find a way to start background process -> commented code below is working, but there is an UI freeze
-        /*FeatureLocationManager featureLocationManager = new FeatureLocationManager(e.getProject());
+        // TODO THESIS: find a way to start background process -> code below is working, but there is an UI freeze
+        FeatureLocationManager featureLocationManager = new FeatureLocationManager(e.getProject());
 
         for(var feature : FeatureModelUtil.findFeatures(e.getProject())){
             System.out.println("Checking: " + feature.getLPQText());
@@ -37,7 +40,7 @@ public class TestClass extends AnAction {
             }
             System.out.println("\n\n");
 
-        }*/
+        }
     }
 
     /**
@@ -46,7 +49,8 @@ public class TestClass extends AnAction {
      * @param project
      * @return
      */
-    private @NotNull Runnable testClassAction(Project project){
+    private Runnable testClassAction(Project project){
+
 
         FeatureLocationManager featureLocationManager = new FeatureLocationManager(project);
 
