@@ -30,6 +30,7 @@ public class FeatureLocationManager {
 
             //TODO THESIS
             // put reference search into background task
+            // replace for-loop with Coroutines or similar -> UI Freeze
             for (PsiReference reference : ReferencesSearch.search(feature)) {
                 //get comment sibling of the feature comment
                 PsiElement element = reference.getElement();
