@@ -30,19 +30,19 @@ public class TestClass extends AnAction {
         // TODO THESIS: find a way to start background process -> commented code below is working, but there is an UI freeze
         FeatureLocationManager featureLocationManager = new FeatureLocationManager(e.getProject());
 
-        for(var feature : FeatureModelUtil.findFeatures(e.getProject())){
+        /*for(var feature : FeatureModelUtil.findFeatures(e.getProject())){
             System.out.println("Checking: " + feature.getLPQText());
-            /*var mapping = featureLocationManager.getFeatureFileMapping(feature);
+            *//*var mapping = featureLocationManager.getFeatureFileMapping(feature);
             var map = mapping.getAllFeatureLocations();
             for(var path : map.keySet()){
                 System.out.println("    File: " + path);
                 for(var block : map.get(path)){
                     System.out.println("        Start: " + (block.getStartLine() + 1) + "\n        End: " + (block.getEndLine() + 1) + "\n        Total: " + block.getLineCount());
                 }
-            }*/
+            }*//*
             System.out.println("\n\n");
 
-        }
+        }*/
     }
 
     /**

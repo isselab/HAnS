@@ -1,14 +1,13 @@
 package se.isselab.HAnS.featureLocation;
 
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.util.Query;
-import org.jetbrains.annotations.NotNull;
-import se.isselab.HAnS.FeatureAnnotationSearchScope;
+import se.isselab.HAnS.FeatureLocationBackgroundTask;
+import se.isselab.HAnS.Logger;
 import se.isselab.HAnS.MyRunnable;
 import se.isselab.HAnS.codeAnnotation.psi.*;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
@@ -17,19 +16,15 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 
 import com.intellij.psi.*;
-import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileAnnotation;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileName;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
 
 
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 public class FeatureLocationManager {
     private HashMap<FeatureModelFeature, FeatureFileMapping> map = new HashMap<>();
@@ -41,10 +36,29 @@ public class FeatureLocationManager {
         // put initialization of features into corresponding facade / method
         List<FeatureModelFeature> featureList = FeatureModelUtil.findFeatures(project);
         MyRunnable myRunnable = new MyRunnable(featureList, project);
-        ProgressManager.getInstance().runProcessWithProgressSynchronously(myRunnable,"Scan progress", false, project);
-        System.out.println("vor Abruf");
-        Collection<PsiReference> psiRef = myRunnable.getPsiReference();
-        System.out.println("nach Abruf");
+        // ProgressManager.getInstance().runProcessWithProgressSynchronously(myRunnable,"Scan progress", false, project);
+
+
+
+
+        FeatureLocationBackgroundTask backgroundTask = new FeatureLocationBackgroundTask(project,
+                "Scanning progress",
+                true,
+                PerformInBackgroundOption.DEAF,
+                featureList);
+
+
+        ProgressIndicator empty = new EmptyProgressIndicator();
+
+
+
+        ProgressManager progressManager = ProgressManager.getInstance();
+        Logger.print("start background task");
+        progressManager.runProcessWithProgressAsynchronously(backgroundTask, empty);
+
+        Logger.print("vor Abruf");
+        Collection<PsiReference> psiRef = backgroundTask.getPsiReference();
+        Logger.print("nach Abruf");
         /*
         for(var feature : FeatureModelUtil.findFeatures(project)) {
 
