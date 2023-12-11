@@ -3,6 +3,9 @@ package se.isselab.HAnS;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
+import com.intellij.openapi.application.CoroutinesKt;
+import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -19,25 +22,24 @@ public class TestClass extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
 
-        //ProgressIndicator progressIndicator = new EmptyProgressIndicator();
-        //ProgressManager.getInstance().runProcess(testClassAction(e.getProject()), progressIndicator);
-
+       /* ProgressIndicator progressIndicator = new EmptyProgressIndicator();
+        ProgressManager.getInstance().runProcess(testClassAction(e.getProject()), progressIndicator);*/
 
 
         
-        // TODO THESIS: find a way to start background process -> code below is working, but there is an UI freeze
+        // TODO THESIS: find a way to start background process -> commented code below is working, but there is an UI freeze
         FeatureLocationManager featureLocationManager = new FeatureLocationManager(e.getProject());
 
         for(var feature : FeatureModelUtil.findFeatures(e.getProject())){
             System.out.println("Checking: " + feature.getLPQText());
-            var mapping = featureLocationManager.getFeatureFileMapping(feature);
+            /*var mapping = featureLocationManager.getFeatureFileMapping(feature);
             var map = mapping.getAllFeatureLocations();
             for(var path : map.keySet()){
                 System.out.println("    File: " + path);
                 for(var block : map.get(path)){
                     System.out.println("        Start: " + (block.getStartLine() + 1) + "\n        End: " + (block.getEndLine() + 1) + "\n        Total: " + block.getLineCount());
                 }
-            }
+            }*/
             System.out.println("\n\n");
 
         }
@@ -49,8 +51,7 @@ public class TestClass extends AnAction {
      * @param project
      * @return
      */
-    private Runnable testClassAction(Project project){
-
+    /*private @NotNull Runnable testClassAction(Project project){
 
         FeatureLocationManager featureLocationManager = new FeatureLocationManager(project);
 
@@ -79,7 +80,7 @@ public class TestClass extends AnAction {
             System.out.println(ident + "/" + subdir.getName());
             printFiles(subdir, exclude, ident + "----");
         }
-    }
+    }*/
 
 
 }

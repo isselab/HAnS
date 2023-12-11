@@ -1,11 +1,15 @@
 package se.isselab.HAnS.featureLocation;
 
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import org.apache.tools.ant.types.FileList;
+import com.intellij.util.Query;
+import org.jetbrains.annotations.NotNull;
+import se.isselab.HAnS.FeatureAnnotationSearchScope;
+import se.isselab.HAnS.MyRunnable;
 import se.isselab.HAnS.codeAnnotation.psi.*;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
@@ -15,16 +19,17 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import com.intellij.psi.*;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileAnnotation;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileName;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
-import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
-import se.isselab.HAnS.referencing.FileReference;
 
 
-import java.nio.file.Path;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 public class FeatureLocationManager {
     private HashMap<FeatureModelFeature, FeatureFileMapping> map = new HashMap<>();
@@ -34,25 +39,49 @@ public class FeatureLocationManager {
         this.project = project;
         //TODO THESIS
         // put initialization of features into corresponding facade / method
-        for(var feature : FeatureModelUtil.findFeatures(project)){
+        List<FeatureModelFeature> featureList = FeatureModelUtil.findFeatures(project);
+        MyRunnable myRunnable = new MyRunnable(featureList, project);
+        ProgressManager.getInstance().runProcessWithProgressSynchronously(myRunnable,"Scan progress", false, project);
+        System.out.println("vor Abruf");
+        Collection<PsiReference> psiRef = myRunnable.getPsiReference();
+        System.out.println("nach Abruf");
+        /*
+        for(var feature : FeatureModelUtil.findFeatures(project)) {
+
             FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);
 
             //TODO THESIS
             // put reference search into background task
             // replace for-loop with Coroutines or similar -> UI Freeze
-            for (PsiReference reference : ReferencesSearch.search(feature)) {
+            // ReferencesSearch.search(feature); TODO UI-Freeze: no problem
+
+            Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(project), true);
+
+            // testing purposes
+            int time = LocalTime.now().toSecondOfDay();
+
+            // ProgressManager.getInstance().runProcessWithProgressSynchronously(new MyRunnable(featureReference),"Scan progress", false, project);
+
+            // testing purposes
+            int timeDelta = LocalTime.now().toSecondOfDay() - time;
+
+            System.out.println("Query done for feature " + feature.getFeatureName() + ": " + timeDelta + "s");
+            /*for (PsiReference reference : featureRefCollection) {
                 //get comment sibling of the feature comment
+
                 PsiElement element = reference.getElement();
+                System.out.println(element);
                 FeatureFileMapping.Type type;
 
                 //determine file type and process content
                 var fileType = element.getContainingFile();
                 if(fileType instanceof CodeAnnotationFile){
-                   processCodeFile(featureFileMapping, element);
+                    System.out.println("Code Annotation");
+                   // processCodeFile(featureFileMapping, element);
                 }
                 else if (fileType instanceof FileAnnotationFile) {
                     System.out.println("Scanning feature-to-file file");
-                    processFeatureToFile(featureFileMapping, element);
+                    // processFeatureToFile(featureFileMapping, element);
                 }
                 else if(fileType instanceof FolderAnnotationFile){
                     System.out.println("Was a folder file");
@@ -60,10 +89,11 @@ public class FeatureLocationManager {
 
 
             }
-            featureFileMapping.buildFromQueue();
-            map.put(feature, featureFileMapping);
-        }
+            // featureFileMapping.buildFromQueue();
+            // map.put(feature, featureFileMapping);
+        }*/
     }
+
 
     public FeatureFileMapping getFeatureFileMapping(String lpq){
         for(var key : map.keySet()){
