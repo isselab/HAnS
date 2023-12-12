@@ -7,25 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HAnSSingleton {
-    private HAnSSingleton hAnSSingleton;
+    private static final HAnSSingleton hAnSSingleton = new HAnSSingleton();
     private List<HAnSObserverInterface> onUpdateObservers;
     private List<HAnSObserverInterface> onDeleteObservers;
     private List<HAnSObserverInterface> onAddObservers;
-    private List<HAnSObserverInterface> onInitialisationObservers;
+    private List<HAnSObserverInterface> onInitObservers;
 
 
     private HAnSSingleton(){
         onUpdateObservers = new ArrayList<>();
         onDeleteObservers = new ArrayList<>();
         onAddObservers = new ArrayList<>();
-        onInitialisationObservers = new ArrayList<>();
+        onInitObservers = new ArrayList<>();
     }
 
     public HAnSSingleton getHAnSSingleton() {
-        if(hAnSSingleton == null) {
-            hAnSSingleton = new HAnSSingleton();
-        }
-
         return hAnSSingleton;
     }
 
@@ -44,12 +40,12 @@ public class HAnSSingleton {
                 break;
             }
             case INITIALISATION -> {
-                if(!onInitialisationObservers.contains(observer)) onInitialisationObservers.add(observer);
+                if(!onInitObservers.contains(observer)) onInitObservers.add(observer);
                 break;
             }
         }
     }
-
+    // TODO: Proxy to hide functionality from other plugins
     public void notifyObservers(@NotNull NotifyOption option) {
         switch (option) {
             case UPDATE -> {
@@ -71,8 +67,8 @@ public class HAnSSingleton {
                 break;
             }
             case INITIALISATION -> {
-                for(HAnSObserverInterface observer:onInitialisationObservers) {
-                    observer.onInitialisation();
+                for(HAnSObserverInterface observer: onInitObservers) {
+                    observer.onInit();
                 }
                 break;
             }

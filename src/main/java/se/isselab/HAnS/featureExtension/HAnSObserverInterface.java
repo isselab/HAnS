@@ -4,5 +4,5 @@ public interface HAnSObserverInterface {
     void onUpdate();
     void onDelete();
     void onAdd();
-    void onInitialisation();
+    void onInit();
 }
