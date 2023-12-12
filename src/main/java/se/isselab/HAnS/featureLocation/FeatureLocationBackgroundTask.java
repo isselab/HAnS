@@ -1,4 +1,4 @@
-package se.isselab.HAnS;
+package se.isselab.HAnS.featureLocation;
 
 import com.intellij.openapi.progress.PerformInBackgroundOption;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -10,6 +10,8 @@ import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import se.isselab.HAnS.FeatureAnnotationSearchScope;
+import se.isselab.HAnS.Logger;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.Collection;

@@ -123,7 +123,11 @@ limitations under the License.
         <projectService serviceImplementation="se.isselab.HAnS.TestService" serviceInterface="se.isselab.HAnS.MyServiceInterface"/>
     </extensions>
 
-
+    <extensionPoints>
+        <extensionPoint
+            name="hansObserver"
+            interface="se.isselab.HAnS.featureExtension.HAnSObserverInterface"/>
+    </extensionPoints>
     <actions>
         <action id="RenameFeature"
                 class="se.isselab.HAnS.actions.RenameAction"
