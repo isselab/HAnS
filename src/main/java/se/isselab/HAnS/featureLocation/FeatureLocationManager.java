@@ -1,13 +1,11 @@
 package se.isselab.HAnS.featureLocation;
 
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.progress.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import se.isselab.HAnS.Logger;
-import se.isselab.HAnS.MyRunnable;
 import se.isselab.HAnS.codeAnnotation.psi.*;
 import se.isselab.HAnS.featureExtension.HAnSObserverInterface;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
@@ -22,108 +20,47 @@ import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileAnnotation;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileName;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
-import se.isselab.HAnS.singleton.HAnSSingleton;
+import se.isselab.HAnS.singleton.HAnSManager;
 import se.isselab.HAnS.singleton.NotifyOption;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 public class FeatureLocationManager implements HAnSObserverInterface {
-    private HashMap<FeatureModelFeature, FeatureFileMapping> map = new HashMap<>();
+
+    private static final FeatureLocationManager featureLocationManager = new FeatureLocationManager();
+    // TODO: getter für HAnSSingleton
+    private final HashMap<FeatureModelFeature, FeatureFileMapping> map = new HashMap<>();
+
+
+    private List<Collection<PsiReference>> psiReferences = new ArrayList<>();
+    private final HashMap<FeatureModelFeature, FeatureFileMapping> featureMapping = new HashMap<>();
     // private final Project project;
 
-    public FeatureLocationManager(){
-        /*this.project = project;
-        //TODO THESIS
-        // put initialization of features into corresponding facade / method
+    private FeatureLocationManager(){
 
-
-
-
-
-
-        FeatureLocationBackgroundTask backgroundTask = new FeatureLocationBackgroundTask(project,
-                "Scanning progress",
-                true,
-                PerformInBackgroundOption.DEAF,
-                featureList);
-
-
-        ProgressIndicator empty = new EmptyProgressIndicator();
-
-
-
-        ProgressManager progressManager = ProgressManager.getInstance();
-        Logger.print("start background task");
-        progressManager.runProcessWithProgressAsynchronously(backgroundTask, empty);
-
-        Logger.print("vor Abruf");
-        Collection<PsiReference> psiRef = backgroundTask.getPsiReference();
-        Logger.print("nach Abruf");
-        for(var feature : FeatureModelUtil.findFeatures(project)) {
-
-            FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);
-
-            //TODO THESIS
-            // put reference search into background task
-            // replace for-loop with Coroutines or similar -> UI Freeze
-            // ReferencesSearch.search(feature); TODO UI-Freeze: no problem
-
-            Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(project), true);
-
-            // testing purposes
-            int time = LocalTime.now().toSecondOfDay();
-
-            // ProgressManager.getInstance().runProcessWithProgressSynchronously(new MyRunnable(featureReference),"Scan progress", false, project);
-
-            // testing purposes
-            int timeDelta = LocalTime.now().toSecondOfDay() - time;
-
-            System.out.println("Query done for feature " + feature.getFeatureName() + ": " + timeDelta + "s");
-            for (PsiReference reference : featureRefCollection) {
-                //get comment sibling of the feature comment
-
-                PsiElement element = reference.getElement();
-                System.out.println(element);
-                FeatureFileMapping.Type type;
-
-                //determine file type and process content
-                var fileType = element.getContainingFile();
-                if(fileType instanceof CodeAnnotationFile){
-                    System.out.println("Code Annotation");
-                   // processCodeFile(featureFileMapping, element);
-                }
-                else if (fileType instanceof FileAnnotationFile) {
-                    System.out.println("Scanning feature-to-file file");
-                    // processFeatureToFile(featureFileMapping, element);
-                }
-                else if(fileType instanceof FolderAnnotationFile){
-                    System.out.println("Was a folder file");
-                }
-
-
-            }
-            // featureFileMapping.buildFromQueue();
-            // map.put(feature, featureFileMapping);
-        }*/
     }
 
+    public static FeatureLocationManager getFeatureLocationManager() {
+        return featureLocationManager;
+    }
 
     public FeatureFileMapping getFeatureFileMapping(String lpq){
-        for(var key : map.keySet()){
+        for(var key : featureMapping.keySet()){
             if(key.getLPQText().equals(lpq))
-                return map.get(key);
+                return featureMapping.get(key);
         }
         return null;
     }
     public FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature){
-        return map.get(feature);
+        return featureMapping.get(feature);
     }
 
     public void add(FeatureModelFeature feature, FeatureFileMapping featureFileMapping){
-        map.put(feature, featureFileMapping);
+        featureMapping.put(feature, featureFileMapping);
     }
 
     private int getLine(PsiElement elem, Project project){
@@ -143,7 +80,7 @@ public class FeatureLocationManager implements HAnSObserverInterface {
     private void processCodeFile(FeatureFileMapping featureFileMapping, PsiElement element){
         //TODO THESIS
         // check function (edge cases, return value etc)
-        HAnSSingleton singleton = HAnSSingleton.getHAnSSingleton();
+        HAnSManager singleton = HAnSManager.getInstance();
         var commentElement = PsiTreeUtil.getContextOfType(element, PsiComment.class);
 
         if(commentElement == null) {
@@ -197,6 +134,13 @@ public class FeatureLocationManager implements HAnSObserverInterface {
 
     }
 
+    public List<Collection<PsiReference>> getPsiReferences() {
+        return psiReferences;
+    }
+
+    public void setPsiReferences(List<Collection<PsiReference>> psiReferences) {
+        this.psiReferences = psiReferences;
+    }
     @Override
     public void onUpdate() {
 
@@ -218,8 +162,8 @@ public class FeatureLocationManager implements HAnSObserverInterface {
     @Override
     public void onInit() {
         Logger.print("FeatureLocationManager.onInit() call");
-        HAnSSingleton singleton = HAnSSingleton.getHAnSSingleton();
-        List<FeatureModelFeature> featureList = singleton.getFeatureList();
+        HAnSManager singleton = HAnSManager.getInstance();
+        List<FeatureModelFeature> featureList = FeatureModelUtil.findFeatures(singleton.getProject());
         List<Collection<PsiReference>> psiReferences = singleton.getPsiReferences();
         int i = 0;
         for(var feature : featureList) {
@@ -249,10 +193,10 @@ public class FeatureLocationManager implements HAnSObserverInterface {
 
             }
             featureFileMapping.buildFromQueue();
-            map.put(feature, featureFileMapping);
+            featureMapping.put(feature, featureFileMapping);
             i++;
         }
-        singleton.setFeatureMapping(map);
+
         singleton.notifyObservers(NotifyOption.UPDATE);
     }
 }
