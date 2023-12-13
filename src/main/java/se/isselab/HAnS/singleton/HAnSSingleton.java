@@ -1,9 +1,18 @@
 package se.isselab.HAnS.singleton;
 
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureExtension.HAnSObserverInterface;
+import se.isselab.HAnS.featureLocation.FeatureFileMapping;
+import se.isselab.HAnS.featureLocation.FeatureLocationManager;
+import se.isselab.HAnS.featureModel.FeatureModelUtil;
+import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class HAnSSingleton {
@@ -12,6 +21,14 @@ public class HAnSSingleton {
     private List<HAnSObserverInterface> onDeleteObservers;
     private List<HAnSObserverInterface> onAddObservers;
     private List<HAnSObserverInterface> onInitObservers;
+    private List<FeatureModelFeature> featureList;
+    private List<Collection<PsiReference>> psiReferences;
+    private HashMap<FeatureModelFeature, FeatureFileMapping> featureMapping;
+    private final FeatureLocationManager featureLocationManager;
+
+
+    // TODO: Check correctness
+    private final Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
 
     private HAnSSingleton(){
@@ -19,9 +36,13 @@ public class HAnSSingleton {
         onDeleteObservers = new ArrayList<>();
         onAddObservers = new ArrayList<>();
         onInitObservers = new ArrayList<>();
+        // TODO: do we have to wait for indexing first? could return null
+        featureList = FeatureModelUtil.findFeatures(project);
+        featureLocationManager = new FeatureLocationManager();
+        registerObserver(featureLocationManager, NotifyOption.INITIALISATION);
     }
 
-    public HAnSSingleton getHAnSSingleton() {
+    public static HAnSSingleton getHAnSSingleton() {
         return hAnSSingleton;
     }
 
@@ -73,5 +94,30 @@ public class HAnSSingleton {
                 break;
             }
         }
+    }
+
+    public List<FeatureModelFeature> getFeatureList() {
+        // TODO: Check this "Read access is allowed from inside read-action (or EDT) only"
+        return FeatureModelUtil.findFeatures(project);
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public List<Collection<PsiReference>> getPsiReferences() {
+        return psiReferences;
+    }
+
+    public void setPsiReferences(List<Collection<PsiReference>> psiReferences) {
+        this.psiReferences = psiReferences;
+    }
+
+    public HashMap<FeatureModelFeature, FeatureFileMapping> getFeatureMapping() {
+        return featureMapping;
+    }
+
+    public void setFeatureMapping(HashMap<FeatureModelFeature, FeatureFileMapping> featureMapping) {
+        this.featureMapping = featureMapping;
     }
 }

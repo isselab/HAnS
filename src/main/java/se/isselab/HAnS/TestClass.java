@@ -7,6 +7,7 @@ import com.intellij.openapi.application.CoroutinesKt;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
+import com.intellij.openapi.progress.PerformInBackgroundOption;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 
@@ -15,34 +16,58 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 
+import se.isselab.HAnS.featureLocation.FeatureLocationBackgroundTask;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
+import se.isselab.HAnS.singleton.HAnSSingleton;
 
 public class TestClass extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
 
-       /* ProgressIndicator progressIndicator = new EmptyProgressIndicator();
-        ProgressManager.getInstance().runProcess(testClassAction(e.getProject()), progressIndicator);*/
+        HAnSSingleton singleton = HAnSSingleton.getHAnSSingleton();
+
+        startBackgroundTask(singleton);
 
 
         
         // TODO THESIS: find a way to start background process -> commented code below is working, but there is an UI freeze
-        FeatureLocationManager featureLocationManager = new FeatureLocationManager(e.getProject());
+        // TODO THESIS: do we need this and where do we need this?
+//        FeatureLocationManager featureLocationManager = new FeatureLocationManager(e.getProject());
+//
+//        for(var feature : FeatureModelUtil.findFeatures(e.getProject())){
+//            System.out.println("Checking: " + feature.getLPQText());
+//            var mapping = featureLocationManager.getFeatureFileMapping(feature);
+//            var map = mapping.getAllFeatureLocations();
+//            for(var path : map.keySet()){
+//                System.out.println("    File: " + path);
+//                for(var block : map.get(path)){
+//                    System.out.println("        Start: " + (block.getStartLine() + 1) + "\n        End: " + (block.getEndLine() + 1) + "\n        Total: " + block.getLineCount());
+//                }
+//            }
+//            System.out.println("\n\n");
+//
+//        }
+    }
 
-        /*for(var feature : FeatureModelUtil.findFeatures(e.getProject())){
-            System.out.println("Checking: " + feature.getLPQText());
-            *//*var mapping = featureLocationManager.getFeatureFileMapping(feature);
-            var map = mapping.getAllFeatureLocations();
-            for(var path : map.keySet()){
-                System.out.println("    File: " + path);
-                for(var block : map.get(path)){
-                    System.out.println("        Start: " + (block.getStartLine() + 1) + "\n        End: " + (block.getEndLine() + 1) + "\n        Total: " + block.getLineCount());
-                }
-            }*//*
-            System.out.println("\n\n");
+    /**
+     * Starts Background Task for FeatureLocationManager.
+     *
+     * @param singleton
+     * @see se.isselab.HAnS.featureLocation.FeatureLocationBackgroundTask
+     */
+    private void startBackgroundTask(HAnSSingleton singleton) {
+        FeatureLocationBackgroundTask backgroundTask = new FeatureLocationBackgroundTask(singleton.getProject(),
+                "Scanning progress",
+                true,
+                PerformInBackgroundOption.DEAF,
+                singleton.getFeatureList());
+        // TODO: singleton of ProgressIndicator
+        ProgressIndicator empty = new EmptyProgressIndicator();
 
-        }*/
+        ProgressManager progressManager = ProgressManager.getInstance();
+        Logger.print("start background task");
+        progressManager.runProcessWithProgressAsynchronously(backgroundTask, empty);
     }
 
     /**

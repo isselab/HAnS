@@ -13,12 +13,15 @@ import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.FeatureAnnotationSearchScope;
 import se.isselab.HAnS.Logger;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
+import se.isselab.HAnS.singleton.HAnSSingleton;
+import se.isselab.HAnS.singleton.NotifyOption;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class FeatureLocationBackgroundTask extends Task.Backgroundable{
-    private Collection<PsiReference> psiReferences;
+
     private List<FeatureModelFeature> featureList;
 
 
@@ -32,21 +35,17 @@ public class FeatureLocationBackgroundTask extends Task.Backgroundable{
         this.featureList = featureList;
     }
 
-    public Collection<PsiReference> getPsiReference (){
-        return psiReferences;
-    }
-
     @Override
     public void run(@NotNull ProgressIndicator progressIndicator) {
+
+        List<Collection<PsiReference>> psiReferences = new ArrayList<>();
         for(var feature : featureList) {
             Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(super.getProject()), true);
-            psiReferences = featureReference.findAll();
-        }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            psiReferences.add(featureReference.findAll());
         }
         Logger.print("task done");
+        HAnSSingleton.getHAnSSingleton().setPsiReferences(psiReferences);
+        HAnSSingleton.getHAnSSingleton().notifyObservers(NotifyOption.INITIALISATION);
+        Logger.print("PsiReferences set and Observers notified");
     }
 }
