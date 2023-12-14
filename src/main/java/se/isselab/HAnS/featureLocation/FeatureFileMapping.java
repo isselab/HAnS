@@ -13,7 +13,7 @@ public class FeatureFileMapping {
     public enum Type {begin, end, line, none}
     private HashMap<String, ArrayList<FeatureLocationBlock>> map = new HashMap<>();
     private HashMap<String, ArrayList<Pair<Type, Integer>>> cache = new HashMap<>();
-    private FeatureModelFeature parentFeature;
+    private final FeatureModelFeature parentFeature;
 
     public FeatureFileMapping(FeatureModelFeature feature){
         parentFeature = feature;
