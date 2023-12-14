@@ -31,7 +31,7 @@ public class FeatureLocationInfo {
         this.featureName = featureName;
         this.startOffset = startOffset;
         this.endOffset = endOffset;
-
+        System.out.println("Wo bin ich?");
     }
     public FeatureLocationInfo() {
     }
