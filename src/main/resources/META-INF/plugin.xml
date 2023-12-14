@@ -120,7 +120,7 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
 
-        <projectService serviceImplementation="se.isselab.HAnS.TestService" serviceInterface="se.isselab.HAnS.MyServiceInterface"/>
+        <projectService serviceImplementation="se.isselab.HAnS.FeatureService" serviceInterface="se.isselab.HAnS.FeatureServiceInterface"/>
     </extensions>
 
     <extensionPoints>
