@@ -5,6 +5,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 import se.isselab.HAnS.Logger;
 import se.isselab.HAnS.codeAnnotation.psi.*;
 import se.isselab.HAnS.featureExtension.HAnSObserverInterface;
@@ -34,17 +36,17 @@ public class FeatureLocationManager implements HAnSObserverInterface {
     private static final FeatureLocationManager featureLocationManager = new FeatureLocationManager();
     // TODO: getter für HAnSSingleton
     private final HashMap<FeatureModelFeature, FeatureFileMapping> map = new HashMap<>();
-
-
-    private List<Collection<PsiReference>> psiReferences = new ArrayList<>();
+    private List<Collection<PsiReference>> featurePsiReferences = new ArrayList<>();
     private final HashMap<FeatureModelFeature, FeatureFileMapping> featureMapping = new HashMap<>();
+
+
     // private final Project project;
 
     private FeatureLocationManager(){
 
     }
 
-    public static FeatureLocationManager getFeatureLocationManager() {
+    public static FeatureLocationManager getInstance() {
         return featureLocationManager;
     }
 
@@ -134,12 +136,12 @@ public class FeatureLocationManager implements HAnSObserverInterface {
 
     }
 
-    public List<Collection<PsiReference>> getPsiReferences() {
-        return psiReferences;
+    public List<Collection<PsiReference>> getFeaturePsiReferences() {
+        return featurePsiReferences;
     }
 
-    public void setPsiReferences(List<Collection<PsiReference>> psiReferences) {
-        this.psiReferences = psiReferences;
+    public void setFeaturePsiReferences(List<Collection<PsiReference>> featurePsiReferences) {
+        this.featurePsiReferences = featurePsiReferences;
     }
     @Override
     public void onUpdate() {
@@ -197,6 +199,33 @@ public class FeatureLocationManager implements HAnSObserverInterface {
             i++;
         }
 
+        JSONArray a = new JSONArray();
+        for(var feature : FeatureModelUtil.findFeatures(singleton.getProject())){
+            //iterate over each feature
+            JSONObject jsonFeature = new JSONObject();
+            JSONArray jsonFeatureAray = new JSONArray();
+            var fileMappings = featureMapping.get(feature);
+            var featureLocations = fileMappings.getAllFeatureLocations();
+            for(var file : featureLocations.keySet()){
+                //iterate over each file which has featureLocations
+                JSONObject jsonFile = new JSONObject();
+                JSONArray jsonFileArray = new JSONArray();
+                var locationSet = featureLocations.get(file);
+                for(var location : locationSet){
+                    //iterate over each location within the corresponding file;
+                    JSONObject jsonLocation = new JSONObject();
+                    jsonLocation.put("start", location.getStartLine());
+                    jsonLocation.put("end", location.getEndLine());
+                    jsonFileArray.add(jsonLocation);
+                }
+                jsonFile.put(file, jsonFileArray);
+                System.out.println("PRINTING JSON: " + jsonFile.toJSONString() + "\nEND OF JSON");
+            }
+            a.add(map.get(feature));
+        }
+        //System.out.println("PRINTING JSON: " + a.toJSONString() + "\nEND OF JSON");
+
         singleton.notifyObservers(NotifyOption.UPDATE);
+
     }
 }

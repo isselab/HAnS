@@ -28,7 +28,7 @@ public class FeatureSubject {
         onInitObservers = new ArrayList<>();
     }
 
-    public static FeatureSubject getFeatureSubject() {
+    public static FeatureSubject getInstance() {
         return featureSubject;
     }
     /**

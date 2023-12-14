@@ -1,5 +1,6 @@
 package se.isselab.HAnS.featureLocation;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.PerformInBackgroundOption;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
@@ -40,18 +41,20 @@ public class FeatureLocationBackgroundTask extends Task.Backgroundable{
 
     @Override
     public void run(@NotNull ProgressIndicator progressIndicator) {
+        ApplicationManager.getApplication().runReadAction(() ->
+        {
+            HAnSManager singleton = HAnSManager.getInstance();
+            List<Collection<PsiReference>> psiReferences = new ArrayList<>();
+            List<FeatureModelFeature> featureList = FeatureModelUtil.findFeatures(singleton.getProject());
 
-        HAnSManager singleton = HAnSManager.getInstance();
-        List<Collection<PsiReference>> psiReferences = new ArrayList<>();
-        List<FeatureModelFeature> featureList = FeatureModelUtil.findFeatures(singleton.getProject());
-
-        for(var feature : featureList) {
-            Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(super.getProject()), true);
-            psiReferences.add(featureReference.findAll());
-        }
-        Logger.print("task done");
-        singleton.setPsiReferences(psiReferences);
-        singleton.notifyObservers(NotifyOption.INITIALISATION);
-        Logger.print("PsiReferences set and Observers notified");
+            for (var feature : featureList) {
+                Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(super.getProject()), true);
+                psiReferences.add(featureReference.findAll());
+            }
+            Logger.print("task done");
+            singleton.setPsiReferences(psiReferences);
+            singleton.notifyObservers(NotifyOption.INITIALISATION);
+            Logger.print("PsiReferences set and Observers notified");
+        });
     }
 }

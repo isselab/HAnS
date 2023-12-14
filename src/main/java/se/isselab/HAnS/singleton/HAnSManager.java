@@ -6,7 +6,6 @@ import com.intellij.psi.PsiReference;
 import se.isselab.HAnS.featureExtension.HAnSObserverInterface;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
-import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.Collection;
@@ -43,8 +42,8 @@ public class HAnSManager {
         // -> we don't need it. We'll use FeatureModelUtil.findFeatures(project);
         // featureList = FeatureModelUtil.findFeatures(project);
 
-        featureLocationManager = FeatureLocationManager.getFeatureLocationManager();
-        featureSubject = FeatureSubject.getFeatureSubject();
+        featureLocationManager = FeatureLocationManager.getInstance();
+        featureSubject = FeatureSubject.getInstance();
         registerObserver(featureLocationManager, NotifyOption.INITIALISATION);
     }
 
@@ -66,11 +65,11 @@ public class HAnSManager {
 
     public List<Collection<PsiReference>> getPsiReferences() {
         // TODO: Proxy to hide functionality from other plugins
-        return featureLocationManager.getPsiReferences();
+        return featureLocationManager.getFeaturePsiReferences();
     }
 
     public void setPsiReferences(List<Collection<PsiReference>> psiReferences) {
-        featureLocationManager.setPsiReferences(psiReferences);
+        featureLocationManager.setFeaturePsiReferences(psiReferences);
     }
 
     public HashMap<FeatureModelFeature, FeatureFileMapping> getFeatureMapping() {
