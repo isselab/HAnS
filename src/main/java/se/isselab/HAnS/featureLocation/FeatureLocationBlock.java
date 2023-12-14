@@ -24,4 +24,8 @@ public class FeatureLocationBlock {
         return Math.max(numberOfLines + 1, 0);
     }
 
+    @Override
+    public String toString() {
+        return "Start: [" + getStartLine() + "]  End: [" + getEndLine() + "]  Total: [" + getLineCount() + "] lines";
+    }
 }

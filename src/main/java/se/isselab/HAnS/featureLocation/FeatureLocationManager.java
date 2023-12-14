@@ -5,8 +5,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.searches.ReferencesSearch;
+import com.intellij.util.Query;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import se.isselab.HAnS.FeatureAnnotationSearchScope;
 import se.isselab.HAnS.Logger;
 import se.isselab.HAnS.codeAnnotation.psi.*;
 import se.isselab.HAnS.featureExtension.HAnSObserverInterface;
@@ -23,25 +26,14 @@ import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileName;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
 import se.isselab.HAnS.singleton.HAnSManager;
-import se.isselab.HAnS.singleton.NotifyOption;
 
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 
 public class FeatureLocationManager implements HAnSObserverInterface {
 
+    //TODO THESIS:
+    // make sure intertwined featureblocks dont get counted multiple times
     private static final FeatureLocationManager featureLocationManager = new FeatureLocationManager();
     // TODO: getter für HAnSSingleton
-    private final HashMap<FeatureModelFeature, FeatureFileMapping> map = new HashMap<>();
-    private List<Collection<PsiReference>> featurePsiReferences = new ArrayList<>();
-    private final HashMap<FeatureModelFeature, FeatureFileMapping> featureMapping = new HashMap<>();
-
-
-    // private final Project project;
-
     private FeatureLocationManager(){
 
     }
@@ -50,23 +42,40 @@ public class FeatureLocationManager implements HAnSObserverInterface {
         return featureLocationManager;
     }
 
-    public FeatureFileMapping getFeatureFileMapping(String lpq){
-        for(var key : featureMapping.keySet()){
-            if(key.getLPQText().equals(lpq))
-                return featureMapping.get(key);
+    public static FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature){
+        HAnSManager singleton = HAnSManager.getInstance();
+        FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);
+        //TODO THESIS
+        // difference between using featureReference or featureReference.findAll
+        Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(singleton.getProject()), true);
+
+        for (PsiReference reference : featureReference) {
+            //get comment sibling of the feature comment
+
+            PsiElement element = reference.getElement();
+            FeatureFileMapping.Type type;
+
+            //determine file type and process content
+            var fileType = element.getContainingFile();
+            if(fileType instanceof CodeAnnotationFile){
+                processCodeFile(featureFileMapping, element);
+            }
+            else if (fileType instanceof FileAnnotationFile) {
+                processFeatureToFile(featureFileMapping, element);
+            }
+            else if(fileType instanceof FolderAnnotationFile){
+                //TODO THESIS
+                // implement
+                System.out.println("Was a folder file");
+            }
+
         }
-        return null;
-    }
-    public FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature){
-        return featureMapping.get(feature);
+        featureFileMapping.buildFromQueue();
+        return featureFileMapping;
     }
 
-    public void add(FeatureModelFeature feature, FeatureFileMapping featureFileMapping){
-        featureMapping.put(feature, featureFileMapping);
-    }
-
-    private int getLine(PsiElement elem, Project project){
-        PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
+    private static int getLine(PsiElement elem){
+        PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(HAnSManager.getInstance().getProject());
         PsiFile openedFile = elem.getContainingFile();
 
         //iterate over each psiElement and check for PsiComment-Feature-Annotations
@@ -79,7 +88,7 @@ public class FeatureLocationManager implements HAnSObserverInterface {
         return document.getLineNumber(elem.getTextRange().getStartOffset());
     }
 
-    private void processCodeFile(FeatureFileMapping featureFileMapping, PsiElement element){
+    private static void processCodeFile(FeatureFileMapping featureFileMapping, PsiElement element){
         //TODO THESIS
         // check function (edge cases, return value etc)
         HAnSManager singleton = HAnSManager.getInstance();
@@ -106,18 +115,20 @@ public class FeatureLocationManager implements HAnSObserverInterface {
         //TODO THESIS
         // check .getVirtualFile for null exception which can occur in certain cases
         // get relative path to source
-        featureFileMapping.enqueue(element.getContainingFile().getVirtualFile().getPath(), getLine(commentElement, singleton.getProject()), type);
+        featureFileMapping.enqueue(element.getContainingFile().getVirtualFile().getPath(), getLine(commentElement), type);
     }
 
-    private void processFeatureToFile(FeatureFileMapping featureFileMapping, PsiElement element){
+    private static void processFeatureToFile(FeatureFileMapping featureFileMapping, PsiElement element){
         //TODO THESIS
         // Get file reference instead of filename
         var parent = PsiTreeUtil.getParentOfType(element, FileAnnotationFileAnnotation.class);
-        if(parent == null){
+        if(parent == null)
             return;
-        }
+
 
         var fileReferences = PsiTreeUtil.getChildrenOfType(parent, FileAnnotationFileReferences.class);
+        if(fileReferences == null)
+            return;
 
         for(var ref : fileReferences){
             //get name of file
@@ -136,13 +147,7 @@ public class FeatureLocationManager implements HAnSObserverInterface {
 
     }
 
-    public List<Collection<PsiReference>> getFeaturePsiReferences() {
-        return featurePsiReferences;
-    }
 
-    public void setFeaturePsiReferences(List<Collection<PsiReference>> featurePsiReferences) {
-        this.featurePsiReferences = featurePsiReferences;
-    }
     @Override
     public void onUpdate() {
 
@@ -163,6 +168,7 @@ public class FeatureLocationManager implements HAnSObserverInterface {
      */
     @Override
     public void onInit() {
+        /*
         Logger.print("FeatureLocationManager.onInit() call");
         HAnSManager singleton = HAnSManager.getInstance();
         List<FeatureModelFeature> featureList = FeatureModelUtil.findFeatures(singleton.getProject());
@@ -195,37 +201,12 @@ public class FeatureLocationManager implements HAnSObserverInterface {
 
             }
             featureFileMapping.buildFromQueue();
-            featureMapping.put(feature, featureFileMapping);
             i++;
         }
 
-        JSONArray a = new JSONArray();
-        for(var feature : FeatureModelUtil.findFeatures(singleton.getProject())){
-            //iterate over each feature
-            JSONObject jsonFeature = new JSONObject();
-            JSONArray jsonFeatureAray = new JSONArray();
-            var fileMappings = featureMapping.get(feature);
-            var featureLocations = fileMappings.getAllFeatureLocations();
-            for(var file : featureLocations.keySet()){
-                //iterate over each file which has featureLocations
-                JSONObject jsonFile = new JSONObject();
-                JSONArray jsonFileArray = new JSONArray();
-                var locationSet = featureLocations.get(file);
-                for(var location : locationSet){
-                    //iterate over each location within the corresponding file;
-                    JSONObject jsonLocation = new JSONObject();
-                    jsonLocation.put("start", location.getStartLine());
-                    jsonLocation.put("end", location.getEndLine());
-                    jsonFileArray.add(jsonLocation);
-                }
-                jsonFile.put(file, jsonFileArray);
-                System.out.println("PRINTING JSON: " + jsonFile.toJSONString() + "\nEND OF JSON");
-            }
-            a.add(map.get(feature));
-        }
         //System.out.println("PRINTING JSON: " + a.toJSONString() + "\nEND OF JSON");
 
         singleton.notifyObservers(NotifyOption.UPDATE);
-
+        */
     }
 }

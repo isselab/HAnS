@@ -10,7 +10,14 @@ import com.intellij.openapi.progress.ProgressManager;
 
 import org.jetbrains.annotations.NotNull;
 
+import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationBackgroundTask;
+import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
+import se.isselab.HAnS.featureLocation.FeatureLocationManager;
+import se.isselab.HAnS.featureModel.FeatureModelUtil;
+import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
+import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
+import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 import se.isselab.HAnS.singleton.HAnSManager;
 
 public class TestClass extends AnAction {
@@ -18,7 +25,32 @@ public class TestClass extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
 
         HAnSManager singleton = HAnSManager.getInstance();
-        startBackgroundTask(singleton);
+        for(FeatureModelFeature feature : FeatureModelUtil.findFeatures(singleton.getProject())){
+            FeatureFileMapping featureFileMapping = FeatureLocationManager.getFeatureFileMapping(feature);
+            System.out.println("Feature: " + feature.getName());
+            System.out.println("Test");
+
+            if(feature.getParent() instanceof FeatureModelFile){
+                System.out.println("Parent: " + ((FeatureModelFile)feature.getParent()).getName());
+            }
+            else {
+                System.out.println("Parent: " + ((FeatureModelFeatureImpl) feature.getParent()).getName());
+            }
+            for(var child : feature.getChildren()){
+                System.out.println("Child: " + ((FeatureModelFeatureImpl) child).getName());
+            }
+
+
+            for(String file : featureFileMapping.getAllFeatureLocations().keySet()){
+                System.out.println("  File: " + file);
+
+                for(FeatureLocationBlock featureLocationBlock : featureFileMapping.getAllFeatureLocations().get(file)){
+                    System.out.println("    " + featureLocationBlock.toString());
+                }
+
+            }
+        }
+        //startBackgroundTask(singleton);
     }
 
     /**

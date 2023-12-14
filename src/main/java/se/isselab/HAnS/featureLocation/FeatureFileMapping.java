@@ -149,6 +149,8 @@ public class FeatureFileMapping {
         return new ArrayList<>(map.get(file));
     }
 
+    //TODO THESIS
+    // maybe remove access to complete hashmap
     public Map<String, List<FeatureLocationBlock>> getAllFeatureLocations(){
         //TODO THESIS
         // returning new map to prevent altering of private map - check whether it is suitable

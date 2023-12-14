@@ -62,15 +62,8 @@ public class HAnSManager {
     public Project getProject() {
         return project;
     }
+    
 
-    public List<Collection<PsiReference>> getPsiReferences() {
-        // TODO: Proxy to hide functionality from other plugins
-        return featureLocationManager.getFeaturePsiReferences();
-    }
-
-    public void setPsiReferences(List<Collection<PsiReference>> psiReferences) {
-        featureLocationManager.setFeaturePsiReferences(psiReferences);
-    }
 
     public HashMap<FeatureModelFeature, FeatureFileMapping> getFeatureMapping() {
         HashMap<FeatureModelFeature,FeatureFileMapping> copy = featureMapping;
