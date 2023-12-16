@@ -186,6 +186,26 @@ public class FeatureFileMapping {
         return new HashMap<>(map);
     }
 
+    /**
+     * Method to get the total line-count of a feature in a file specified by path
+     * @param path path of the file which should be checked
+     * @return line-count of a feature in the given file
+     */
+    public int getFeatureLineCountInFile(String path){
+        var annotationTypeToBlocksPair = map.get(path);
+        if(annotationTypeToBlocksPair == null)
+            return 0;
+
+        HashSet<Integer> lineSet = new HashSet<>();
+        //add each individual line to the set
+        for(FeatureLocationBlock block : annotationTypeToBlocksPair.second){
+            for(int i = block.getStartLine(); i <= block.getEndLine(); i++){
+                lineSet.add(i);
+            }
+        }
+        return lineSet.size();
+    }
+
 
 
 }

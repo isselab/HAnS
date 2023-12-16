@@ -38,8 +38,6 @@ public class FeatureLocationManager {
         //TODO THESIS
         // how to get project
         Project project = ProjectManager.getInstance().getOpenProjects()[0];
-        //TODO THESIS
-        // difference between using featureReference or featureReference.findAll
         Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(project), true);
 
         for (PsiReference reference : featureReference) {

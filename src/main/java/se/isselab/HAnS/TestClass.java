@@ -44,7 +44,7 @@ public class TestClass extends AnAction {
                 for(FeatureLocationBlock featureLocationBlock : annotationToBlockPair.second){
                     System.out.println("    " + featureLocationBlock.toString());
                 }
-
+                System.out.println("  Total lines: [" + featureFileMapping.getFeatureLineCountInFile(file) + "]");
             }
             System.out.println("/////\n");
         }

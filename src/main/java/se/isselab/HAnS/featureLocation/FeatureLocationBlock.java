@@ -26,6 +26,6 @@ public class FeatureLocationBlock {
 
     @Override
     public String toString() {
-        return "Start: [" + getStartLine() + "]  End: [" + getEndLine() + "]  Total: [" + getLineCount() + "] lines";
+        return "Start: [" + getStartLine() + "]  End: [" + getEndLine() + "]";
     }
 }
