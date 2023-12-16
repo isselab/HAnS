@@ -26,8 +26,6 @@ import se.isselab.HAnS.referencing.FileReferenceUtil;
 
 public class FeatureLocationManager {
 
-    //TODO THESIS:
-    // make sure intertwined featureblocks dont get counted multiple times
     // TODO: getter für HAnSSingleton
     private FeatureLocationManager(){
 
