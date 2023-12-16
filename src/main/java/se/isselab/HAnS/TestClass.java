@@ -17,6 +17,8 @@ public class TestClass extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
 
+        FeatureService featureService = new FeatureService();
+
         //TODO THESIS:
         // how to get project
         for(FeatureModelFeature feature : FeatureModelUtil.findFeatures(e.getProject())){
@@ -35,6 +37,8 @@ public class TestClass extends AnAction {
             }
             */
 
+            var tanglingDegree = featureService.getFeatureTangling(feature);
+            System.out.println(" Tangling: " + tanglingDegree);
 
             for(String file : featureFileMapping.getAllFeatureLocations().keySet()){
                 var annotationToBlockPair = featureFileMapping.getAllFeatureLocations().get(file);
@@ -47,6 +51,8 @@ public class TestClass extends AnAction {
                 System.out.println("  Total lines: [" + featureFileMapping.getFeatureLineCountInFile(file) + "]");
             }
             System.out.println("/////\n");
+
+
         }
     }
 

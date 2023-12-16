@@ -3,11 +3,21 @@ package se.isselab.HAnS;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.search.searches.ReferencesSearch;
+import com.intellij.psi.util.PsiTreeUtil;
+import se.isselab.HAnS.codeAnnotation.psi.*;
+import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationParameterImpl;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
 import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
+import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
+import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationLpqReferencesImpl;
+import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
+import se.isselab.HAnS.folderAnnotation.psi.impl.FolderAnnotationLpqImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +47,67 @@ public final class FeatureService implements FeatureServiceInterface {
 
     @Override
     public int getFeatureTangling(FeatureModelFeature feature) {
-        return 0;
+        //TODO THESIS:
+        // this approach does not take intertwined features into account
+        // nor does it calculate tangling of different feature types ( folder which annotates a file which is annotated by a feature etc )
+
+        //TODO THESIS:
+        // check if metrics are correct
+        //create a new map to save which and how often a feature is tangled with the specified feature
+        HashMap<String, Integer> tanglingMap = new HashMap<>();
+        Project project = ProjectManager.getInstance().getOpenProjects()[0];
+
+        for(PsiReference reference : ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(project))){
+            PsiElement element = reference.getElement();
+
+            //determine file type and process content
+            var fileType = element.getContainingFile();
+
+            if(fileType instanceof CodeAnnotationFile){
+
+                CodeAnnotationParameterImpl parentElement = PsiTreeUtil.getParentOfType(element, CodeAnnotationParameterImpl.class);
+                var featureMarker = element.getParent().getParent();
+
+                //skip endmarker to not count begin and end tangling as two separate entries
+                if(featureMarker instanceof CodeAnnotationEndmarker)
+                    continue;
+
+                if(parentElement == null)
+                    continue;
+                for(var featureElement : parentElement.getLpqList()){
+                    //compare if they are not the same and then increment degree of the pair
+                    if(element != featureElement){
+                        tanglingMap.merge(featureElement.getName(), 1, Integer::sum);
+                    }
+                }
+            }
+            else if (fileType instanceof FileAnnotationFile) {
+                FileAnnotationLpqReferencesImpl parentElement = PsiTreeUtil.getParentOfType(element, FileAnnotationLpqReferencesImpl.class);
+                if(parentElement == null)
+                    continue;
+                for(var featureElement : parentElement.getLpqList()){
+                    //compare if they are not the same and then increment degree of the pair
+
+                    if(element != featureElement)
+                        tanglingMap.merge(featureElement.getName(), 1, Integer::sum);
+                }
+            }
+            else if(fileType instanceof FolderAnnotationFile){
+                var parentElement = element.getParent();
+                if(parentElement instanceof FolderAnnotationFile)
+                for(var featureElement : PsiTreeUtil.getChildrenOfType(parentElement, FolderAnnotationLpqImpl.class)){
+                    if(element != featureElement){
+                        tanglingMap.merge(featureElement.getName(), 1, Integer::sum);
+                    }
+                }
+
+            }
+        }
+        int result = 0;
+        for(var degree : tanglingMap.values()){
+            result += degree;
+        }
+        return result;
     }
 
     @Override
