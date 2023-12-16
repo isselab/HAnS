@@ -21,6 +21,7 @@ import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileAnnotation;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileName;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
+import se.isselab.HAnS.referencing.FileReferenceUtil;
 
 
 public class FeatureLocationManager {
@@ -45,12 +46,12 @@ public class FeatureLocationManager {
             //get comment sibling of the feature comment
 
             PsiElement element = reference.getElement();
-            FeatureFileMapping.Type type;
+            FeatureFileMapping.MarkerType type;
 
             //determine file type and process content
             var fileType = element.getContainingFile();
             if(fileType instanceof CodeAnnotationFile){
-                processCodeFile(featureFileMapping, element, project);
+                processCodeFile(featureFileMapping, element);
             }
             else if (fileType instanceof FileAnnotationFile) {
                 processFeatureToFile(featureFileMapping, element);
@@ -66,7 +67,10 @@ public class FeatureLocationManager {
         return featureFileMapping;
     }
 
-    private static int getLine(PsiElement elem, Project project){
+    private static int getLine(PsiElement elem){
+        //TODO THESIS
+        // how to get project
+        Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
         PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
         PsiFile openedFile = elem.getContainingFile();
@@ -81,7 +85,11 @@ public class FeatureLocationManager {
         return document.getLineNumber(elem.getTextRange().getStartOffset());
     }
 
-    private static void processCodeFile(FeatureFileMapping featureFileMapping, PsiElement element, Project project){
+    private static void processCodeFile(FeatureFileMapping featureFileMapping, PsiElement element){
+        //TODO THESIS
+        // how to get project
+        Project project = ProjectManager.getInstance().getOpenProjects()[0];
+
         //TODO THESIS
         // check function (edge cases, return value etc)
         var commentElement = PsiTreeUtil.getContextOfType(element, PsiComment.class);
@@ -92,32 +100,35 @@ public class FeatureLocationManager {
         }
 
         var featureMarker = element.getParent().getParent();
-        FeatureFileMapping.Type type;
+        FeatureFileMapping.MarkerType type;
 
         //get feature type
         if(featureMarker instanceof CodeAnnotationBeginmarker)
-            type = FeatureFileMapping.Type.begin;
+            type = FeatureFileMapping.MarkerType.begin;
         else if(featureMarker instanceof CodeAnnotationEndmarker)
-            type = FeatureFileMapping.Type.end;
+            type = FeatureFileMapping.MarkerType.end;
         else if(featureMarker instanceof CodeAnnotationLinemarker)
-            type = FeatureFileMapping.Type.line;
+            type = FeatureFileMapping.MarkerType.line;
         else
-            type = FeatureFileMapping.Type.none;
+            type = FeatureFileMapping.MarkerType.none;
 
         //TODO THESIS
         // check .getVirtualFile for null exception which can occur in certain cases
         // get relative path to source
-        featureFileMapping.enqueue(element.getContainingFile().getVirtualFile().getPath(), getLine(commentElement, project), type);
+        featureFileMapping.enqueue(element.getContainingFile().getOriginalFile().getVirtualFile().getPath(), getLine(commentElement), type, FeatureFileMapping.AnnotationType.code);
 
     }
 
     private static void processFeatureToFile(FeatureFileMapping featureFileMapping, PsiElement element){
         //TODO THESIS
+        // how to get project
+        Project project = ProjectManager.getInstance().getOpenProjects()[0];
+
+        //TODO THESIS
         // Get file reference instead of filename
         var parent = PsiTreeUtil.getParentOfType(element, FileAnnotationFileAnnotation.class);
         if(parent == null)
             return;
-
 
         var fileReferences = PsiTreeUtil.getChildrenOfType(parent, FileAnnotationFileReferences.class);
         if(fileReferences == null)
@@ -126,17 +137,24 @@ public class FeatureLocationManager {
         for(var ref : fileReferences){
             //get name of file
             for(var file : ref.getFileReferenceList()){
-                StringBuilder out = new StringBuilder();
-                var child = file.getFirstChild();
-                while(child != null){
-                    if(child instanceof FileAnnotationFileName){
-                        out.append(child.getText());
-                        child = child.getNextSibling();
-                    }
-                }
-                System.out.println("File: " + out);
+
+                //TODO THESIS get file of reference
+                PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
+
+                var psiFile = FileReferenceUtil.findFile(file, file.getFileName().getText()).get(0);
+
+                Document document = psiDocumentManager.getDocument(psiFile);
+                if(document == null)
+                    return;
+
+                //System.out.println("File: " + file.getFileName().getText());
+                //TODO THESIS:
+                // get relative path to source
+                String[] temp = psiFile.getVirtualFile().getPath().split("/");
+                String path = "/" + temp[temp.length - 1];
+
+                featureFileMapping.enqueue(path, document.getLineCount() - 1, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
             }
         }
-
     }
 }

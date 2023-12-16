@@ -3,6 +3,7 @@ package se.isselab.HAnS.featureLocation;
 
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiFile;
+import se.isselab.HAnS.Logger;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.*;
@@ -10,9 +11,10 @@ import java.util.*;
 import static com.jediterm.terminal.util.Pair.getSecond;
 
 public class FeatureFileMapping {
-    public enum Type {begin, end, line, none}
-    private HashMap<String, ArrayList<FeatureLocationBlock>> map = new HashMap<>();
-    private HashMap<String, ArrayList<Pair<Type, Integer>>> cache = new HashMap<>();
+    public enum MarkerType {begin, end, line, none}
+    public enum AnnotationType {folder, file, code}
+    private HashMap<String, Pair<AnnotationType,ArrayList<FeatureLocationBlock>>> map = new HashMap<>();
+    private HashMap<String, Pair<AnnotationType,ArrayList<Pair<MarkerType, Integer>>>> cache = new HashMap<>();
     private final FeatureModelFeature parentFeature;
 
     public FeatureFileMapping(FeatureModelFeature feature){
@@ -27,21 +29,24 @@ public class FeatureFileMapping {
      *
      * @see #buildFromQueue()
      */
-    public void enqueue(String path, int lineNumber, Type type){
+    public void enqueue(String path, int lineNumber, MarkerType type, AnnotationType annotationType){
         if(cache.get(path) != null){
-            cache.get(path).add(new Pair<>(type, lineNumber));
+            if(cache.get(path).first != annotationType)
+                Logger.print(Logger.Channel.WARNING, "Feature is linked to file via different annotation types. This can result in inaccurate metrics. " + "[Feature: " + parentFeature.getLPQText() + "][File: " + path + "]");
+            cache.get(path).second.add(new Pair<>(type, lineNumber));
         }
         else{
-            ArrayList<Pair<Type, Integer>> arr = new ArrayList<>();
+
+            ArrayList<Pair<MarkerType, Integer>> arr = new ArrayList<>();
             arr.add(new Pair<>(type, lineNumber));
-            cache.put(path, arr);
+            cache.put(path, new Pair<>(annotationType, arr));
         }
     }
 
     /**
      * Builds the cached data provided by <code>enqueue()</code> into corresponding featureLocationBlock-structures
      *
-     * @see #enqueue(String, int, Type)
+     * @see #enqueue(String, int, MarkerType, AnnotationType)
      */
     public void buildFromQueue(){
         //TODO THESIS
@@ -53,13 +58,15 @@ public class FeatureFileMapping {
         {        //building featureLocationBlocks from cache entries
             Stack<Integer> stack = new Stack<>();
             //sort in ascending order
-            cache.get(path).sort(Comparator.comparing(p -> p.second));
+            cache.get(path).second.sort(Comparator.comparing(p -> p.second));
 
+            var annotationTypeToLocationBlockPair = cache.get(path);
             //create a featureLocationBlock for each (begin,end) or line
-            for (var pair : cache.get(path)) {
-                switch (pair.first) {
+            for (var markerToLinePair : annotationTypeToLocationBlockPair.second) {
+
+                switch (markerToLinePair.first) {
                     case begin: {
-                        stack.push(pair.second);
+                        stack.push(markerToLinePair.second);
                         break;
                     }
                     case end: {
@@ -70,19 +77,20 @@ public class FeatureFileMapping {
                             continue;
                         }
                         int beginLine = stack.pop();
-                        add(path, new FeatureLocationBlock(beginLine, pair.second));
+                        add(path, new FeatureLocationBlock(beginLine, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                         break;
                     }
 
                     case line: {
-                        add(path, new FeatureLocationBlock(pair.second, pair.second));
+                        add(path, new FeatureLocationBlock(markerToLinePair.second, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                         break;
                     }
 
                     case none: {
                         //TODO THESIS
-                        // should not happen but cover case if "none" label was found
-                        System.out.println("[HAnS-Vis][ERROR] found marker of Type::None");
+                        // should only happen if file is a feature-to-file or feature-to-folder
+                        add(path, new FeatureLocationBlock(0, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
+                        //System.out.println("[HAnS-Vis][ERROR] found marker of Type::None");
                         break;
                     }
 
@@ -128,30 +136,33 @@ public class FeatureFileMapping {
      * @param path the file path which is mapped to a given block
      * @param block the location of the feature block inside the given file
      */
-    public void add(String path, FeatureLocationBlock block){
+    public void add(String path, FeatureLocationBlock block, AnnotationType annotationType){
         //check if file is already mapped to given feature
 
         //add block to already existing arraylist
         if(map.containsKey(path)){
-            map.get(path).add(block);
+            //TODO THESIS:
+            // handle case if file is annotated multiple times - e.g Direction.java is mapped to feature "Move" via multiples of {feature-to-folder, feature-to-file or inline}
+
+            map.get(path).second.add(block);
             return;
         }
 
         //add file and location to map
         ArrayList<FeatureLocationBlock> list = new ArrayList<>();
         list.add(block);
-        map.put(path,  list);
+        map.put(path,  new Pair<>(annotationType, list));
     }
 
     public ArrayList<FeatureLocationBlock> getFeatureLocationBlocks(PsiFile file){
         //TODO THESIS
         // returning new arraylist to prevent altering of private list - check whether it is suitable
-        return new ArrayList<>(map.get(file));
+        return new ArrayList<>(map.get(file).second);
     }
 
     //TODO THESIS
     // maybe remove access to complete hashmap
-    public Map<String, List<FeatureLocationBlock>> getAllFeatureLocations(){
+    public Map<String, Pair<AnnotationType,ArrayList<FeatureLocationBlock>>> getAllFeatureLocations(){
         //TODO THESIS
         // returning new map to prevent altering of private map - check whether it is suitable
         return new HashMap<>(map);

@@ -22,8 +22,8 @@ public class TestClass extends AnAction {
         for(FeatureModelFeature feature : FeatureModelUtil.findFeatures(e.getProject())){
             FeatureFileMapping featureFileMapping = FeatureLocationManager.getFeatureFileMapping(feature);
             System.out.println("Feature: " + feature.getName());
-            System.out.println("Test");
 
+            /*
             if(feature.getParent() instanceof FeatureModelFile){
                 System.out.println("Parent: " + ((FeatureModelFile)feature.getParent()).getName());
             }
@@ -33,16 +33,20 @@ public class TestClass extends AnAction {
             for(var child : feature.getChildren()){
                 System.out.println("Child: " + ((FeatureModelFeatureImpl) child).getName());
             }
+            */
 
 
             for(String file : featureFileMapping.getAllFeatureLocations().keySet()){
-                System.out.println("  File: " + file);
+                var annotationToBlockPair = featureFileMapping.getAllFeatureLocations().get(file);
+                System.out.println("  File: " + file + "\n  Type: " + annotationToBlockPair.first.toString());
 
-                for(FeatureLocationBlock featureLocationBlock : featureFileMapping.getAllFeatureLocations().get(file)){
+
+                for(FeatureLocationBlock featureLocationBlock : annotationToBlockPair.second){
                     System.out.println("    " + featureLocationBlock.toString());
                 }
 
             }
+            System.out.println("/////\n");
         }
     }
 
