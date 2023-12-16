@@ -10,6 +10,10 @@ import java.util.*;
 
 import static com.jediterm.terminal.util.Pair.getSecond;
 
+/**
+ * Object which contains mappings for filePaths
+ * to its corresponding annotationType and a list of FeatureLocationBlocks
+ */
 public class FeatureFileMapping {
     public enum MarkerType {begin, end, line, none}
     public enum AnnotationType {folder, file, code}
@@ -22,10 +26,12 @@ public class FeatureFileMapping {
     }
     /**
      * Caches data for later processing via <code>buildFromQueue()</code>
+     * This function should be called for each marker for a given feature before <code>buildFromQueue()</code> is called
      *
      * @param path the file path which is mapped to the given linenumber
      * @param lineNumber the linenumber within the specified file
      * @param type the type of the feature marker
+     * @param annotationType the annotation type - {file, folder, code}
      *
      * @see #buildFromQueue()
      */
@@ -116,6 +122,10 @@ public class FeatureFileMapping {
         cache = new HashMap<>();
     }
 
+    /**
+     * Method to get the Feature mapped to the FeatureFileMapping
+     * @return FeatureModelFeature mapped to the FeatureFileMapping
+     */
     public FeatureModelFeature getParentFeature(){
         return parentFeature;
     }
@@ -135,8 +145,9 @@ public class FeatureFileMapping {
      *
      * @param path the file path which is mapped to a given block
      * @param block the location of the feature block inside the given file
+     * @param annotationType the annotation type for the corresponding filepath
      */
-    public void add(String path, FeatureLocationBlock block, AnnotationType annotationType){
+    private void add(String path, FeatureLocationBlock block, AnnotationType annotationType){
         //check if file is already mapped to given feature
 
         //add block to already existing arraylist
@@ -160,8 +171,15 @@ public class FeatureFileMapping {
         return new ArrayList<>(map.get(file).second);
     }
 
+
     //TODO THESIS
     // maybe remove access to complete hashmap
+
+    /**
+     * Method to get a Map which contains mappings for filePaths (key)
+     * to its corresponding annotationType (value.first) and a list of FeatureLocationBlocks (value.second)
+     * @return HashMap with  path : (AnnotationType , LocationBlock[])
+     */
     public Map<String, Pair<AnnotationType,ArrayList<FeatureLocationBlock>>> getAllFeatureLocations(){
         //TODO THESIS
         // returning new map to prevent altering of private map - check whether it is suitable
