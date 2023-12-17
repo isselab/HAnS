@@ -206,6 +206,20 @@ public class FeatureFileMapping {
         return lineSet.size();
     }
 
+    /**
+     * Method to get the total line-count of a feature for all files
+     * @return line-count of a feature
+     */
+    public int getTotalFeatureLineCount(){
+        int total = 0;
+
+        for(var path : map.keySet()){
+            total += getFeatureLineCountInFile(path);
+        }
+
+        return total;
+    }
+
 
 
 }

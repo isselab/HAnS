@@ -10,8 +10,6 @@ import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
-import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
-import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 
 public class TestClass extends AnAction {
     @Override
