@@ -18,7 +18,6 @@ import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileAnnotation;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileName;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
 import se.isselab.HAnS.referencing.FileReferenceUtil;
@@ -42,7 +41,6 @@ public class FeatureLocationManager {
             //get comment sibling of the feature comment
 
             PsiElement element = reference.getElement();
-            FeatureFileMapping.MarkerType type;
 
             //determine file type and process content
             var fileType = element.getContainingFile();
@@ -137,7 +135,12 @@ public class FeatureLocationManager {
                 //TODO THESIS get file of reference
                 PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
 
-                var psiFile = FileReferenceUtil.findFile(file, file.getFileName().getText()).get(0);
+                //TODO THESIS:
+                // get relative path to source
+                var fileName = FileReferenceUtil.findFile(file, file.getFileName().getText());
+                if(fileName.isEmpty())
+                    continue;
+                var psiFile = fileName.get(0);
 
                 Document document = psiDocumentManager.getDocument(psiFile);
                 if(document == null)

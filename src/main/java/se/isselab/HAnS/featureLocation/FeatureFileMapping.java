@@ -2,13 +2,11 @@ package se.isselab.HAnS.featureLocation;
 
 
 import com.intellij.openapi.util.Pair;
-import com.intellij.psi.PsiFile;
 import se.isselab.HAnS.Logger;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.*;
 
-import static com.jediterm.terminal.util.Pair.getSecond;
 
 /**
  * Object which contains mappings for filePaths
@@ -17,7 +15,7 @@ import static com.jediterm.terminal.util.Pair.getSecond;
 public class FeatureFileMapping {
     public enum MarkerType {begin, end, line, none}
     public enum AnnotationType {folder, file, code}
-    private HashMap<String, Pair<AnnotationType,ArrayList<FeatureLocationBlock>>> map = new HashMap<>();
+    private final HashMap<String, Pair<AnnotationType,ArrayList<FeatureLocationBlock>>> map = new HashMap<>();
     private HashMap<String, Pair<AnnotationType,ArrayList<Pair<MarkerType, Integer>>>> cache = new HashMap<>();
     private final FeatureModelFeature parentFeature;
 
@@ -71,47 +69,41 @@ public class FeatureFileMapping {
             for (var markerToLinePair : annotationTypeToLocationBlockPair.second) {
 
                 switch (markerToLinePair.first) {
-                    case begin: {
+                    case begin -> {
                         stack.push(markerToLinePair.second);
-                        break;
                     }
-                    case end: {
+                    case end -> {
                         if (stack.isEmpty()) {
                             //TODO THESIS
                             // error-handling if no matching begin was found for the end
-                            System.out.println("[HAnS-Vis][ERROR] found end marker without matching begin marker");
+                            Logger.print(Logger.Channel.WARNING, String.format("Found &end marker without matching &begin marker in [%s] at line [%d]. This will result in inaccurate metrics", path, markerToLinePair.second + 1));
                             continue;
                         }
                         int beginLine = stack.pop();
                         add(path, new FeatureLocationBlock(beginLine, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
-                        break;
                     }
-
-                    case line: {
+                    case line -> {
                         add(path, new FeatureLocationBlock(markerToLinePair.second, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
-                        break;
                     }
-
-                    case none: {
+                    case none -> {
                         //TODO THESIS
                         // should only happen if file is a feature-to-file or feature-to-folder
                         add(path, new FeatureLocationBlock(0, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                         //System.out.println("[HAnS-Vis][ERROR] found marker of Type::None");
-                        break;
                     }
-
-                    default: {
+                    default -> {
                         //TODO THESIS
                         // should not happen but cover case if no label was found
-                        System.out.println("[HAnS-Vis][ERROR] found marker with no type");
+                        System.out.println("[HAnS-Vis][ERROR] Found marker with no type");
                     }
-
                 }
             }
             if (!stack.isEmpty()) {
                 //TODO THESIS
                 // there was a begin without an endmarker
-                System.out.println("[HAnS-Vis][ERROR] missing closing end marker");
+                for(var line : stack){
+                    Logger.print(Logger.Channel.WARNING, String.format("Missing closing &end marker for &begin in [%s] at line [%d].  This will result in inaccurate metrics", path, line + 1));
+                }
             }
         }
         //TODO THESIS
@@ -165,10 +157,10 @@ public class FeatureFileMapping {
         map.put(path,  new Pair<>(annotationType, list));
     }
 
-    public ArrayList<FeatureLocationBlock> getFeatureLocationBlocks(PsiFile file){
+    public ArrayList<FeatureLocationBlock> getFeatureLocationBlocks(String filePath){
         //TODO THESIS
         // returning new arraylist to prevent altering of private list - check whether it is suitable
-        return new ArrayList<>(map.get(file).second);
+        return new ArrayList<>(map.get(filePath).second);
     }
 
 

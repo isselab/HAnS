@@ -3,30 +3,19 @@ package se.isselab.HAnS;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.search.searches.ReferencesSearch;
-import com.intellij.psi.util.PsiTreeUtil;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.TestOnly;
-import se.isselab.HAnS.codeAnnotation.psi.*;
-import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationParameterImpl;
+import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
 import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
-import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationLpqReferencesImpl;
-import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
-import se.isselab.HAnS.folderAnnotation.psi.impl.FolderAnnotationLpqImpl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 
 @Service(Service.Level.PROJECT)
 public final class FeatureService implements FeatureServiceInterface {
@@ -38,7 +27,7 @@ public final class FeatureService implements FeatureServiceInterface {
 
     /**
      * Get Feature List from HAnS in Service
-     * @return
+     * @return Feature List of all registered features
      */
     @Override
     public List<FeatureModelFeature> getFeatures() {
@@ -50,70 +39,81 @@ public final class FeatureService implements FeatureServiceInterface {
         return null;
     }
 
-    @Override
-    public int getFeatureTangling(FeatureModelFeature feature) {
-        //TODO THESIS:
-        // this approach does not take intertwined features into account
-        // nor does it calculate tangling of different feature types ( folder which annotates a file which is annotated by a feature etc )
+    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getAllFeatureTangling(){
+        //map which contains Features and their tangled features
+        HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = new HashMap<>();
 
-        //TODO THESIS:
-        // check if metrics are correct
-        //create a new map to save which and how often a feature is tangled with the specified feature
-        HashMap<String, Integer> tanglingMap = new HashMap<>();
-        Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
-        for(PsiReference reference : ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(project))){
-            PsiElement element = reference.getElement();
+        //map which contains file to {features and their blocks}
+        HashMap<String, HashMap<FeatureModelFeature, ArrayList<FeatureLocationBlock>>> featureFileMapping = new HashMap<>();
+        //iterate over each feature and get the locations from them
+        for(FeatureModelFeature feature : FeatureModelUtil.findFeatures(project)) {
+            //get information for the corresponding feature
+            var locationMap = FeatureLocationManager.getFeatureFileMapping(feature);
 
-            //determine file type and process content
-            var fileType = element.getContainingFile();
+            //create entry for the featureFileMapping - this entry contains the feature and the feature locations within the file specified by filePath
 
-            if(fileType instanceof CodeAnnotationFile){
+            //iterate over each file inside this map
+            for (var fileMapping : locationMap.getAllFeatureLocations().entrySet()){
+                //get the path and the corresponding feature locations within this path
+                String filePath = fileMapping.getKey();
+                ArrayList<FeatureLocationBlock> locations = fileMapping.getValue().second;
 
-                CodeAnnotationParameterImpl parentElement = PsiTreeUtil.getParentOfType(element, CodeAnnotationParameterImpl.class);
-                var featureMarker = element.getParent().getParent();
+                //add the {feature to location[]} to the fileMap
+                var map = featureFileMapping.get(filePath);
+                if(map != null){
+                    //the file is already associated with features - check for tangling
+                    for(var existingFeatureLocations : map.entrySet()){
+                        //iterate over the locations of the feature and check if any of them do intersect
+                        for(FeatureLocationBlock block : locations){
+                            if(block.hasSharedLines(existingFeatureLocations.getValue().toArray(new FeatureLocationBlock[0]))){
+                                //features share the same lines of code
 
-                //skip endmarker to not count begin and end tangling as two separate entries
-                if(featureMarker instanceof CodeAnnotationEndmarker)
-                    continue;
+                                //add tangling entry for both features a->b and b->a
+                                var featureB = existingFeatureLocations.getKey();
 
-                if(parentElement == null)
-                    continue;
-                for(var featureElement : parentElement.getLpqList()){
-                    //compare if they are not the same and then increment degree of the pair
-                    if(element != featureElement){
-                        tanglingMap.merge(featureElement.getName(), 1, Integer::sum);
-                    }
-                }
-            }
-            else if (fileType instanceof FileAnnotationFile) {
-                FileAnnotationLpqReferencesImpl parentElement = PsiTreeUtil.getParentOfType(element, FileAnnotationLpqReferencesImpl.class);
-                if(parentElement == null)
-                    continue;
-                for(var featureElement : parentElement.getLpqList()){
-                    //compare if they are not the same and then increment degree of the pair
+                                //add featureB to featureA
+                                if(tanglingMap.containsKey(feature)){
+                                        tanglingMap.get(feature).add(featureB);
+                                }
+                                else{
+                                    HashSet<FeatureModelFeature> featureSet = new HashSet<>();
+                                    featureSet.add(featureB);
+                                    tanglingMap.put(feature, featureSet);
+                                }
 
-                    if(element != featureElement)
-                        tanglingMap.merge(featureElement.getName(), 1, Integer::sum);
-                }
-            }
-            else if(fileType instanceof FolderAnnotationFile){
-                var parentElement = element.getParent();
-                if(parentElement instanceof FolderAnnotationFile) {
-                    for (var featureElement : Objects.requireNonNull(PsiTreeUtil.getChildrenOfType(parentElement, FolderAnnotationLpqImpl.class))) {
-                        if (element != featureElement) {
-                            tanglingMap.merge(featureElement.getName(), 1, Integer::sum);
+                                //add featureA to featureB
+                                if(tanglingMap.containsKey(featureB)){
+                                    tanglingMap.get(featureB).add(feature);
+                                }
+                                else{
+                                    HashSet<FeatureModelFeature> featureSet = new HashSet<>();
+                                    featureSet.add(feature);
+                                    tanglingMap.put(featureB, featureSet);
+                                }
+                            }
                         }
                     }
-                }
+                    //add feature to the map
+                    map.put(feature, locations);
 
+                }
+                else{
+                    //the file is new so we add a new entry
+                    HashMap<FeatureModelFeature, ArrayList<FeatureLocationBlock>> featureLocationMap = new HashMap<>();
+                    featureLocationMap.put(feature, locations);
+                    featureFileMapping.put(filePath, featureLocationMap);
+                }
             }
         }
-        int result = 0;
-        for(var degree : tanglingMap.values()){
-            result += degree;
-        }
-        return result;
+
+        return tanglingMap;
+    }
+
+    @Override
+    public int getFeatureTangling(FeatureModelFeature feature) {
+        var resultMap = getAllFeatureTangling().get(feature);
+        return resultMap != null ? resultMap.size() : 0;
     }
 
     @Override
@@ -223,7 +223,6 @@ public final class FeatureService implements FeatureServiceInterface {
         JSONArray data = new JSONArray();
         JSONObject rootObject = new JSONObject();
 
-        var mapping = FeatureLocationManager.getFeatureFileMapping(root);
         rootObject.put("name", root.getLPQText());
         rootObject.put("value", getTotalLineCountWithChilds(root));
         rootObject.put("children", getChildFeaturesAsJson(root));

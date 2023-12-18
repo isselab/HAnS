@@ -17,8 +17,12 @@ public class TestClass extends AnAction {
 
         FeatureService featureService = new FeatureService();
 
+
+        var tanglingMap = featureService.getAllFeatureTangling();
+
         //TODO THESIS:
         // how to get project
+
         for(FeatureModelFeature feature : FeatureModelUtil.findFeatures(e.getProject())){
             FeatureFileMapping featureFileMapping = FeatureLocationManager.getFeatureFileMapping(feature);
             System.out.println("Feature: " + feature.getName());
@@ -33,9 +37,9 @@ public class TestClass extends AnAction {
             for(var child : feature.getChildren()){
                 System.out.println("Child: " + ((FeatureModelFeatureImpl) child).getName());
             }
-            */
+*/
 
-            var tanglingDegree = featureService.getFeatureTangling(feature);
+            var tanglingDegree = tanglingMap.get(feature) != null ? tanglingMap.get(feature).size() : 0;
             System.out.println(" Tangling: " + tanglingDegree);
 
             for(String file : featureFileMapping.getAllFeatureLocations().keySet()){
@@ -52,6 +56,7 @@ public class TestClass extends AnAction {
 
 
         }
+        System.out.println("Done");
     }
 
 
