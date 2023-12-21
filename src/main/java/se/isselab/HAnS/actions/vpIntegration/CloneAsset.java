@@ -19,7 +19,7 @@ public class CloneAsset extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
 
         try {
-            String filePath = System.getProperty("user.home") + "\\Desktop\\myClone.txt";
+            String filePath = System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\CloneTrace.txt";
             try{
                 String sourceFilePath = new String(Files.readAllBytes(Paths.get(filePath)));
             }catch(Exception e){

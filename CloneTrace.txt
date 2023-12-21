@@ -1,0 +1,2 @@
+
+C:/Users/User/Documents/UNI/BA/Snake/src/logic/Direction.java;C:/Users/User/Documents/UNI/BA/Snake/src/graphics\Direction.java;20231221211634

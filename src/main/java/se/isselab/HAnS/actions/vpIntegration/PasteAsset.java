@@ -22,7 +22,7 @@ public class PasteAsset extends AnAction {
         if (targetVirtualFile == null) return;
 
         String targetFilePath = targetVirtualFile.getPath();
-        String textFilePath = System.getProperty("user.home") + "\\Desktop\\myClone.txt";
+        String textFilePath = System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\CloneTrace.txt";
         String currentDateAndTime = getCurrentDateAndTime();
         try {
             String sourceFilePath = new String(Files.readAllBytes(Paths.get(textFilePath)));
