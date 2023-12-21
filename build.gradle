@@ -1,5 +1,6 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.ExtensionsKt
+import org.jetbrains.intellij.tasks.ListProductsReleasesTask
 
 plugins {
     id 'java'
@@ -73,7 +74,7 @@ test {
 
 listProductsReleases {
     types =  providers.gradleProperty('platformTypes').map { it.split(',').collect { it.trim() }.findAll { !it.isEmpty() } }
-    releaseChannels = EnumSet.of(org.jetbrains.intellij.tasks.ListProductsReleasesTask.Channel.RELEASE)
+    releaseChannels = EnumSet.of(ListProductsReleasesTask.Channel.RELEASE)
 }
 
 signPlugin {
@@ -91,7 +92,7 @@ publishPlugin {
 changelog {
     path = file("CHANGELOG.md").canonicalPath
     repositoryUrl = providers.gradleProperty('pluginRepositoryUrl')
-    header = "${-> version} - ${ExtensionsKt.date("yyyy-MM-dd")}"
+    header = "${-> providers.gradleProperty('pluginVersion').get()} - ${ExtensionsKt.date("yyyy-MM-dd")}"
     itemPrefix = "-"
     keepUnreleasedSection = true
     unreleasedTerm = "Unreleased"
