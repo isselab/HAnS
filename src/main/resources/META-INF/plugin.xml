@@ -152,5 +152,13 @@ limitations under the License.
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
+
+        <action id="CloneAsset" text="Clone Asset" class="se.isselab.HAnS.actions.vpIntegration.CloneAsset">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
+        </action>
+
+        <action id="PasteAsset" text="Paste Asset" class="se.isselab.HAnS.actions.vpIntegration.PasteAsset">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
+        </action>
     </actions>
 </idea-plugin>
