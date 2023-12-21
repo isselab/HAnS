@@ -10,8 +10,8 @@ plugins {
 
 apply plugin: 'org.jetbrains.changelog'
 
-group = providers.gradleProperty('pluginGroup')
-version = providers.gradleProperty('pluginVersion')
+group = providers.gradleProperty('pluginGroup').get()
+version = providers.gradleProperty('pluginVersion').get()
 
 repositories {
     mavenCentral()
@@ -24,9 +24,9 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    pluginName = providers.gradleProperty("pluginName")
-    version = providers.gradleProperty("platformVersion")
-    type = providers.gradleProperty("platformType")
+    pluginName = providers.gradleProperty("pluginName").get()
+    version = providers.gradleProperty("platformVersion").get()
+    type = providers.gradleProperty("platformType").get()
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
     plugins = providers.gradleProperty('platformPlugins').map { it.split(',').collect { it.trim() }.findAll { !it.isEmpty() } }
@@ -37,9 +37,9 @@ runIde {
 }
 
 patchPluginXml {
-    pluginId = providers.gradleProperty('pluginId')
-    sinceBuild = providers.gradleProperty('pluginSinceBuild')
-    untilBuild = providers.gradleProperty('pluginUntilBuild')
+    pluginId = providers.gradleProperty('pluginId').get()
+    sinceBuild = providers.gradleProperty('pluginSinceBuild').get()
+    untilBuild = providers.gradleProperty('pluginUntilBuild').get()
 
     // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
     pluginDescription = providers.fileContents(layout.projectDirectory.file('README.md')).asText.map {
@@ -91,7 +91,7 @@ publishPlugin {
 
 changelog {
     path = file("CHANGELOG.md").canonicalPath
-    repositoryUrl = providers.gradleProperty('pluginRepositoryUrl')
+    repositoryUrl = providers.gradleProperty('pluginRepositoryUrl').get()
     header = "${-> providers.gradleProperty('pluginVersion').get()} - ${ExtensionsKt.date("yyyy-MM-dd")}"
     itemPrefix = "-"
     keepUnreleasedSection = true
