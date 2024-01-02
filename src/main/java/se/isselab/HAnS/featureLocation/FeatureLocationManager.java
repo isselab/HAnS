@@ -44,6 +44,11 @@ public class FeatureLocationManager {
         return mapping;
     }
 
+    /**
+     * Returns the FeatureFileMapping for the given feature
+     * @param feature
+     * @return FeatureFileMapping for the given feature
+     */
     public static FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature){
         FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);
         //TODO THESIS

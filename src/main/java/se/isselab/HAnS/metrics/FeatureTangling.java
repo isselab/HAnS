@@ -36,6 +36,8 @@ public class FeatureTangling {
         if(tanglingMap.containsKey(feature))
             return tanglingMap.get(feature).size();
 
+        //TODO THESIS
+        // errorhandling
         return 0;
     }
 
@@ -155,6 +157,8 @@ public class FeatureTangling {
             return new JSONObject();
         }
 
+        //TODO THESIS
+        // check if reference is passed via function
         fileMappingCache = FeatureLocationManager.getAllFeatureFileMapping();
         tanglingMapCache = getTanglingMap();
 

@@ -46,6 +46,11 @@ public final class FeatureService implements FeatureServiceInterface {
         return FeatureLocationManager.getFeatureFileMapping(feature);
     }
 
+    public HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(){
+        return FeatureLocationManager.getAllFeatureFileMapping();
+    }
+
+
     /**
      * Returns the tanling degree of the given feature
      * @param feature
