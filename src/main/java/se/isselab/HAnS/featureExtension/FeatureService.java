@@ -13,6 +13,7 @@ import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
 import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
+import se.isselab.HAnS.metrics.FeatureTangling;
 
 
 import java.util.*;
@@ -34,93 +35,43 @@ public final class FeatureService implements FeatureServiceInterface {
         return FeatureModelUtil.findFeatures(project);
     }
 
+
+    /**
+     * Returns the locations of a Feature as a FeatureFileMapping
+     * @param feature
+     * @return Locations of a Feature as a FeatureFileMapping
+     */
     @Override
     public FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature) {
-        return null;
+        return FeatureLocationManager.getFeatureFileMapping(feature);
     }
 
-    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getAllFeatureTangling(){
-        //map which contains Features and their tangled features
-        HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = new HashMap<>();
-
-
-        //map which contains file to {features and their blocks}
-        HashMap<String, HashMap<FeatureModelFeature, ArrayList<FeatureLocationBlock>>> featureFileMapping = new HashMap<>();
-        //iterate over each feature and get the locations from them
-        for(FeatureModelFeature feature : FeatureModelUtil.findFeatures(project)) {
-            //get information for the corresponding feature
-            var locationMap = FeatureLocationManager.getFeatureFileMapping(feature);
-
-            //create entry for the featureFileMapping - this entry contains the feature and the feature locations within the file specified by filePath
-
-            //iterate over each file inside this map
-            for (var fileMapping : locationMap.getAllFeatureLocations().entrySet()){
-                //get the path and the corresponding feature locations within this path
-                String filePath = fileMapping.getKey();
-                ArrayList<FeatureLocationBlock> locations = fileMapping.getValue().second;
-
-                //add the {feature to location[]} to the fileMap
-                var map = featureFileMapping.get(filePath);
-                if(map != null){
-                    //the file is already associated with features - check for tangling
-                    for(var existingFeatureLocations : map.entrySet()){
-                        //iterate over the locations of the feature and check if any of them do intersect
-                        for(FeatureLocationBlock block : locations){
-                            if(block.hasSharedLines(existingFeatureLocations.getValue().toArray(new FeatureLocationBlock[0]))){
-                                //features share the same lines of code
-
-                                //add tangling entry for both features a->b and b->a
-                                var featureB = existingFeatureLocations.getKey();
-
-                                //add featureB to featureA
-                                if(tanglingMap.containsKey(feature)){
-                                        tanglingMap.get(feature).add(featureB);
-                                }
-                                else{
-                                    HashSet<FeatureModelFeature> featureSet = new HashSet<>();
-                                    featureSet.add(featureB);
-                                    tanglingMap.put(feature, featureSet);
-                                }
-
-                                //add featureA to featureB
-                                if(tanglingMap.containsKey(featureB)){
-                                    tanglingMap.get(featureB).add(feature);
-                                }
-                                else{
-                                    HashSet<FeatureModelFeature> featureSet = new HashSet<>();
-                                    featureSet.add(feature);
-                                    tanglingMap.put(featureB, featureSet);
-                                }
-                            }
-                        }
-                    }
-                    //add feature to the map
-                    map.put(feature, locations);
-
-                }
-                else{
-                    //the file is new so we add a new entry
-                    HashMap<FeatureModelFeature, ArrayList<FeatureLocationBlock>> featureLocationMap = new HashMap<>();
-                    featureLocationMap.put(feature, locations);
-                    featureFileMapping.put(filePath, featureLocationMap);
-                }
-            }
-        }
-
-        return tanglingMap;
-    }
-
+    /**
+     * Returns the tanling degree of the given feature
+     * @param feature
+     * @return TanglingDegree of the given feature
+     */
     @Override
     public int getFeatureTangling(FeatureModelFeature feature) {
-        var resultMap = getAllFeatureTangling().get(feature);
+        var resultMap = getTanglingMap().get(feature);
         return resultMap != null ? resultMap.size() : 0;
     }
 
+    /**
+     * Returns the scattering degree of the given feature
+     * @param feature
+     * @return Scattering degree of the given feature
+     */
     @Override
     public int getFeatureScattering(FeatureModelFeature feature) {
         return 0;
     }
 
+    /**
+     * Returns a list of all child features of the given feature from the .feature-model
+     * @param feature
+     * @return List of all child features of the given feature from the .feature-model
+     */
     @Override
     public List<FeatureModelFeature> getChildFeatures(FeatureModelFeature feature) {
         List<FeatureModelFeature> childs = new ArrayList<>();
@@ -130,6 +81,11 @@ public final class FeatureService implements FeatureServiceInterface {
         return childs;
     }
 
+    /**
+     * Returns the parent feature of the given Feature from the .feature-model
+     * @param feature
+     * @return Parent feature of the given Feature from the .feature-model
+     */
     @Override
     public FeatureModelFeature getParentFeature(FeatureModelFeature feature) {
         if (feature.getParent() instanceof FeatureModelFile) {
@@ -138,6 +94,11 @@ public final class FeatureService implements FeatureServiceInterface {
         return (FeatureModelFeatureImpl) feature.getParent();
     }
 
+    /**
+     * Returns the top-level Feature of the given Feature from the .feature-model
+     * @param feature
+     * @return Top-level Feature of the given Feature from the .feature-model
+     */
     @Override
     public FeatureModelFeature getRootFeature(FeatureModelFeature feature) {
         //TODO THESIS:
@@ -147,6 +108,45 @@ public final class FeatureService implements FeatureServiceInterface {
             temp = (FeatureModelFeature) temp.getParent();
         }
         return temp;
+    }
+
+    /**
+     * Returns a HashMap which is a 1:n feature mapping of feature to its tangled features
+     * @return TanglingMap
+     */
+    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(){
+        return FeatureTangling.getTanglingMap();
+    }
+
+    /**
+     * Returns a list of all top-level features declared in the .feature-model
+     * @return List of all top-level features declared in the .feature-model
+     */
+    public List<FeatureModelFeature> getRootFeatures(){
+        var featureList = FeatureModelUtil.findFeatures(project);
+        ArrayList<FeatureModelFeature> rootFeatures = new ArrayList<>();
+
+        if(featureList.isEmpty())
+            return rootFeatures;
+
+        FeatureModelFeature entryFeature = featureList.get(0);
+        rootFeatures.add(entryFeature);
+
+        //traverse left siblings
+        FeatureModelFeature siblingFeature = entryFeature;
+        while(siblingFeature.getPrevSibling() instanceof FeatureModelFeature){
+            siblingFeature = (FeatureModelFeature) siblingFeature.getPrevSibling();
+            rootFeatures.add(siblingFeature);
+        }
+
+        //traverse right siblings
+        siblingFeature = entryFeature;
+        while(siblingFeature.getNextSibling() instanceof FeatureModelFeature){
+            siblingFeature = (FeatureModelFeature) siblingFeature.getNextSibling();
+            rootFeatures.add(siblingFeature);
+        }
+
+        return rootFeatures;
     }
 
     @Override
@@ -242,7 +242,7 @@ public final class FeatureService implements FeatureServiceInterface {
 
             JSONObject childJson = new JSONObject();
             childJson.put("name", child.getLPQText());
-            childJson.put("value", Math.max(getTotalLineCountWithChilds(child),1));
+            childJson.put("value", getTotalLineCountWithChilds(child));
             childJson.put("children", getChildFeaturesAsJson(child));
             children.add(childJson);
         }
@@ -250,8 +250,10 @@ public final class FeatureService implements FeatureServiceInterface {
     }
 
     @TestOnly
-    private int getTotalLineCountWithChilds(FeatureModelFeature parent){
-        int total = 1;
+    public int getTotalLineCountWithChilds(FeatureModelFeature parent){
+        //TODO THESIS
+        // put into hans viz
+        int total = 0;
         for(var child : getChildFeatures(parent)){
             total += getTotalLineCountWithChilds(child);
         }
