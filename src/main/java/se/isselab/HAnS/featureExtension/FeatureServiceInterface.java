@@ -1,4 +1,4 @@
-package se.isselab.HAnS;
+package se.isselab.HAnS.featureExtension;
 
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;

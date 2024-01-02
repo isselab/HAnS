@@ -1,4 +1,4 @@
-package se.isselab.HAnS;
+package se.isselab.HAnS.featureExtension;
 
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;

@@ -1,4 +1,10 @@
 HAnS
+    Metrics
+        Scattering
+        Tangling
+        FeatureLocation
+    ExtensionPoint
+        Service
     FeatureModel
         Language
         File

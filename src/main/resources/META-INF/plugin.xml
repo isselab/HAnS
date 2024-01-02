@@ -120,13 +120,15 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
 
-        <projectService serviceImplementation="se.isselab.HAnS.FeatureService" serviceInterface="se.isselab.HAnS.FeatureServiceInterface"/>
+        <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService" serviceInterface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
     </extensions>
 
     <extensionPoints>
+        <!-- &begin[Service]-->
         <extensionPoint
-            name="hansObserver"
-            interface="se.isselab.HAnS.featureExtension.HAnSObserverInterface"/>
+                name="featureService"
+                interface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
+        <!-- &end[Service]-->
     </extensionPoints>
     <actions>
         <action id="RenameFeature"
