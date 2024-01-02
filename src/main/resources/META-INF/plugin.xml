@@ -15,7 +15,7 @@ limitations under the License.
 -->
 <idea-plugin>
     <name>HAnS (Helping Annotate Software)</name>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <id>se.isselab.hans</id>
     <vendor email="johan.t.martinson+HAnS@gmail.com" url="https://github.com/isselab/HAnS">Johan Martinson and Herman Jansson</vendor>
 
