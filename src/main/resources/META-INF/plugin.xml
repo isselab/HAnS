@@ -129,6 +129,12 @@ limitations under the License.
                 name="featureService"
                 interface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
         <!-- &end[Service]-->
+        <!-- &begin[ExtensionPoint]-->
+        <extensionPoint
+                name="hansCallback"
+                interface="se.isselab.HAnS.HAnSCallback"/>
+        <!-- &end[ExtensionPoint]-->
+
     </extensionPoints>
     <actions>
         <action id="RenameFeature"
@@ -163,6 +169,10 @@ limitations under the License.
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
         <action id="se.isselab.HAnS.TestClass" class="se.isselab.HAnS.TestClass" text="Test Action"
+                description="Testing">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </action>
+        <action id="se.isselab.HAnS.BackgroundTaskAction" class="se.isselab.HAnS.BackgroundTaskAction" text="Backgroundtask"
                 description="Testing">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>

@@ -1,5 +1,6 @@
 package se.isselab.HAnS.featureLocation;
 
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
@@ -85,14 +86,16 @@ public class FeatureLocationManager {
     private static void processCodeFile(FeatureFileMapping featureFileMapping, PsiElement element){
         //TODO THESIS
         // check function (edge cases, return value etc)
-        var commentElement = PsiTreeUtil.getContextOfType(element, PsiComment.class);
+        var commentElement = ReadAction.compute(()-> PsiTreeUtil.getContextOfType(element, PsiComment.class));
+
+        // var commentElement = PsiTreeUtil.getContextOfType(element, PsiComment.class);
 
         if(commentElement == null) {
             System.out.println("[ERROR] could not process comment");
             return;
         }
 
-        var featureMarker = element.getParent().getParent();
+        var featureMarker = ReadAction.compute(()-> element.getParent().getParent());
         FeatureFileMapping.MarkerType type;
 
         //get feature type

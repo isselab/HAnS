@@ -3,7 +3,9 @@ package se.isselab.HAnS;
 
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.NlsContexts;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,14 +27,23 @@ public class BackgroundTask extends Task.Backgroundable{
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
 
-        var featureList = FeatureModelUtil.findFeatures(getProject());
+        if(!DumbService.isDumb(ProjectManager.getInstance().getOpenProjects()[0])) {
+            var featureList = ReadAction.compute(() -> FeatureModelUtil.findFeatures(getProject()));
 
-        for (var feature : featureList) {
-            indicator.setText2("scanning: " + feature.getLPQText());
-            featureFileMappings.add(FeatureLocationManager.getFeatureFileMapping(feature));
+            for (var feature : featureList) {
+
+                indicator.setText2("scanning: " + ReadAction.compute(feature::getLPQText));
+
+                // indicator.setText2("scanning: " + feature.getLPQText());
+                // FeatureFileMapping featureFileMapping = FeatureLocationManager.getFeatureFileMapping(feature);
+                featureFileMappings.add(ReadAction.compute(() -> FeatureLocationManager.getFeatureFileMapping(feature)));
+            }
+
+            System.out.println("done with background");
         }
-
-        System.out.println("done with background");
+        else {
+            System.out.println("still indexing");
+        }
     }
 
 
