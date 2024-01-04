@@ -44,7 +44,6 @@ public class BackgroundTask extends Task.Backgroundable{
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
 
-        if(!DumbService.isDumb(ProjectManager.getInstance().getOpenProjects()[0])) {
         HashMap<String, FeatureFileMapping> fileMapping = null;
         HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = null;
         // TODO THESIS: Scattering
@@ -81,8 +80,6 @@ public class BackgroundTask extends Task.Backgroundable{
             }
 
             System.out.println("done with background");
-        }
-        else {
         }*/
         /*else {
             System.out.println("still indexing");

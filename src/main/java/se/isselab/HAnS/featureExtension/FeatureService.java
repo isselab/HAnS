@@ -52,6 +52,10 @@ public final class FeatureService implements FeatureServiceInterface {
     public HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(){
         return FeatureLocationManager.getAllFeatureFileMapping();
     }
+    // TODO THESIS: preparation for background task
+    public HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(HAnSCallback callback){
+        return FeatureLocationManager.getAllFeatureFileMapping();
+    }
 
 
     /**
