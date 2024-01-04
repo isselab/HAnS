@@ -1,11 +1,14 @@
 package se.isselab.HAnS.featureExtension;
 
 import com.intellij.openapi.components.Service;
+import com.intellij.openapi.progress.EmptyProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.TestOnly;
+import se.isselab.HAnS.HAnSCallback;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
@@ -264,6 +267,11 @@ public final class FeatureService implements FeatureServiceInterface {
         }
         total += FeatureLocationManager.getFeatureFileMapping(parent).getTotalFeatureLineCount();
         return total;
+    }
+
+    public void getFeatureFileMappingAndTanglingMap(HAnSCallback callback) {
+        BackgroundTask task = new BackgroundTask(project, "Scanning features", callback, (Mode.FILEMAPPING|Mode.TANGLINGMAP));
+        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
     }
 
 }

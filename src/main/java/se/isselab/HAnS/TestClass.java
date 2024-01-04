@@ -9,6 +9,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import org.jetbrains.annotations.NotNull;
 
+import se.isselab.HAnS.featureExtension.BackgroundTask;
 import se.isselab.HAnS.featureExtension.FeatureService;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
@@ -29,7 +30,7 @@ public class TestClass extends AnAction {
 
         System.out.println("starting background");
 
-        BackgroundTask task = new BackgroundTask(e.getProject(), "Scanning features", new CallbackClass());
+        // BackgroundTask task = new BackgroundTask(e.getProject(), "Scanning features", new CallbackClass());
 
 
         //ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
