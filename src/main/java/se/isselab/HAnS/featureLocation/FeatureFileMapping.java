@@ -1,6 +1,7 @@
 package se.isselab.HAnS.featureLocation;
 
 
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.util.Pair;
 import se.isselab.HAnS.Logger;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
@@ -36,7 +37,7 @@ public class FeatureFileMapping {
     public void enqueue(String path, int lineNumber, MarkerType type, AnnotationType annotationType){
         if(cache.get(path) != null){
             if(cache.get(path).first != annotationType)
-                Logger.print(Logger.Channel.WARNING, "Feature is linked to file via different annotation types. This can result in inaccurate metrics. " + "[Feature: " + parentFeature.getLPQText() + "][File: " + path + "]");
+                Logger.print(Logger.Channel.WARNING, "Feature is linked to file via different annotation types. This can result in inaccurate metrics. " + "[Feature: " + ReadAction.compute(()->parentFeature.getLPQText()) + "][File: " + path + "]");
             cache.get(path).second.add(new Pair<>(type, lineNumber));
         }
         else{

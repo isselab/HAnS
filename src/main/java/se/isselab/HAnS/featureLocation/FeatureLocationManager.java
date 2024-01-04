@@ -38,8 +38,8 @@ public class FeatureLocationManager {
         Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
         HashMap<String, FeatureFileMapping> mapping = new HashMap<>();
-        for(var feature : FeatureModelUtil.findFeatures(project)){
-            mapping.put(feature.getLPQText(), FeatureLocationManager.getFeatureFileMapping(feature));
+        for(var feature : ReadAction.compute(()->FeatureModelUtil.findFeatures(project))){
+            mapping.put(ReadAction.compute(()->feature.getLPQText()), FeatureLocationManager.getFeatureFileMapping(feature));
         }
 
         return mapping;
@@ -56,13 +56,13 @@ public class FeatureLocationManager {
         // how to get project
         Project project = ProjectManager.getInstance().getOpenProjects()[0];
         Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(project), true);
-        for (PsiReference reference : featureReference) {
+        for (PsiReference reference : ReadAction.compute(()->featureReference)) {
             //get comment sibling of the feature comment
 
             PsiElement element = reference.getElement();
 
             //determine file type and process content
-            var fileType = element.getContainingFile();
+            var fileType = ReadAction.compute(element::getContainingFile);
             if(fileType instanceof CodeAnnotationFile){
                 processCodeFile(featureFileMapping, element);
             }
@@ -70,7 +70,7 @@ public class FeatureLocationManager {
                 processFeatureToFile(featureFileMapping, element);
             }
             else if(fileType instanceof FolderAnnotationFile){
-                PsiDirectory dir = fileType.getContainingDirectory();
+                PsiDirectory dir = ReadAction.compute(fileType::getContainingDirectory);
                 if(dir == null)
                     continue;
                 processFeatureToFolder(featureFileMapping, dir);
@@ -111,7 +111,7 @@ public class FeatureLocationManager {
         //TODO THESIS
         // check .getVirtualFile for null exception which can occur in certain cases
         // get relative path to source
-        featureFileMapping.enqueue(element.getContainingFile().getOriginalFile().getVirtualFile().getPath(), getLine(commentElement), type, FeatureFileMapping.AnnotationType.code);
+        featureFileMapping.enqueue(ReadAction.compute(()->element.getContainingFile().getOriginalFile().getVirtualFile().getPath()), ReadAction.compute(()->getLine(commentElement)), type, FeatureFileMapping.AnnotationType.code);
 
     }
 
@@ -122,7 +122,7 @@ public class FeatureLocationManager {
 
         //TODO THESIS
         // Get file reference instead of filename
-        var parent = PsiTreeUtil.getParentOfType(element, FileAnnotationFileAnnotation.class);
+        var parent = ReadAction.compute(()->PsiTreeUtil.getParentOfType(element, FileAnnotationFileAnnotation.class));
         if(parent == null)
             return;
 
@@ -140,12 +140,12 @@ public class FeatureLocationManager {
 
                 //TODO THESIS:
                 // get relative path to source
-                var fileName = FileReferenceUtil.findFile(file, file.getFileName().getText());
+                var fileName = ReadAction.compute(()->FileReferenceUtil.findFile(file, file.getFileName().getText()));
                 if(fileName.isEmpty())
                     continue;
                 var psiFile = fileName.get(0);
 
-                Document document = psiDocumentManager.getDocument(psiFile);
+                Document document = ReadAction.compute(()->psiDocumentManager.getDocument(psiFile));
                 if(document == null)
                     return;
 
@@ -165,13 +165,13 @@ public class FeatureLocationManager {
         // how to get project
         Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
-        for(var file : directory.getFiles()){
+        for(var file : ReadAction.compute(directory::getFiles)){
             //skip .feature-to-folder and .feature-to-file files
             if(file instanceof FolderAnnotationFile || file instanceof FileAnnotationFile)
                 continue;
 
             PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
-            Document document = psiDocumentManager.getDocument(file);
+            Document document = ReadAction.compute(()->psiDocumentManager.getDocument(file));
             if(document == null)
                 return;
             //TODO THESIS:
@@ -180,7 +180,7 @@ public class FeatureLocationManager {
             String path = "/" + temp[temp.length - 1];
             featureFileMapping.enqueue(path, document.getLineCount() - 1, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
         }
-        for(var dir : directory.getSubdirectories()){
+        for(var dir : ReadAction.compute(directory::getSubdirectories)){
             //recursively add subdirectories to the feature
             processFeatureToFolder(featureFileMapping, dir);
         }
@@ -192,7 +192,7 @@ public class FeatureLocationManager {
         Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
         PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
-        PsiFile openedFile = elem.getContainingFile();
+        PsiFile openedFile = ReadAction.compute(elem::getContainingFile);
 
         //iterate over each psiElement and check for PsiComment-Feature-Annotations
         if(openedFile == null)

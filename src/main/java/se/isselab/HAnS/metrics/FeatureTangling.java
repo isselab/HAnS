@@ -1,5 +1,6 @@
 package se.isselab.HAnS.metrics;
 
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import net.minidev.json.JSONArray;
@@ -59,7 +60,7 @@ public class FeatureTangling {
         //map which contains file to {features and their blocks}
         HashMap<String, HashMap<FeatureModelFeature, ArrayList<FeatureLocationBlock>>> featureFileMapping = new HashMap<>();
         //iterate over each feature and get the locations from them
-        for(FeatureModelFeature feature : FeatureModelUtil.findFeatures(project)) {
+        for(FeatureModelFeature feature : ReadAction.compute(()->FeatureModelUtil.findFeatures(project))) {
             //get information for the corresponding feature
             var locationMap = featureService.getFeatureFileMapping(feature);
 
