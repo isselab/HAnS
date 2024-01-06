@@ -48,16 +48,22 @@ public class BackgroundTask extends Task.Backgroundable{
         HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = null;
         // TODO THESIS: Scattering
 
-        if((options & (Mode.FILEMAPPING + Mode.TANGLINGMAP)) == options) {          // 0011
+        if((options & (Mode.FILEMAPPING + Mode.TANGLINGMAP)) == options) {
+            // 0011
+            System.out.println("was file and tangling request");
             fileMapping = FeatureLocationManager.getAllFeatureFileMapping();
-            FeatureTangling.getTanglingMap(fileMapping);
+            tanglingMap = FeatureTangling.getTanglingMap(fileMapping);
 
         }
         else {
-            if((options & Mode.FILEMAPPING) == options){                           // 0001
+            if((options & Mode.FILEMAPPING) == options){
+                System.out.println("was file request");
+                // 0001
                 fileMapping = FeatureLocationManager.getAllFeatureFileMapping();
             }
-            if((options & Mode.TANGLINGMAP) == options){                           // 0010
+            if((options & Mode.TANGLINGMAP) == options){
+                System.out.println("was tangling request");
+                // 0010
                 tanglingMap = FeatureTangling.getTanglingMap();
             }
         }
