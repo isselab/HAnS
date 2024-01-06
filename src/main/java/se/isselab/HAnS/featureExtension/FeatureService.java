@@ -50,6 +50,7 @@ public final class FeatureService implements FeatureServiceInterface {
     }
 
     public HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(){
+        System.out.println("called service.getAllFeatureFileMappings");
         return FeatureLocationManager.getAllFeatureFileMapping();
     }
     // TODO THESIS: preparation for background task
@@ -127,7 +128,13 @@ public final class FeatureService implements FeatureServiceInterface {
      * @return TanglingMap
      */
     public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(){
+        System.out.println("called service.getTanglingMap");
         return FeatureTangling.getTanglingMap();
+    }
+
+    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> fileMappings){
+        System.out.println("called service.getTanglingMap");
+        return FeatureTangling.getTanglingMap(fileMappings);
     }
 
     /**

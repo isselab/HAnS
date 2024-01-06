@@ -44,27 +44,27 @@ public class BackgroundTask extends Task.Backgroundable{
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
 
+        FeatureService featureService = new FeatureService();
         HashMap<String, FeatureFileMapping> fileMapping = null;
         HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = null;
         // TODO THESIS: Scattering
-
         if((options & (Mode.FILEMAPPING + Mode.TANGLINGMAP)) == options) {
             // 0011
             System.out.println("was file and tangling request");
-            fileMapping = FeatureLocationManager.getAllFeatureFileMapping();
-            tanglingMap = FeatureTangling.getTanglingMap(fileMapping);
+            fileMapping = featureService.getAllFeatureFileMappings();
+            tanglingMap = featureService.getTanglingMap(fileMapping);
 
         }
         else {
             if((options & Mode.FILEMAPPING) == options){
                 System.out.println("was file request");
                 // 0001
-                fileMapping = FeatureLocationManager.getAllFeatureFileMapping();
+                fileMapping = featureService.getAllFeatureFileMappings();
             }
             if((options & Mode.TANGLINGMAP) == options){
                 System.out.println("was tangling request");
                 // 0010
-                tanglingMap = FeatureTangling.getTanglingMap();
+                tanglingMap = featureService.getTanglingMap();
             }
         }
         if((options & Mode.SCATTERING) == options){                            // 0100
