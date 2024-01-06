@@ -47,12 +47,19 @@ public class FeatureTangling {
      * @return TanglingMap
      */
     public static HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(){
+        FeatureService featureService = new FeatureService();
+       return getTanglingMap(featureService.getAllFeatureFileMappings());
+    }
+    /**
+     * Returns a HashMap which is a 1:n feature mapping of feature to its tangled features
+     * @param fileMappings
+     * @return TanglingMap
+     */
+    public static HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> fileMappings){
         //TODO THESIS
         // maybe return a class container instead of a map to make access more convenient
 
         Project project = ProjectManager.getInstance().getOpenProjects()[0];
-
-        FeatureService featureService = new FeatureService();
 
         //map which contains Features and their tangled features
         HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = new HashMap<>();
@@ -62,7 +69,7 @@ public class FeatureTangling {
         //iterate over each feature and get the locations from them
         for(FeatureModelFeature feature : ReadAction.compute(()->FeatureModelUtil.findFeatures(project))) {
             //get information for the corresponding feature
-            var locationMap = featureService.getFeatureFileMapping(feature);
+            var locationMap = fileMappings.get(feature.getLPQText());
 
             //create entry for the featureFileMapping - this entry contains the feature and the feature locations within the file specified by filePath
 
@@ -122,7 +129,6 @@ public class FeatureTangling {
 
         return tanglingMap;
     }
-
 
     /**
      * Creates a JSON of the FeatureModel structure of the current project.

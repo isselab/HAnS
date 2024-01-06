@@ -50,8 +50,8 @@ public class BackgroundTask extends Task.Backgroundable{
 
         if((options & (Mode.FILEMAPPING + Mode.TANGLINGMAP)) == options) {          // 0011
             fileMapping = FeatureLocationManager.getAllFeatureFileMapping();
-            // TODO THESIS: FeatureTangling.getTanglingMap(filemapping);
-            tanglingMap = FeatureTangling.getTanglingMap();
+            FeatureTangling.getTanglingMap(fileMapping);
+
         }
         else {
             if((options & Mode.FILEMAPPING) == options){                           // 0001
