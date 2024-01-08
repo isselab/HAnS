@@ -235,52 +235,9 @@ public final class FeatureService implements FeatureServiceInterface {
         return finalJson;
     }
 
-    @TestOnly
-    public JSONArray getFeatureModelAsJson(){
-        var featureList = FeatureModelUtil.findFeatures(project);
-        FeatureModelFeature root = getRootFeature(featureList.get(0));
-        JSONArray data = new JSONArray();
-        JSONObject rootObject = new JSONObject();
-
-        rootObject.put("name", root.getLPQText());
-        rootObject.put("value", getTotalLineCountWithChilds(root));
-        rootObject.put("children", getChildFeaturesAsJson(root));
-        data.add(rootObject);
-
-        return data;
-    }
-
-    @TestOnly
-    private JSONArray getChildFeaturesAsJson(FeatureModelFeature parentFeature) {
-        JSONArray children = new JSONArray();
-        var childFeatureList = getChildFeatures(parentFeature);
-
-        //iterate over each child and recursively get its childs
-        for(var child : childFeatureList){
-            //get linecount of feature via mapping
-
-            JSONObject childJson = new JSONObject();
-            childJson.put("name", child.getLPQText());
-            childJson.put("value", getTotalLineCountWithChilds(child));
-            childJson.put("children", getChildFeaturesAsJson(child));
-            children.add(childJson);
-        }
-        return children;
-    }
-
-    @TestOnly
-    public int getTotalLineCountWithChilds(FeatureModelFeature parent){
-        //TODO THESIS
-        // put into hans viz
-        int total = 0;
-        for(var child : getChildFeatures(parent)){
-            total += getTotalLineCountWithChilds(child);
-        }
-        total += FeatureLocationManager.getFeatureFileMapping(parent).getTotalFeatureLineCount();
-        return total;
-    }
-
     public void getFeatureFileMappingAndTanglingMap(HAnSCallback callback) {
+        //TODO THESIS
+        // better use MODE as parameter instead of function for each combination
         BackgroundTask task = new BackgroundTask(project, "Scanning features", callback, (Mode.FILEMAPPING|Mode.TANGLINGMAP));
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
     }

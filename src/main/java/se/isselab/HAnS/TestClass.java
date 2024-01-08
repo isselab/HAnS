@@ -68,8 +68,6 @@ public class TestClass extends AnAction {
         for(var feature : FeatureModelUtil.findFeatures(e.getProject())){
             mapping.put(feature.getLPQText(), FeatureLocationManager.getFeatureFileMapping(feature));
         }
-        System.out.println("Tree & TreeMap:\n" + FeatureTangling.getFeatureJSON(FeatureTangling.Mode.Tree));
-        System.out.println("Tangling:\n" + FeatureTangling.getFeatureJSON(FeatureTangling.Mode.Tangling));
 
        // System.out.println("Map: " + tanglingMap);
 
