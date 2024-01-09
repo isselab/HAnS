@@ -9,13 +9,13 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.TestOnly;
 import se.isselab.HAnS.HAnSCallback;
-import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
 import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
+import se.isselab.HAnS.metrics.FeatureScattering;
 import se.isselab.HAnS.metrics.FeatureTangling;
 
 
@@ -124,17 +124,40 @@ public final class FeatureService implements FeatureServiceInterface {
     }
 
     /**
-     * Returns a HashMap which is a 1:n feature mapping of feature to its tangled features
-     * @return TanglingMap
+     * @see FeatureTangling#getTanglingMap()
+     * @return the tanglingMap of all features
      */
     public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(){
         System.out.println("called service.getTanglingMap");
         return FeatureTangling.getTanglingMap();
     }
 
+    /**
+     * @see FeatureTangling#getTanglingMap(HashMap)
+     * @param fileMappings
+     * @return the tanglingMap of the features represented by the fileMapping
+     */
     public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> fileMappings){
         System.out.println("called service.getTanglingMap");
         return FeatureTangling.getTanglingMap(fileMappings);
+    }
+
+    /**
+     * @see FeatureScattering#getScatteringDegree(FeatureModelFeature)
+     * @param feature
+     * @return scattering degree of the feature
+     */
+    public int getScatteringDegree(FeatureModelFeature feature){
+        return FeatureScattering.getScatteringDegree(feature);
+    }
+
+    /**
+     * @see FeatureScattering#getScatteringDegree(FeatureFileMapping)
+     * @param fileMapping
+     * @return scattering degree of the feature represented by the file mapping
+     */
+    public int getScatteringDegree(FeatureFileMapping fileMapping){
+        return FeatureScattering.getScatteringDegree(fileMapping);
     }
 
     /**
@@ -235,10 +258,10 @@ public final class FeatureService implements FeatureServiceInterface {
         return finalJson;
     }
 
-    public void getFeatureFileMappingAndTanglingMap(HAnSCallback callback) {
+    public void getFeatureMetrics(HAnSCallback callback, int options) {
         //TODO THESIS
         // better use MODE as parameter instead of function for each combination
-        BackgroundTask task = new BackgroundTask(project, "Scanning features", callback, (Mode.FILEMAPPING|Mode.TANGLINGMAP));
+        BackgroundTask task = new BackgroundTask(project, "Scanning features", callback, options);
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
     }
 

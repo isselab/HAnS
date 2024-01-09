@@ -16,15 +16,8 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 public class FeatureTangling {
-
-    public enum Mode {Default, Tree, TreeMap, Tangling}
-
-
-    private static HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMapCache = null;
-    private static HashMap<String, FeatureFileMapping> fileMappingCache = null;
 
     /**
      * Returns the tangling degree of the given feature
@@ -32,13 +25,22 @@ public class FeatureTangling {
      * @return tangling degree of the given feature
      */
     public static int getFeatureTanglingDegree(FeatureModelFeature feature){
-        var tanglingMap = getTanglingMap();
+        FeatureService featureService = new FeatureService();
+        return getFeatureTanglingDegree(featureService.getAllFeatureFileMappings(), feature);
+    }
+
+    /**
+     * Returns the tangling degree of the given feature while making use of a precalculated fileMapping
+     * @param fileMappings pre calculated fileMapping
+     * @param feature the feature which should be checked
+     * @return tangling degree of the given feature
+     */
+    public static int getFeatureTanglingDegree(HashMap<String, FeatureFileMapping> fileMappings, FeatureModelFeature feature){
+        var tanglingMap = getTanglingMap(fileMappings);
 
         if(tanglingMap.containsKey(feature))
             return tanglingMap.get(feature).size();
 
-        //TODO THESIS
-        // errorhandling
         return 0;
     }
 
@@ -51,7 +53,7 @@ public class FeatureTangling {
        return getTanglingMap(featureService.getAllFeatureFileMappings());
     }
     /**
-     * Returns a HashMap which is a 1:n feature mapping of feature to its tangled features
+     * Returns a HashMap which is a 1:n feature mapping of feature to its tangled features while making use of a precalculated fileMapping
      * @param fileMappings
      * @return TanglingMap
      */
