@@ -71,7 +71,7 @@ public class FeatureTangling {
         //iterate over each feature and get the locations from them
         for(FeatureModelFeature feature : ReadAction.compute(()->FeatureModelUtil.findFeatures(project))) {
             //get information for the corresponding feature
-            var locationMap = fileMappings.get(feature.getLPQText());
+            var locationMap = fileMappings.get(ReadAction.compute(feature::getLPQText));
 
             //create entry for the featureFileMapping - this entry contains the feature and the feature locations within the file specified by filePath
 
