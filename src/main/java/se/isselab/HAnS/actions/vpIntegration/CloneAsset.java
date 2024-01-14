@@ -4,6 +4,7 @@ package se.isselab.HAnS.actions.vpIntegration;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -22,13 +23,22 @@ public class CloneAsset extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
 
         Project project = anActionEvent.getProject();
-        Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
-        PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
-        processJavaFile(psiFile);
-        createTrack(anActionEvent);
         VirtualFile virtualFile = CommonDataKeys.VIRTUAL_FILE.getData(anActionEvent.getDataContext());
+        if (virtualFile != null && !virtualFile.isDirectory()) {
+            Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+            if (editor == null) return;
 
-        //Messages.showMessageDialog("Hello", "Title", Messages.getInformationIcon());
+            PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
+            if (psiFile != null) {
+                processJavaFile(psiFile);
+            }
+        } else {
+            PsiDirectory psiDirectory = PsiManager.getInstance(project).findDirectory(virtualFile);
+            if (psiDirectory != null) {
+                cloneDirectory(psiDirectory);
+            }
+        }
+        createTrack(anActionEvent);
     }
 
     public void createTrack(AnActionEvent anActionEvent){
@@ -53,16 +63,15 @@ public class CloneAsset extends AnAction {
     }
     private void processJavaFile(PsiFile javaFile) {
         // Iterate over all classes in the file
-        for (PsiElement psiClass : javaFile.getChildren()) {
-            if(psiClass instanceof PsiClass){
-                System.out.println("Class found: " + ((PsiClass) psiClass).getName());
+        for (PsiElement psiElement : javaFile.getChildren()) {
+            if (psiElement instanceof PsiClass){
+                System.out.println("Class found: " + ((PsiClass) psiElement).getName());
             }
-
-            // Iterate over all methods in the class
-            /*
-            for (PsiMethod psiMethod : psiClass.getMethods()) {
-                System.out.println("  Method found: " + psiMethod.getName());
-            }*/
         }
+    }
+
+    private void cloneDirectory(PsiDirectory psiDirectory){
+        // logic for psiDirectory
+        System.out.println("Directory found: " + (psiDirectory.getName()));
     }
 }

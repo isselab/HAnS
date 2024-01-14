@@ -19,7 +19,7 @@ limitations under the License.
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
-    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <!-- &begin[ColorSettingsPage] -->
     <extensions defaultExtensionNs="com.intellij">
@@ -148,7 +148,7 @@ limitations under the License.
         </action>
         <!-- &end[NewFile] -->
 
-        <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
+        <action id="SurroundFeature" text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
@@ -159,6 +159,14 @@ limitations under the License.
 
         <action id="PasteAsset" text="Paste Asset" class="se.isselab.HAnS.actions.vpIntegration.PasteAsset">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
+        </action>
+
+        <action id="CloneAssetCode" text="Clone Asset" class="se.isselab.HAnS.actions.vpIntegration.CloneAssetCode">
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="SurroundFeature" />
+        </action>
+
+        <action id="PasteAssetCode" text="Paste Asset" class="se.isselab.HAnS.actions.vpIntegration.PasteAssetCode">
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="CloneAssetCode" />
         </action>
     </actions>
 </idea-plugin>
