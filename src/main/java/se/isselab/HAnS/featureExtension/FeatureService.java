@@ -113,8 +113,8 @@ public final class FeatureService implements FeatureServiceInterface {
      */
     @Override
     public FeatureModelFeature getRootFeature(FeatureModelFeature feature) {
-        //TODO THESIS:
-        // there can be multiple top level features - maybe return FeatureModelFeature[]
+        //TODO THESIS: As there is only one root feature, it may also be possible to obtain the root feature via the feature model.
+        // Each project has only one root feature (as long as there is only one feature model for a project)
         FeatureModelFeature temp = feature;
         while(!(temp.getParent() instanceof FeatureModelFile)){
             temp = (FeatureModelFeature) temp.getParent();

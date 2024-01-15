@@ -4,7 +4,7 @@ import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.List;
-
+// TODO: check whether all methods from FeatureService are also defined here
 public interface FeatureServiceInterface {
 
 

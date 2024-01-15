@@ -59,6 +59,7 @@ public class FeatureLocationInfo {
     public static HashMap<String, ArrayList<FeatureLocationInfo>> getAllFeatureLocations(Project project){
         HashMap<String, ArrayList<FeatureLocationInfo>> map = new HashMap<>();
 
+        // TODO: use FeatureAnnotation
         String beginSuffix = "&begin";
         String endSuffix = "&end";
         String lineSuffix = "&line";
