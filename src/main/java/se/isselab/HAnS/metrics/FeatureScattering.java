@@ -23,13 +23,14 @@ public class FeatureScattering {
 
         return scatteringDegree;
     }
-
+    // TODO: Caller should bring fileMapping
     /**
      * Returns the scattering degree of the given feature
      * @param feature feature to search for
      * @return scattering degree of the given feature
      */
     public static int getScatteringDegree(FeatureModelFeature feature){
+        // TODO: Project.getService implementieren
         FeatureService featureService = new FeatureService();
         return getScatteringDegree(featureService.getFeatureFileMapping(feature));
     }

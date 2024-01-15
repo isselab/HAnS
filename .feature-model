@@ -4,6 +4,7 @@ HAnS
         Tangling
         FeatureLocation
     ExtensionPoint
+        Callback
         Service
     FeatureModel
         Language

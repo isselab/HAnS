@@ -3,19 +3,13 @@ package se.isselab.HAnS.featureExtension;
 
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.NlsContexts;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import se.isselab.HAnS.HAnSCallback;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
-import se.isselab.HAnS.featureLocation.FeatureLocationManager;
-import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.metrics.FeatureMetrics;
-import se.isselab.HAnS.metrics.FeatureTangling;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,24 +66,6 @@ public class BackgroundTask extends Task.Backgroundable{
         }
         // TODO THESIS: Scattering
         featureMetrics = new FeatureMetrics(fileMapping, tanglingMap);
-
-        /*if(!DumbService.isDumb(ProjectManager.getInstance().getOpenProjects()[0])) {
-            var featureList = ReadAction.compute(() -> FeatureModelUtil.findFeatures(getProject()));
-
-            for (var feature : featureList) {
-
-                indicator.setText2("scanning: " + ReadAction.compute(feature::getLPQText));
-
-                // indicator.setText2("scanning: " + feature.getLPQText());
-                // FeatureFileMapping featureFileMapping = FeatureLocationManager.getFeatureFileMapping(feature);
-                featureFileMappings.add(ReadAction.compute(() -> FeatureLocationManager.getFeatureFileMapping(feature)));
-            }
-
-            System.out.println("done with background");
-        }*/
-        /*else {
-            System.out.println("still indexing");
-        }*/
     }
 
 

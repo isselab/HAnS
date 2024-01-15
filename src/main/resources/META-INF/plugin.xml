@@ -129,11 +129,11 @@ limitations under the License.
                 name="featureService"
                 interface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
         <!-- &end[Service]-->
-        <!-- &begin[ExtensionPoint]-->
+        <!-- &begin[Callback]-->
         <extensionPoint
                 name="hansCallback"
-                interface="se.isselab.HAnS.HAnSCallback"/>
-        <!-- &end[ExtensionPoint]-->
+                interface="se.isselab.HAnS.featureExtension.HAnSCallback"/>
+        <!-- &end[Callback]-->
 
     </extensionPoints>
     <actions>
@@ -167,14 +167,6 @@ limitations under the License.
         <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
-        </action>
-        <action id="se.isselab.HAnS.TestClass" class="se.isselab.HAnS.TestClass" text="Test Action"
-                description="Testing">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-        </action>
-        <action id="se.isselab.HAnS.BackgroundTaskAction" class="se.isselab.HAnS.BackgroundTaskAction" text="Backgroundtask"
-                description="Testing">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
     </actions>
 </idea-plugin>
