@@ -11,6 +11,7 @@ import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.Query;
 import se.isselab.HAnS.FeatureAnnotationSearchScope;
 import se.isselab.HAnS.codeAnnotation.psi.*;
+import se.isselab.HAnS.featureExtension.backgroundTask.BackgroundTask;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
@@ -34,7 +35,7 @@ public class FeatureLocationManager {
 
     }
 
-    public static HashMap<String, FeatureFileMapping> getAllFeatureFileMapping(){
+    public static HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(){
         Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
         HashMap<String, FeatureFileMapping> mapping = new HashMap<>();
@@ -46,9 +47,12 @@ public class FeatureLocationManager {
     }
 
     /**
-     * Returns the FeatureFileMapping for the given feature
+     * Returns the FeatureFileMapping for the given feature.
+     * Includes expensive ReferencesSearch.search(), which might cause UI freezes depending on the size of the search.
+     * Better use Backgroundtask.
      * @param feature
      * @return FeatureFileMapping for the given feature
+     * @see BackgroundTask
      */
     public static FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature){
         FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);

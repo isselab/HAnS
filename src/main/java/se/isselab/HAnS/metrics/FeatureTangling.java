@@ -3,10 +3,8 @@ package se.isselab.HAnS.metrics;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import se.isselab.HAnS.Logger;
 import se.isselab.HAnS.featureExtension.FeatureService;
+import se.isselab.HAnS.featureExtension.backgroundTask.BackgroundTask;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
@@ -20,13 +18,16 @@ import java.util.HashSet;
 public class FeatureTangling {
 
     /**
-     * Returns the tangling degree of the given feature
+     * Returns the tangling degree of the given feature.
+     * Includes expensive ReferencesSearch.search() in FeatureLocationManager.getAllFeatureFileMappings(), which might
+     * cause UI freezes. Better use a Backgroundtask.
      * @param feature the feature which should be checked
      * @return tangling degree of the given feature
+     * @see BackgroundTask
      */
     public static int getFeatureTanglingDegree(FeatureModelFeature feature){
         FeatureService featureService = new FeatureService();
-        return getFeatureTanglingDegree(featureService.getAllFeatureFileMappings(), feature);
+        return getFeatureTanglingDegree(FeatureLocationManager.getAllFeatureFileMappings(), feature);
     }
 
     /**
