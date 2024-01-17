@@ -8,12 +8,14 @@ import com.intellij.openapi.project.ProjectManager;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.TestOnly;
+import se.isselab.HAnS.featureExtension.backgroundTask.*;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
 import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
+import se.isselab.HAnS.metrics.FeatureMetrics;
 import se.isselab.HAnS.metrics.FeatureScattering;
 import se.isselab.HAnS.metrics.FeatureTangling;
 
@@ -37,7 +39,7 @@ public final class FeatureService implements FeatureServiceInterface {
         return FeatureModelUtil.findFeatures(project);
     }
 
-
+    // &begin[FeatureFileMapping]
     /**
      * Returns the locations of a Feature as a FeatureFileMapping
      * @param feature
@@ -48,20 +50,39 @@ public final class FeatureService implements FeatureServiceInterface {
         return FeatureLocationManager.getFeatureFileMapping(feature);
     }
 
+    @Override
+    public void getFeatureFileMappingBackground(FeatureModelFeature feature, HAnSCallback callback) {
+        BackgroundTask task = new FileMappingBackground(project, "Scanning features", callback, new FeatureMetrics(feature));
+        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
+    }
+
+    // TODO: Expensive
+    /**
+     * expensive
+     * @return
+     */
+    @Override
     public HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(){
         System.out.println("called service.getAllFeatureFileMappings");
-        return FeatureLocationManager.getAllFeatureFileMapping();
+        return FeatureLocationManager.getAllFeatureFileMappings();
     }
+
     // TODO THESIS: preparation for background task
-    public HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(HAnSCallback callback){
-        return FeatureLocationManager.getAllFeatureFileMapping();
+    @Override
+    public void getAllFeatureFileMappingsBackground(HAnSCallback callback){
+        BackgroundTask task = new FeatureFileMappingsBackground(project, "Scanning features", callback, null);
+        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
     }
+    // &end[FeatureFileMapping]
 
-
+    // &begin[Tangling]
     /**
-     * Returns the tanling degree of the given feature
-     * @param feature
+     * Returns the tangling degree of the given feature.
+     * Use this method only if you want to calculate it for one feature. Otherwise, use {@link #getFeatureTangling(HashMap, FeatureModelFeature)} so that the featureFileMappings is only calculated once
+     * @param feature FeatureModelFeature
      * @return TanglingDegree of the given feature
+     * @see FeatureFileMapping
+     * @see #getFeatureTangling(HashMap, FeatureModelFeature)
      */
     @Override
     public int getFeatureTangling(FeatureModelFeature feature) {
@@ -70,14 +91,93 @@ public final class FeatureService implements FeatureServiceInterface {
     }
 
     /**
+     * Returns the tangling degree of the given feature. Uses pre-calculated HashMap of feature file mappings
+     * @param featureFileMappings
+     * @param feature FeatureModelFeature
+     * @return TanglingDegree of the given feature
+     * @see FeatureFileMapping
+     * @see #getFeatureTangling(HashMap, FeatureModelFeature)
+     */
+    @Override
+    public int getFeatureTangling(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature) {
+        var resultMap = getTanglingMap(featureFileMappings).get(feature);
+        return resultMap != null ? resultMap.size() : 0;
+    }
+
+    /**
+     *
+     * @param feature
+     * @param callback
+     * @return
+     */
+    @Override
+    public void getFeatureTanglingBackground(FeatureModelFeature feature, HAnSCallback callback) {
+        BackgroundTask task = new TanglingDegreeBackground(project, "Scanning features", callback, new FeatureMetrics(feature));
+        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
+    }
+
+
+    /**
+     * Uses expensive method ReferencesSearch.search(), which can cause UI freezes. Maybe use a BackgroundTask instead.
+     * @see FeatureTangling#getTanglingMap()
+     * @see #getTanglingMapBackground(HAnSCallback)
+     * @return the tanglingMap of all features
+     */
+    @Override
+    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(){
+        System.out.println("called service.getTanglingMap");
+        return FeatureTangling.getTanglingMap();
+    }
+    public void getTanglingMapBackground(HAnSCallback callback){
+        BackgroundTask task = new TanglingMapBackground(project, "Scanning features", callback, null);
+        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
+    }
+    @Override
+    /**
+     * @see FeatureTangling#getTanglingMap(HashMap)
+     * @param featureFileMappings
+     * @return the tanglingMap of the features represented by the fileMapping
+     */
+    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> featureFileMappings){
+        System.out.println("called service.getTanglingMap");
+        return FeatureTangling.getTanglingMap(featureFileMappings);
+    }
+    // &end[Tangling]
+
+    // &begin[Scattering]
+    /**
      * Returns the scattering degree of the given feature
      * @param feature
      * @return Scattering degree of the given feature
      */
+
+    /**
+     * @see FeatureScattering#getScatteringDegree(FeatureModelFeature)
+     * @param feature
+     * @return scattering degree of the feature
+     */
     @Override
     public int getFeatureScattering(FeatureModelFeature feature) {
-        return 0;
+        return FeatureScattering.getScatteringDegree(feature);
     }
+
+    /**
+     * @see FeatureScattering#getScatteringDegree(FeatureFileMapping)
+     * @param featureFileMapping
+     * @return scattering degree of the feature represented by the file mapping
+     */
+    @Override
+    public int getFeatureScattering(FeatureFileMapping featureFileMapping) {
+        return FeatureScattering.getScatteringDegree(featureFileMapping);
+    }
+
+    @Override
+    public void getFeatureScatteringBackground(FeatureModelFeature feature, HAnSCallback callback) {
+        BackgroundTask task = new ScatteringDegreeBackground(project, "Scanning features", callback, new FeatureMetrics(feature));
+        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
+    }
+
+    // &end[Scattering]
 
     /**
      * Returns a list of all child features of the given feature from the .feature-model
@@ -122,43 +222,7 @@ public final class FeatureService implements FeatureServiceInterface {
         return temp;
     }
 
-    /**
-     * @see FeatureTangling#getTanglingMap()
-     * @return the tanglingMap of all features
-     */
-    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(){
-        System.out.println("called service.getTanglingMap");
-        return FeatureTangling.getTanglingMap();
-    }
-
-    /**
-     * @see FeatureTangling#getTanglingMap(HashMap)
-     * @param fileMappings
-     * @return the tanglingMap of the features represented by the fileMapping
-     */
-    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> fileMappings){
-        System.out.println("called service.getTanglingMap");
-        return FeatureTangling.getTanglingMap(fileMappings);
-    }
-
-    /**
-     * @see FeatureScattering#getScatteringDegree(FeatureModelFeature)
-     * @param feature
-     * @return scattering degree of the feature
-     */
-    public int getScatteringDegree(FeatureModelFeature feature){
-        return FeatureScattering.getScatteringDegree(feature);
-    }
-
-    /**
-     * @see FeatureScattering#getScatteringDegree(FeatureFileMapping)
-     * @param fileMapping
-     * @return scattering degree of the feature represented by the file mapping
-     */
-    public int getScatteringDegree(FeatureFileMapping fileMapping){
-        return FeatureScattering.getScatteringDegree(fileMapping);
-    }
-
+    // TODO: use this for only one feature
     /**
      * Returns a list of all top-level features declared in the .feature-model
      * @return List of all top-level features declared in the .feature-model
@@ -190,14 +254,16 @@ public final class FeatureService implements FeatureServiceInterface {
         return rootFeatures;
     }
 
+
     @Override
     public void createFeature(FeatureModelFeature feature) {
         // TODO: use existing function of HAnS
     }
-
+    // &begin[Referencing]
     @Override
-    public FeatureModelFeature renameFeature(FeatureModelFeature feature) {
+    public FeatureModelFeature renameFeature(FeatureModelFeature feature, String newName) {
         // TODO: use existing function of HAnS
+        feature.setName(newName);
         return null;
     }
 
@@ -206,7 +272,8 @@ public final class FeatureService implements FeatureServiceInterface {
         // TODO: use existing function of HAnS
         return false;
     }
-
+    // &end[Referencing]
+    // TODO: delete?
     @TestOnly
     public JSONObject getFeatureLineCountAsJson(){
         JSONArray featureLocationsJson = new JSONArray();
@@ -257,10 +324,13 @@ public final class FeatureService implements FeatureServiceInterface {
         return finalJson;
     }
 
-    public void getFeatureMetrics(HAnSCallback callback, int options) {
-        //TODO THESIS
-        // better use MODE as parameter instead of function for each combination
-        BackgroundTask task = new BackgroundTask(project, "Scanning features", callback, options);
+    /**
+     * Generate featureFileMappings and tanglingMap
+     * @param callback
+     */
+    @Override
+    public void getFeatureMetricsBackground(HAnSCallback callback) {
+        BackgroundTask task = new FeatureMetricsBackground(project, "Scanning features", callback, null);
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
     }
 
