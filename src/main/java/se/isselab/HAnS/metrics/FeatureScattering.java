@@ -15,11 +15,12 @@ public class FeatureScattering {
      * @return scattering degree of the given feature
      */
     public static int getScatteringDegree(FeatureFileMapping featureFileMapping){
+        //TODO THESIS calculate scattering without intertwined locations
         int scatteringDegree = 0;
 
-        for(var file : featureFileMapping.getAllFeatureLocations().keySet()){
-            var locations = featureFileMapping.getAllFeatureLocations().get(file);
-            scatteringDegree += locations.second.size();
+        for(var file : featureFileMapping.getMappedFilePaths()){
+            var locations = featureFileMapping.getFeatureLocationsForFile(file);
+            scatteringDegree += locations.getFeatureLocations().size();
         }
 
         return scatteringDegree;

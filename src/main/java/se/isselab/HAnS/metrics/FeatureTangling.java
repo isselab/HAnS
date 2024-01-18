@@ -9,9 +9,9 @@ import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class FeatureTangling {
 
@@ -63,7 +63,7 @@ public class FeatureTangling {
         HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = new HashMap<>();
 
         //map which contains file to {features and their blocks}
-        HashMap<String, HashMap<FeatureModelFeature, ArrayList<FeatureLocationBlock>>> featureFileMapping = new HashMap<>();
+        HashMap<String, HashMap<FeatureModelFeature, List<FeatureLocationBlock>>> featureFileMapping = new HashMap<>();
         //iterate over each feature and get the locations from them
         for(FeatureModelFeature feature : ReadAction.compute(()->FeatureModelUtil.findFeatures(project))) {
             //get information for the corresponding feature
@@ -72,10 +72,10 @@ public class FeatureTangling {
             //create entry for the featureFileMapping - this entry contains the feature and the feature locations within the file specified by filePath
 
             //iterate over each file inside this map
-            for (var fileMapping : locationMap.getAllFeatureLocations().entrySet()){
+            for (var featureLocation : locationMap.getFeatureLocations()){
                 //get the path and the corresponding feature locations within this path
-                String filePath = fileMapping.getKey();
-                ArrayList<FeatureLocationBlock> locations = fileMapping.getValue().second;
+                String filePath = featureLocation.getMappedPath();
+                List<FeatureLocationBlock> locations = featureLocation.getFeatureLocations();
 
                 //add the {feature to location[]} to the fileMap
                 var map = featureFileMapping.get(filePath);
@@ -118,7 +118,7 @@ public class FeatureTangling {
                 }
                 else{
                     //the file is new so we add a new entry
-                    HashMap<FeatureModelFeature, ArrayList<FeatureLocationBlock>> featureLocationMap = new HashMap<>();
+                    HashMap<FeatureModelFeature, List<FeatureLocationBlock>> featureLocationMap = new HashMap<>();
                     featureLocationMap.put(feature, locations);
                     featureFileMapping.put(filePath, featureLocationMap);
                 }

@@ -18,10 +18,10 @@ public class FeatureFileMapping {
     public enum AnnotationType {folder, file, code}
     private final HashMap<String, Pair<AnnotationType,ArrayList<FeatureLocationBlock>>> map = new HashMap<>();
     private HashMap<String, Pair<AnnotationType,ArrayList<Pair<MarkerType, Integer>>>> cache = new HashMap<>();
-    private final FeatureModelFeature parentFeature;
+    private final FeatureModelFeature mappedFeature;
 
     public FeatureFileMapping(FeatureModelFeature feature){
-        parentFeature = feature;
+        mappedFeature = feature;
     }
     /**
      * Caches data for later processing via <code>buildFromQueue()</code>
@@ -37,7 +37,7 @@ public class FeatureFileMapping {
     public void enqueue(String path, int lineNumber, MarkerType type, AnnotationType annotationType){
         if(cache.get(path) != null){
             if(cache.get(path).first != annotationType)
-                Logger.print(Logger.Channel.WARNING, "Feature is linked to file via different annotation types. This can result in inaccurate metrics. " + "[Feature: " + ReadAction.compute(()->parentFeature.getLPQText()) + "][File: " + path + "]");
+                Logger.print(Logger.Channel.WARNING, "Feature is linked to file via different annotation types. This can result in inaccurate metrics. " + "[Feature: " + ReadAction.compute(()-> mappedFeature.getLPQText()) + "][File: " + path + "]");
             cache.get(path).second.add(new Pair<>(type, lineNumber));
         }
         else{
@@ -119,8 +119,8 @@ public class FeatureFileMapping {
      * Method to get the Feature mapped to the FeatureFileMapping
      * @return FeatureModelFeature mapped to the FeatureFileMapping
      */
-    public FeatureModelFeature getParentFeature(){
-        return parentFeature;
+    public FeatureModelFeature getFeature(){
+        return mappedFeature;
     }
 
     /**
@@ -158,26 +158,38 @@ public class FeatureFileMapping {
         map.put(path,  new Pair<>(annotationType, list));
     }
 
-    public ArrayList<FeatureLocationBlock> getFeatureLocationBlocks(String filePath){
-        //TODO THESIS
-        // returning new arraylist to prevent altering of private list - check whether it is suitable
-        return new ArrayList<>(map.get(filePath).second);
+    public ArrayList<FeatureLocation> getFeatureLocations(){
+        ArrayList<FeatureLocation> result = new ArrayList<>();
+        for(var filePath : map.keySet()){
+            var entry = map.get(filePath);
+            FeatureLocation location = new FeatureLocation(filePath, mappedFeature, entry.first, entry.second);
+            result.add(location);
+        }
+        return result;
     }
 
+    public FeatureLocation getFeatureLocationsForFile(String filePath){
+        if(!map.containsKey(filePath))
+            return null;
 
-    //TODO THESIS
-    // maybe remove access to complete hashmap
+        var entry = map.get(filePath);
+        return new FeatureLocation(filePath, mappedFeature, entry.first, entry.second);
+    }
+
+    public Set<String> getMappedFilePaths(){
+        return map.keySet();
+    }
 
     /**
      * Method to get a Map which contains mappings for filePaths (key)
      * to its corresponding annotationType (value.first) and a list of FeatureLocationBlocks (value.second)
      * @return HashMap with  path : (AnnotationType , LocationBlock[])
      */
-    public Map<String, Pair<AnnotationType,ArrayList<FeatureLocationBlock>>> getAllFeatureLocations(){
+    /*public Map<String, Pair<AnnotationType,ArrayList<FeatureLocationBlock>>> getAllFeatureLocations(){
         //TODO THESIS
         // returning new map to prevent altering of private map - check whether it is suitable
         return new HashMap<>(map);
-    }
+    }*/
 
     /**
      * Method to get the total line-count of a feature in a file specified by path

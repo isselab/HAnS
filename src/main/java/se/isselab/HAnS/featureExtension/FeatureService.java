@@ -295,10 +295,10 @@ public final class FeatureService implements FeatureServiceInterface {
         for(var feature : FeatureModelUtil.findFeatures(project)) {
 
             var mapping = FeatureLocationManager.getFeatureFileMapping(project, feature);
-            var map = mapping.getAllFeatureLocations();
+            var paths = mapping.getMappedFilePaths();
             //get all lines of the given feature
             int totalLines = 0;
-            for(var file : map.keySet()){
+            for(var file : paths){
                 totalLines += mapping.getFeatureLineCountInFile(file);
             }
 
