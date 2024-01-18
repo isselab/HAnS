@@ -109,7 +109,7 @@ public class FeatureLocationManager {
         //TODO THESIS
         // check .getVirtualFile for null exception which can occur in certain cases
         // get relative path to source
-        featureFileMapping.enqueue(ReadAction.compute(()->element.getContainingFile().getOriginalFile().getVirtualFile().getPath()), ReadAction.compute(()->getLine(project, commentElement)), type, FeatureFileMapping.AnnotationType.code);
+        featureFileMapping.enqueue(ReadAction.compute(()->commentElement.getContainingFile().getVirtualFile().getPath()), ReadAction.compute(()->getLine(project, commentElement)), type, FeatureFileMapping.AnnotationType.code);
 
     }
 
@@ -144,13 +144,7 @@ public class FeatureLocationManager {
                 if(document == null)
                     return;
 
-                //System.out.println("File: " + file.getFileName().getText());
-                //TODO THESIS:
-                // get relative path to source
-                String[] temp = psiFile.getVirtualFile().getPath().split("/");
-                String path = "/" + temp[temp.length - 1];
-
-                featureFileMapping.enqueue(path, document.getLineCount() - 1, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
+                featureFileMapping.enqueue(psiFile.getVirtualFile().getPath(), document.getLineCount() - 1, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
             }
         }
     }
@@ -166,11 +160,8 @@ public class FeatureLocationManager {
             Document document = ReadAction.compute(()->psiDocumentManager.getDocument(file));
             if(document == null)
                 return;
-            //TODO THESIS:
-            // get relative path to source
-            String[] temp = file.getVirtualFile().getPath().split("/");
-            String path = "/" + temp[temp.length - 1];
-            featureFileMapping.enqueue(path, document.getLineCount() - 1, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
+
+            featureFileMapping.enqueue(file.getVirtualFile().getPath(), document.getLineCount() - 1, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
         }
         for(var dir : ReadAction.compute(directory::getSubdirectories)){
             //recursively add subdirectories to the feature
