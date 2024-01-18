@@ -26,7 +26,7 @@ public class ScatteringDegreeBackground extends BackgroundTask{
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
         FeatureModelFeature feature = featureMetrics.getFeature();
-        int scatteringDegree = FeatureScattering.getScatteringDegree(feature);
+        int scatteringDegree = FeatureScattering.getScatteringDegree(super.getProject(), feature);
         featureMetrics = new FeatureMetrics(feature, -1, scatteringDegree);
     }
 }

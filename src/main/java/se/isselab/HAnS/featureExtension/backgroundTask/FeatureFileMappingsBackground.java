@@ -27,6 +27,6 @@ public class FeatureFileMappingsBackground extends BackgroundTask{
 
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
-        featureMetrics = new FeatureMetrics(FeatureLocationManager.getAllFeatureFileMappings(), null);
+        featureMetrics = new FeatureMetrics(FeatureLocationManager.getAllFeatureFileMappings(super.getProject()), null);
     }
 }

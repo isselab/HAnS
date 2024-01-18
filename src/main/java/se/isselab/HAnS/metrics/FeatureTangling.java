@@ -2,8 +2,6 @@ package se.isselab.HAnS.metrics;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import se.isselab.HAnS.featureExtension.FeatureService;
 import se.isselab.HAnS.featureExtension.backgroundTask.BackgroundTask;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
@@ -25,19 +23,19 @@ public class FeatureTangling {
      * @return tangling degree of the given feature
      * @see BackgroundTask
      */
-    public static int getFeatureTanglingDegree(FeatureModelFeature feature){
-        FeatureService featureService = new FeatureService();
-        return getFeatureTanglingDegree(FeatureLocationManager.getAllFeatureFileMappings(), feature);
+    public static int getFeatureTanglingDegree(Project project, FeatureModelFeature feature){
+        return getFeatureTanglingDegree(project, FeatureLocationManager.getAllFeatureFileMappings(project), feature);
     }
 
     /**
      * Returns the tangling degree of the given feature while making use of a precalculated fileMapping
+     * @param project
      * @param fileMappings pre calculated fileMapping
      * @param feature the feature which should be checked
      * @return tangling degree of the given feature
      */
-    public static int getFeatureTanglingDegree(HashMap<String, FeatureFileMapping> fileMappings, FeatureModelFeature feature){
-        var tanglingMap = getTanglingMap(fileMappings);
+    public static int getFeatureTanglingDegree(Project project, HashMap<String, FeatureFileMapping> fileMappings, FeatureModelFeature feature){
+        var tanglingMap = getTanglingMap(project, fileMappings);
 
         if(tanglingMap.containsKey(feature))
             return tanglingMap.get(feature).size();
@@ -49,20 +47,17 @@ public class FeatureTangling {
      * Returns a HashMap which is a 1:n feature mapping of feature to its tangled features
      * @return TanglingMap
      */
-    public static HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(){
-        FeatureService featureService = new FeatureService();
-       return getTanglingMap(featureService.getAllFeatureFileMappings());
+    public static HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(Project project){
+       return getTanglingMap(project, FeatureLocationManager.getAllFeatureFileMappings(project));
     }
     /**
      * Returns a HashMap which is a 1:n feature mapping of feature to its tangled features while making use of a precalculated fileMapping
      * @param fileMappings
      * @return TanglingMap
      */
-    public static HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> fileMappings){
+    public static HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(Project project, HashMap<String, FeatureFileMapping> fileMappings){
         //TODO THESIS
         // maybe return a class container instead of a map to make access more convenient
-
-        Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
         //map which contains Features and their tangled features
         HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = new HashMap<>();

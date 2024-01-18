@@ -95,6 +95,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
 
     private void createFeatureModelFileWithDialog() {
         // Get the project instance from the ProjectManager
+        // TODO: Discuss with Johan, if we should changes this for multiple Projects
         Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
         // Get feature name from user via DialogBox

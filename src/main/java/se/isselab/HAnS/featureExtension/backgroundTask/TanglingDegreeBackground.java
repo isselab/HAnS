@@ -26,7 +26,7 @@ public class TanglingDegreeBackground extends BackgroundTask{
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
         FeatureModelFeature feature = featureMetrics.getFeature();
-        int tanglingDegree = FeatureTangling.getFeatureTanglingDegree(feature);
+        int tanglingDegree = FeatureTangling.getFeatureTanglingDegree(super.getProject(), feature);
         super.featureMetrics = new FeatureMetrics(feature,tanglingDegree,-1);
     }
 }

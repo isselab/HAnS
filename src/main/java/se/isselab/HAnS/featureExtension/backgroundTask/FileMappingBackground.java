@@ -30,7 +30,7 @@ public class FileMappingBackground extends BackgroundTask {
             featureMetrics = new FeatureMetrics();
         }
         else {
-            featureMetrics = new FeatureMetrics(FeatureLocationManager.getFeatureFileMapping(feature));
+            featureMetrics = new FeatureMetrics(FeatureLocationManager.getFeatureFileMapping(super.getProject(), feature));
         }
     }
 }

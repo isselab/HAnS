@@ -30,8 +30,8 @@ public class FeatureMetricsBackground extends BackgroundTask{
 
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
-        HashMap<String, FeatureFileMapping> featureFileMappings = FeatureLocationManager.getAllFeatureFileMappings();
-        HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = FeatureTangling.getTanglingMap(featureFileMappings);
+        HashMap<String, FeatureFileMapping> featureFileMappings = FeatureLocationManager.getAllFeatureFileMappings(super.getProject());
+        HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = FeatureTangling.getTanglingMap(super.getProject(), featureFileMappings);
         featureMetrics = new FeatureMetrics(featureFileMappings, tanglingMap);
     }
 }

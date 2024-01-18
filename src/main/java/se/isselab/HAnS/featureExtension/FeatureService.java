@@ -4,7 +4,6 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.TestOnly;
@@ -26,8 +25,8 @@ import java.util.*;
 public final class FeatureService implements FeatureServiceInterface {
     private final Project project;
 
-    public FeatureService(){
-        this.project = ProjectManager.getInstance().getOpenProjects()[0];
+    public FeatureService(Project project){
+        this.project = project;
     }
 
     /**
@@ -47,7 +46,7 @@ public final class FeatureService implements FeatureServiceInterface {
      */
     @Override
     public FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature) {
-        return FeatureLocationManager.getFeatureFileMapping(feature);
+        return FeatureLocationManager.getFeatureFileMapping(project, feature);
     }
 
     @Override
@@ -64,7 +63,7 @@ public final class FeatureService implements FeatureServiceInterface {
     @Override
     public HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(){
         System.out.println("called service.getAllFeatureFileMappings");
-        return FeatureLocationManager.getAllFeatureFileMappings();
+        return FeatureLocationManager.getAllFeatureFileMappings(project);
     }
 
     // TODO THESIS: preparation for background task
@@ -119,14 +118,14 @@ public final class FeatureService implements FeatureServiceInterface {
 
     /**
      * Uses expensive method ReferencesSearch.search(), which can cause UI freezes. Maybe use a BackgroundTask instead.
-     * @see FeatureTangling#getTanglingMap()
+     * @see FeatureTangling#getTanglingMap(Project)
      * @see #getTanglingMapBackground(HAnSCallback)
      * @return the tanglingMap of all features
      */
     @Override
     public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(){
         System.out.println("called service.getTanglingMap");
-        return FeatureTangling.getTanglingMap();
+        return FeatureTangling.getTanglingMap(project);
     }
     public void getTanglingMapBackground(HAnSCallback callback){
         BackgroundTask task = new TanglingMapBackground(project, "Scanning features", callback, null);
@@ -140,7 +139,7 @@ public final class FeatureService implements FeatureServiceInterface {
      */
     public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> featureFileMappings){
         System.out.println("called service.getTanglingMap");
-        return FeatureTangling.getTanglingMap(featureFileMappings);
+        return FeatureTangling.getTanglingMap(project, featureFileMappings);
     }
     // &end[Tangling]
 
@@ -152,13 +151,13 @@ public final class FeatureService implements FeatureServiceInterface {
      */
 
     /**
-     * @see FeatureScattering#getScatteringDegree(FeatureModelFeature)
+     * @see FeatureScattering#getScatteringDegree(Project, FeatureModelFeature)
      * @param feature
      * @return scattering degree of the feature
      */
     @Override
     public int getFeatureScattering(FeatureModelFeature feature) {
-        return FeatureScattering.getScatteringDegree(feature);
+        return FeatureScattering.getScatteringDegree(project, feature);
     }
 
     /**
@@ -279,7 +278,7 @@ public final class FeatureService implements FeatureServiceInterface {
         JSONArray featureLocationsJson = new JSONArray();
         for(var feature : FeatureModelUtil.findFeatures(project)) {
 
-            var mapping = FeatureLocationManager.getFeatureFileMapping(feature);
+            var mapping = FeatureLocationManager.getFeatureFileMapping(project, feature);
             var map = mapping.getAllFeatureLocations();
             //get all lines of the given feature
             int totalLines = 0;

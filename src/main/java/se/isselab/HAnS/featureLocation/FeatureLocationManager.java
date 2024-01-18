@@ -3,7 +3,6 @@ package se.isselab.HAnS.featureLocation;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -35,12 +34,10 @@ public class FeatureLocationManager {
 
     }
 
-    public static HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(){
-        Project project = ProjectManager.getInstance().getOpenProjects()[0];
-
+    public static HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(Project project){
         HashMap<String, FeatureFileMapping> mapping = new HashMap<>();
         for(var feature : ReadAction.compute(()->FeatureModelUtil.findFeatures(project))){
-            mapping.put(ReadAction.compute(()->feature.getLPQText()), FeatureLocationManager.getFeatureFileMapping(feature));
+            mapping.put(ReadAction.compute(()->feature.getLPQText()), FeatureLocationManager.getFeatureFileMapping(project, feature));
         }
 
         return mapping;
@@ -54,11 +51,8 @@ public class FeatureLocationManager {
      * @return FeatureFileMapping for the given feature
      * @see BackgroundTask
      */
-    public static FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature){
+    public static FeatureFileMapping getFeatureFileMapping(Project project, FeatureModelFeature feature){
         FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);
-        //TODO THESIS
-        // how to get project
-        Project project = ProjectManager.getInstance().getOpenProjects()[0];
         Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(project), true);
         for (PsiReference reference : ReadAction.compute(()->featureReference)) {
             //get comment sibling of the feature comment
@@ -68,16 +62,16 @@ public class FeatureLocationManager {
             //determine file type and process content
             var fileType = ReadAction.compute(element::getContainingFile);
             if(fileType instanceof CodeAnnotationFile){
-                processCodeFile(featureFileMapping, element);
+                processCodeFile(project, featureFileMapping, element);
             }
             else if (fileType instanceof FileAnnotationFile) {
-                processFeatureToFile(featureFileMapping, element);
+                processFeatureToFile(project, featureFileMapping, element);
             }
             else if(fileType instanceof FolderAnnotationFile){
                 PsiDirectory dir = ReadAction.compute(fileType::getContainingDirectory);
                 if(dir == null)
                     continue;
-                processFeatureToFolder(featureFileMapping, dir);
+                processFeatureToFolder(project, featureFileMapping, dir);
 
             }
 
@@ -87,7 +81,7 @@ public class FeatureLocationManager {
     }
 
 
-    private static void processCodeFile(FeatureFileMapping featureFileMapping, PsiElement element){
+    private static void processCodeFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element){
         //TODO THESIS
         // check function (edge cases, return value etc)
         var commentElement = ReadAction.compute(()-> PsiTreeUtil.getContextOfType(element, PsiComment.class));
@@ -115,14 +109,11 @@ public class FeatureLocationManager {
         //TODO THESIS
         // check .getVirtualFile for null exception which can occur in certain cases
         // get relative path to source
-        featureFileMapping.enqueue(ReadAction.compute(()->element.getContainingFile().getOriginalFile().getVirtualFile().getPath()), ReadAction.compute(()->getLine(commentElement)), type, FeatureFileMapping.AnnotationType.code);
+        featureFileMapping.enqueue(ReadAction.compute(()->element.getContainingFile().getOriginalFile().getVirtualFile().getPath()), ReadAction.compute(()->getLine(project, commentElement)), type, FeatureFileMapping.AnnotationType.code);
 
     }
 
-    private static void processFeatureToFile(FeatureFileMapping featureFileMapping, PsiElement element){
-        //TODO THESIS
-        // how to get project
-        Project project = ProjectManager.getInstance().getOpenProjects()[0];
+    private static void processFeatureToFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element){
 
         //TODO THESIS
         // Get file reference instead of filename
@@ -164,10 +155,7 @@ public class FeatureLocationManager {
         }
     }
 
-    private static void processFeatureToFolder(FeatureFileMapping featureFileMapping, PsiDirectory directory){
-        //TODO THESIS
-        // how to get project
-        Project project = ProjectManager.getInstance().getOpenProjects()[0];
+    private static void processFeatureToFolder(Project project, FeatureFileMapping featureFileMapping, PsiDirectory directory){
 
         for(var file : ReadAction.compute(directory::getFiles)){
             //skip .feature-to-folder and .feature-to-file files
@@ -186,14 +174,12 @@ public class FeatureLocationManager {
         }
         for(var dir : ReadAction.compute(directory::getSubdirectories)){
             //recursively add subdirectories to the feature
-            processFeatureToFolder(featureFileMapping, dir);
+            processFeatureToFolder(project,
+                    featureFileMapping, dir);
         }
     }
 
-    private static int getLine(PsiElement elem){
-        //TODO THESIS
-        // how to get project
-        Project project = ProjectManager.getInstance().getOpenProjects()[0];
+    private static int getLine(Project project, PsiElement elem){
 
         PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
         PsiFile openedFile = ReadAction.compute(elem::getContainingFile);

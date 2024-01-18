@@ -24,6 +24,6 @@ public class TanglingMapBackground extends BackgroundTask{
 
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
-        super.featureMetrics = new FeatureMetrics(null, FeatureTangling.getTanglingMap());
+        super.featureMetrics = new FeatureMetrics(null, FeatureTangling.getTanglingMap(super.getProject()));
     }
 }

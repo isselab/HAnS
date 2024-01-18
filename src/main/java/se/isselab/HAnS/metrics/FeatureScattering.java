@@ -1,5 +1,6 @@
 package se.isselab.HAnS.metrics;
 
+import com.intellij.openapi.project.Project;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
@@ -28,7 +29,7 @@ public class FeatureScattering {
      * @param feature feature to search for
      * @return scattering degree of the given feature
      */
-    public static int getScatteringDegree(FeatureModelFeature feature){
-        return getScatteringDegree(FeatureLocationManager.getFeatureFileMapping(feature));
+    public static int getScatteringDegree(Project project, FeatureModelFeature feature){
+        return getScatteringDegree(FeatureLocationManager.getFeatureFileMapping(project, feature));
     }
 }
