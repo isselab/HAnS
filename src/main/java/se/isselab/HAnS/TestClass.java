@@ -15,6 +15,11 @@ public class TestClass extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         FeatureService featureService = e.getProject().getService(FeatureService.class);
+        //featureService.shortenPathToSource("/Users/philippkusmierz/Dev/Bachelorarbeit/HAnS-viz/src/main/java/se/isselab/hansviz/browser/BrowserSchemeHandlerFactory.java");
+        // featureService.shortenPathToFileInFolder("/Users/philippkusmierz/Dev/Bachelorarbeit/HAnS-viz/src/main/java/se/isselab/hansviz/browser/BrowserSchemeHandlerFactory.java");
+        featureService.shortenPathToFileInFolder("C:\\Users\\dstec\\Project\\HAnS\\src\\main\\java\\se\\isselab\\HAnS\\featureLocation\\FeatureFileMapping.java");
+        // featureService.shortenPathToFile("/Users/philippkusmierz/Dev/Bachelorarbeit/HAnS-viz/src/main/java/se/isselab/hansviz/browser/BrowserSchemeHandlerFactory.java");
+        /*
         var fileMappings = featureService.getAllFeatureFileMappings();
 
         FeatureModelFeature feature = FeatureModelUtil.findFeatures(e.getProject()).get(3);
@@ -23,7 +28,7 @@ public class TestClass extends AnAction {
         NavigationUtil.openFileWithPsiElement(feature, false, false);
 
         //before
-        /*for(var featureLPQ : fileMappings.keySet()){
+        *//*for(var featureLPQ : fileMappings.keySet()){
             System.out.println(featureLPQ);
             var fileMapping = fileMappings.get(featureLPQ);
             for(var path : fileMapping.getAllFeatureLocations().keySet()){
@@ -34,7 +39,7 @@ public class TestClass extends AnAction {
                 System.out.println("    Lines: " + fileMapping.getFeatureLineCountInFile(path));
             }
             System.out.println("Total lines: " + fileMapping.getTotalFeatureLineCount());
-        }*/
+        }*//*
 
         //now
         for(var featureLPQ : fileMappings.keySet()){
@@ -47,6 +52,6 @@ public class TestClass extends AnAction {
 
             }
         }
-
+*/
     }
 }

@@ -12,6 +12,7 @@ import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.TestOnly;
 import se.isselab.HAnS.featureExtension.backgroundTask.*;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
+import se.isselab.HAnS.featureLocation.pathFormatter.PathFormatter;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
@@ -338,9 +339,19 @@ public final class FeatureService implements FeatureServiceInterface {
          */
         return finalJson;
     }
-
-    /**
-     * Generate featureFileMappings and tanglingMap
+    // TODO THESIS: Methods for JSONHandler.featureToJSON
+    // &begin[PathFormatter]
+    public String shortenPathToSource(String path){
+        return PathFormatter.shortenPathToSource(project, path);
+    }
+    public String shortenPathToFileInFolder(String path){
+        return PathFormatter.shortenPathToFileInFolder(path);
+    }
+    public String shortenPathToFile(String path){
+        return PathFormatter.shortenPathToFile(path);
+    }
+    // &end[PathFormatter]
+     /** Generate featureFileMappings and tanglingMap
      * @param callback
      */
     @Override

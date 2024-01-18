@@ -4,6 +4,7 @@ HAnS
         Scattering
         Tangling
         FeatureLocation
+            PathFormatter
     ExtensionPoint
         Callback
         Service
