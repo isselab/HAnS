@@ -1,5 +1,8 @@
 package se.isselab.HAnS.featureExtension;
 
+import com.intellij.codeInsight.navigation.NavigationUtil;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -253,6 +256,19 @@ public final class FeatureService implements FeatureServiceInterface {
         return rootFeatures;
     }
 
+
+    public void highlightFeatureInFeatureModel(String featureLpq) {
+
+        List<FeatureModelFeature> selectedFeatures = ReadAction.compute(() -> FeatureModelUtil.findLPQ(project, featureLpq));
+        if(selectedFeatures.isEmpty())
+            return;
+        //TODO THESIS: check return value of selectedFeatures
+        ApplicationManager.getApplication().invokeLater(() -> NavigationUtil.openFileWithPsiElement(selectedFeatures.get(0), false, false));
+    }
+
+    public void highlightFeatureInFile(String featureLpq){
+        //TODO THESIS: implement
+    }
 
     @Override
     public void createFeature(FeatureModelFeature feature) {
