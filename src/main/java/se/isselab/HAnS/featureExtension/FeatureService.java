@@ -4,9 +4,12 @@ import com.intellij.codeInsight.navigation.NavigationUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.components.Service;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.TestOnly;
@@ -23,6 +26,7 @@ import se.isselab.HAnS.metrics.FeatureScattering;
 import se.isselab.HAnS.metrics.FeatureTangling;
 
 
+import java.nio.file.Path;
 import java.util.*;
 
 @Service(Service.Level.PROJECT)
@@ -267,6 +271,18 @@ public final class FeatureService implements FeatureServiceInterface {
         ApplicationManager.getApplication().invokeLater(() -> NavigationUtil.openFileWithPsiElement(selectedFeatures.get(0), false, false));
     }
 
+    /**
+     *
+     * @param path path-name of file from project source, e.g. src/java/...
+     */
+    public void openFileInProject(String path){
+        ApplicationManager.getApplication().invokeLater(() -> {
+            String newPath = project.getBasePath() + path;
+            VirtualFile open = VirtualFileManager.getInstance().findFileByNioPath(Path.of(newPath));
+            if(open == null) return;
+            FileEditorManager.getInstance(project).openFile(open, false);
+        });
+    }
     public void highlightFeatureInFile(String featureLpq){
         //TODO THESIS: implement
     }
