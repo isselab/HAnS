@@ -14,6 +14,8 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.TestOnly;
 import se.isselab.HAnS.featureExtension.backgroundTask.*;
+import se.isselab.HAnS.featureLocation.FeatureLocation;
+import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureLocation.pathFormatter.PathFormatter;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
@@ -56,6 +58,9 @@ public final class FeatureService implements FeatureServiceInterface {
     public FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature) {
         return FeatureLocationManager.getFeatureFileMapping(project, feature);
     }
+    public FeatureFileMapping getFeatureFileMappingOfFeature(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature){
+        return featureFileMappings.get(feature.getLPQText());
+    }
 
     @Override
     public void getFeatureFileMappingBackground(FeatureModelFeature feature, HAnSCallback callback) {
@@ -80,8 +85,14 @@ public final class FeatureService implements FeatureServiceInterface {
         BackgroundTask task = new FeatureFileMappingsBackground(project, "Scanning features", callback, null);
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
     }
+    public boolean isFeatureInFeatureFileMappings(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature){
+        return featureFileMappings.containsKey(feature.getLPQText());
+    }
     // &end[FeatureFileMapping]
 
+    public int getTotalFeatureLineCount(FeatureFileMapping featureFileMapping){
+        return featureFileMapping.getTotalFeatureLineCount();
+    }
     // &begin[Tangling]
     /**
      * Returns the tangling degree of the given feature.
@@ -110,7 +121,9 @@ public final class FeatureService implements FeatureServiceInterface {
         var resultMap = getTanglingMap(featureFileMappings).get(feature);
         return resultMap != null ? resultMap.size() : 0;
     }
-
+    public HashSet<FeatureModelFeature> getTanglingMapOfFeature(HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, FeatureModelFeature feature){
+        return tanglingMap.get(feature);
+    }
     /**
      *
      * @param feature
@@ -186,6 +199,15 @@ public final class FeatureService implements FeatureServiceInterface {
 
     // &end[Scattering]
 
+    public ArrayList<FeatureLocation> getFeatureLocations(FeatureFileMapping featureFileMapping){
+        return featureFileMapping.getFeatureLocations();
+    }
+    public List<FeatureLocationBlock> getListOfFeatureLocationBlock(FeatureLocation featureLocation){
+        return featureLocation.getFeatureLocations();
+    }
+    public int getFeatureLineCountInFile(FeatureFileMapping featureFileMapping, FeatureLocation featureLocation){
+        return featureFileMapping.getFeatureLineCountInFile(featureLocation.getMappedPath());
+    }
     /**
      * Returns a list of all child features of the given feature from the .feature-model
      * @param feature
