@@ -27,7 +27,6 @@ public class FeatureExposer {
         List<FeatureModelFeature> selectedFeatures = ReadAction.compute(() -> FeatureModelUtil.findLPQ(project, featureLpq));
         if(selectedFeatures.isEmpty())
             return;
-        //TODO THESIS: check return value of selectedFeatures
         ApplicationManager.getApplication().invokeLater(() -> NavigationUtil.openFileWithPsiElement(selectedFeatures.get(0), false, false));
     }
     public static void openFileInProject(Project project, String path){

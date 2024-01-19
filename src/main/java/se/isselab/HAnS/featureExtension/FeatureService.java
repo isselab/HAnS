@@ -300,9 +300,6 @@ public final class FeatureService implements FeatureServiceInterface {
     public void openFileInProject(String path, int startline, int endline){
         FeatureExposer.openFileInProject(project, path, startline, endline);
     }
-    public void highlightFeatureInFile(String featureLpq){
-        //TODO THESIS: implement
-    }
 
     @Override
     public void createFeature(FeatureModelFeature feature) {
@@ -372,18 +369,7 @@ public final class FeatureService implements FeatureServiceInterface {
          */
         return finalJson;
     }
-    // TODO THESIS: Methods for JSONHandler.featureToJSON
-    // &begin[PathFormatter]
-    public String shortenPathToSource(String path){
-        return PathFormatter.shortenPathToSource(project, path);
-    }
-    public String shortenPathToFileInFolder(String path){
-        return PathFormatter.shortenPathToFileInFolder(path);
-    }
-    public String shortenPathToFile(String path){
-        return PathFormatter.shortenPathToFile(path);
-    }
-    // &end[PathFormatter]
+
      /** Generate featureFileMappings and tanglingMap
      * @param callback
      */

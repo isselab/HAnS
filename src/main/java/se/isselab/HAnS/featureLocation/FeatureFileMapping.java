@@ -54,8 +54,6 @@ public class FeatureFileMapping {
      * @see #enqueue(String, int, MarkerType, AnnotationType)
      */
     public void buildFromQueue(){
-        //TODO THESIS
-        // handle case if build from queue gets called on an empty queue
         if(cache == null || cache.isEmpty())
             return;
 
@@ -75,8 +73,6 @@ public class FeatureFileMapping {
                     }
                     case end -> {
                         if (stack.isEmpty()) {
-                            //TODO THESIS
-                            // error-handling if no matching begin was found for the end
                             Logger.print(Logger.Channel.WARNING, String.format("Found &end marker without matching &begin marker in [%s] at line [%d]. This will result in inaccurate metrics", path, markerToLinePair.second + 1));
                             continue;
                         }
@@ -87,29 +83,23 @@ public class FeatureFileMapping {
                         add(path, new FeatureLocationBlock(markerToLinePair.second, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                     }
                     case none -> {
-                        //TODO THESIS
                         // should only happen if file is a feature-to-file or feature-to-folder
                         add(path, new FeatureLocationBlock(0, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                         //System.out.println("[HAnS-Vis][ERROR] found marker of Type::None");
                     }
                     default -> {
-                        //TODO THESIS
                         // should not happen but cover case if no label was found
-                        System.out.println("[HAnS-Vis][ERROR] Found marker with no type");
+                        Logger.print(Logger.Channel.ERROR,"[HAnS-Vis][ERROR] Found marker with no type");
                     }
                 }
             }
             if (!stack.isEmpty()) {
-                //TODO THESIS
                 // there was a begin without an endmarker
                 for(var line : stack){
                     Logger.print(Logger.Channel.WARNING, String.format("Missing closing &end marker for &begin in [%s] at line [%d].  This will result in inaccurate metrics", path, line + 1));
                 }
             }
         }
-        //TODO THESIS
-        // check if feature is intertwined and dont count lines twice
-        // e.g begin[move, position] ... begin[position] ... end[position] ...end[position] ... end[move]
 
         //clear cache and file
         cache = new HashMap<>();
@@ -123,15 +113,6 @@ public class FeatureFileMapping {
         return mappedFeature;
     }
 
-    /**
-     * Maps a whole file to the feature
-     * @param path path to the file to be mapped
-     */
-    private void add(String path){
-        //TODO THESIS
-        // add path as whole feature
-
-    }
 
     /**
      * Maps the given file to a block.
@@ -145,8 +126,6 @@ public class FeatureFileMapping {
 
         //add block to already existing arraylist
         if(map.containsKey(path)){
-            //TODO THESIS:
-            // handle case if file is annotated multiple times - e.g Direction.java is mapped to feature "Move" via multiples of {feature-to-folder, feature-to-file or inline}
 
             map.get(path).second.add(block);
             return;
@@ -179,17 +158,6 @@ public class FeatureFileMapping {
     public Set<String> getMappedFilePaths(){
         return map.keySet();
     }
-
-    /**
-     * Method to get a Map which contains mappings for filePaths (key)
-     * to its corresponding annotationType (value.first) and a list of FeatureLocationBlocks (value.second)
-     * @return HashMap with  path : (AnnotationType , LocationBlock[])
-     */
-    /*public Map<String, Pair<AnnotationType,ArrayList<FeatureLocationBlock>>> getAllFeatureLocations(){
-        //TODO THESIS
-        // returning new map to prevent altering of private map - check whether it is suitable
-        return new HashMap<>(map);
-    }*/
 
     /**
      * Method to get the total line-count of a feature in a file specified by path

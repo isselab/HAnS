@@ -82,8 +82,6 @@ public class FeatureLocationManager {
 
 
     private static void processCodeFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element){
-        //TODO THESIS
-        // check function (edge cases, return value etc)
         var commentElement = ReadAction.compute(()-> PsiTreeUtil.getContextOfType(element, PsiComment.class));
 
         // var commentElement = PsiTreeUtil.getContextOfType(element, PsiComment.class);
@@ -106,17 +104,14 @@ public class FeatureLocationManager {
         else
             type = FeatureFileMapping.MarkerType.none;
 
-        //TODO THESIS
-        // check .getVirtualFile for null exception which can occur in certain cases
-        // get relative path to source
-        featureFileMapping.enqueue(ReadAction.compute(()->commentElement.getContainingFile().getVirtualFile().getPath()), ReadAction.compute(()->getLine(project, commentElement)), type, FeatureFileMapping.AnnotationType.code);
-
+        var file = ReadAction.compute(() ->commentElement.getContainingFile().getVirtualFile());
+        if(file == null)
+            return;
+        featureFileMapping.enqueue(ReadAction.compute(file::getPath), ReadAction.compute(()->getLine(project, commentElement)), type, FeatureFileMapping.AnnotationType.code);
     }
 
     private static void processFeatureToFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element){
 
-        //TODO THESIS
-        // Get file reference instead of filename
         var parent = ReadAction.compute(()->PsiTreeUtil.getParentOfType(element, FileAnnotationFileAnnotation.class));
         if(parent == null)
             return;
@@ -129,12 +124,8 @@ public class FeatureLocationManager {
             //get name of file
             for(var file : ref.getFileReferenceList()){
 
-                //TODO THESIS
-                // get file of reference
                 PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
 
-                //TODO THESIS:
-                // get relative path to source
                 var fileName = ReadAction.compute(()->FileReferenceUtil.findFile(file, file.getFileName().getText()));
                 if(fileName.isEmpty())
                     continue;

@@ -9,10 +9,6 @@ public class TestClass extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         FeatureService featureService = e.getProject().getService(FeatureService.class);
-        featureService.shortenPathToSource("/Users/philippkusmierz/Dev/Bachelorarbeit/HAnS-viz/src/main/java/se/isselab/hansviz/browser/BrowserSchemeHandlerFactory.java");
-        featureService.shortenPathToFileInFolder("/Users/philippkusmierz/Dev/Bachelorarbeit/HAnS-viz/src/main/java/se/isselab/hansviz/browser/BrowserSchemeHandlerFactory.java");
-        /*featureService.shortenPathToFileInFolder("C:\\Users\\dstec\\Project\\HAnS\\src\\main\\java\\se\\isselab\\HAnS\\featureLocation\\FeatureFileMapping.java");*/
-        featureService.shortenPathToFile("/Users/philippkusmierz/Dev/Bachelorarbeit/HAnS-viz/src/main/java/se/isselab/hansviz/browser/BrowserSchemeHandlerFactory.java");
         featureService.openFileInProject("/src/main/java/se/isselab/hansviz/browser/BrowserSchemeHandlerFactory.java");
         /*
         var fileMappings = featureService.getAllFeatureFileMappings();
