@@ -34,10 +34,17 @@ public class FeatureLocationManager {
 
     }
 
+    /**
+     * Method to get all FeatureFileMappings for a given project.
+     * Represented as a Map of a Feature-LPQ to its corresponding FileMapping
+     * @see FeatureFileMapping
+     * @param project The project
+     * @return Map of all FeatureFileMappings for the given project
+     */
     public static HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(Project project){
         HashMap<String, FeatureFileMapping> mapping = new HashMap<>();
         for(var feature : ReadAction.compute(()->FeatureModelUtil.findFeatures(project))){
-            mapping.put(ReadAction.compute(()->feature.getLPQText()), FeatureLocationManager.getFeatureFileMapping(project, feature));
+            mapping.put(ReadAction.compute(feature::getLPQText), FeatureLocationManager.getFeatureFileMapping(project, feature));
         }
 
         return mapping;
@@ -46,8 +53,8 @@ public class FeatureLocationManager {
     /**
      * Returns the FeatureFileMapping for the given feature.
      * Includes expensive ReferencesSearch.search(), which might cause UI freezes depending on the size of the search.
-     * Better use Backgroundtask.
-     * @param feature
+     * Better use BackgroundTask.
+     * @param feature Corresponding feature for which the FileMapping should be calculated
      * @return FeatureFileMapping for the given feature
      * @see BackgroundTask
      */

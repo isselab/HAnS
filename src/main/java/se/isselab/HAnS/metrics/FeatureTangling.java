@@ -18,7 +18,7 @@ public class FeatureTangling {
     /**
      * Returns the tangling degree of the given feature.
      * Includes expensive ReferencesSearch.search() in FeatureLocationManager.getAllFeatureFileMappings(), which might
-     * cause UI freezes. Better use a Backgroundtask.
+     * cause UI freezes. Better use a BackgroundTask.
      * @param feature the feature which should be checked
      * @return tangling degree of the given feature
      * @see BackgroundTask
@@ -29,7 +29,7 @@ public class FeatureTangling {
 
     /**
      * Returns the tangling degree of the given feature while making use of a precalculated fileMapping
-     * @param project
+     * @param project the project
      * @param fileMappings pre calculated fileMapping
      * @param feature the feature which should be checked
      * @return tangling degree of the given feature
@@ -52,7 +52,7 @@ public class FeatureTangling {
     }
     /**
      * Returns a HashMap which is a 1:n feature mapping of feature to its tangled features while making use of a precalculated fileMapping
-     * @param fileMappings
+     * @param fileMappings fileMappings which should be used
      * @return TanglingMap
      */
     public static HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(Project project, HashMap<String, FeatureFileMapping> fileMappings){

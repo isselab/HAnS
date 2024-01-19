@@ -10,8 +10,7 @@ import java.util.*;
 
 
 /**
- * Object which contains mappings for filePaths
- * to its corresponding annotationType and a list of FeatureLocationBlocks
+ * Structure which holds information of all locations inside the project for a given Feature.
  */
 public class FeatureFileMapping {
     public enum MarkerType {begin, end, line, none}
@@ -27,8 +26,8 @@ public class FeatureFileMapping {
      * Caches data for later processing via <code>buildFromQueue()</code>
      * This function should be called for each marker for a given feature before <code>buildFromQueue()</code> is called
      *
-     * @param path the file path which is mapped to the given linenumber
-     * @param lineNumber the linenumber within the specified file
+     * @param path the file path which is mapped to the given line number
+     * @param lineNumber the line number within the specified file
      * @param type the type of the feature marker
      * @param annotationType the annotation type - {file, folder, code}
      *
@@ -37,7 +36,7 @@ public class FeatureFileMapping {
     public void enqueue(String path, int lineNumber, MarkerType type, AnnotationType annotationType){
         if(cache.get(path) != null){
             if(cache.get(path).first != annotationType)
-                Logger.print(Logger.Channel.WARNING, "Feature is linked to file via different annotation types. This can result in inaccurate metrics. " + "[Feature: " + ReadAction.compute(()-> mappedFeature.getLPQText()) + "][File: " + path + "]");
+                Logger.print(Logger.Channel.WARNING, "Feature is linked to file via different annotation types. This can result in inaccurate metrics. " + "[Feature: " + ReadAction.compute(mappedFeature::getLPQText) + "][File: " + path + "]");
             cache.get(path).second.add(new Pair<>(type, lineNumber));
         }
         else{
@@ -115,7 +114,7 @@ public class FeatureFileMapping {
 
 
     /**
-     * Maps the given file to a block.
+     * Maps the given file to a FeatureLocationBlock.
      *
      * @param path the file path which is mapped to a given block
      * @param block the location of the feature block inside the given file
@@ -137,6 +136,10 @@ public class FeatureFileMapping {
         map.put(path,  new Pair<>(annotationType, list));
     }
 
+    /**
+     * Method to get all FeatureLocations of the corresponding feature
+     * @return List of all FeatureLocations of the corresponding feature
+     */
     public ArrayList<FeatureLocation> getFeatureLocations(){
         ArrayList<FeatureLocation> result = new ArrayList<>();
         for(var filePath : map.keySet()){
@@ -147,6 +150,11 @@ public class FeatureFileMapping {
         return result;
     }
 
+    /**
+     * Method to get the FeatureLocations of a file for the corresponding feature
+     * @param filePath The File path to retrieve the feature locations from
+     * @return FeatureLocation structure which holds information on feature locations inside given path
+     */
     public FeatureLocation getFeatureLocationsForFile(String filePath){
         if(!map.containsKey(filePath))
             return null;
@@ -155,6 +163,10 @@ public class FeatureFileMapping {
         return new FeatureLocation(filePath, mappedFeature, entry.first, entry.second);
     }
 
+    /**
+     * Method to get a Set of all File paths tangled with the current feature
+     * @return Set<String></String> of all related Paths
+     */
     public Set<String> getMappedFilePaths(){
         return map.keySet();
     }

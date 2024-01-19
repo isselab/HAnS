@@ -1,15 +1,10 @@
 package se.isselab.HAnS.featureExtension;
 
-import com.intellij.codeInsight.navigation.NavigationUtil;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.components.Service;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.TestOnly;
@@ -18,7 +13,6 @@ import se.isselab.HAnS.featureExtension.backgroundTask.*;
 import se.isselab.HAnS.featureLocation.FeatureLocation;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
-import se.isselab.HAnS.featureLocation.pathFormatter.PathFormatter;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
@@ -29,7 +23,6 @@ import se.isselab.HAnS.metrics.FeatureScattering;
 import se.isselab.HAnS.metrics.FeatureTangling;
 
 
-import java.nio.file.Path;
 import java.util.*;
 
 @Service(Service.Level.PROJECT)

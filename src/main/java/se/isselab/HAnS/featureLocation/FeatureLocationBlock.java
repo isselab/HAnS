@@ -1,5 +1,8 @@
 package se.isselab.HAnS.featureLocation;
 
+/**
+ * Structure which represents a block of lines from start to end
+ */
 public class FeatureLocationBlock {
     private final int start;
     private final int end;
@@ -17,7 +20,10 @@ public class FeatureLocationBlock {
         return end;
     }
 
-
+    /**
+     * Method to get the line-count of the given Block
+     * @return Line-count of the given block
+     */
     public int getLineCount(){
         int numberOfLines = end - start;
 
@@ -45,6 +51,10 @@ public class FeatureLocationBlock {
         return false;
     }
 
+    /**
+     * Method to get the start and end line formatted as a string
+     * @return String which shows information of start and end-line
+     */
     @Override
     public String toString() {
         return "Start: [" + getStartLine() + "]  End: [" + getEndLine() + "]";

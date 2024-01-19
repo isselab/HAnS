@@ -5,7 +5,6 @@ import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
-import java.util.Objects;
 
 public class FeatureScattering {
 
