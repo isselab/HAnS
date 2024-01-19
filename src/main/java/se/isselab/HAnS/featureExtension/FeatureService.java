@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.TestOnly;
+import se.isselab.HAnS.featureExposer.FeatureExposer;
 import se.isselab.HAnS.featureExtension.backgroundTask.*;
 import se.isselab.HAnS.featureLocation.FeatureLocation;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
@@ -286,11 +287,7 @@ public final class FeatureService implements FeatureServiceInterface {
 
     public void highlightFeatureInFeatureModel(String featureLpq) {
 
-        List<FeatureModelFeature> selectedFeatures = ReadAction.compute(() -> FeatureModelUtil.findLPQ(project, featureLpq));
-        if(selectedFeatures.isEmpty())
-            return;
-        //TODO THESIS: check return value of selectedFeatures
-        ApplicationManager.getApplication().invokeLater(() -> NavigationUtil.openFileWithPsiElement(selectedFeatures.get(0), false, false));
+        FeatureExposer.highlightFeatureInFeatureModel(project, featureLpq);
     }
 
     /**
@@ -298,12 +295,10 @@ public final class FeatureService implements FeatureServiceInterface {
      * @param path path-name of file from project source, e.g. src/java/...
      */
     public void openFileInProject(String path){
-        ApplicationManager.getApplication().invokeLater(() -> {
-            String newPath = project.getBasePath() + path;
-            VirtualFile open = VirtualFileManager.getInstance().findFileByNioPath(Path.of(newPath));
-            if(open == null) return;
-            FileEditorManager.getInstance(project).openFile(open, false);
-        });
+        FeatureExposer.openFileInProject(project, path);
+    }
+    public void openFileInProject(String path, int startline, int endline){
+        FeatureExposer.openFileInProject(project, path, startline, endline);
     }
     public void highlightFeatureInFile(String featureLpq){
         //TODO THESIS: implement
