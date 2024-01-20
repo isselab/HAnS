@@ -95,7 +95,6 @@ public class FeatureLocationManager {
         // var commentElement = PsiTreeUtil.getContextOfType(element, PsiComment.class);
 
         if(commentElement == null) {
-            System.out.println("[ERROR] could not process comment");
             return;
         }
 
@@ -143,7 +142,7 @@ public class FeatureLocationManager {
                 if(document == null)
                     return;
 
-                featureFileMapping.enqueue(psiFile.getVirtualFile().getPath(), document.getLineCount() - 1, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
+                featureFileMapping.enqueue(psiFile.getVirtualFile().getPath(), document.getLineCount() > 0 ? document.getLineCount() - 1 : 0, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
             }
         }
     }
@@ -160,7 +159,7 @@ public class FeatureLocationManager {
             if(document == null)
                 return;
 
-            featureFileMapping.enqueue(file.getVirtualFile().getPath(), document.getLineCount() - 1, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
+            featureFileMapping.enqueue(file.getVirtualFile().getPath(), document.getLineCount() > 0 ? document.getLineCount() - 1 : 0, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
         }
         for(var dir : ReadAction.compute(directory::getSubdirectories)){
             //recursively add subdirectories to the feature

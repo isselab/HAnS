@@ -80,7 +80,6 @@ public final class FeatureService implements FeatureServiceInterface {
      */
     @Override
     public HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(){
-        System.out.println("called service.getAllFeatureFileMappings");
         return FeatureLocationManager.getAllFeatureFileMappings(project);
     }
 
@@ -189,7 +188,6 @@ public final class FeatureService implements FeatureServiceInterface {
      */
     @Override
     public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(){
-        System.out.println("called service.getTanglingMap");
         return FeatureTangling.getTanglingMap(project);
     }
 
@@ -209,7 +207,6 @@ public final class FeatureService implements FeatureServiceInterface {
      */
     @Override
     public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> featureFileMappings){
-        System.out.println("called service.getTanglingMap");
         return FeatureTangling.getTanglingMap(project, featureFileMappings);
     }
     // &end[Tangling]

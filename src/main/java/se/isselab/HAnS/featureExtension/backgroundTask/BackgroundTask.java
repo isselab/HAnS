@@ -28,7 +28,6 @@ public abstract class BackgroundTask extends Task.Backgroundable{
 
     @Override
     public void onSuccess() {
-        System.out.println("Starting on success");
         callback.onComplete(featureMetrics);
     }
 }

@@ -3,7 +3,6 @@ package se.isselab.HAnS.featureLocation;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.util.Pair;
-import se.isselab.HAnS.Logger;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.*;
@@ -36,7 +35,8 @@ public class FeatureFileMapping {
     public void enqueue(String path, int lineNumber, MarkerType type, AnnotationType annotationType){
         if(cache.get(path) != null){
             if(cache.get(path).first != annotationType)
-                Logger.print(Logger.Channel.WARNING, "Feature is linked to file via different annotation types. This can result in inaccurate metrics. " + "[Feature: " + ReadAction.compute(mappedFeature::getLPQText) + "][File: " + path + "]");
+                //TODO handle case when feature is annotated multiple times to same asset
+                System.err.println("Feature is linked to file via different annotation types. This can result in inaccurate metrics. " + "[Feature: " + ReadAction.compute(mappedFeature::getLPQText) + "][File: " + path + "]");
             cache.get(path).second.add(new Pair<>(type, lineNumber));
         }
         else{
@@ -72,7 +72,8 @@ public class FeatureFileMapping {
                     }
                     case end -> {
                         if (stack.isEmpty()) {
-                            Logger.print(Logger.Channel.WARNING, String.format("Found &end marker without matching &begin marker in [%s] at line [%d]. This will result in inaccurate metrics", path, markerToLinePair.second + 1));
+                            //TODO found end marker without begin marker
+                            System.err.printf("Found &end marker without matching &begin marker in [%s] at line [%d]. This will result in inaccurate metrics", path, markerToLinePair.second + 1);
                             continue;
                         }
                         int beginLine = stack.pop();
@@ -88,14 +89,14 @@ public class FeatureFileMapping {
                     }
                     default -> {
                         // should not happen but cover case if no label was found
-                        Logger.print(Logger.Channel.ERROR,"[HAnS-Vis][ERROR] Found marker with no type");
                     }
                 }
             }
             if (!stack.isEmpty()) {
                 // there was a begin without an endmarker
                 for(var line : stack){
-                    Logger.print(Logger.Channel.WARNING, String.format("Missing closing &end marker for &begin in [%s] at line [%d].  This will result in inaccurate metrics", path, line + 1));
+                    //TODO handle case when there was a begin marker without an end marker
+                    System.err.printf("Missing closing &end marker for &begin in [%s] at line [%d].  This will result in inaccurate metrics", path, line + 1);
                 }
             }
         }
