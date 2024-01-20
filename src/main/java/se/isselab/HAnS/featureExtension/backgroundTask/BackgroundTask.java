@@ -34,51 +34,6 @@ public abstract class BackgroundTask extends Task.Backgroundable{
         this.callback = callback;
         this.featureMetrics = featureMetrics;
     }
-/*
-
-    @Override
-    public void run(@NotNull ProgressIndicator indicator) {
-
-        */
-/*FeatureService featureService = new FeatureService();*//*
-
-        HashMap<String, FeatureFileMapping> featureFileMappings = null;
-        HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = null;
-        HashMap<String, FeatureFileMapping> fileMapping = null;
-        FeatureModelFeature feature = null;
-        int tanglingDegree = -1;
-        int scatteringDegree = -1;
-
-        // TODO THESIS: Scattering
-        */
-/*if((options & Mode.FEATUREFILEMAPPINGS) > 0 && (options & Mode.TANGLINGMAP) > 0) {
-            // 0011
-            System.out.println("was file and tangling request");
-            featureFileMappings = FeatureLocationManager.getAllFeatureFileMappings();
-            tanglingMap = featureService.getTanglingMap(featureFileMappings);
-
-        }
-        else {
-            if((options & Mode.FEATUREFILEMAPPINGS) > 0){
-                System.out.println("was file request");
-                // 0001
-                featureFileMappings = featureService.getAllFeatureFileMappings();
-            }
-            if((options & Mode.TANGLINGMAP) > 0){
-                System.out.println("was tangling request");
-                // 0010
-                tanglingMap = featureService.getTanglingMap();
-            }
-        }
-        if((options & Mode.SCATTERING) > 0){                            // 0100
-            // TODO THESIS: Scattering
-        }
-        // TODO THESIS: Scattering*//*
-
-        featureMetrics = new FeatureMetrics(featureFileMappings, tanglingMap);
-    }
-
-*/
 
     @Override
     public void onSuccess() {

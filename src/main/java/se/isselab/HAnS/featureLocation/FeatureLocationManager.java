@@ -29,7 +29,6 @@ import java.util.HashMap;
 
 public class FeatureLocationManager {
 
-    // TODO: getter für HAnSSingleton
     private FeatureLocationManager(){
 
     }

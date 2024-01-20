@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-// TODO: check whether all methods from FeatureService are also defined here
 public interface FeatureServiceInterface {
 
 
@@ -92,10 +91,4 @@ public interface FeatureServiceInterface {
     boolean deleteFeature(FeatureModelFeature feature);
     // &end[Referencing]
     void getFeatureMetricsBackground(HAnSCallback callback);
-
-    //TODO THESIS
-    // add CRUD feature methods (important)
-    // feature-scattering / tangling (important)
-    // get feature-hierarchie (convenience)
-    // get first-level-features or root (convenience)
 }
