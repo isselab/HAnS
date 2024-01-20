@@ -1,4 +1,4 @@
-package se.isselab.HAnS.featureExposer;
+package se.isselab.HAnS.fileHighlighter;
 
 
 import com.intellij.openapi.application.ApplicationManager;
@@ -19,7 +19,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 
-public class FeatureExposer {
+public class FileHighlighter {
     /**
      * Highlights a feature in the feature model of the project based on its LPQ.
      * @param project Project

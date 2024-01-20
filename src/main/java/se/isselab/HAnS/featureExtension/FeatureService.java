@@ -5,10 +5,7 @@ import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import org.jetbrains.annotations.TestOnly;
-import se.isselab.HAnS.featureExposer.FeatureExposer;
+import se.isselab.HAnS.fileHighlighter.FileHighlighter;
 import se.isselab.HAnS.featureExtension.backgroundTask.*;
 import se.isselab.HAnS.featureLocation.FeatureLocation;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
@@ -339,19 +336,19 @@ public final class FeatureService implements FeatureServiceInterface {
     /**
      * Highlights a feature in the feature model
      * @param featureLpq LPQ name of the feature
-     * @see FeatureExposer#highlightFeatureInFeatureModel(Project, String)
+     * @see FileHighlighter#highlightFeatureInFeatureModel(Project, String)
      */
     public void highlightFeatureInFeatureModel(String featureLpq) {
 
-        FeatureExposer.highlightFeatureInFeatureModel(project, featureLpq);
+        FileHighlighter.highlightFeatureInFeatureModel(project, featureLpq);
     }
     /**
      * Highlights a feature in the feature model
      * @param feature {@link FeatureModelFeature}
-     * @see FeatureExposer#highlightFeatureInFeatureModel(Project, FeatureModelFeature)
+     * @see FileHighlighter#highlightFeatureInFeatureModel(Project, FeatureModelFeature)
      */
     public void highlighFeatureInFeatureModel(FeatureModelFeature feature){
-        FeatureExposer.highlightFeatureInFeatureModel(project, feature);
+        FileHighlighter.highlightFeatureInFeatureModel(project, feature);
     }
 
     /**
@@ -359,7 +356,7 @@ public final class FeatureService implements FeatureServiceInterface {
      * @param path String: absolute path of the file
      */
     public void openFileInProject(String path){
-        FeatureExposer.openFileInProject(project, path);
+        FileHighlighter.openFileInProject(project, path);
     }
     /**
      * Opens a file of the project in the editor and highlights code block
@@ -368,7 +365,7 @@ public final class FeatureService implements FeatureServiceInterface {
      * @param endline of the codeblock
      */
     public void openFileInProject(String path, int startline, int endline){
-        FeatureExposer.openFileInProject(project, path, startline, endline);
+        FileHighlighter.openFileInProject(project, path, startline, endline);
     }
 
     @Override
