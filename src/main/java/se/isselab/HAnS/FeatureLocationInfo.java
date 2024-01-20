@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+// TODO THESIS: Delete?
 /**
  * Holds information on a given feature and its occurrences in a given file
  */
