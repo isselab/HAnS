@@ -38,7 +38,7 @@ public class FileHighlighter {
      * @param project Project
      * @param feature {@link FeatureModelFeature}
      */
-    public static void highlightFeatureInFeatureModel(Project project, FeatureModelFeature feature) {
+    public static void highlightFeatureInFeatureModel(FeatureModelFeature feature) {
         ApplicationManager.getApplication().invokeLater(() -> PsiNavigateUtil.navigate(feature));
     }
 

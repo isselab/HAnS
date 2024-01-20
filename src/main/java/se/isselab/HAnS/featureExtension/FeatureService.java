@@ -204,7 +204,7 @@ public final class FeatureService implements FeatureServiceInterface {
     }
     /**
      * @see FeatureTangling#getTanglingMap(Project, HashMap)
-     * @param featureFileMappings
+     * @param featureFileMappings All {@link FeatureFileMapping} of the project
      * @return the tanglingMap of the features represented by the fileMapping
      */
     @Override
@@ -361,11 +361,11 @@ public final class FeatureService implements FeatureServiceInterface {
     /**
      * Highlights a feature in the feature model
      * @param feature {@link FeatureModelFeature}
-     * @see FileHighlighter#highlightFeatureInFeatureModel(Project, FeatureModelFeature)
+     * @see FileHighlighter#highlightFeatureInFeatureModel(FeatureModelFeature)
      */
     @Override
     public void highlighFeatureInFeatureModel(FeatureModelFeature feature){
-        FileHighlighter.highlightFeatureInFeatureModel(project, feature);
+        FileHighlighter.highlightFeatureInFeatureModel(feature);
     }
 
     /**
