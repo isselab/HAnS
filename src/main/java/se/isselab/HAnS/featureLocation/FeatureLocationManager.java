@@ -35,8 +35,10 @@ public class FeatureLocationManager {
     }
 
     /**
-     * Method to get all FeatureFileMappings for a given project.
+     * Method to get all {@link FeatureFileMapping} for a given project.
      * Represented as a Map of a Feature-LPQ to its corresponding FileMapping
+     * Includes expensive <code>ReferencesSearch.search()</code>, which might cause UI freezes depending on the size of the search.
+     * Better use BackgroundTask.
      * @see FeatureFileMapping
      * @param project The project
      * @return Map of all FeatureFileMappings for the given project
