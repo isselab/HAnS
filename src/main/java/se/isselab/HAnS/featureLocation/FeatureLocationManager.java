@@ -50,7 +50,7 @@ public class FeatureLocationManager {
 
         return mapping;
     }
-
+    // &begin[FeatureFileMapping]
     /**
      * Returns the FeatureFileMapping for the given feature.
      * Includes expensive ReferencesSearch.search(), which might cause UI freezes depending on the size of the search.
@@ -87,7 +87,7 @@ public class FeatureLocationManager {
         featureFileMapping.buildFromQueue();
         return featureFileMapping;
     }
-
+    // &end[FeatureFileMapping]
 
     private static void processCodeFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element){
         var commentElement = ReadAction.compute(()-> PsiTreeUtil.getContextOfType(element, PsiComment.class));

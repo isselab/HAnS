@@ -135,7 +135,7 @@ public class FeatureFileMapping {
         list.add(block);
         map.put(path,  new Pair<>(annotationType, list));
     }
-
+    // &begin[FeatureLocation]
     /**
      * Method to get all FeatureLocations of the corresponding feature
      * @return List of all FeatureLocations of the corresponding feature
@@ -149,7 +149,9 @@ public class FeatureFileMapping {
         }
         return result;
     }
+    // &end[FeatureLocation]
 
+    // &begin[FeatureLocation]
     /**
      * Method to get the FeatureLocations of a file for the corresponding feature
      * @param filePath The File path to retrieve the feature locations from
@@ -162,7 +164,7 @@ public class FeatureFileMapping {
         var entry = map.get(filePath);
         return new FeatureLocation(filePath, mappedFeature, entry.first, entry.second);
     }
-
+    // &end[FeatureLocation]
     /**
      * Method to get a Set of all File paths tangled with the current feature
      * @return Set<String></String> of all related Paths
@@ -171,6 +173,7 @@ public class FeatureFileMapping {
         return map.keySet();
     }
 
+    // &begin[LineCount]
     /**
      * Method to get the total line-count of a feature in a file specified by path
      * @param path path of the file which should be checked
@@ -190,7 +193,9 @@ public class FeatureFileMapping {
         }
         return lineSet.size();
     }
+    // &end[LineCount]
 
+    // &begin[LineCount]
     /**
      * Method to get the total line-count of a feature for all files
      * @return line-count of a feature
@@ -204,7 +209,7 @@ public class FeatureFileMapping {
 
         return total;
     }
-
+    // &end[LineCount]
 
 
 }

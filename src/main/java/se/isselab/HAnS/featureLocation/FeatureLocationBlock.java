@@ -19,7 +19,7 @@ public class FeatureLocationBlock {
     public int getEndLine(){
         return end;
     }
-
+    // &begin[LineCount]
     /**
      * Method to get the line-count of the given Block
      * @return Line-count of the given block
@@ -29,7 +29,7 @@ public class FeatureLocationBlock {
 
         return Math.max(numberOfLines + 1, 0);
     }
-
+    // &end[LineCount]
     /**
      * Checks whether the block shares the same lines with another block
      * @param block the block which should be checked against
