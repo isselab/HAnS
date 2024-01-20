@@ -1,11 +1,9 @@
 package se.isselab.HAnS.featureExtension;
 
-import com.intellij.openapi.project.Project;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocation;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
-import se.isselab.HAnS.fileHighlighter.FileHighlighter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,11 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 public interface FeatureServiceInterface {
 
-
-    /**
-     * Get Feature List from HAnS in Interface
-     * @return
-     */
     List<FeatureModelFeature> getFeatures();
 
     // &begin[FeatureFileMapping]
@@ -64,11 +57,6 @@ public interface FeatureServiceInterface {
     List<FeatureModelFeature> getChildFeatures(FeatureModelFeature feature);
     FeatureModelFeature getParentFeature(FeatureModelFeature feature);
 
-    /**
-     * Retrieve root/first-level-features from feature
-     * @param feature
-     * @return
-     */
     FeatureModelFeature getRootFeature(FeatureModelFeature feature);
     List<FeatureModelFeature> getRootFeatures();
 
@@ -82,11 +70,6 @@ public interface FeatureServiceInterface {
     void createFeature(FeatureModelFeature feature);
 
     // &begin[Referencing]
-    /**
-     * Rename feature of Feature Model. Updated feature will be returned on success. On failure old feature will be returned.
-     * @param feature
-     * @return
-     */
     FeatureModelFeature renameFeature(FeatureModelFeature feature, String newName);
     boolean deleteFeature(FeatureModelFeature feature);
     // &end[Referencing]
