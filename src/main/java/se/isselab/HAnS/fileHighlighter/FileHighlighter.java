@@ -35,7 +35,6 @@ public class FileHighlighter {
     }
     /**
      * Highlights a feature in the feature model of the project.
-     * @param project Project
      * @param feature {@link FeatureModelFeature}
      */
     public static void highlightFeatureInFeatureModel(FeatureModelFeature feature) {
