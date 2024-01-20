@@ -56,6 +56,7 @@ public final class FeatureService implements FeatureServiceInterface {
      * @param feature Feature whose file mapping is to be calculated
      * @return {@link FeatureFileMapping} of Feature
      */
+    @Override
     public FeatureFileMapping getFeatureFileMappingOfFeature(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature){
         return featureFileMappings.get(feature.getLPQText());
     }
@@ -100,19 +101,34 @@ public final class FeatureService implements FeatureServiceInterface {
      * @param feature feature that needs to be checked on
      * @return true if featureFileMappings contains the feature
      */
+    @Override
     public boolean isFeatureInFeatureFileMappings(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature){
         return featureFileMappings.containsKey(feature.getLPQText());
     }
     // &end[FeatureFileMapping]
 
+    // &begin[LineCount]
     /**
      * Method to get the total line-count of a feature for all files
      * @param featureFileMapping {@link FeatureFileMapping} of the feature
      * @return line-count of a feature
      */
+    @Override
     public int getTotalFeatureLineCount(FeatureFileMapping featureFileMapping){
         return featureFileMapping.getTotalFeatureLineCount();
     }
+    /**
+     * @param featureFileMapping {@link FeatureFileMapping}
+     * @param featureLocation {@link FeatureLocation}
+     * @return total line-count of a feature in a file
+     * @see FeatureFileMapping#getFeatureLineCountInFile(String)
+     */
+    @Override
+    public int getFeatureLineCountInFile(FeatureFileMapping featureFileMapping, FeatureLocation featureLocation){
+        return featureFileMapping.getFeatureLineCountInFile(featureLocation.getMappedPath());
+    }
+    // &end[LineCount]
+
     // &begin[Tangling]
     /**
      * Returns the tangling degree of the given feature.
@@ -149,6 +165,7 @@ public final class FeatureService implements FeatureServiceInterface {
      * @param feature {@link FeatureModelFeature}
      * @return Tangling map of a feature as a HashSet
      */
+    @Override
     public HashSet<FeatureModelFeature> getTanglingMapOfFeature(HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, FeatureModelFeature feature){
         return tanglingMap.get(feature);
     }
@@ -180,6 +197,7 @@ public final class FeatureService implements FeatureServiceInterface {
      *  Calculates all Tangling Maps of features in the background and returns the result to {@link HAnSCallback} Implementation.
      * @param callback {@link HAnSCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
      */
+    @Override
     public void getTanglingMapBackground(HAnSCallback callback){
         BackgroundTask task = new TanglingMapBackground(project, "Scanning features", callback, null);
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
@@ -232,11 +250,13 @@ public final class FeatureService implements FeatureServiceInterface {
 
     // &end[Scattering]
 
+    // &begin[FeatureLocation]
     /**
      * Finds {@link FeatureLocation} of the feature
      * @param featureFileMapping {@link FeatureFileMapping} of the feature
      * @return ArrayList of {@link FeatureLocation} of the Feature
      */
+    @Override
     public ArrayList<FeatureLocation> getFeatureLocations(FeatureFileMapping featureFileMapping){
         return featureFileMapping.getFeatureLocations();
     }
@@ -245,19 +265,12 @@ public final class FeatureService implements FeatureServiceInterface {
      * @param featureLocation {@link FeatureFileMapping} of the feature
      * @return List of {@link FeatureLocationBlock} of the {@link FeatureLocation}
      */
+    @Override
     public List<FeatureLocationBlock> getListOfFeatureLocationBlock(FeatureLocation featureLocation){
         return featureLocation.getFeatureLocations();
     }
+    // &end[FeatureLocation]
 
-    /**
-     * @param featureFileMapping {@link FeatureFileMapping}
-     * @param featureLocation {@link FeatureLocation}
-     * @return total line-count of a feature in a file
-     * @see FeatureFileMapping#getFeatureLineCountInFile(String)
-     */
-    public int getFeatureLineCountInFile(FeatureFileMapping featureFileMapping, FeatureLocation featureLocation){
-        return featureFileMapping.getFeatureLineCountInFile(featureLocation.getMappedPath());
-    }
     /**
      * Returns a list of all child features of the given feature from the .feature-model
      * @param feature {@link FeatureModelFeature}
@@ -306,6 +319,7 @@ public final class FeatureService implements FeatureServiceInterface {
      * Returns a list of all top-level features declared in the .feature-model
      * @return List of all top-level features declared in the .feature-model
      */
+    @Override
     public List<FeatureModelFeature> getRootFeatures(){
         var featureList = FeatureModelUtil.findFeatures(project);
         ArrayList<FeatureModelFeature> rootFeatures = new ArrayList<>();
@@ -333,11 +347,13 @@ public final class FeatureService implements FeatureServiceInterface {
         return rootFeatures;
     }
 
+    // &begin[FileHighlighter]
     /**
      * Highlights a feature in the feature model
      * @param featureLpq LPQ name of the feature
      * @see FileHighlighter#highlightFeatureInFeatureModel(Project, String)
      */
+    @Override
     public void highlightFeatureInFeatureModel(String featureLpq) {
 
         FileHighlighter.highlightFeatureInFeatureModel(project, featureLpq);
@@ -347,6 +363,7 @@ public final class FeatureService implements FeatureServiceInterface {
      * @param feature {@link FeatureModelFeature}
      * @see FileHighlighter#highlightFeatureInFeatureModel(Project, FeatureModelFeature)
      */
+    @Override
     public void highlighFeatureInFeatureModel(FeatureModelFeature feature){
         FileHighlighter.highlightFeatureInFeatureModel(project, feature);
     }
@@ -355,6 +372,7 @@ public final class FeatureService implements FeatureServiceInterface {
      * Opens a file of the project in the editor
      * @param path String: absolute path of the file
      */
+    @Override
     public void openFileInProject(String path){
         FileHighlighter.openFileInProject(project, path);
     }
@@ -364,10 +382,11 @@ public final class FeatureService implements FeatureServiceInterface {
      * @param startline of the codeblock
      * @param endline of the codeblock
      */
+    @Override
     public void openFileInProject(String path, int startline, int endline){
         FileHighlighter.openFileInProject(project, path, startline, endline);
     }
-
+    // &end[FileHighlighter]
     @Override
     public void createFeature(FeatureModelFeature feature) {
         // TODO: use existing function of HAnS

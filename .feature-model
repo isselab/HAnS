@@ -1,13 +1,4 @@
 HAnS
-    Metrics
-        FeatureFileMapping
-        Scattering
-        Tangling
-        FeatureLocation
-            PathFormatter
-    ExtensionPoint
-        Callback
-        Service
     FeatureModel
         Language
         File
@@ -32,6 +23,16 @@ HAnS
         CodeAnnotation
         ColorSettingsPage
     Referencing
+    Metrics
+        LineCount
+        FeatureFileMapping
+        Scattering
+        Tangling
+        FeatureLocation
+    ExtensionPoint
+        Callback
+        Service
+    FileHighlighter
     FeatureView
     FileTemplate
         NewFile
