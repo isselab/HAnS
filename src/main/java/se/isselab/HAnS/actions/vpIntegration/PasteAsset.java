@@ -3,8 +3,16 @@ package se.isselab.HAnS.actions.vpIntegration;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileVisitor;
+import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedWriter;
@@ -12,31 +20,21 @@ import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
+
 
 public class PasteAsset extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+        Project project = anActionEvent.getProject();
         VirtualFile targetVirtualFile = anActionEvent.getData(CommonDataKeys.VIRTUAL_FILE);
         if (targetVirtualFile == null) return;
-
-        String targetFilePath = targetVirtualFile.getPath();
-        String textFilePath = System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\CloneTrace.txt";
-        String currentDateAndTime = getCurrentDateAndTime();
-        try {
-            String sourceFilePath = new String(Files.readAllBytes(Paths.get(textFilePath)));
-            String[] pahtSplitted = sourceFilePath.split("/");
-            String updatedContent = targetFilePath + "\\" + pahtSplitted[pahtSplitted.length - 1] + currentDateAndTime;
-            FileWriter fileWriter = new FileWriter(textFilePath, true);
-            BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
-            bufferFileWriter.append(updatedContent);
-            bufferFileWriter.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        boolean isDirectory = checkPsiDirectory(targetVirtualFile);
+        if(isDirectory){
+            addClonedFile(anActionEvent, project, targetVirtualFile);
+            addFeaturesToFeatureModel(project);
         }
-        // Messages.showMessageDialog(date, "Title", Messages.getInformationIcon());
+        saveTrace(targetVirtualFile);
     }
 
     @Override
@@ -44,7 +42,7 @@ public class PasteAsset extends AnAction {
         super.update(e);
         e.getPresentation().setEnabledAndVisible(false);
         VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
-        boolean isDirectory = virtualFile != null && virtualFile.isDirectory();
+        boolean isDirectory = checkPsiDirectory(virtualFile);
         e.getPresentation().setEnabledAndVisible(isDirectory);
     }
 
@@ -55,5 +53,150 @@ public class PasteAsset extends AnAction {
         String currentTime = (time.getTime() / 1000 / 60 / 60) % 24 + "" + (time.getTime() / 1000 / 60) % 60 + "" + (time.getTime() / 1000) % 60;
         String dateAndTimeInString = dateSplitted[2] + dateSplitted[0] + dateSplitted[1] + currentTime;
         return dateAndTimeInString;
+    }
+
+    public boolean checkPsiDirectory(VirtualFile vf){
+        boolean isDirectory = vf != null && vf.isDirectory();
+        return isDirectory;
+    }
+
+    public void saveTrace(VirtualFile targetVirtualFile){
+        String targetFilePath = targetVirtualFile.getPath();
+        String textFilePath = System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\CloneTrace.txt";
+        String currentDateAndTime = getCurrentDateAndTime();
+        try {
+            String sourceFilePath = new String(Files.readAllBytes(Paths.get(textFilePath)));
+            String[] pahtSplitted = sourceFilePath.split("/");
+            String updatedContent = targetFilePath + "/" + pahtSplitted[pahtSplitted.length - 1] + currentDateAndTime;
+            FileWriter fileWriter = new FileWriter(textFilePath, true);
+            BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
+            bufferFileWriter.append(updatedContent);
+            bufferFileWriter.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addClonedFile(AnActionEvent anActionEvent, Project project, VirtualFile targetVirtualFile){
+        PsiManager psiManager = PsiManager.getInstance(anActionEvent.getProject());
+        PsiDirectory targetDirectory = psiManager.findDirectory(targetVirtualFile);
+        if (targetDirectory != null) {
+            WriteCommandAction.runWriteCommandAction(project, new Runnable() {
+                @Override
+                public void run() {
+                    targetDirectory.add(CloneAsset.clonedFile);
+                }
+            });
+        }
+    }
+
+    public void addFeaturesToFeatureModel(Project project){
+        List<String> clonedFeatureNames = CloneAsset.featureNames;
+        VirtualFile featureModelFile = findFeatureModelFile(project);
+
+        if (featureModelFile != null) {
+            String content = readFileContent(featureModelFile);
+            Set<String> existingFeatures = parseExistingFeatures(content);
+
+            boolean modified = false;
+            StringBuilder newContent = new StringBuilder(content);
+
+            for (String featureName : clonedFeatureNames) {
+                if (!existingFeatures.contains(featureName)) {
+                    if (!existingFeatures.contains("unassigned")) {
+                        createUnassignedFeature(newContent);
+                        existingFeatures.add("unassigned");
+                        modified = true;
+                    }
+                    addFeatureUnderUnassigned(newContent, featureName);
+                    modified = true;
+                }
+            }
+
+            if (modified) {
+                writeBackToFile(featureModelFile, newContent.toString(), project);
+            }
+        }
+    }
+
+    private VirtualFile findFeatureModelFile(Project project) {
+        VirtualFile projectBaseDir = project.getBaseDir();
+        if (projectBaseDir == null) {
+            return null;
+        }
+
+        final VirtualFile[] foundFile = new VirtualFile[1];
+
+        // VfsUtil to visit each file and directory starting from the base directory
+        VfsUtil.visitChildrenRecursively(projectBaseDir, new VirtualFileVisitor<Void>() {
+            @Override
+            public boolean visitFile(@org.jetbrains.annotations.NotNull VirtualFile file) {
+                if (file.getName().endsWith(".feature-model")) {
+                    foundFile[0] = file;
+                    return false;
+                }
+                return true; // Continue searching
+            }
+        });
+
+        return foundFile[0];
+    }
+
+    private String readFileContent(VirtualFile file) {
+        Document document = FileDocumentManager.getInstance().getDocument(file);
+        if (document == null) {
+            return null;
+        }
+
+        return document.getText();
+    }
+
+    private Set<String> parseExistingFeatures(String content) {
+        Set<String> features = new HashSet<>();
+        Scanner scanner = new Scanner(content);
+
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine().trim();
+            if (!line.isEmpty()) {
+                features.add(line);
+            }
+        }
+        scanner.close();
+
+        return features;
+    }
+
+    private void createUnassignedFeature(StringBuilder content) {
+        content.append("\nunassigned");
+    }
+
+    private void addFeatureUnderUnassigned(StringBuilder content, String featureName) {
+        String unassignedFeaturePattern = "\nunassigned";
+
+        // Find the index where the "unassigned" feature is located
+        int unassignedIndex = content.indexOf(unassignedFeaturePattern);
+
+        if (unassignedIndex != -1) {
+            // Assuming each feature is on a new line and child features are indented
+            int insertPosition = content.indexOf("\n", unassignedIndex + unassignedFeaturePattern.length());
+            if (insertPosition == -1) {
+                // If "unassigned" is the last line, append at the end of the content
+                insertPosition = content.length();
+            }
+            content.insert(insertPosition, "\n\t" + featureName);
+        } else {
+            createUnassignedFeature(content);
+            content.append("\n\t").append(featureName);
+        }
+    }
+
+    private void writeBackToFile(VirtualFile file, String content, Project project) {
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            Document document = FileDocumentManager.getInstance().getDocument(file);
+            if (document != null) {
+                document.setText(content);
+            }
+        });
     }
 }

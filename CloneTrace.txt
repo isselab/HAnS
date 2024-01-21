@@ -1,1 +1,2 @@
 
+C:/Users/User/Documents/UNI/BA/Snake/src/logic/DataOfSquare.java;C:/Users/User/Documents/UNI/BA/Snake/src/graphics/DataOfSquare.java;2024012223050
