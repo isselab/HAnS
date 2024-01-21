@@ -35,7 +35,7 @@ public class FeatureFileMapping {
     public void enqueue(String path, int lineNumber, MarkerType type, AnnotationType annotationType){
         if(cache.get(path) != null){
             if(cache.get(path).first != annotationType)
-                //TODO handle case when feature is annotated multiple times to same asset
+                // handle case when feature is annotated multiple times to same asset
                 System.err.println("Feature is linked to file via different annotation types. This can result in inaccurate metrics. " + "[Feature: " + ReadAction.compute(mappedFeature::getLPQText) + "][File: " + path + "]");
             cache.get(path).second.add(new Pair<>(type, lineNumber));
         }
@@ -72,7 +72,7 @@ public class FeatureFileMapping {
                     }
                     case end -> {
                         if (stack.isEmpty()) {
-                            //TODO found end marker without begin marker
+                            // found end marker without begin marker
                             System.err.printf("Found &end marker without matching &begin marker in [%s] at line [%d]. This will result in inaccurate metrics", path, markerToLinePair.second + 1);
                             continue;
                         }
@@ -95,7 +95,7 @@ public class FeatureFileMapping {
             if (!stack.isEmpty()) {
                 // there was a begin without an endmarker
                 for(var line : stack){
-                    //TODO handle case when there was a begin marker without an end marker
+                    // handle case when there was a begin marker without an end marker
                     System.err.printf("Missing closing &end marker for &begin in [%s] at line [%d].  This will result in inaccurate metrics", path, line + 1);
                 }
             }

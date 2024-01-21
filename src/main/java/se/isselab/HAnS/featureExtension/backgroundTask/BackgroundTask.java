@@ -8,17 +8,19 @@ import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.featureExtension.HAnSCallback;
 import se.isselab.HAnS.metrics.FeatureMetrics;
 
-public abstract class BackgroundTask extends Task.Backgroundable{
+public abstract class BackgroundTask extends Task.Backgroundable {
 
     HAnSCallback callback;
 
     FeatureMetrics featureMetrics;
+
     /**
      * Background task needs a Callback class that implements HAnSCallback.
      * It is necessary to callback after succeeding the backgroundtask
-     * @param project current Project
-     * @param title Title for Progress Indicator
-     * @param callback  {@link HAnSCallback} Implementation
+     *
+     * @param project  current Project
+     * @param title    Title for Progress Indicator
+     * @param callback {@link HAnSCallback} Implementation
      */
     public BackgroundTask(@Nullable Project project, @NotNull String title, HAnSCallback callback, FeatureMetrics featureMetrics) {
         super(project, title);

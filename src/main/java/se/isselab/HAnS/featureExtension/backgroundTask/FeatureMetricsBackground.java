@@ -18,11 +18,9 @@ public class FeatureMetricsBackground extends BackgroundTask{
     /**
      * Background task needs a Callback class that implements HAnSCallback.
      * It is necessary to callback after succeeding the backgroundtask
-     *
-     * @param project
-     * @param title
-     * @param callback
-     * @param featureMetrics
+     * @param project current Project
+     * @param title Title for Progress Indicator
+     * @param callback  {@link HAnSCallback} Implementation
      */
     public FeatureMetricsBackground(@Nullable Project project, @NotNull String title, HAnSCallback callback, FeatureMetrics featureMetrics) {
         super(project, title, callback, featureMetrics);

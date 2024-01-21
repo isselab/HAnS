@@ -56,8 +56,6 @@ public class FeatureTangling {
      * @return TanglingMap
      */
     public static HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(Project project, HashMap<String, FeatureFileMapping> fileMappings){
-        //TODO THESIS
-        // maybe return a class container instead of a map to make access more convenient
 
         //map which contains Features and their tangled features
         HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = new HashMap<>();

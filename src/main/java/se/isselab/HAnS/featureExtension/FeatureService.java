@@ -302,8 +302,6 @@ public final class FeatureService implements FeatureServiceInterface {
      */
     @Override
     public FeatureModelFeature getRootFeature(FeatureModelFeature feature) {
-        //TODO THESIS: As there is only one root feature, it may also be possible to obtain the root feature via the feature model.
-        // Each project has only one root feature (as long as there is only one feature model for a project)
         FeatureModelFeature temp = feature;
         while(!(temp.getParent() instanceof FeatureModelFile)){
             temp = (FeatureModelFeature) temp.getParent();
@@ -311,7 +309,6 @@ public final class FeatureService implements FeatureServiceInterface {
         return temp;
     }
 
-    // TODO: use this for only one feature
     /**
      * Returns a list of all top-level features declared in the .feature-model
      * @return List of all top-level features declared in the .feature-model
@@ -384,24 +381,6 @@ public final class FeatureService implements FeatureServiceInterface {
         FileHighlighter.openFileInProject(project, path, startline, endline);
     }
     // &end[FileHighlighter]
-    @Override
-    public void createFeature(FeatureModelFeature feature) {
-        // TODO: use existing function of HAnS
-    }
-    // &begin[Referencing]
-    @Override
-    public FeatureModelFeature renameFeature(FeatureModelFeature feature, String newName) {
-        // TODO: use existing function of HAnS
-        feature.setName(newName);
-        return null;
-    }
-
-    @Override
-    public boolean deleteFeature(FeatureModelFeature feature) {
-        // TODO: use existing function of HAnS
-        return false;
-    }
-    // &end[Referencing]
 
      /** Generate all {@link FeatureFileMapping} of the project and tanglingMap for the whole project in the background and returns it to {@link HAnSCallback} Implementation.
      * @param callback {@link HAnSCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask

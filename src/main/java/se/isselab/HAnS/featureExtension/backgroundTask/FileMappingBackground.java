@@ -14,10 +14,9 @@ public class FileMappingBackground extends BackgroundTask {
      * Background task needs a Callback class that implements HAnSCallback.
      * It is necessary to callback after succeeding the backgroundtask
      *
-     * @param project
-     * @param title
-     * @param callback
-     * @param featureMetrics
+     * @param project  current Project
+     * @param title    Title for Progress Indicator
+     * @param callback {@link HAnSCallback} Implementation
      */
     public FileMappingBackground(@Nullable Project project, @NotNull String title, HAnSCallback callback, FeatureMetrics featureMetrics) {
         super(project, title, callback, featureMetrics);
@@ -26,10 +25,9 @@ public class FileMappingBackground extends BackgroundTask {
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
         FeatureModelFeature feature = featureMetrics.getFeature();
-        if(feature==null){
+        if (feature == null) {
             featureMetrics = new FeatureMetrics();
-        }
-        else {
+        } else {
             featureMetrics = new FeatureMetrics(FeatureLocationManager.getFeatureFileMapping(super.getProject(), feature));
         }
     }

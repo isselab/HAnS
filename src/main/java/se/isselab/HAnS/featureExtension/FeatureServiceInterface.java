@@ -9,21 +9,28 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
 public interface FeatureServiceInterface {
 
     List<FeatureModelFeature> getFeatures();
 
     // &begin[FeatureFileMapping]
     FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature);
+
     void getFeatureFileMappingBackground(FeatureModelFeature feature, HAnSCallback callback);
+
     HashMap<String, FeatureFileMapping> getAllFeatureFileMappings();
+
     void getAllFeatureFileMappingsBackground(HAnSCallback callback);
+
     FeatureFileMapping getFeatureFileMappingOfFeature(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature);
+
     boolean isFeatureInFeatureFileMappings(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature);
     // &end[FeatureFileMapping]
 
     // &begin[LineCount]
     int getTotalFeatureLineCount(FeatureFileMapping featureFileMapping);
+
     int getFeatureLineCountInFile(FeatureFileMapping featureFileMapping, FeatureLocation featureLocation);
     // &end[LineCount]
 
@@ -31,12 +38,15 @@ public interface FeatureServiceInterface {
     int getFeatureTangling(FeatureModelFeature feature);
 
     int getFeatureTangling(HashMap<String, FeatureFileMapping> fileMappings, FeatureModelFeature feature);
+
     HashSet<FeatureModelFeature> getTanglingMapOfFeature(HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, FeatureModelFeature feature);
+
     void getTanglingMapBackground(HAnSCallback callback);
 
     void getFeatureTanglingBackground(FeatureModelFeature feature, HAnSCallback callback);
 
     HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap();
+
     HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> featureFileMappings);
     // &end[Tangling]
 
@@ -51,27 +61,28 @@ public interface FeatureServiceInterface {
 
     // &begin[FeatureLocation]
     ArrayList<FeatureLocation> getFeatureLocations(FeatureFileMapping featureFileMapping);
+
     List<FeatureLocationBlock> getListOfFeatureLocationBlock(FeatureLocation featureLocation);
+
     // &end[FeatureLocation]
     // convenience methods
     List<FeatureModelFeature> getChildFeatures(FeatureModelFeature feature);
+
     FeatureModelFeature getParentFeature(FeatureModelFeature feature);
 
     FeatureModelFeature getRootFeature(FeatureModelFeature feature);
+
     List<FeatureModelFeature> getRootFeatures();
 
     // &begin[FileHighlighter]
     void highlightFeatureInFeatureModel(String featureLpq);
+
     void highlighFeatureInFeatureModel(FeatureModelFeature feature);
+
     void openFileInProject(String path);
+
     void openFileInProject(String path, int startline, int endline);
     // &end[FileHighlighter]
-    // CRUD feature methods
-    void createFeature(FeatureModelFeature feature);
 
-    // &begin[Referencing]
-    FeatureModelFeature renameFeature(FeatureModelFeature feature, String newName);
-    boolean deleteFeature(FeatureModelFeature feature);
-    // &end[Referencing]
     void getFeatureMetricsBackground(HAnSCallback callback);
 }
