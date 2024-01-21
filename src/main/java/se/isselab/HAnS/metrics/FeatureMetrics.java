@@ -19,22 +19,24 @@ public class FeatureMetrics {
     /**
      * Generate empty Feature Metrics for error handling.
      */
-    public FeatureMetrics(){
+    public FeatureMetrics() {
 
     }
 
     /**
      * Generate Feature Metrics with Feature
-     * @param feature
+     *
+     * @param feature {@link FeatureModelFeature}
      */
-    public FeatureMetrics(FeatureModelFeature feature){
+    public FeatureMetrics(FeatureModelFeature feature) {
         this.feature = feature;
     }
 
     /**
      * Generate Feature Metrics with FeatureFileMappings and TanglingMap
-     * @param featureFileMappings HashMap<String, FeatureFileMapping>
-     * @param tanglingMap HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>>
+     *
+     * @param featureFileMappings {@link FeatureFileMapping} of all {@link FeatureModelFeature} represented as HashMap
+     * @param tanglingMap         Tangling Map of all {@link FeatureModelFeature} represented as HashMap
      */
     public FeatureMetrics(HashMap<String, FeatureFileMapping> featureFileMappings, HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap) {
         this.tanglingMap = tanglingMap;
@@ -43,19 +45,21 @@ public class FeatureMetrics {
 
     /**
      * Generate Feature Metrics with FeatureFileMapping of a Feature
-     * @param featureFileMapping
+     *
+     * @param featureFileMapping {@link FeatureFileMapping} of a {@link FeatureModelFeature}
      */
-    public FeatureMetrics(FeatureFileMapping featureFileMapping){
+    public FeatureMetrics(FeatureFileMapping featureFileMapping) {
         this.fileMapping = featureFileMapping;
     }
 
     /**
      * Generate Feature Metrics with Feature, Tangling Degree and Scattering Degree
-     * @param feature FeatureModelFeature
-     * @param tanglingDegree of feature
+     *
+     * @param feature          FeatureModelFeature
+     * @param tanglingDegree   of feature
      * @param scatteringDegree of feature
      */
-    public FeatureMetrics(FeatureModelFeature feature, int tanglingDegree, int scatteringDegree){
+    public FeatureMetrics(FeatureModelFeature feature, int tanglingDegree, int scatteringDegree) {
         this.feature = feature;
         this.tanglingDegree = tanglingDegree;
         this.scatteringDegree = scatteringDegree;
@@ -70,6 +74,7 @@ public class FeatureMetrics {
     public FeatureFileMapping getFileMapping() {
         return fileMapping;
     }
+
     /**
      * @return TanglingMap of the Feature Model or null if no TanglingMap was calculated
      */
