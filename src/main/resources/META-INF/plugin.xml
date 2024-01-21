@@ -168,8 +168,5 @@ limitations under the License.
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
-        <action id="se.isselab.HAnS.TestClass" class="se.isselab.HAnS.TestClass" text="TestAction">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-        </action>
     </actions>
 </idea-plugin>
