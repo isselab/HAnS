@@ -13,13 +13,14 @@ public class FeatureLocation {
 
     private final FeatureFileMapping.AnnotationType annotationType;
 
-    private List<FeatureLocationBlock> featureLocations;
+    private final List<FeatureLocationBlock> featureLocations;
 
     /**
      * Constructor
-     * @param mappedPath Path which should be mapped with the information
-     * @param mappedFeature Feature which should be mapped with the information
-     * @param annotationType AnnotationType of the FeatureLocations
+     *
+     * @param mappedPath       Path which should be mapped with the information
+     * @param mappedFeature    Feature which should be mapped with the information
+     * @param annotationType   AnnotationType of the FeatureLocations
      * @param featureLocations List of FeatureLocationBlocks
      */
     public FeatureLocation(String mappedPath, FeatureModelFeature mappedFeature, FeatureFileMapping.AnnotationType annotationType, List<FeatureLocationBlock> featureLocations) {
@@ -31,6 +32,7 @@ public class FeatureLocation {
 
     /**
      * Method to get the corresponding path
+     *
      * @return Corresponding Path
      */
     public String getMappedPath() {
@@ -39,6 +41,7 @@ public class FeatureLocation {
 
     /**
      * Method to get the corresponding feature
+     *
      * @return Corresponding feature
      */
     public FeatureModelFeature getMappedFeature() {
@@ -47,6 +50,7 @@ public class FeatureLocation {
 
     /**
      * Method to get the AnnotationType
+     *
      * @return AnnotationType
      */
     public FeatureFileMapping.AnnotationType getAnnotationType() {
@@ -55,6 +59,7 @@ public class FeatureLocation {
 
     /**
      * Method to get all FeatureLocationBlocks for the given feature in the given path
+     *
      * @return List of all FeatureLocationBlocks
      */
     public List<FeatureLocationBlock> getFeatureLocations() {
