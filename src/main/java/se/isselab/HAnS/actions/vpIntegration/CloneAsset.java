@@ -66,22 +66,21 @@ public class CloneAsset extends AnAction {
             ex.printStackTrace();
         }
     }
+
     public static void cloneFile(PsiFile javaFile) {
         Project project = javaFile.getProject();
         PsiFileFactory fileFactory = PsiFileFactory.getInstance(project);
-
         // Extract content from the original file
         String fileContent = javaFile.getText();
-
         // Create a new file with the same content
         PsiFile newFile = fileFactory.createFileFromText(javaFile.getName(), javaFile.getFileType(), fileContent);
         clonedFile = newFile;
         featureNames = extractFeatureNames(javaFile);
     }
 
-    private void cloneDirectory(PsiDirectory psiDirectory){
-        // logic for psiDirectory
-        System.out.println("Directory found: " + (psiDirectory.getName()));
+    public static void cloneDirectory(PsiDirectory psiDirectory){
+        PsiDirectory newDirectory = psiDirectory;
+        clonedDirectory = newDirectory;
     }
 
     public static List<String> extractFeatureNames(PsiFile file){

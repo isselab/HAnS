@@ -14,7 +14,6 @@ import com.intellij.openapi.vfs.VirtualFileVisitor;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.nio.file.Files;
@@ -31,10 +30,31 @@ public class PasteAsset extends AnAction {
         if (targetVirtualFile == null) return;
         boolean isDirectory = checkPsiDirectory(targetVirtualFile);
         if(isDirectory){
-            addClonedFile(anActionEvent, project, targetVirtualFile);
-            addFeaturesToFeatureModel(project);
+            if(CloneAsset.clonedFile != null && CloneAsset.clonedDirectory == null){
+                addClonedFile(anActionEvent, project, targetVirtualFile);
+                addFeaturesToFeatureModel(project);
+                CloneAsset.clonedFile = null;
+            }else if(CloneAsset.clonedFile == null && CloneAsset.clonedDirectory != null){
+                pasteClonedDirectory(anActionEvent, project, targetVirtualFile);
+                CloneAsset.clonedDirectory = null;
+            }
         }
         saveTrace(targetVirtualFile);
+    }
+
+    private void pasteClonedDirectory(AnActionEvent anActionEvent, Project project, VirtualFile targetVirtualFile) {
+        String newDirectoryName = CloneAsset.clonedDirectory.getName();
+        PsiManager psiManager = PsiManager.getInstance(anActionEvent.getProject());
+        PsiDirectory targetDirectory = psiManager.findDirectory(targetVirtualFile);
+        PsiDirectory newDirectory = createDirectory(targetDirectory, newDirectoryName, project);
+    }
+
+    private PsiDirectory createDirectory(PsiDirectory targetDirectory, String newDirectoryName, Project project) {
+        final PsiDirectory[] newDirectory = new PsiDirectory[1];
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            newDirectory[0] = targetDirectory.createSubdirectory(newDirectoryName);
+        });
+        return newDirectory[0];
     }
 
     @Override
@@ -43,7 +63,8 @@ public class PasteAsset extends AnAction {
         e.getPresentation().setEnabledAndVisible(false);
         VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
         boolean isDirectory = checkPsiDirectory(virtualFile);
-        e.getPresentation().setEnabledAndVisible(isDirectory);
+        boolean clonedAssetNotNull = (CloneAsset.clonedFile != null || CloneAsset.clonedDirectory != null);
+        e.getPresentation().setEnabledAndVisible(isDirectory && clonedAssetNotNull);
     }
 
     public String getCurrentDateAndTime(){
