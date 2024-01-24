@@ -12,6 +12,7 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
 import java.io.BufferedWriter;
@@ -29,32 +30,19 @@ public class PasteAsset extends AnAction {
         VirtualFile targetVirtualFile = anActionEvent.getData(CommonDataKeys.VIRTUAL_FILE);
         if (targetVirtualFile == null) return;
         boolean isDirectory = checkPsiDirectory(targetVirtualFile);
+        PsiManager psiManager = PsiManager.getInstance(anActionEvent.getProject());
+        PsiDirectory targetDirectory = psiManager.findDirectory(targetVirtualFile);
         if(isDirectory){
             if(CloneAsset.clonedFile != null && CloneAsset.clonedDirectory == null){
-                addClonedFile(anActionEvent, project, targetVirtualFile);
+                addClonedFile(project, targetDirectory);
                 addFeaturesToFeatureModel(project);
                 CloneAsset.clonedFile = null;
             }else if(CloneAsset.clonedFile == null && CloneAsset.clonedDirectory != null){
-                pasteClonedDirectory(anActionEvent, project, targetVirtualFile);
+                pasteClonedDirectory(anActionEvent, project, targetDirectory);
                 CloneAsset.clonedDirectory = null;
             }
         }
         saveTrace(targetVirtualFile);
-    }
-
-    private void pasteClonedDirectory(AnActionEvent anActionEvent, Project project, VirtualFile targetVirtualFile) {
-        String newDirectoryName = CloneAsset.clonedDirectory.getName();
-        PsiManager psiManager = PsiManager.getInstance(anActionEvent.getProject());
-        PsiDirectory targetDirectory = psiManager.findDirectory(targetVirtualFile);
-        PsiDirectory newDirectory = createDirectory(targetDirectory, newDirectoryName, project);
-    }
-
-    private PsiDirectory createDirectory(PsiDirectory targetDirectory, String newDirectoryName, Project project) {
-        final PsiDirectory[] newDirectory = new PsiDirectory[1];
-        WriteCommandAction.runWriteCommandAction(project, () -> {
-            newDirectory[0] = targetDirectory.createSubdirectory(newDirectoryName);
-        });
-        return newDirectory[0];
     }
 
     @Override
@@ -65,6 +53,30 @@ public class PasteAsset extends AnAction {
         boolean isDirectory = checkPsiDirectory(virtualFile);
         boolean clonedAssetNotNull = (CloneAsset.clonedFile != null || CloneAsset.clonedDirectory != null);
         e.getPresentation().setEnabledAndVisible(isDirectory && clonedAssetNotNull);
+    }
+
+    private void pasteClonedDirectory(AnActionEvent anActionEvent, Project project, PsiDirectory targetDirectory) {
+        String newDirectoryName = CloneAsset.clonedDirectory.getName();
+        PsiDirectory newDirectory = createDirectory(targetDirectory, newDirectoryName, project);
+        for (PsiFile file : CloneAsset.clonedDirectory.getFiles()) {
+            CloneAsset.clonedFile = file;
+            addClonedFile(project, newDirectory);
+            addFeaturesToFeatureModel(project);
+            CloneAsset.clonedFile = null;
+        }
+        for (PsiDirectory subDir : CloneAsset.clonedDirectory.getSubdirectories()) {
+            targetDirectory = newDirectory;
+            CloneAsset.clonedDirectory = subDir;
+            pasteClonedDirectory(anActionEvent, project,targetDirectory);
+        }
+    }
+
+    private PsiDirectory createDirectory(PsiDirectory targetDirectory, String newDirectoryName, Project project) {
+        final PsiDirectory[] newDirectory = new PsiDirectory[1];
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            newDirectory[0] = targetDirectory.createSubdirectory(newDirectoryName);
+        });
+        return newDirectory[0];
     }
 
     public String getCurrentDateAndTime(){
@@ -83,7 +95,7 @@ public class PasteAsset extends AnAction {
 
     public void saveTrace(VirtualFile targetVirtualFile){
         String targetFilePath = targetVirtualFile.getPath();
-        String textFilePath = System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\CloneTrace.txt";
+        String textFilePath = System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\trace-db.txt";
         String currentDateAndTime = getCurrentDateAndTime();
         try {
             String sourceFilePath = new String(Files.readAllBytes(Paths.get(textFilePath)));
@@ -99,9 +111,7 @@ public class PasteAsset extends AnAction {
         }
     }
 
-    public void addClonedFile(AnActionEvent anActionEvent, Project project, VirtualFile targetVirtualFile){
-        PsiManager psiManager = PsiManager.getInstance(anActionEvent.getProject());
-        PsiDirectory targetDirectory = psiManager.findDirectory(targetVirtualFile);
+    public void addClonedFile(Project project, PsiDirectory targetDirectory){
         if (targetDirectory != null) {
             WriteCommandAction.runWriteCommandAction(project, new Runnable() {
                 @Override
@@ -122,19 +132,19 @@ public class PasteAsset extends AnAction {
 
             boolean modified = false;
             StringBuilder newContent = new StringBuilder(content);
-
-            for (String featureName : clonedFeatureNames) {
-                if (!existingFeatures.contains(featureName)) {
-                    if (!existingFeatures.contains("unassigned")) {
-                        createUnassignedFeature(newContent);
-                        existingFeatures.add("unassigned");
+            if(clonedFeatureNames != null){
+                for (String featureName : clonedFeatureNames) {
+                    if (!existingFeatures.contains(featureName)) {
+                        if (!existingFeatures.contains("unassigned")) {
+                            createUnassignedFeature(newContent);
+                            existingFeatures.add("unassigned");
+                            modified = true;
+                        }
+                        addFeatureUnderUnassigned(newContent, featureName);
                         modified = true;
                     }
-                    addFeatureUnderUnassigned(newContent, featureName);
-                    modified = true;
                 }
             }
-
             if (modified) {
                 writeBackToFile(featureModelFile, newContent.toString(), project);
             }

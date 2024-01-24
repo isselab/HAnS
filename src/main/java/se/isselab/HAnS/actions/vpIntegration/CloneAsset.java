@@ -48,7 +48,7 @@ public class CloneAsset extends AnAction {
 
     public void createTrack(AnActionEvent anActionEvent){
         try {
-            String filePath = System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\CloneTrace.txt";
+            String filePath = System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\trace-db.txt";
             try{
                 String sourceFilePath = new String(Files.readAllBytes(Paths.get(filePath)));
             }catch(Exception e){
