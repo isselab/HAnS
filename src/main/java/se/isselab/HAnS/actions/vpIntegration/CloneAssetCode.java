@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,20 +19,23 @@ import java.util.Iterator;
 import java.util.List;
 
 public class CloneAssetCode extends AnAction {
+    public static List<PsiElement> elementsInRange;
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-// Get the current editor
         Editor editor = anActionEvent.getData(CommonDataKeys.EDITOR);
         if (editor == null) return;
-
-        // Get the document and project
         PsiFile psiFile = PsiDocumentManager.getInstance(anActionEvent.getProject()).getPsiFile(editor.getDocument());
         if (psiFile == null) return;
-
-        // Get the selection model
         SelectionModel selectionModel = editor.getSelectionModel();
+        int caretOffset = editor.getCaretModel().getOffset();
+        PsiElement endElement = psiFile.findElementAt(caretOffset);
+        PsiMethod methodAtCaret = PsiTreeUtil.getParentOfType(endElement, PsiMethod.class);
+        System.out.println(methodAtCaret.getText());
+        getHighlightedBlock(selectionModel, psiFile);
 
-        // Check if something is selected
+        }
+
+    private void getHighlightedBlock(SelectionModel selectionModel, PsiFile psiFile){
         if (selectionModel.hasSelection()) {
             // Get start and end offsets of the selected text
             int startOffset = selectionModel.getSelectionStart();
@@ -55,11 +59,15 @@ public class CloneAssetCode extends AnAction {
             if (endElement != null) {
                 elementsInRange.add(endElement);
             }
-            Iterator iterator = elementsInRange.iterator();
-            while(iterator.hasNext()){
-                System.out.println("Element is " + ((PsiElement) iterator.next()).getText());
+            if(startElement != null && endElement != null){
+                cloneBlock(elementsInRange);
             }
-
         }
     }
+    private static void cloneBlock(List<PsiElement> elements) {
+        elementsInRange = elements;
+    }
+
 }
+
+
