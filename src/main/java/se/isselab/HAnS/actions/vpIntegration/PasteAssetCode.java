@@ -20,7 +20,7 @@ public class PasteAssetCode extends AnAction {
         PsiFile currentFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
         if (currentFile == null) return;
         if(CloneAssetCode.elementsInRange != null){
-            pasteClonedElements(editor, project, currentFile);
+            pasteClonedCodeBlock(editor, project, currentFile);
         } else if(CloneAssetCode.clonedClass != null){
             pasteClonedClass(editor, project, currentFile);
         } else if(CloneAssetCode.clonedMethod != null){
@@ -45,18 +45,24 @@ public class PasteAssetCode extends AnAction {
         });
     }
 
-    private void pasteClonedElements(Editor editor, Project project, PsiFile currentFile) {
+    private void pasteClonedCodeBlock(Editor editor, Project project, PsiFile currentFile) {
         PsiElement pasteTarget = getTargetPaste(editor, currentFile);
         List<PsiElement> elementsToPaste = CloneAssetCode.elementsInRange;
         if (elementsToPaste == null || elementsToPaste.isEmpty()) return;
-
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\n");  // Start of code block
+        for (PsiElement element : elementsToPaste) {
+            sb.append(element.getText());
+        }
+        sb.append("}");
         WriteCommandAction.runWriteCommandAction(project, () -> {
-            for (PsiElement element : elementsToPaste) {
-                // Clone the element and add it to the target location
-                PsiElement clonedElement = element.copy();
-                pasteTarget.getParent().addBefore(clonedElement, pasteTarget);
+            PsiElementFactory elementFactory = JavaPsiFacade.getElementFactory(project);
+            PsiElement codeBlock = elementFactory.createCodeBlockFromText(sb.toString(), null);
+            if (pasteTarget != null && pasteTarget.isValid()) {
+                pasteTarget.getParent().addBefore(codeBlock, pasteTarget);
             }
         });
+
     }
 
     private PsiElement getTargetPaste(Editor editor, PsiFile currentFile){
