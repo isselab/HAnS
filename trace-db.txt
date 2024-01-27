@@ -1,4 +1,0 @@
-
-C:/Users/User/Documents/UNI/BA/Snake/src/logic/KeyboardListener.java;C:/Users/User/Documents/UNI/BA/Snake/src/graphics/KeyboardListener.java;2024012419106
-C:/Users/User/Documents/UNI/BA/Snake/src/logic/DataOfSquare.java;C:/Users/User/Documents/UNI/BA/Snake/src/graphics/DataOfSquare.java;20240124191025
-C:/Users/User/Documents/UNI/BA/Snake/src/logic;C:/Users/User/Documents/UNI/BA/Snake/src/pojo/logic;20240124191058
