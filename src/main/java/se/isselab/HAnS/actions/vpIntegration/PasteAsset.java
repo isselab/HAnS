@@ -7,7 +7,6 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
@@ -15,11 +14,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
+
 import java.util.*;
 
 
@@ -29,6 +24,7 @@ public class PasteAsset extends AnAction {
         Project project = anActionEvent.getProject();
         VirtualFile targetVirtualFile = anActionEvent.getData(CommonDataKeys.VIRTUAL_FILE);
         if (targetVirtualFile == null) return;
+        TracingHandler tracingHandler = new TracingHandler(anActionEvent);
         boolean isDirectory = checkPsiDirectory(targetVirtualFile);
         PsiManager psiManager = PsiManager.getInstance(anActionEvent.getProject());
         PsiDirectory targetDirectory = psiManager.findDirectory(targetVirtualFile);
@@ -42,7 +38,7 @@ public class PasteAsset extends AnAction {
                 CloneAsset.clonedDirectory = null;
             }
         }
-        saveTrace(targetVirtualFile);
+        tracingHandler.storeFileOrFolderTrace(targetVirtualFile);
     }
 
     @Override
@@ -79,36 +75,9 @@ public class PasteAsset extends AnAction {
         return newDirectory[0];
     }
 
-    public String getCurrentDateAndTime(){
-        Date time = new Date();
-        String date = new SimpleDateFormat("MM/dd/yyyy").format(Calendar.getInstance().getTime());
-        String[] dateSplitted = date.split("/");
-        String currentTime = (time.getTime() / 1000 / 60 / 60) % 24 + "" + (time.getTime() / 1000 / 60) % 60 + "" + (time.getTime() / 1000) % 60;
-        String dateAndTimeInString = dateSplitted[2] + dateSplitted[0] + dateSplitted[1] + currentTime;
-        return dateAndTimeInString;
-    }
-
     public boolean checkPsiDirectory(VirtualFile vf){
         boolean isDirectory = vf != null && vf.isDirectory();
         return isDirectory;
-    }
-
-    public void saveTrace(VirtualFile targetVirtualFile){
-        String targetFilePath = targetVirtualFile.getPath();
-        String textFilePath = System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\trace-db.txt";
-        String currentDateAndTime = getCurrentDateAndTime();
-        try {
-            String sourceFilePath = new String(Files.readAllBytes(Paths.get(textFilePath)));
-            String[] pahtSplitted = sourceFilePath.split("/");
-            String updatedContent = targetFilePath + "/" + pahtSplitted[pahtSplitted.length - 1] + currentDateAndTime;
-            FileWriter fileWriter = new FileWriter(textFilePath, true);
-            BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
-            bufferFileWriter.append(updatedContent);
-            bufferFileWriter.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void addClonedFile(Project project, PsiDirectory targetDirectory){
