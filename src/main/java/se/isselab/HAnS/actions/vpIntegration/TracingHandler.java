@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
@@ -27,7 +28,7 @@ public class TracingHandler {
 
     public void createFileOrFolderTrace(){
         try {
-            String filePath = getTraceFilePath();
+            String filePath = getTraceFilePath(anActionEvent.getProject());
             try{
                 String sourceFilePath = new String(Files.readAllBytes(Paths.get(filePath)));
             }catch(Exception e){
@@ -46,14 +47,15 @@ public class TracingHandler {
         }
     }
 
-    public void storeFileOrFolderTrace(VirtualFile targetVirtualFile){
+    public void storeFileOrFolderTrace(){
+        VirtualFile targetVirtualFile = anActionEvent.getData(CommonDataKeys.VIRTUAL_FILE);
         String targetFilePath = targetVirtualFile.getPath();
-        String textFilePath = getTraceFilePath();
+        String textFilePath = getTraceFilePath(anActionEvent.getProject());
         String currentDateAndTime = getCurrentDateAndTime();
         try {
             String sourceFilePath = new String(Files.readAllBytes(Paths.get(textFilePath)));
-            String[] pahtSplitted = sourceFilePath.split("/");
-            String updatedContent = targetFilePath + "/" + pahtSplitted[pahtSplitted.length - 1] + currentDateAndTime;
+            String[] pathSplitted = sourceFilePath.split("/");
+            String updatedContent = targetFilePath + "/" + pathSplitted[pathSplitted.length - 1] + currentDateAndTime;
             FileWriter fileWriter = new FileWriter(textFilePath, true);
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
             bufferFileWriter.append(updatedContent);
@@ -64,9 +66,9 @@ public class TracingHandler {
         }
     }
 
-    public void createCodeAssetsTrace(AnActionEvent anActionEvent){
+    public void createCodeAssetsTrace(){
         try {
-            String filePath = getTraceFilePath();
+            String filePath = getTraceFilePath(anActionEvent.getProject());
             try{
                 String sourceFilePath = new String(Files.readAllBytes(Paths.get(filePath)));
             }catch(Exception e){
@@ -86,6 +88,24 @@ public class TracingHandler {
         }
     }
 
+    public void storeCodeAssetsTrace(){
+        Editor editor = FileEditorManager.getInstance(anActionEvent.getProject()).getSelectedTextEditor();
+        VirtualFile targetFile = FileDocumentManager.getInstance().getFile(editor.getDocument());
+        String targetFilePath = targetFile.getPath();
+        String textFilePath = getTraceFilePath(anActionEvent.getProject());
+        String currentDateAndTime = getCurrentDateAndTime();
+        try {
+            String updatedContent = targetFilePath + "/" + getAssetName() + ";" + currentDateAndTime;
+            FileWriter fileWriter = new FileWriter(textFilePath, true);
+            BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
+            bufferFileWriter.append(updatedContent);
+            bufferFileWriter.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private String getAssetName() {
         if(CloneAssetCode.clonedClass != null){
             return CloneAssetCode.clonedClass.getName();
@@ -93,11 +113,17 @@ public class TracingHandler {
         if(CloneAssetCode.clonedMethod != null){
             return CloneAssetCode.clonedMethod.getName();
         }
-        return "Code Block";
+        return "CodeBlock";
     }
 
-    private String getTraceFilePath(){
-        return System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\trace-db.txt";
+    private String getTraceFilePath(Project project){
+        //return System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\trace-db.txt";
+        if (project == null) return null;
+
+        VirtualFile projectBaseDir = project.getBaseDir();
+        if (projectBaseDir == null) return null;
+
+        return projectBaseDir.getPath() + "/trace-db.txt";
     }
 
     public String getCurrentDateAndTime(){

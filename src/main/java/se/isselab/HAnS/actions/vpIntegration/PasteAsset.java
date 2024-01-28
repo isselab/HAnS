@@ -38,7 +38,7 @@ public class PasteAsset extends AnAction {
                 CloneAsset.clonedDirectory = null;
             }
         }
-        tracingHandler.storeFileOrFolderTrace(targetVirtualFile);
+        tracingHandler.storeFileOrFolderTrace();
     }
 
     @Override

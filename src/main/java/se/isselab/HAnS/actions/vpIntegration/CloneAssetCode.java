@@ -30,7 +30,7 @@ public class CloneAssetCode extends AnAction {
         TracingHandler tracingHandler = new TracingHandler(anActionEvent);
         if(selectionModel.hasSelection()){
             getHighlightedBlock(selectionModel, psiFile);
-            tracingHandler.createCodeAssetsTrace(anActionEvent);
+            tracingHandler.createCodeAssetsTrace();
             return;
         }
         int caretOffset = editor.getCaretModel().getOffset();
@@ -41,7 +41,7 @@ public class CloneAssetCode extends AnAction {
         } else {
             cloneClass(element);
         }
-        tracingHandler.createCodeAssetsTrace(anActionEvent);
+        tracingHandler.createCodeAssetsTrace();
     }
 
     private void resetClones() {

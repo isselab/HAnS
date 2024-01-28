@@ -16,6 +16,7 @@ public class PasteAssetCode extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
         Editor editor = anActionEvent.getData(CommonDataKeys.EDITOR);
         Project project = anActionEvent.getProject();
+        TracingHandler tracingHandler = new TracingHandler(anActionEvent);
         if (editor == null || project == null) return;
         PsiFile currentFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
         if (currentFile == null) return;
@@ -26,7 +27,7 @@ public class PasteAssetCode extends AnAction {
         } else if(CloneAssetCode.clonedMethod != null){
             pasteClonedMethod(editor, project, currentFile);
         }
-
+        tracingHandler.storeCodeAssetsTrace();
     }
 
     private void pasteClonedMethod(Editor editor, Project project, PsiFile currentFile) {
