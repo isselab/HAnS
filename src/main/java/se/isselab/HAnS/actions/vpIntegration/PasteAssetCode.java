@@ -8,6 +8,8 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
+import se.isselab.HAnS.vpIntegration.FeaturesHandler;
+import se.isselab.HAnS.vpIntegration.TracingHandler;
 
 import java.util.List;
 
@@ -20,12 +22,16 @@ public class PasteAssetCode extends AnAction {
         if (editor == null || project == null) return;
         PsiFile currentFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
         if (currentFile == null) return;
+        FeaturesHandler featuresHandler = new FeaturesHandler(project);
         if(CloneAssetCode.elementsInRange != null){
             pasteClonedCodeBlock(editor, project, currentFile);
+            featuresHandler.addFeaturesToFeatureModel();
         } else if(CloneAssetCode.clonedClass != null){
             pasteClonedClass(editor, project, currentFile);
+            featuresHandler.addFeaturesToFeatureModel();
         } else if(CloneAssetCode.clonedMethod != null){
             pasteClonedMethod(editor, project, currentFile);
+            featuresHandler.addFeaturesToFeatureModel();
         }
         tracingHandler.storeCodeAssetsTrace();
     }

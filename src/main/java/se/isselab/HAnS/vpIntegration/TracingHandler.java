@@ -1,4 +1,4 @@
-package se.isselab.HAnS.actions.vpIntegration;
+package se.isselab.HAnS.vpIntegration;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
+import se.isselab.HAnS.actions.vpIntegration.CloneAssetCode;
 
 import java.io.BufferedWriter;
 import java.io.File;
