@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
-import se.isselab.HAnS.actions.vpIntegration.CloneAssetCode;
+import se.isselab.HAnS.actions.vpIntegration.CloneAsset;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -108,11 +108,11 @@ public class TracingHandler {
     }
 
     private String getAssetName() {
-        if(CloneAssetCode.clonedClass != null){
-            return CloneAssetCode.clonedClass.getName();
+        if(CloneAsset.clonedClass != null){
+            return CloneAsset.clonedClass.getName();
         }
-        if(CloneAssetCode.clonedMethod != null){
-            return CloneAssetCode.clonedMethod.getName();
+        if(CloneAsset.clonedMethod != null){
+            return CloneAsset.clonedMethod.getName();
         }
         return "CodeBlock";
     }

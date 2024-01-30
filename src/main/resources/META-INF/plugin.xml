@@ -154,19 +154,14 @@ limitations under the License.
         </action>
 
         <action id="CloneAsset" text="Clone Asset" class="se.isselab.HAnS.actions.vpIntegration.CloneAsset">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
-        </action>
-
-        <action id="PasteAsset" text="Paste Asset" class="se.isselab.HAnS.actions.vpIntegration.PasteAsset">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="last" />
-        </action>
-
-        <action id="CloneAssetCode" text="Clone Asset" class="se.isselab.HAnS.actions.vpIntegration.CloneAssetCode">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first" />
             <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="SurroundFeature" />
         </action>
 
-        <action id="PasteAssetCode" text="Paste Asset" class="se.isselab.HAnS.actions.vpIntegration.PasteAssetCode">
-            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="CloneAssetCode" />
+        <action id="PasteAsset" text="Paste Cloned Asset" class="se.isselab.HAnS.actions.vpIntegration.PasteClonedAsset">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first" />
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="CloneAsset" />
         </action>
+
     </actions>
 </idea-plugin>
