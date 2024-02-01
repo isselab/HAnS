@@ -1,6 +1,7 @@
 package se.isselab.HAnS.actions.vpIntegration;
 
 
+import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
@@ -9,8 +10,11 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.source.tree.PsiCommentImpl;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import se.isselab.HAnS.codeAnnotation.CodeAnnotationLanguage;
+import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationFeatureImpl;
 import se.isselab.HAnS.vpIntegration.FeatureNames;
 import se.isselab.HAnS.vpIntegration.TracingHandler;
 
@@ -58,26 +62,6 @@ public class CloneAsset extends AnAction {
         clonedDirectory = newDirectory;
     }
 
-    public static List<String> extractFeatureNames(PsiFile file){
-        List<String> featureNames = new ArrayList<>();
-        Pattern pattern = Pattern.compile("// &(?:line|begin)\\[([^:]*)\\]");
-
-        // Iterate through all elements in the PsiFile
-        for (PsiElement element : PsiTreeUtil.findChildrenOfType(file, PsiElement.class)) {
-            // Check if the element is a comment
-            if (element instanceof PsiComment) {
-                String commentText = element.getText();
-                Matcher matcher = pattern.matcher(commentText);
-
-                // Check if the comment matches the feature name pattern
-                if (matcher.find()) {
-                    // Extract the feature name and add it to the list
-                    featureNames.add(matcher.group(1));
-                }
-            }
-        }
-        return featureNames;
-    }
 
     private void handleProjectMenu(AnActionEvent anActionEvent, Project project, TracingHandler tracingHandler){
         VirtualFile virtualFile = CommonDataKeys.VIRTUAL_FILE.getData(anActionEvent.getDataContext());
@@ -169,18 +153,22 @@ public class CloneAsset extends AnAction {
         FeatureNames.getInstance().setFeatureNames(extractFeaturesOfCodeBlock(elements));
     }
 
-    private static List<String> extractFeatureNames(PsiElement elements){
+    private static List<String> extractFeatureNames(PsiElement elements) {
         List<String> featureNames = new ArrayList<>();
-        Pattern pattern = Pattern.compile("// &(?:line|begin)\\[([^:]*)\\]");
 
-        // Iterate through all elements in the PsiFile
         for (PsiElement element : PsiTreeUtil.findChildrenOfType(elements, PsiElement.class)) {
-            // Check if the element is a comment
             if (element instanceof PsiComment) {
-                String commentText = element.getText();
-                Matcher matcher = pattern.matcher(commentText);
-                if (matcher.find()) {
-                    featureNames.add(matcher.group(1));
+                if (element instanceof PsiLanguageInjectionHost) {
+                    PsiLanguageInjectionHost host = (PsiLanguageInjectionHost) element;
+                    InjectedLanguageManager manager = InjectedLanguageManager.getInstance(host.getProject());
+                    List<PsiElement> injectedElements = new ArrayList<>();
+                    manager.enumerate(host, (injectedPsi, places) -> {
+                        injectedElements.addAll(PsiTreeUtil.collectElementsOfType(injectedPsi, CodeAnnotationFeatureImpl.class));
+                    });
+                    for(PsiElement el : injectedElements){
+                        if(!featureNames.contains(el.getText()))
+                            featureNames.add(el.getText());
+                    }
                 }
             }
         }
@@ -189,13 +177,19 @@ public class CloneAsset extends AnAction {
 
     private static List<String> extractFeaturesOfCodeBlock(List<PsiElement> elements){
         List<String> featureNames = new ArrayList<>();
-        Pattern pattern = Pattern.compile("// &(?:line|begin)\\[([^:]*)\\]");
         for(PsiElement element : elements){
-            if(element instanceof PsiComment){
-                String commentText = element.getText();
-                Matcher matcher = pattern.matcher(commentText);
-                if (matcher.find()) {
-                    featureNames.add(matcher.group(1));
+            if (element instanceof PsiComment) {
+                if (element instanceof PsiLanguageInjectionHost) {
+                    PsiLanguageInjectionHost host = (PsiLanguageInjectionHost) element;
+                    InjectedLanguageManager manager = InjectedLanguageManager.getInstance(host.getProject());
+                    List<PsiElement> injectedElements = new ArrayList<>();
+                    manager.enumerate(host, (injectedPsi, places) -> {
+                        injectedElements.addAll(PsiTreeUtil.collectElementsOfType(injectedPsi, CodeAnnotationFeatureImpl.class));
+                    });
+                    for(PsiElement el : injectedElements){
+                        if(!featureNames.contains(el.getText()))
+                            featureNames.add(el.getText());
+                    }
                 }
             }
         }
