@@ -23,12 +23,12 @@ HAnS
         CodeAnnotation
         ColorSettingsPage
     Referencing
+        FeatureLocation
     Metrics
         LineCount
         FeatureFileMapping
         Scattering
         Tangling
-        FeatureLocation
     ExtensionPoint
         Callback
         Service
