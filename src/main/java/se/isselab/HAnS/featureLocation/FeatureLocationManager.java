@@ -24,6 +24,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.Query;
+import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.FeatureAnnotationSearchScope;
 import se.isselab.HAnS.codeAnnotation.psi.*;
 import se.isselab.HAnS.featureExtension.backgroundTask.BackgroundTask;
@@ -108,13 +109,26 @@ public class FeatureLocationManager {
     private static void processCodeFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element) {
         var commentElement = ReadAction.compute(() -> PsiTreeUtil.getContextOfType(element, PsiComment.class));
 
-        // var commentElement = PsiTreeUtil.getContextOfType(element, PsiComment.class);
-
         if (commentElement == null) {
             return;
         }
 
         var featureMarker = ReadAction.compute(() -> element.getParent().getParent());
+        FeatureFileMapping.MarkerType type = getMarkerType(featureMarker);
+
+        var file = ReadAction.compute(() -> commentElement.getContainingFile().getVirtualFile());
+        if (file == null)
+            return;
+        featureFileMapping.enqueue(ReadAction.compute(file::getPath), ReadAction.compute(() -> getLine(project, commentElement)), type, FeatureFileMapping.AnnotationType.code);
+    }
+
+    /**
+     * Determines the MarkerType of the current PsiElement
+     * @param featureMarker The PsiElement which should be checked
+     * @return The MarkerType of the current PsiElement if it was valid, else MarkerType::none
+     */
+    @NotNull
+    private static FeatureFileMapping.MarkerType getMarkerType(PsiElement featureMarker) {
         FeatureFileMapping.MarkerType type;
 
         //get feature type
@@ -126,11 +140,7 @@ public class FeatureLocationManager {
             type = FeatureFileMapping.MarkerType.line;
         else
             type = FeatureFileMapping.MarkerType.none;
-
-        var file = ReadAction.compute(() -> commentElement.getContainingFile().getVirtualFile());
-        if (file == null)
-            return;
-        featureFileMapping.enqueue(ReadAction.compute(file::getPath), ReadAction.compute(() -> getLine(project, commentElement)), type, FeatureFileMapping.AnnotationType.code);
+        return type;
     }
 
     private static void processFeatureToFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element) {
@@ -143,6 +153,10 @@ public class FeatureLocationManager {
         if (fileReferences == null)
             return;
 
+        enqueueFileReferences(project, featureFileMapping, fileReferences);
+    }
+
+    private static void enqueueFileReferences(Project project, FeatureFileMapping featureFileMapping, FileAnnotationFileReferences[] fileReferences) {
         for (var ref : fileReferences) {
             //get name of file
             for (var file : ref.getFileReferenceList()) {
