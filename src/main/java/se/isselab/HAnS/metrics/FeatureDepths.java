@@ -2,13 +2,29 @@ package se.isselab.HAnS.metrics;
 
 import com.intellij.openapi.project.Project;
 import se.isselab.HAnS.ProjectStructureTree6;
+import se.isselab.HAnS.featureLocation.FeatureFileMapping;
+import se.isselab.HAnS.featureLocation.FeatureLocation;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FeatureDepths {
+
+    // NoAF: Calculate Number of File Annotations: total number of file
+    // annotations directly referencing the feature
+    public static Integer getNumberOfAnnotatedFiles(HashMap<String, FeatureFileMapping> fileMappings, String featureLPQ) {
+        var fileMapping = fileMappings.get(featureLPQ);
+        ArrayList<FeatureLocation> featureLocations = fileMapping.getFeatureLocations();
+        // Filter out FeatureLocation of only file AnnotationType
+        List<FeatureLocation> fileFeatureLocations = featureLocations.stream()
+                .filter(location -> location.getAnnotationType() == FeatureFileMapping.AnnotationType.file)
+                .toList();
+
+        return fileFeatureLocations.size();
+    }
 
     public static Integer getNumberOfFeatures(ProjectStructureTree tree, String pathToItem) {
         // find corresponding node in the Project Tree
