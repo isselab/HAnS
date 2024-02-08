@@ -29,12 +29,9 @@ public class FeatureDepths {
     public static Integer getNumberOfFeatures(ProjectStructureTree tree, String pathToItem) {
         // find corresponding node in the Project Tree
         ProjectStructureTree treeNode = findProjectTreeNode(tree, pathToItem);
-        System.out.println(treeNode.getName());
-        System.out.println(treeNode.getPath());
         // count number of Features
         Set<String> features = new HashSet<>();
         countNumberOfFeaturesInItem(treeNode, features);
-        System.out.println(Arrays.toString(features.toArray()));
         return features.size();
     }
 

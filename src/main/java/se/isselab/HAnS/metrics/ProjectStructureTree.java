@@ -167,8 +167,6 @@ public class ProjectStructureTree {
             // don't process automatically generated files since they can't contain inline annotations
             if (!isReadOnly(file)) {
                 this.processCode(project, file, fileNode);
-            } else {
-                System.out.println(file.getAbsolutePath());
             }
 
         }
