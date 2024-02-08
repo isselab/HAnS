@@ -222,15 +222,15 @@ public class ProjectStructureTree {
             Map<String, Integer> featureDepths = new HashMap<>();
             if (!featureLPQs.get().isEmpty()) {
                 for (String feature: featureLPQs.get()) {
-                    List<Integer> linesWithFeature = findLinesWithText(file.getPath(),feature);
+                    List<Integer> linesWithFeature = locateCodeAnnotationLinesForFeature(file.getPath(),feature);
                     for (int targetLineNumber : linesWithFeature) {
-                        int depth = countCodeAnnotationDepth(file.getPath(), targetLineNumber);
+                        int depth = countCodeAnnotationDepth(file.getPath(), targetLineNumber, parent.getDepth());
                         featureDepths.put(feature, depth);
                     }
                 }
             }
             for (Map.Entry<String, Integer> entry : featureDepths.entrySet()) {
-                ProjectStructureTree pst = new ProjectStructureTree(entry.getKey(), parent.getPath(), Type.LINE, parent.getDepth() + entry.getValue());
+                ProjectStructureTree pst = new ProjectStructureTree(entry.getKey(), parent.getPath(), Type.LINE, entry.getValue());
                 pst.featureList.add(entry.getKey());
                 parent.children.add(pst);
             }
@@ -258,8 +258,8 @@ public class ProjectStructureTree {
         return featureList;
     }
 
-    // find all feature-to-code annotations with specific feature within specific file
-    private static List<Integer> findLinesWithText(String filePath, String searchFeature) {
+    // find all lines with feature-to-code annotations with specific feature within specific file
+    private static List<Integer> locateCodeAnnotationLinesForFeature(String filePath, String searchFeature) {
         List<Integer> matchingLines = new ArrayList<>();
         String patternStr = "&(begin|line)\\[(?=.*\\b" + searchFeature + "\\b)([^\\]]+)\\]";
         Pattern pattern= Pattern.compile(patternStr);
@@ -282,6 +282,47 @@ public class ProjectStructureTree {
         }
 
         return matchingLines;
+    }
+
+    // determines depth of a code annotation
+    // goes to line containing the code annotation and then moves up and counts other parent code annotations
+    private static int countCodeAnnotationDepth(String filePath, int targetLineNumber, int parentFileDepth) {
+        int beginOccurrences = 0;
+        int endOccurrences = 0;
+
+        String patternStringBegin = "&begin\\[\\s*([a-zA-Z]+)\\s*(?:,\\s*([a-zA-Z]+)\\s*)?\\]";
+        String patternStringEnd = "&end\\[\\s*([a-zA-Z]+)\\s*(?:,\\s*([a-zA-Z]+)\\s*)?\\]";
+        Pattern patternBegin = Pattern.compile(patternStringBegin);
+        Pattern patternEnd = Pattern.compile(patternStringEnd);
+
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            int lineNumber = 1;
+
+            while ((line = br.readLine()) != null && lineNumber < targetLineNumber) {
+                Matcher matcher = patternBegin.matcher(line);
+                if (matcher.find()) {
+                    // Extract the matched part of the line
+                    String matchedPart = matcher.group(0);
+                    long commaCount = matchedPart.chars().filter(ch -> ch == ',').count() + 1;
+                    beginOccurrences += (int) commaCount;
+                }
+
+                matcher = patternEnd.matcher(line);
+                if (matcher.find()) {
+                    // Extract the matched part of the line
+                    String matchedPart = matcher.group(0);
+                    long commaCount = matchedPart.chars().filter(ch -> ch == ',').count() + 1;
+                    endOccurrences += (int) commaCount;
+                }
+                lineNumber++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return parentFileDepth + ( beginOccurrences - endOccurrences ) + 1;
     }
 
 
