@@ -1,5 +1,8 @@
 package se.isselab.HAnS.metrics;
 
+import com.intellij.openapi.project.Project;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +51,22 @@ public class ProjectStructureTree {
 
     public List<ProjectStructureTree> getChildren() {
         return children;
+    }
+
+    // Method to process the project structure
+    public ProjectStructureTree processProjectStructure(Project project, String rootFolderPath) {
+
+        File rootFolder = new File(rootFolderPath);
+        if (!rootFolder.exists() || !rootFolder.isDirectory()) {
+            throw new IllegalArgumentException("Invalid root folder path");
+        }
+
+        ProjectStructureTree root = new ProjectStructureTree(
+                rootFolder.getName(), rootFolderPath, ProjectStructureTree.Type.FOLDER, 0);
+
+        this.processFolder(project, rootFolder, root);
+
+        return root;
     }
 
 }
