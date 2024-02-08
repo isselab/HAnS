@@ -3,8 +3,14 @@ package se.isselab.HAnS.metrics;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.impl.PsiManagerImpl;
+import org.jetbrains.annotations.NotNull;
+import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
+import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
+import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationTokenType;
 
 import java.io.File;
 import java.util.*;
@@ -101,6 +107,34 @@ public class ProjectStructureTree {
                 }
             }
 
+        }
+    }
+
+    private void processFile(Project project, File file, ProjectStructureTree parent, Queue<File> featureToFileQueue) {
+        LocalFileSystem localFileSystem = LocalFileSystem.getInstance();
+        VirtualFile virtualFile = localFileSystem.findFileByIoFile(file);
+        if (virtualFile == null) { return; }
+
+        PsiFile foundFile = PsiManagerImpl.getInstance(project).findFile(virtualFile);
+
+        if (foundFile instanceof FileAnnotationFile) { // Logic for .feature-to-file
+            featureToFileQueue.add(file);
+        } else if (foundFile instanceof FolderAnnotationFile) { // Logic for .feature-to-folder
+            foundFile.accept(new PsiRecursiveElementWalkingVisitor() {
+                @Override
+                public void visitElement(@NotNull PsiElement element) {
+                    if (element.getNode().getElementType() instanceof FolderAnnotationTokenType) {
+                        parent.featureList.add(element.getText());
+                    }
+                    super.visitElement(element);
+                }
+            });
+        } else {
+            ProjectStructureTree fileNode = new ProjectStructureTree(
+                    file.getName(), file.getAbsolutePath(), Type.FILE, parent.depth);
+            parent.children.add(fileNode);
+
+            this.processCode(project, file, fileNode);
         }
     }
 
