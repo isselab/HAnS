@@ -1,11 +1,13 @@
 package se.isselab.HAnS.metrics;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.impl.PsiManagerImpl;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class ProjectStructureTree {
 
@@ -67,6 +69,39 @@ public class ProjectStructureTree {
         this.processFolder(project, rootFolder, root);
 
         return root;
+    }
+
+    private void processFolder(Project project, File folder, ProjectStructureTree parent) {
+        Queue<File> specialFilesQueue = new LinkedList<>(); // save .feature-to-file in the folder for later processing
+        File[] files = folder.listFiles();
+
+        if (files == null) {
+            return;
+        }
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                ProjectStructureTree folderNode = new ProjectStructureTree(
+                        file.getName(), file.getAbsolutePath(), ProjectStructureTree.Type.FOLDER, parent.depth + 1);
+                parent.children.add(folderNode);
+                processFolder(project, file, folderNode);
+            } else if (file.isFile()) {
+                this.processFile(project, file, parent, specialFilesQueue);
+            }
+        }
+
+        while (!specialFilesQueue.isEmpty()) {
+            File specialFileNode = specialFilesQueue.poll();
+            LocalFileSystem localFileSystem = LocalFileSystem.getInstance();
+            VirtualFile virtualFile = localFileSystem.findFileByIoFile(specialFileNode);
+            if (virtualFile != null) {
+                PsiFile foundFile = PsiManagerImpl.getInstance(project).findFile(virtualFile);
+                if (foundFile != null) {
+                    processFeatureToFile(foundFile, parent);
+                }
+            }
+
+        }
     }
 
 }
