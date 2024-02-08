@@ -5,11 +5,22 @@ import se.isselab.HAnS.ProjectStructureTree6;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.OptionalDouble;
+import java.nio.file.Path;
+import java.util.*;
 
 public class FeatureDepths {
+
+    public static Integer getNumberOfFeatures(ProjectStructureTree tree, String pathToItem) {
+        // find corresponding node in the Project Tree
+        ProjectStructureTree treeNode = findProjectTreeNode(tree, pathToItem);
+        System.out.println(treeNode.getName());
+        System.out.println(treeNode.getPath());
+        // count number of Features
+        Set<String> features = new HashSet<>();
+        countNumberOfFeaturesInItem(treeNode, features);
+        System.out.println(Arrays.toString(features.toArray()));
+        return features.size();
+    }
 
     // takes project tree and feature LPQ as parameter
     // return max nesting depth of specific feature
@@ -40,5 +51,33 @@ public class FeatureDepths {
                 findAndStoreFeatureDepthsRecursive(child, targetFeatureLPQ, occurrences);
             }
         }
+    }
+
+    private static ProjectStructureTree  findProjectTreeNode(ProjectStructureTree node, String path) {
+        if (node != null && node.getPath().equals(path)) {
+            return node;
+        }
+
+        if (node.getChildren() != null) {
+            for (ProjectStructureTree child : node.getChildren()) {
+                ProjectStructureTree result = findProjectTreeNode(child, path);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static void countNumberOfFeaturesInItem(ProjectStructureTree node, Set<String> features) {
+        if (!node.getFeatureList().isEmpty()) {
+            features.addAll(node.getFeatureList());
+        }
+        if (node.getChildren() != null) {
+            for (ProjectStructureTree child : node.getChildren()) {
+                countNumberOfFeaturesInItem(child, features);
+            }
+        }
+
     }
 }

@@ -77,7 +77,7 @@ public class ProjectStructureTree {
     }
 
     public static void printTree(ProjectStructureTree node, String indent) {
-        System.out.println(indent + node.getName() + " " + node.depth + " " + node.featureList.toString()+ " " + node.getType());
+        System.out.println(indent + node.getName() + " " + node.depth + " " + node.featureList.toString()+ " " + node.getType() + " " + node.getPath());
         for (ProjectStructureTree child : node.getChildren()) {
             printTree(child, indent + "-");
         }
