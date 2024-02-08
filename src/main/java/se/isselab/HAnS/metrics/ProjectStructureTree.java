@@ -21,6 +21,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ProjectStructureTree {
 
@@ -205,7 +207,7 @@ public class ProjectStructureTree {
                         if (comment.contains("&begin") || comment.contains("&end") || comment.contains("&line")) {
                             featureLPQs.updateAndGet(
                                     currentList -> {
-                                        currentList.addAll(extractLPQsFromFile(comment));
+                                        currentList.addAll(extractLPQsFromInlineAnnotation(comment));
                                         return currentList;
                                     });
                         }
@@ -231,6 +233,26 @@ public class ProjectStructureTree {
             }
 
         }
+    }
+
+    // takes feature-to-code annotation and returns set of feature-LPQs
+    private static Set<String> extractLPQsFromInlineAnnotation(String input) {
+        Set<String> featureList = new HashSet<>();
+        Pattern pattern = Pattern.compile("\\[([^\\]]+)\\]");
+
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.find()) {
+            String content = matcher.group(1);
+
+            // Split the content into individual features using a comma as the delimiter
+            String[] featureArray = content.split(",\\s*");
+
+            for (String feature : featureArray) {
+                featureList.add(feature.trim());
+            }
+        }
+
+        return featureList;
     }
 
 }
