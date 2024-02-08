@@ -21,6 +21,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -81,6 +83,11 @@ public class ProjectStructureTree {
         }
     }
 
+    private static boolean isReadOnly(File file) {
+        // Check if the file/folder is read-only
+        return !file.canWrite() || file.getPath().endsWith(".class");
+    }
+
     public static ProjectStructureTree buildTree(Project project) {
         ProjectStructureTree tree = new ProjectStructureTree();
         ProjectStructureTree result = tree.processProjectStructure(project, getFeatureModelPath());
@@ -93,7 +100,7 @@ public class ProjectStructureTree {
     }
 
     // Method to process the project structure
-    public ProjectStructureTree processProjectStructure(Project project, String rootFolderPath) {
+    private ProjectStructureTree processProjectStructure(Project project, String rootFolderPath) {
 
         File rootFolder = new File(rootFolderPath);
         if (!rootFolder.exists() || !rootFolder.isDirectory()) {
@@ -157,8 +164,16 @@ public class ProjectStructureTree {
                     file.getName(), file.getAbsolutePath(), Type.FILE, parent.depth);
             parent.children.add(fileNode);
 
-            this.processCode(project, file, fileNode);
+            // don't process automatically generated files since they can't contain inline annotations
+            if (!isReadOnly(file)) {
+                this.processCode(project, file, fileNode);
+            } else {
+                System.out.println(file.getAbsolutePath());
+            }
+
         }
+
+
     }
 
 
