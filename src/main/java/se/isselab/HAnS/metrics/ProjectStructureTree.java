@@ -9,11 +9,16 @@ import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.impl.PsiManagerImpl;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
+import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReference;
+import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationLpq;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationTokenType;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ProjectStructureTree {
 
@@ -135,6 +140,51 @@ public class ProjectStructureTree {
             parent.children.add(fileNode);
 
             this.processCode(project, file, fileNode);
+        }
+    }
+
+
+    // Logic for .feature-to-file
+    private static void processFeatureToFile(PsiFile file, ProjectStructureTree parent) {
+        Map<Set<String>, Set<String>> filesToFeatures = new HashMap<>();
+        AtomicReference<Set<String>> fileList = new AtomicReference<>(new HashSet<>());
+        AtomicReference<Set<String>> featureList = new AtomicReference<>(new HashSet<>());
+
+        file.accept(new PsiRecursiveElementWalkingVisitor() {
+            @Override
+            public void visitElement(@NotNull PsiElement element) {
+
+                if (element instanceof FileAnnotationFileReference) {
+                    if (!fileList.get().isEmpty() && !featureList.get().isEmpty()) {
+                        filesToFeatures.put(new HashSet<>(fileList.get()), new HashSet<>(featureList.get()));
+                        fileList.set(new HashSet<>());
+                        featureList.set(new HashSet<>());
+                    }
+                    Path pathToFile = Paths.get(parent.getPath(), element.getText());
+                    fileList.get().add(pathToFile.toString());
+                } else if (element instanceof FileAnnotationLpq) {
+                    featureList.get().add(element.getText());
+                }
+
+                super.visitElement(element);
+            }
+        });
+
+        if (!fileList.get().isEmpty() && !featureList.get().isEmpty()) {
+            filesToFeatures.put(new HashSet<>(fileList.get()), new HashSet<>(featureList.get()));
+        }
+
+        for(Map.Entry<Set<String>, Set<String>> entry: filesToFeatures.entrySet() ) {
+
+            Set<String> fileNames = entry.getKey();
+            Set<String> featureSet = entry.getValue();
+
+            for (ProjectStructureTree child : parent.children) {
+                if (fileNames.contains(child.getPath())) {
+                    child.getFeatureList().addAll(featureSet);
+                }
+            }
+
         }
     }
 
