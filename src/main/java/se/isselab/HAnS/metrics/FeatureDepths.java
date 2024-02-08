@@ -1,15 +1,7 @@
 package se.isselab.HAnS.metrics;
-
-import com.intellij.openapi.project.Project;
-import se.isselab.HAnS.ProjectStructureTree6;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocation;
-import se.isselab.HAnS.featureLocation.FeatureLocationManager;
-import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
-
-import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FeatureDepths {
 
