@@ -16,7 +16,10 @@ import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationLpq;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationTokenType;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -254,5 +257,32 @@ public class ProjectStructureTree {
 
         return featureList;
     }
+
+    // find all feature-to-code annotations with specific feature within specific file
+    private static List<Integer> findLinesWithText(String filePath, String searchFeature) {
+        List<Integer> matchingLines = new ArrayList<>();
+        String patternStr = "&(begin|line)\\[(?=.*\\b" + searchFeature + "\\b)([^\\]]+)\\]";
+        Pattern pattern= Pattern.compile(patternStr);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            int lineNumber = 1;
+
+            while ((line = br.readLine()) != null) {
+
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.find()) {
+                    matchingLines.add(lineNumber);
+                }
+
+                lineNumber++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return matchingLines;
+    }
+
 
 }
