@@ -1,6 +1,7 @@
 package se.isselab.HAnS.metrics;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiComment;
@@ -73,6 +74,24 @@ public class ProjectStructureTree {
         return children;
     }
 
+    public static void printTree(ProjectStructureTree node, String indent) {
+        System.out.println(indent + node.getName() + " " + node.depth + " " + node.featureList.toString()+ " " + node.getType());
+        for (ProjectStructureTree child : node.getChildren()) {
+            printTree(child, indent + "-");
+        }
+    }
+
+    public static ProjectStructureTree buildTree(Project project) {
+        ProjectStructureTree tree = new ProjectStructureTree();
+        ProjectStructureTree result = tree.processProjectStructure(project, getFeatureModelPath());
+        return result;
+    }
+
+    private static String getFeatureModelPath() {
+        Project project = ProjectManager.getInstance().getOpenProjects()[0];
+        return project.getBasePath();
+    }
+
     // Method to process the project structure
     public ProjectStructureTree processProjectStructure(Project project, String rootFolderPath) {
 
@@ -109,25 +128,17 @@ public class ProjectStructureTree {
         }
 
         while (!specialFilesQueue.isEmpty()) {
-            File specialFileNode = specialFilesQueue.poll();
-            LocalFileSystem localFileSystem = LocalFileSystem.getInstance();
-            VirtualFile virtualFile = localFileSystem.findFileByIoFile(specialFileNode);
-            if (virtualFile != null) {
-                PsiFile foundFile = PsiManagerImpl.getInstance(project).findFile(virtualFile);
-                if (foundFile != null) {
-                    processFeatureToFile(foundFile, parent);
-                }
-            }
 
+            File specialFileNode = specialFilesQueue.poll();
+            PsiFile foundFile = fileToPsi(project, specialFileNode);
+            if (foundFile != null) {
+                processFeatureToFile(foundFile, parent);
+            }
         }
     }
 
     private void processFile(Project project, File file, ProjectStructureTree parent, Queue<File> featureToFileQueue) {
-        LocalFileSystem localFileSystem = LocalFileSystem.getInstance();
-        VirtualFile virtualFile = localFileSystem.findFileByIoFile(file);
-        if (virtualFile == null) { return; }
-
-        PsiFile foundFile = PsiManagerImpl.getInstance(project).findFile(virtualFile);
+        PsiFile foundFile = fileToPsi(project, file);
 
         if (foundFile instanceof FileAnnotationFile) { // Logic for .feature-to-file
             featureToFileQueue.add(file);
@@ -196,13 +207,13 @@ public class ProjectStructureTree {
     }
 
     private void processCode(Project project, File file, ProjectStructureTree parent) {
-        LocalFileSystem localFileSystem = LocalFileSystem.getInstance();
-        VirtualFile virtualFile = localFileSystem.findFileByIoFile(file);
-        PsiFile foundFile = PsiManagerImpl.getInstance(project).findFile(virtualFile);
+
+        PsiFile foundFile = fileToPsi(project, file);
+
         AtomicReference<Set<String>> featureLPQs = new AtomicReference<>(new HashSet<>());
 
         if (foundFile != null) {
-            foundFile.accept(new CodeAnnotationVisitor() {
+            foundFile.accept(new PsiRecursiveElementWalkingVisitor() {
                 @Override
                 public void visitElement(@NotNull PsiElement element) {
                     if (element instanceof PsiComment) {
@@ -286,7 +297,7 @@ public class ProjectStructureTree {
 
     // determines depth of a code annotation
     // goes to line containing the code annotation and then moves up and counts other parent code annotations
-    private static int countCodeAnnotationDepth(String filePath, int targetLineNumber, int parentFileDepth) {
+    private static int countCodeAnnotationDepth(String filePath, int targetLineNumber, int parentDepth) {
         int beginOccurrences = 0;
         int endOccurrences = 0;
 
@@ -321,8 +332,18 @@ public class ProjectStructureTree {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        int result = parentDepth + (beginOccurrences-endOccurrences)+1;
+        return result;
+    }
 
-        return parentFileDepth + ( beginOccurrences - endOccurrences ) + 1;
+    private PsiFile fileToPsi(Project project, File file) {
+        LocalFileSystem localFileSystem = LocalFileSystem.getInstance();
+        VirtualFile virtualFile = localFileSystem.findFileByIoFile(file);
+        if (virtualFile == null) { return null; }
+
+        PsiFile foundFile = PsiManagerImpl.getInstance(project).findFile(virtualFile);
+        if (foundFile == null) { return null; }
+        return foundFile;
     }
 
 
