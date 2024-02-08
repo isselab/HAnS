@@ -3,11 +3,13 @@ package se.isselab.HAnS.metrics;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
 import com.intellij.psi.impl.PsiManagerImpl;
 import org.jetbrains.annotations.NotNull;
+import se.isselab.HAnS.codeAnnotation.psi.CodeAnnotationVisitor;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReference;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationLpq;
@@ -183,6 +185,49 @@ public class ProjectStructureTree {
                 if (fileNames.contains(child.getPath())) {
                     child.getFeatureList().addAll(featureSet);
                 }
+            }
+
+        }
+    }
+
+    private void processCode(Project project, File file, ProjectStructureTree parent) {
+        LocalFileSystem localFileSystem = LocalFileSystem.getInstance();
+        VirtualFile virtualFile = localFileSystem.findFileByIoFile(file);
+        PsiFile foundFile = PsiManagerImpl.getInstance(project).findFile(virtualFile);
+        AtomicReference<Set<String>> featureLPQs = new AtomicReference<>(new HashSet<>());
+
+        if (foundFile != null) {
+            foundFile.accept(new CodeAnnotationVisitor() {
+                @Override
+                public void visitElement(@NotNull PsiElement element) {
+                    if (element instanceof PsiComment) {
+                        String comment = element.getText();
+                        if (comment.contains("&begin") || comment.contains("&end") || comment.contains("&line")) {
+                            featureLPQs.updateAndGet(
+                                    currentList -> {
+                                        currentList.addAll(extractLPQsFromFile(comment));
+                                        return currentList;
+                                    });
+                        }
+                    }
+                    super.visitElement(element);
+                }
+            });
+
+            Map<String, Integer> featureDepths = new HashMap<>();
+            if (!featureLPQs.get().isEmpty()) {
+                for (String feature: featureLPQs.get()) {
+                    List<Integer> linesWithFeature = findLinesWithText(file.getPath(),feature);
+                    for (int targetLineNumber : linesWithFeature) {
+                        int depth = countCodeAnnotationDepth(file.getPath(), targetLineNumber);
+                        featureDepths.put(feature, depth);
+                    }
+                }
+            }
+            for (Map.Entry<String, Integer> entry : featureDepths.entrySet()) {
+                ProjectStructureTree pst = new ProjectStructureTree(entry.getKey(), parent.getPath(), Type.LINE, parent.getDepth() + entry.getValue());
+                pst.featureList.add(entry.getKey());
+                parent.children.add(pst);
             }
 
         }
