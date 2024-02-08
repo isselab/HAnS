@@ -81,7 +81,7 @@ public class FeatureDepths {
         }
 
     }
-    
+
     private static int countNumberOfAnnotatedFiles(ProjectStructureTree node, String targetFeatureLPQ) {
         int count = 0;
 
