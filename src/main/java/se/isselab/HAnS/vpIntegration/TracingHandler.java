@@ -7,8 +7,8 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
+import com.intellij.psi.*;
+import com.intellij.psi.util.PsiTreeUtil;
 import se.isselab.HAnS.actions.vpIntegration.CloneAsset;
 
 import java.io.BufferedWriter;
@@ -27,7 +27,7 @@ public class TracingHandler {
         this.anActionEvent = anActionEvent;
     }
 
-    public void createFileOrFolderTrace(){
+    public String createFileOrFolderTrace(){
         try {
             String filePath = getTraceFilePath(anActionEvent.getProject());
             try{
@@ -38,13 +38,11 @@ public class TracingHandler {
             FileWriter fileWriter = new FileWriter(filePath, true);
             VirtualFile virtualFile = CommonDataKeys.VIRTUAL_FILE.getData(anActionEvent.getDataContext());
             String content = virtualFile.getPath() + ";";
-            BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
-            bufferFileWriter.newLine();
-            bufferFileWriter.append(content);
-            bufferFileWriter.close();
+            return content;
 
         } catch (Exception ex) {
             ex.printStackTrace();
+            return null;
         }
     }
 
@@ -54,11 +52,12 @@ public class TracingHandler {
         String textFilePath = getTraceFilePath(anActionEvent.getProject());
         String currentDateAndTime = getCurrentDateAndTime();
         try {
-            String sourceFilePath = new String(Files.readAllBytes(Paths.get(textFilePath)));
+            String sourceFilePath = CloneAsset.subTrace;
             String[] pathSplitted = sourceFilePath.split("/");
-            String updatedContent = targetFilePath + "/" + pathSplitted[pathSplitted.length - 1] + currentDateAndTime;
+            String updatedContent = sourceFilePath + targetFilePath + "/" + pathSplitted[pathSplitted.length - 1] + currentDateAndTime;
             FileWriter fileWriter = new FileWriter(textFilePath, true);
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
+            bufferFileWriter.newLine();
             bufferFileWriter.append(updatedContent);
             bufferFileWriter.close();
 
@@ -67,7 +66,7 @@ public class TracingHandler {
         }
     }
 
-    public void createCodeAssetsTrace(){
+    public String createCodeAssetsTrace(){
         try {
             String filePath = getTraceFilePath(anActionEvent.getProject());
             try{
@@ -79,13 +78,11 @@ public class TracingHandler {
             FileWriter fileWriter = new FileWriter(filePath, true);
             VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(editor.getDocument());
             String content = virtualFile.getPath() + "/" + getAssetName() +  ";";
-            BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
-            bufferFileWriter.newLine();
-            bufferFileWriter.append(content);
-            bufferFileWriter.close();
+            return content;
 
         } catch (Exception ex) {
             ex.printStackTrace();
+            return null;
         }
     }
 
@@ -96,9 +93,12 @@ public class TracingHandler {
         String textFilePath = getTraceFilePath(anActionEvent.getProject());
         String currentDateAndTime = getCurrentDateAndTime();
         try {
-            String updatedContent = targetFilePath + "/" + getAssetName() + ";" + currentDateAndTime;
+            String sourceFilePath = CloneAsset.subTrace;
+            String[] pathSplitted = sourceFilePath.split("/");
+            String updatedContent = CloneAsset.subTrace + targetFilePath + getCurrentClassName(editor) + "/" + pathSplitted[pathSplitted.length - 1] + currentDateAndTime;
             FileWriter fileWriter = new FileWriter(textFilePath, true);
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
+            bufferFileWriter.newLine();
             bufferFileWriter.append(updatedContent);
             bufferFileWriter.close();
 
@@ -107,12 +107,24 @@ public class TracingHandler {
         }
     }
 
+    private String getCurrentClassName(Editor editor){
+        if(CloneAsset.clonedMethod != null){
+            PsiFile psiFile = PsiDocumentManager.getInstance(anActionEvent.getProject()).getPsiFile(editor.getDocument());
+            int offset = editor.getCaretModel().getOffset();
+            PsiElement elementAt = psiFile.findElementAt(offset);
+            PsiClass containingClass = PsiTreeUtil.getParentOfType(elementAt, PsiClass.class);
+            return "/" + containingClass.getName();
+        }
+        return "";
+    }
+
     private String getAssetName() {
         if(CloneAsset.clonedClass != null){
             return CloneAsset.clonedClass.getName();
         }
         if(CloneAsset.clonedMethod != null){
-            return CloneAsset.clonedMethod.getName();
+            PsiClass parentClass = PsiTreeUtil.getParentOfType(CloneAsset.clonedMethod, PsiClass.class);
+            return parentClass.getName() + "/" + CloneAsset.clonedMethod.getName();
         }
         return "CodeBlock";
     }

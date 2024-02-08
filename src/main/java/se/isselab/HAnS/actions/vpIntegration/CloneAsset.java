@@ -29,6 +29,7 @@ public class CloneAsset extends AnAction {
     public static PsiMethod clonedMethod;
     public static PsiClass clonedClass;
     public static List<PsiElement> elementsInRange;
+    public static String subTrace;
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
@@ -79,7 +80,7 @@ public class CloneAsset extends AnAction {
                 cloneDirectory(psiDirectory);
             }
         }
-        tracingHandler.createFileOrFolderTrace();
+        subTrace = tracingHandler.createFileOrFolderTrace();
     }
 
     private void handleEditorMenu(AnActionEvent anActionEvent, Editor editor, TracingHandler tracingHandler){
@@ -101,7 +102,7 @@ public class CloneAsset extends AnAction {
         } else {
             cloneClass(element);
         }
-        tracingHandler.createCodeAssetsTrace();
+        subTrace = tracingHandler.createCodeAssetsTrace();
     }
 
     public static void resetClones() {
