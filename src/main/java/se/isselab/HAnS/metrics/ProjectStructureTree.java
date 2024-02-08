@@ -37,7 +37,7 @@ public class ProjectStructureTree {
     private HashSet<String> featureList;
     private List<ProjectStructureTree> children;
 
-    private enum Type {FOLDER, FILE, LINE}
+    public enum Type {FOLDER, FILE, LINE}
 
     public ProjectStructureTree() {}
 
@@ -75,7 +75,7 @@ public class ProjectStructureTree {
     }
 
     public static void printTree(ProjectStructureTree node, String indent) {
-        System.out.println(indent + node.getName() + " " + node.depth + " " + node.featureList.toString()+ " " + node.getType() + " " + node.getPath());
+        System.out.println(indent + node.getName() + " " + node.depth + " " + node.featureList.toString()+ " " + node.getType());
         for (ProjectStructureTree child : node.getChildren()) {
             printTree(child, indent + "-");
         }
