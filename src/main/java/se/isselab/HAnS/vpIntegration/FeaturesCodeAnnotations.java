@@ -3,15 +3,15 @@ package se.isselab.HAnS.vpIntegration;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FeatureNames {
-    private static FeatureNames instance = new FeatureNames();
+public class FeaturesCodeAnnotations {
+    private static FeaturesCodeAnnotations instance = new FeaturesCodeAnnotations();
     private List<String> featureNames;
 
-    private FeatureNames() {
+    private FeaturesCodeAnnotations() {
         featureNames = new ArrayList<>();
     }
 
-    public static FeatureNames getInstance() {
+    public static FeaturesCodeAnnotations getInstance() {
         return instance;
     }
 

@@ -7,12 +7,18 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
-import se.isselab.HAnS.vpIntegration.FeatureNames;
+import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiRecursiveElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
+import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationTokenType;
+import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationFeatureNameImpl;
+import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationFileAnnotationImpl;
+import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationFileNameImpl;
+import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationLpqReferencesImpl;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 public class FeaturesHandler {
     Project project;
@@ -21,7 +27,7 @@ public class FeaturesHandler {
     }
 
     public void addFeaturesToFeatureModel(){
-        List<String> clonedFeatureNames = FeatureNames.getInstance().getFeatureNames();
+        List<String> clonedFeatureNames = FeaturesCodeAnnotations.getInstance().getFeatureNames();
         VirtualFile featureModelFile = findFeatureModelFile(project);
 
         if (featureModelFile != null) {
@@ -128,5 +134,43 @@ public class FeaturesHandler {
             }
         });
     }
+
+    public ArrayList<PsiElement> findFeatureToFileMappings(PsiFile psifile){
+        ArrayList<PsiElement> featuresElements = new ArrayList<>();
+        PsiDirectory parentDirectory = psifile.getParent();
+        PsiFile featureFile = null;
+        if (parentDirectory != null) {
+            for (PsiFile file : parentDirectory.getFiles()) {
+                if (file.getName().endsWith(".feature-to-file")) {
+                    featureFile = file;
+                    break;
+                }
+            }
+        }
+        if(featureFile != null){
+            featureFile.accept(new PsiRecursiveElementVisitor() {
+                @Override
+                public void visitElement(PsiElement element) {
+                    super.visitElement(element);
+                    if (element instanceof FileAnnotationFileNameImpl) {
+                        if(element.getText().equals(psifile.getName())){
+                            PsiElement desiredParent = PsiTreeUtil.getParentOfType(element, FileAnnotationFileAnnotationImpl.class);
+                            if (desiredParent != null) {
+                                Collection<PsiElement> children = PsiTreeUtil.findChildrenOfType(desiredParent, FileAnnotationFeatureNameImpl.class);
+                                for (PsiElement child : children) {
+                                    featuresElements.add(child);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        if(featuresElements.size() != 0){
+            return featuresElements;
+        }
+        return null;
+    }
+
 }
 

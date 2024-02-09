@@ -5,23 +5,19 @@ import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
-import com.intellij.openapi.editor.ex.EditorPopupHandler;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
-import com.intellij.psi.impl.source.tree.PsiCommentImpl;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
-import se.isselab.HAnS.codeAnnotation.CodeAnnotationLanguage;
 import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationFeatureImpl;
-import se.isselab.HAnS.vpIntegration.FeatureNames;
+import se.isselab.HAnS.vpIntegration.FeaturesCodeAnnotations;
+import se.isselab.HAnS.vpIntegration.FeaturesHandler;
 import se.isselab.HAnS.vpIntegration.TracingHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CloneAsset extends AnAction {
     public static PsiFile clonedFile;
@@ -50,12 +46,14 @@ public class CloneAsset extends AnAction {
     public static void cloneFile(PsiFile file) {
         Project project = file.getProject();
         PsiFileFactory fileFactory = PsiFileFactory.getInstance(project);
+        FeaturesHandler featuresHandler = new FeaturesHandler(project);
         // Extract content from the original file
         String fileContent = file.getText();
         // Create a new file with the same content
         PsiFile newFile = fileFactory.createFileFromText(file.getName(), file.getFileType(), fileContent);
         clonedFile = newFile;
-        FeatureNames.getInstance().setFeatureNames(extractFeatureNames(file));
+        FeaturesCodeAnnotations.getInstance().setFeatureNames(extractFeatureNames(file));
+        ArrayList<PsiElement> features = featuresHandler.findFeatureToFileMappings(file);
     }
 
     public static void cloneDirectory(PsiDirectory psiDirectory){
@@ -116,12 +114,12 @@ public class CloneAsset extends AnAction {
     private void cloneClass(PsiElement element) {
         PsiClass classAtCaret = PsiTreeUtil.getParentOfType(element, PsiClass.class);
         clonedClass = classAtCaret;
-        FeatureNames.getInstance().setFeatureNames(extractFeatureNames(classAtCaret));
+        FeaturesCodeAnnotations.getInstance().setFeatureNames(extractFeatureNames(classAtCaret));
     }
 
     private void cloneMethod(PsiMethod methodAtCaret) {
         clonedMethod = methodAtCaret;
-        FeatureNames.getInstance().setFeatureNames(extractFeatureNames(methodAtCaret));
+        FeaturesCodeAnnotations.getInstance().setFeatureNames(extractFeatureNames(methodAtCaret));
     }
 
     private void getHighlightedBlock(SelectionModel selectionModel, PsiFile psiFile){
@@ -151,7 +149,7 @@ public class CloneAsset extends AnAction {
 
     private static void cloneBlock(List<PsiElement> elements) {
         elementsInRange = elements;
-        FeatureNames.getInstance().setFeatureNames(extractFeaturesOfCodeBlock(elements));
+        FeaturesCodeAnnotations.getInstance().setFeatureNames(extractFeaturesOfCodeBlock(elements));
     }
 
     private static List<String> extractFeatureNames(PsiElement elements) {
