@@ -15,7 +15,6 @@ import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationFeatureImpl;
 import se.isselab.HAnS.vpIntegration.FeaturesCodeAnnotations;
 import se.isselab.HAnS.vpIntegration.FeaturesHandler;
 import se.isselab.HAnS.vpIntegration.TracingHandler;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +25,7 @@ public class CloneAsset extends AnAction {
     public static PsiClass clonedClass;
     public static List<PsiElement> elementsInRange;
     public static String subTrace;
+    public static ArrayList<PsiElement> featuresAnnotations;
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
@@ -33,6 +33,7 @@ public class CloneAsset extends AnAction {
         Project project = anActionEvent.getProject();
         Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
         TracingHandler tracingHandler = new TracingHandler(anActionEvent);
+        resetClones();
         if(place.equals("ProjectViewPopup")){
             //handle Project menu
             handleProjectMenu(anActionEvent, project, tracingHandler);
@@ -43,26 +44,27 @@ public class CloneAsset extends AnAction {
         }
     }
 
-    public static void cloneFile(PsiFile file) {
+    public static void cloneFile(PsiFile file, FeaturesHandler featuresHandler) {
         Project project = file.getProject();
         PsiFileFactory fileFactory = PsiFileFactory.getInstance(project);
-        FeaturesHandler featuresHandler = new FeaturesHandler(project);
         // Extract content from the original file
         String fileContent = file.getText();
         // Create a new file with the same content
         PsiFile newFile = fileFactory.createFileFromText(file.getName(), file.getFileType(), fileContent);
         clonedFile = newFile;
         FeaturesCodeAnnotations.getInstance().setFeatureNames(extractFeatureNames(file));
-        ArrayList<PsiElement> features = featuresHandler.findFeatureToFileMappings(file);
+        featuresAnnotations = featuresHandler.findFeatureToFileMappings(file);
     }
 
-    public static void cloneDirectory(PsiDirectory psiDirectory){
+    public static void cloneDirectory(PsiDirectory psiDirectory, FeaturesHandler featuresHandler){
         PsiDirectory newDirectory = psiDirectory;
         clonedDirectory = newDirectory;
+        featuresAnnotations = featuresHandler.findFeatureToFolderMappings(psiDirectory);
     }
 
 
     private void handleProjectMenu(AnActionEvent anActionEvent, Project project, TracingHandler tracingHandler){
+        FeaturesHandler featuresHandler = new FeaturesHandler(project);
         VirtualFile virtualFile = CommonDataKeys.VIRTUAL_FILE.getData(anActionEvent.getDataContext());
         if (virtualFile != null && !virtualFile.isDirectory()) {
             Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
@@ -70,12 +72,12 @@ public class CloneAsset extends AnAction {
             PsiFile psiFile = PsiManager.getInstance(project).findFile(virtualFile);
             //PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
             if (psiFile != null) {
-                cloneFile(psiFile);
+                cloneFile(psiFile, featuresHandler);
             }
         } else {
             PsiDirectory psiDirectory = PsiManager.getInstance(project).findDirectory(virtualFile);
             if (psiDirectory != null) {
-                cloneDirectory(psiDirectory);
+                cloneDirectory(psiDirectory, featuresHandler);
             }
         }
         subTrace = tracingHandler.createFileOrFolderTrace();
@@ -109,6 +111,7 @@ public class CloneAsset extends AnAction {
         clonedClass = null;
         clonedMethod = null;
         elementsInRange = null;
+        featuresAnnotations = null;
     }
 
     private void cloneClass(PsiElement element) {

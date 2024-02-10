@@ -12,11 +12,10 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationTokenType;
 import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationFeatureNameImpl;
 import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationFileAnnotationImpl;
 import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationFileNameImpl;
-import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationLpqReferencesImpl;
+import se.isselab.HAnS.folderAnnotation.psi.impl.FolderAnnotationLpqImpl;
 
 import java.util.*;
 
@@ -166,10 +165,36 @@ public class FeaturesHandler {
                 }
             });
         }
-        if(featuresElements.size() != 0){
+        if(featuresElements.size() != 0)
             return featuresElements;
-        }
         return null;
+    }
+    public ArrayList<PsiElement> findFeatureToFolderMappings(PsiDirectory psiDirectory){
+        ArrayList<PsiElement> featuresElements = new ArrayList<>();
+        PsiFile featureFolder = null;
+        if (psiDirectory != null) {
+            for (PsiFile file : psiDirectory.getFiles()) {
+                if (file.getName().endsWith(".feature-to-folder")) {
+                    featureFolder = file;
+                    break;
+                }
+            }
+        }
+        if(featureFolder != null){
+            featureFolder.accept(new PsiRecursiveElementVisitor() {
+                @Override
+                public void visitElement(PsiElement element) {
+                    super.visitElement(element);
+                    if (element instanceof FolderAnnotationLpqImpl) {
+                            featuresElements.add(element);
+                        }
+                    }
+            });
+        }
+        if(featuresElements.size() != 0)
+            return featuresElements;
+        return null;
+
     }
 
 }

@@ -5,9 +5,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileTypes.PlainTextFileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
+import com.intellij.psi.codeStyle.CodeStyleManager;
+import com.jetbrains.rd.util.AtomicReference;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.vpIntegration.FeaturesHandler;
 import se.isselab.HAnS.vpIntegration.TracingHandler;
@@ -62,13 +65,62 @@ public class PasteClonedAsset extends AnAction {
             if (CloneAsset.clonedFile != null && CloneAsset.clonedDirectory == null) {
                 addClonedFile(project, targetDirectory);
                 featuresHandler.addFeaturesToFeatureModel();
-                CloneAsset.clonedFile = null;
+                pasteFeatureAnnotations(targetDirectory);
             } else if (CloneAsset.clonedFile == null && CloneAsset.clonedDirectory != null) {
                 pasteClonedDirectory(anActionEvent, project, targetDirectory);
-                CloneAsset.clonedDirectory = null;
             }
         }
         tracingHandler.storeFileOrFolderTrace();
+    }
+
+    private void pasteFeatureAnnotations(PsiDirectory targetDirectory) {
+        if(CloneAsset.featuresAnnotations != null)
+            pasteToFeatureToFile(targetDirectory);
+    }
+
+    private void pasteToFeatureToFile(PsiDirectory psiDirectory) {
+        AtomicReference<PsiFile> fileMappingRef = new AtomicReference<>(null);
+        Project project = psiDirectory.getProject();
+        if (psiDirectory != null) {
+            for (PsiFile file : psiDirectory.getFiles()) {
+                if (file.getName().endsWith(".feature-to-file")) {
+                    fileMappingRef.getAndSet(file);
+                    break;
+                }
+            }
+        }
+        if (fileMappingRef.get() == null) {
+            String fileName = ".feature-to-file";
+            PsiFileFactory fileFactory = PsiFileFactory.getInstance(project);
+            PsiFile newFile = fileFactory.createFileFromText(fileName, PlainTextFileType.INSTANCE, "");
+            WriteCommandAction.runWriteCommandAction(project , () -> {
+                PsiFile addedFile = (PsiFile) psiDirectory.add(newFile);
+                fileMappingRef.getAndSet(addedFile);
+            });
+
+        }
+
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            StringBuilder fileContent = new StringBuilder();
+            fileContent.append(CloneAsset.clonedFile.getName()).append("\n");
+            for (int i = 0; i < CloneAsset.featuresAnnotations.size(); i++) {
+                if(i == CloneAsset.featuresAnnotations.size() -1 ){
+                    fileContent.append(CloneAsset.featuresAnnotations.get(i).getText()).append("\n");
+                } else {
+                    fileContent.append(CloneAsset.featuresAnnotations.get(i).getText()).append(", ");
+                }
+            }
+            PsiFile fileMappingFile = fileMappingRef.get();
+            if (fileMappingFile != null && fileMappingFile.getViewProvider().getDocument() != null) {
+                var document = fileMappingFile.getViewProvider().getDocument();
+                if(document != null){
+                    String existingContent = document.getText();
+                    String newContent = existingContent + fileContent.toString();
+                    document.setText(newContent);
+                    CodeStyleManager.getInstance(project).reformat(fileMappingFile);
+                }
+            }
+        });
     }
 
     @Override
