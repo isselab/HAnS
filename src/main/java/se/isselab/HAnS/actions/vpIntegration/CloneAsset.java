@@ -54,6 +54,9 @@ public class CloneAsset extends AnAction {
         clonedFile = newFile;
         FeaturesCodeAnnotations.getInstance().setFeatureNames(extractFeatureNames(file));
         featuresAnnotations = featuresHandler.findFeatureToFileMappings(file);
+        if(featuresAnnotations != null){
+            FeaturesCodeAnnotations.getInstance().addFeatures(featuresAnnotations);
+        }
     }
 
     public static void cloneDirectory(PsiDirectory psiDirectory, FeaturesHandler featuresHandler){

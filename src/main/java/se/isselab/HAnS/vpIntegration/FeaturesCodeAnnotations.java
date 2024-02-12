@@ -1,5 +1,7 @@
 package se.isselab.HAnS.vpIntegration;
 
+import com.intellij.psi.PsiElement;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,5 +23,12 @@ public class FeaturesCodeAnnotations {
 
     public synchronized void setFeatureNames(List<String> newStrings) {
         this.featureNames = newStrings;
+    }
+    public synchronized void addFeatures(List<PsiElement> newElements){
+        for(PsiElement element : newElements){
+            if(!this.featureNames.contains(element.getText())){
+                this.featureNames.add(element.getText());
+            }
+        }
     }
 }
