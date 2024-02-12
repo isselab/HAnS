@@ -17,8 +17,10 @@ import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class TracingHandler {
     private AnActionEvent anActionEvent;
@@ -52,7 +54,7 @@ public class TracingHandler {
         String textFilePath = getTraceFilePath(anActionEvent.getProject());
         String currentDateAndTime = getCurrentDateAndTime();
         try {
-            String sourceFilePath = CloneAsset.subTrace;
+            String sourceFilePath = CloneAsset.subAssetTrace;
             String[] pathSplitted = sourceFilePath.split("/");
             String updatedContent = sourceFilePath + targetFilePath + "/" + pathSplitted[pathSplitted.length - 1] + currentDateAndTime;
             FileWriter fileWriter = new FileWriter(textFilePath, true);
@@ -93,9 +95,9 @@ public class TracingHandler {
         String textFilePath = getTraceFilePath(anActionEvent.getProject());
         String currentDateAndTime = getCurrentDateAndTime();
         try {
-            String sourceFilePath = CloneAsset.subTrace;
+            String sourceFilePath = CloneAsset.subAssetTrace;
             String[] pathSplitted = sourceFilePath.split("/");
-            String updatedContent = CloneAsset.subTrace + targetFilePath + getCurrentClassName(editor) + "/" + pathSplitted[pathSplitted.length - 1] + currentDateAndTime;
+            String updatedContent = CloneAsset.subAssetTrace + targetFilePath + getCurrentClassName(editor) + "/" + pathSplitted[pathSplitted.length - 1] + currentDateAndTime;
             FileWriter fileWriter = new FileWriter(textFilePath, true);
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
             bufferFileWriter.newLine();
@@ -146,6 +148,15 @@ public class TracingHandler {
         String currentTime = (time.getTime() / 1000 / 60 / 60) % 24 + "" + (time.getTime() / 1000 / 60) % 60 + "" + (time.getTime() / 1000) % 60;
         String dateAndTimeInString = dateSplitted[2] + dateSplitted[0] + dateSplitted[1] + currentTime;
         return dateAndTimeInString;
+    }
+
+    public void createFeatureTraces(){
+        List<String> features = FeaturesCodeAnnotations.getInstance().getFeatureNames();
+        CloneAsset.subFeatureTrace = new ArrayList<String>();
+        for(String feature : features){
+            String subFeatureTrace = CloneAsset.subAssetTrace.substring(0, CloneAsset.subAssetTrace.length() - 2) + "/" + feature + ";";
+            CloneAsset.subFeatureTrace.add(subFeatureTrace);
+        }
     }
 
 }
