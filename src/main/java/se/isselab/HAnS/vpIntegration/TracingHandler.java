@@ -54,7 +54,7 @@ public class TracingHandler {
         String textFilePath = getTraceFilePath(anActionEvent.getProject());
         String currentDateAndTime = getCurrentDateAndTime();
         try {
-            String sourceFilePath = CloneAsset.subAssetTrace;
+            String sourceFilePath = AssetsToClone.subAssetTrace;
             String[] fileOrDirName = sourceFilePath.split("/");
             targetFilePath = targetFilePath + "/" + fileOrDirName[fileOrDirName.length - 1];
             String updatedContent = sourceFilePath + targetFilePath + currentDateAndTime;
@@ -71,9 +71,9 @@ public class TracingHandler {
     }
 
     private void storeFeaturesTrace(String targetPath, BufferedWriter bufferedWriter) {
-        if(CloneAsset.subFeatureTrace != null){
+        if(AssetsToClone.subFeatureTrace != null){
             try {
-                for(String feature : CloneAsset.subFeatureTrace){
+                for(String feature : AssetsToClone.subFeatureTrace){
                     String[] targetPathWithFeature = feature.split("/");
                     String featureTrace = feature + targetPath.substring(0, targetPath.length() - 1) + "/" + targetPathWithFeature[targetPathWithFeature.length - 1] + getCurrentDateAndTime() ;
                     bufferedWriter.newLine();
@@ -112,10 +112,10 @@ public class TracingHandler {
         String textFilePath = getTraceFilePath(anActionEvent.getProject());
         String currentDateAndTime = getCurrentDateAndTime();
         try {
-            String sourceFilePath = CloneAsset.subAssetTrace;
+            String sourceFilePath = AssetsToClone.subAssetTrace;
             String[] classOrMethodName = sourceFilePath.split("/");
             String targetPath = targetFilePath + getCurrentClassName(editor) + "/" + classOrMethodName[classOrMethodName.length - 1];
-            String updatedContent = CloneAsset.subAssetTrace + targetPath + currentDateAndTime;
+            String updatedContent = AssetsToClone.subAssetTrace + targetPath + currentDateAndTime;
             FileWriter fileWriter = new FileWriter(textFilePath, true);
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
             bufferFileWriter.newLine();
@@ -129,7 +129,7 @@ public class TracingHandler {
     }
 
     private String getCurrentClassName(Editor editor){
-        if(CloneAsset.clonedMethod != null){
+        if(AssetsToClone.clonedMethod != null){
             PsiFile psiFile = PsiDocumentManager.getInstance(anActionEvent.getProject()).getPsiFile(editor.getDocument());
             int offset = editor.getCaretModel().getOffset();
             PsiElement elementAt = psiFile.findElementAt(offset);
@@ -140,12 +140,12 @@ public class TracingHandler {
     }
 
     private String getAssetName() {
-        if(CloneAsset.clonedClass != null){
-            return CloneAsset.clonedClass.getName();
+        if(AssetsToClone.clonedClass != null){
+            return AssetsToClone.clonedClass.getName();
         }
-        if(CloneAsset.clonedMethod != null){
-            PsiClass parentClass = PsiTreeUtil.getParentOfType(CloneAsset.clonedMethod, PsiClass.class);
-            return parentClass.getName() + "/" + CloneAsset.clonedMethod.getName();
+        if(AssetsToClone.clonedMethod != null){
+            PsiClass parentClass = PsiTreeUtil.getParentOfType(AssetsToClone.clonedMethod, PsiClass.class);
+            return parentClass.getName() + "/" + AssetsToClone.clonedMethod.getName();
         }
         return "CodeBlock";
     }
@@ -172,10 +172,10 @@ public class TracingHandler {
     public void createFeatureTraces(){
         List<String> features = FeaturesCodeAnnotations.getInstance().getFeatureNames();
         if(features.size() != 0){
-            CloneAsset.subFeatureTrace = new ArrayList<String>();
+            AssetsToClone.subFeatureTrace = new ArrayList<String>();
             for(String feature : features){
-                String subFeatureTrace = CloneAsset.subAssetTrace.substring(0, CloneAsset.subAssetTrace.length() - 1) + "/" + feature + "::";
-                CloneAsset.subFeatureTrace.add(subFeatureTrace);
+                String subFeatureTrace = AssetsToClone.subAssetTrace.substring(0, AssetsToClone.subAssetTrace.length() - 1) + "/" + feature + "::";
+                AssetsToClone.subFeatureTrace.add(subFeatureTrace);
             }
         }
 
