@@ -113,12 +113,14 @@ public class TracingHandler {
         String currentDateAndTime = getCurrentDateAndTime();
         try {
             String sourceFilePath = CloneAsset.subAssetTrace;
-            String[] pathSplitted = sourceFilePath.split("/");
-            String updatedContent = CloneAsset.subAssetTrace + targetFilePath + getCurrentClassName(editor) + "/" + pathSplitted[pathSplitted.length - 1] + currentDateAndTime;
+            String[] classOrMethodName = sourceFilePath.split("/");
+            String targetPath = targetFilePath + getCurrentClassName(editor) + "/" + classOrMethodName[classOrMethodName.length - 1];
+            String updatedContent = CloneAsset.subAssetTrace + targetPath + currentDateAndTime;
             FileWriter fileWriter = new FileWriter(textFilePath, true);
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
             bufferFileWriter.newLine();
             bufferFileWriter.append(updatedContent);
+            storeFeaturesTrace(targetPath, bufferFileWriter);
             bufferFileWriter.close();
 
         } catch (Exception e) {

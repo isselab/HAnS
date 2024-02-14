@@ -96,9 +96,7 @@ public class CloneAsset extends AnAction {
         // Create a new file with the same content
         PsiFile newFile = fileFactory.createFileFromText(file.getName(), file.getFileType(), fileContent);
         clonedFile = newFile;
-        var featuresAnnotated = extractFeatureNames(file);
-        if(featuresAnnotated != null )
-            FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);
+        saveExtractedFeatureAnnotations(file);
         featuresAnnotations = featuresHandler.findFeatureToFileMappings(file);
         if(featuresAnnotations != null){
             FeaturesCodeAnnotations.getInstance().addFeatures(featuresAnnotations);
@@ -114,12 +112,18 @@ public class CloneAsset extends AnAction {
     private void cloneClass(PsiElement element) {
         PsiClass classAtCaret = PsiTreeUtil.getParentOfType(element, PsiClass.class);
         clonedClass = classAtCaret;
-        FeaturesCodeAnnotations.getInstance().setFeatureNames(extractFeatureNames(classAtCaret));
+        saveExtractedFeatureAnnotations(classAtCaret);
     }
 
     private void cloneMethod(PsiMethod methodAtCaret) {
         clonedMethod = methodAtCaret;
-        FeaturesCodeAnnotations.getInstance().setFeatureNames(extractFeatureNames(methodAtCaret));
+        saveExtractedFeatureAnnotations(methodAtCaret);
+    }
+
+    private static void saveExtractedFeatureAnnotations(PsiElement element){
+        var featuresAnnotated = extractFeatureNames(element);
+        if(featuresAnnotated != null )
+            FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);
     }
 
     private void getHighlightedBlock(SelectionModel selectionModel, PsiFile psiFile){
