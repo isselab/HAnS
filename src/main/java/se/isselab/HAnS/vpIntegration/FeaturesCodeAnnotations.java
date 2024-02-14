@@ -21,8 +21,8 @@ public class FeaturesCodeAnnotations {
         return new ArrayList<>(featureNames);
     }
 
-    public synchronized void setFeatureNames(List<String> newStrings) {
-        this.featureNames = newStrings;
+    public synchronized void setFeatureNames(List<String> newFeatures) {
+        this.featureNames = newFeatures;
     }
     public synchronized void addFeatures(List<PsiElement> newElements){
         for(PsiElement element : newElements){
@@ -30,5 +30,8 @@ public class FeaturesCodeAnnotations {
                 this.featureNames.add(element.getText());
             }
         }
+    }
+    public synchronized void clearFeatures(){
+        this.featureNames.clear();
     }
 }

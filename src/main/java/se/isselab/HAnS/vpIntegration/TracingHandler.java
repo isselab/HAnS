@@ -55,16 +55,33 @@ public class TracingHandler {
         String currentDateAndTime = getCurrentDateAndTime();
         try {
             String sourceFilePath = CloneAsset.subAssetTrace;
-            String[] pathSplitted = sourceFilePath.split("/");
-            String updatedContent = sourceFilePath + targetFilePath + "/" + pathSplitted[pathSplitted.length - 1] + currentDateAndTime;
+            String[] fileOrDirName = sourceFilePath.split("/");
+            targetFilePath = targetFilePath + "/" + fileOrDirName[fileOrDirName.length - 1];
+            String updatedContent = sourceFilePath + targetFilePath + currentDateAndTime;
             FileWriter fileWriter = new FileWriter(textFilePath, true);
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
             bufferFileWriter.newLine();
             bufferFileWriter.append(updatedContent);
+            storeFeaturesTrace(targetFilePath, bufferFileWriter);
             bufferFileWriter.close();
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void storeFeaturesTrace(String targetPath, BufferedWriter bufferedWriter) {
+        if(CloneAsset.subFeatureTrace != null){
+            try {
+                for(String feature : CloneAsset.subFeatureTrace){
+                    String[] targetPathWithFeature = feature.split("/");
+                    String featureTrace = feature + targetPath.substring(0, targetPath.length() - 1) + "/" + targetPathWithFeature[targetPathWithFeature.length - 1] + getCurrentDateAndTime() ;
+                    bufferedWriter.newLine();
+                    bufferedWriter.append(featureTrace);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -152,11 +169,14 @@ public class TracingHandler {
 
     public void createFeatureTraces(){
         List<String> features = FeaturesCodeAnnotations.getInstance().getFeatureNames();
-        CloneAsset.subFeatureTrace = new ArrayList<String>();
-        for(String feature : features){
-            String subFeatureTrace = CloneAsset.subAssetTrace.substring(0, CloneAsset.subAssetTrace.length() - 2) + "/" + feature + ";";
-            CloneAsset.subFeatureTrace.add(subFeatureTrace);
+        if(features.size() != 0){
+            CloneAsset.subFeatureTrace = new ArrayList<String>();
+            for(String feature : features){
+                String subFeatureTrace = CloneAsset.subAssetTrace.substring(0, CloneAsset.subAssetTrace.length() - 1) + "/" + feature + "::";
+                CloneAsset.subFeatureTrace.add(subFeatureTrace);
+            }
         }
+
     }
 
 }

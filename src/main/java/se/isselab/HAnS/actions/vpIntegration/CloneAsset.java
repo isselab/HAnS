@@ -27,6 +27,7 @@ public class CloneAsset extends AnAction {
     public static String subAssetTrace;
     public static ArrayList<String> subFeatureTrace;
     public static ArrayList<PsiElement> featuresAnnotations;
+    public static boolean featuresFound;
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
@@ -44,29 +45,6 @@ public class CloneAsset extends AnAction {
             handleEditorMenu(anActionEvent,editor, tracingHandler);
         }
     }
-
-    public static void cloneFile(PsiFile file, FeaturesHandler featuresHandler) {
-        Project project = file.getProject();
-        PsiFileFactory fileFactory = PsiFileFactory.getInstance(project);
-        // Extract content from the original file
-        String fileContent = file.getText();
-        // Create a new file with the same content
-        PsiFile newFile = fileFactory.createFileFromText(file.getName(), file.getFileType(), fileContent);
-        clonedFile = newFile;
-        FeaturesCodeAnnotations.getInstance().setFeatureNames(extractFeatureNames(file));
-        featuresAnnotations = featuresHandler.findFeatureToFileMappings(file);
-        if(featuresAnnotations != null){
-            FeaturesCodeAnnotations.getInstance().addFeatures(featuresAnnotations);
-        }
-    }
-
-    public static void cloneDirectory(PsiDirectory psiDirectory, FeaturesHandler featuresHandler){
-        PsiDirectory newDirectory = psiDirectory;
-        clonedDirectory = newDirectory;
-        featuresAnnotations = featuresHandler.findFeatureToFolderMappings(psiDirectory);
-    }
-
-
     private void handleProjectMenu(AnActionEvent anActionEvent, Project project, TracingHandler tracingHandler){
         FeaturesHandler featuresHandler = new FeaturesHandler(project);
         VirtualFile virtualFile = CommonDataKeys.VIRTUAL_FILE.getData(anActionEvent.getDataContext());
@@ -110,16 +88,27 @@ public class CloneAsset extends AnAction {
         subAssetTrace = tracingHandler.createCodeAssetsTrace();
         tracingHandler.createFeatureTraces();
     }
+    public static void cloneFile(PsiFile file, FeaturesHandler featuresHandler) {
+        Project project = file.getProject();
+        PsiFileFactory fileFactory = PsiFileFactory.getInstance(project);
+        // Extract content from the original file
+        String fileContent = file.getText();
+        // Create a new file with the same content
+        PsiFile newFile = fileFactory.createFileFromText(file.getName(), file.getFileType(), fileContent);
+        clonedFile = newFile;
+        var featuresAnnotated = extractFeatureNames(file);
+        if(featuresAnnotated != null )
+            FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);
+        featuresAnnotations = featuresHandler.findFeatureToFileMappings(file);
+        if(featuresAnnotations != null){
+            FeaturesCodeAnnotations.getInstance().addFeatures(featuresAnnotations);
+        }
+    }
 
-    public static void resetClones() {
-        clonedFile = null;
-        clonedDirectory = null;
-        clonedClass = null;
-        clonedMethod = null;
-        elementsInRange = null;
-        subAssetTrace = null;
-        subFeatureTrace = null;
-        featuresAnnotations = null;
+    public static void cloneDirectory(PsiDirectory psiDirectory, FeaturesHandler featuresHandler){
+        PsiDirectory newDirectory = psiDirectory;
+        clonedDirectory = newDirectory;
+        featuresAnnotations = featuresHandler.findFeatureToFolderMappings(psiDirectory);
     }
 
     private void cloneClass(PsiElement element) {
@@ -182,7 +171,9 @@ public class CloneAsset extends AnAction {
                 }
             }
         }
-        return featureNames;
+        if(featureNames.size() != 0)
+            return featureNames;
+        return null;
     }
 
     private static List<String> extractFeaturesOfCodeBlock(List<PsiElement> elements){
@@ -203,6 +194,19 @@ public class CloneAsset extends AnAction {
                 }
             }
         }
-        return featureNames;
+        if(featureNames.size() != 0)
+            return featureNames;
+        return null;
+    }
+    public static void resetClones() {
+        clonedFile = null;
+        clonedDirectory = null;
+        clonedClass = null;
+        clonedMethod = null;
+        elementsInRange = null;
+        subAssetTrace = null;
+        subFeatureTrace = null;
+        featuresAnnotations = null;
+        FeaturesCodeAnnotations.getInstance().clearFeatures();
     }
 }
