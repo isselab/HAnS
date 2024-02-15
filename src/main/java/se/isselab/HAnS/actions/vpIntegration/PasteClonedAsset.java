@@ -21,7 +21,6 @@ public class PasteClonedAsset extends AnAction {
             //handle editor menu
             PastingEditorMenuHandler.handleEditorMenu(anActionEvent, project, tracingHandler);
         }
-        AssetsToClone.resetClones();
     }
 
     @Override
