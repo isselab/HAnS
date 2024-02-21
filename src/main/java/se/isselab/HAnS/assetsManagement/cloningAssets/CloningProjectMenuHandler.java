@@ -56,6 +56,9 @@ public class CloningProjectMenuHandler {
         PsiDirectory newDirectory = psiDirectory;
         AssetsToClone.clonedDirectory = newDirectory;
         AssetsToClone.featuresAnnotations = featuresHandler.findFeatureToFolderMappings(psiDirectory);
+        if(AssetsToClone.featuresAnnotations != null){
+            FeaturesCodeAnnotations.getInstance().addFeatures(AssetsToClone.featuresAnnotations);
+        }
     }
 
     private static void saveExtractedFeatureAnnotations(PsiElement element){
