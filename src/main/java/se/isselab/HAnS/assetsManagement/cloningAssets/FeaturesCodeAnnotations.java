@@ -1,4 +1,4 @@
-package se.isselab.HAnS.vpIntegration;
+package se.isselab.HAnS.assetsManagement.cloningAssets;
 
 import com.intellij.psi.PsiElement;
 

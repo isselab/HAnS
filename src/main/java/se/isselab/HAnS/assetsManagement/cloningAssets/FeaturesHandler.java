@@ -1,4 +1,4 @@
-package se.isselab.HAnS.vpIntegration;
+package se.isselab.HAnS.assetsManagement.cloningAssets;
 
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
