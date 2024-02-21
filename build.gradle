@@ -1,14 +1,6 @@
 import org.jetbrains.changelog.Changelog
-import org.jetbrains.changelog.ChangelogSectionUrlBuilder
 import org.jetbrains.changelog.ExtensionsKt
-
-def properties(String key) {
-    return providers.gradleProperty(key)
-}
-
-def environment(String key) {
-    return providers.environmentVariable(key)
-}
+import org.jetbrains.intellij.tasks.ListProductsReleasesTask
 
 plugins {
     id 'java'
@@ -18,8 +10,8 @@ plugins {
 
 apply plugin: 'org.jetbrains.changelog'
 
-group = properties('pluginGroup').get()
-version = properties('pluginVersion').get()
+group = providers.gradleProperty('pluginGroup').get()
+version = providers.gradleProperty('pluginVersion').get()
 
 repositories {
     mavenCentral()
@@ -32,12 +24,12 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    pluginName = properties("pluginName")
-    version = properties("platformVersion")
-    type = properties("platformType")
+    pluginName = providers.gradleProperty("pluginName").get()
+    version = providers.gradleProperty("platformVersion").get()
+    type = providers.gradleProperty("platformType").get()
 
     // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
-    plugins = properties('platformPlugins').map { it.split(',').collect { it.trim() }.findAll { !it.isEmpty() } }
+    plugins = providers.gradleProperty('platformPlugins').map { it.split(',').collect { it.trim() }.findAll { !it.isEmpty() } }
 }
 
 runIde {
@@ -45,9 +37,9 @@ runIde {
 }
 
 patchPluginXml {
-    pluginId = properties('pluginId')
-    sinceBuild = properties('pluginSinceBuild')
-    untilBuild = properties('pluginUntilBuild')
+    pluginId = providers.gradleProperty('pluginId').get()
+    sinceBuild = providers.gradleProperty('pluginSinceBuild').get()
+    untilBuild = providers.gradleProperty('pluginUntilBuild').get()
 
     // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
     pluginDescription = providers.fileContents(layout.projectDirectory.file('README.md')).asText.map {
@@ -81,25 +73,26 @@ test {
 }
 
 listProductsReleases {
-    types =  properties('platformTypes').map { it.split(',').collect { it.trim() }.findAll { !it.isEmpty() } }
+    types =  providers.gradleProperty('platformTypes').map { it.split(',').collect { it.trim() }.findAll { !it.isEmpty() } }
+    releaseChannels = EnumSet.of(ListProductsReleasesTask.Channel.RELEASE)
 }
 
 signPlugin {
-    certificateChain = environment("CERTIFICATE_CHAIN")
-    privateKey = environment("PRIVATE_KEY")
-    password = environment("PRIVATE_KEY_PASSWORD")
+    certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
+    privateKey = providers.environmentVariable("PRIVATE_KEY")
+    password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
 }
 
 publishPlugin {
     dependsOn("patchChangelog")
-    token = environment("PUBLISH_TOKEN")
+    token = providers.environmentVariable("PUBLISH_TOKEN")
 }
 
 
 changelog {
     path = file("CHANGELOG.md").canonicalPath
-    repositoryUrl = properties('pluginRepositoryUrl')
-    header = "${-> version.get()} - ${ExtensionsKt.date("yyyy-MM-dd")}"
+    repositoryUrl = providers.gradleProperty('pluginRepositoryUrl').get()
+    header = "${-> providers.gradleProperty('pluginVersion').get()} - ${ExtensionsKt.date("yyyy-MM-dd")}"
     itemPrefix = "-"
     keepUnreleasedSection = true
     unreleasedTerm = "Unreleased"
