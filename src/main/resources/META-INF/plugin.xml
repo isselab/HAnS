@@ -1,5 +1,6 @@
 <!--
 Copyright [2021] [Herman Jansson & Johan Martinson]
+Copyright [2024] [David Stechow & Philipp Kusmierz]
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,6 +16,8 @@ limitations under the License.
 -->
 <idea-plugin>
     <name>HAnS (Helping Annotate Software)</name>
+    <version>0.0.4</version>
+    <id>se.isselab.hans</id>
     <vendor email="johan.t.martinson+HAnS@gmail.com" url="https://github.com/isselab/HAnS">Johan Martinson and Herman Jansson</vendor>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
@@ -117,8 +120,23 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
+
+        <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService" serviceInterface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
     </extensions>
 
+    <extensionPoints>
+        <!-- &begin[Service]-->
+        <extensionPoint
+                name="featureService"
+                interface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
+        <!-- &end[Service]-->
+        <!-- &begin[Callback]-->
+        <extensionPoint
+                name="hansCallback"
+                interface="se.isselab.HAnS.featureExtension.HAnSCallback"/>
+        <!-- &end[Callback]-->
+
+    </extensionPoints>
     <actions>
         <action id="RenameFeature"
                 class="se.isselab.HAnS.actions.RenameAction"
@@ -139,7 +157,6 @@ limitations under the License.
                 icon="AllIcons.General.Remove">
             <add-to-group group-id="StructureViewPopupMenu" anchor="after" relative-to-action="AddFeature"/>
         </action>
-
         <!-- &begin[NewFile] -->
         <action id="CreateNewFileAction"
                 class="se.isselab.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"
