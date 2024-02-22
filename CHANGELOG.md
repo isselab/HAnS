@@ -3,8 +3,12 @@
 ## [Unreleased]
 
 ### Added
-
+- Extension points for, lines of feature code, tangling and scattering degree metrics.
+- A metrics service to calculate the different metrics.
+- 
 ### Changed
+- Upgrade Gradle version from 8.4 to 8.6.
+- upgrade gradle files from groovy to kotlin. 
 
 ### Deprecated
 
