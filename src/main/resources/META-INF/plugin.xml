@@ -117,6 +117,8 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
+        <postStartupActivity implementation="se.isselab.HAnS.assetsManagement.cloningAssets.IntegrationStartUp"/>
+        <copyPastePostProcessor implementation="se.isselab.HAnS.assetsManagement.cloningAssets.CopyPastePostProcessor"/>
     </extensions>
 
     <actions>

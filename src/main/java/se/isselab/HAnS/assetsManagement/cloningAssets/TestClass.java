@@ -1,6 +1,5 @@
 package se.isselab.HAnS.assetsManagement.cloningAssets;
 
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -8,11 +7,17 @@ import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
-import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase;
+import com.intellij.testFramework.LightProjectDescriptor;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import se.isselab.HAnS.actions.assetsManagement.CloneAsset;
 import se.isselab.HAnS.actions.assetsManagement.PasteClonedAsset;
 
-public class TestClass extends LightJavaCodeInsightFixtureTestCase {
+public class TestClass extends BasePlatformTestCase {
+
+   @Override
+    protected LightProjectDescriptor getProjectDescriptor(){
+        return null;
+    }
 
     public void testCloningFile() throws Exception {
         final PsiFile sourceFile = myFixture.configureByText("SourceFile.java", "public class SourceFile {}");
