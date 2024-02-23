@@ -90,58 +90,67 @@ public class FeatureTangling {
 
             //create entry for the featureFileMapping - this entry contains the feature and the feature locations within the file specified by filePath
 
-            //iterate over each file inside this map
-            for (var featureLocation : locationMap.getFeatureLocations()) {
-                //get the path and the corresponding feature locations within this path
-                String filePath = featureLocation.getMappedPath();
-                List<FeatureLocationBlock> locations = featureLocation.getFeatureLocations();
-
-                //add the {feature to location[]} to the fileMap
-                var map = featureFileMapping.get(filePath);
-                if (map != null) {
-                    //the file is already associated with features - check for tangling
-                    for (var existingFeatureLocations : map.entrySet()) {
-                        //iterate over the locations of the feature and check if any of them do intersect
-                        for (FeatureLocationBlock block : locations) {
-                            if (block.hasSharedLines(existingFeatureLocations.getValue().toArray(new FeatureLocationBlock[0]))) {
-                                //features share the same lines of code
-
-                                //add tangling entry for both features a->b and b->a
-                                var featureB = existingFeatureLocations.getKey();
-
-                                //add featureB to featureA
-                                if (tanglingMap.containsKey(feature)) {
-                                    tanglingMap.get(feature).add(featureB);
-                                } else {
-                                    HashSet<FeatureModelFeature> featureSet = new HashSet<>();
-                                    featureSet.add(featureB);
-                                    tanglingMap.put(feature, featureSet);
-                                }
-
-                                //add featureA to featureB
-                                if (tanglingMap.containsKey(featureB)) {
-                                    tanglingMap.get(featureB).add(feature);
-                                } else {
-                                    HashSet<FeatureModelFeature> featureSet = new HashSet<>();
-                                    featureSet.add(feature);
-                                    tanglingMap.put(featureB, featureSet);
-                                }
-                            }
-                        }
-                    }
-                    //add feature to the map
-                    map.put(feature, locations);
-
-                } else {
-                    //the file is new so we add a new entry
-                    HashMap<FeatureModelFeature, List<FeatureLocationBlock>> featureLocationMap = new HashMap<>();
-                    featureLocationMap.put(feature, locations);
-                    featureFileMapping.put(filePath, featureLocationMap);
-                }
-            }
+            extractTangledFeatures(feature, locationMap, featureFileMapping, tanglingMap);
         }
 
         return tanglingMap;
     }
 
+    private static void extractTangledFeatures(FeatureModelFeature feature, FeatureFileMapping locationMap, HashMap<String, HashMap<FeatureModelFeature, List<FeatureLocationBlock>>> featureFileMapping, HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap) {
+        //iterate over each file inside this map
+        for (var featureLocation : locationMap.getFeatureLocations()) {
+            //get the path and the corresponding feature locations within this path
+            String filePath = featureLocation.getMappedPath();
+            List<FeatureLocationBlock> locations = featureLocation.getFeatureLocations();
+
+            //add the {feature to location[]} to the fileMap
+            var map = featureFileMapping.get(filePath);
+            if (map != null) {
+                //the file is already associated with features - check for tangling
+                calculateTangledFeatureMap(feature, map, locations, tanglingMap);
+
+            } else {
+                //the file is new so we add a new entry
+                HashMap<FeatureModelFeature, List<FeatureLocationBlock>> featureLocationMap = new HashMap<>();
+                featureLocationMap.put(feature, locations);
+                featureFileMapping.put(filePath, featureLocationMap);
+            }
+        }
+    }
+
+    private static void calculateTangledFeatureMap(FeatureModelFeature feature, HashMap<FeatureModelFeature, List<FeatureLocationBlock>> map, List<FeatureLocationBlock> locations, HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap) {
+        for (var existingFeatureLocations : map.entrySet()) {
+            //iterate over the locations of the feature and check if any of them do intersect
+            for (FeatureLocationBlock block : locations) {
+                if (block.hasSharedLines(existingFeatureLocations.getValue().toArray(new FeatureLocationBlock[0]))) {
+                    //features share the same lines of code
+
+                    //add tangling entry for both features a->b and b->a
+                    var featureB = existingFeatureLocations.getKey();
+
+                    //add featureB to featureA
+                    if (tanglingMap.containsKey(feature)) {
+                        tanglingMap.get(feature).add(featureB);
+                    } else {
+                        HashSet<FeatureModelFeature> featureSet = new HashSet<>();
+                        featureSet.add(featureB);
+                        tanglingMap.put(feature, featureSet);
+                    }
+
+                    //add featureA to featureB
+                    if (tanglingMap.containsKey(featureB)) {
+                        tanglingMap.get(featureB).add(feature);
+                    } else {
+                        HashSet<FeatureModelFeature> featureSet = new HashSet<>();
+                        featureSet.add(feature);
+                        tanglingMap.put(featureB, featureSet);
+                    }
+                }
+            }
+        }
+        //add feature to the map
+        map.put(feature, locations);
+    }
+
 }
+
