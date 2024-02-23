@@ -59,17 +59,28 @@ public class FeatureScattering {
                 continue;
 
             //count segments annotated by the feature within a file and increase scattering degree for each
-            int prevLine = lines.first();
-            for (int line : lines) {
-                if (prevLine + 1 != line) {
-                    scatteringDegree++;
-                }
-                prevLine = line;
-            }
+            scatteringDegree = countSegments(lines);
 
         }
 
         return scatteringDegree;
+    }
+
+    /**
+     * Counts the number of contiguous segments within the sorted set
+     * @param set The sorted set from which the segments should be calculated
+     * @return Number of contiguous segments within the set
+     */
+    private static int countSegments(SortedSet<Integer> set) {
+        int segments = 0;
+        int prevLine = set.first();
+        for (int line : set) {
+            if (prevLine + 1 != line) {
+                segments++;
+            }
+            prevLine = line;
+        }
+        return segments;
     }
 
     /**
@@ -82,3 +93,4 @@ public class FeatureScattering {
         return getScatteringDegree(FeatureLocationManager.getFeatureFileMapping(project, feature));
     }
 }
+
