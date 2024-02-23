@@ -93,4 +93,3 @@ public class FeatureScattering {
         return getScatteringDegree(FeatureLocationManager.getFeatureFileMapping(project, feature));
     }
 }
-

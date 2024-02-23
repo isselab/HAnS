@@ -356,6 +356,4 @@ public class ProjectStructureTree {
         if (foundFile == null) { return null; }
         return foundFile;
     }
-
-
 }
