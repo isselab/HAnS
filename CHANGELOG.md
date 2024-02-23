@@ -3,14 +3,26 @@
 ## [Unreleased]
 
 ### Added
+- Extension points for metrics.
+- A metrics service to calculate the different metrics.
+- Supported metrics:
+  - LineCount 
+  - FeatureFileMapping 
+  - Scattering 
+  - Tangling
+- Badge to the discord community.
 
 ### Changed
+- Upgrade Gradle version from 8.4 to 8.6.
+- Upgrade gradle files from groovy to kotlin. 
+- Upgrade action scripts to new versions
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+- Contributor link to Kuzzi04
 
 ### Security
 
