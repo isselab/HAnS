@@ -38,9 +38,9 @@ public class FeaturesHandler {
             if(clonedFeatureNames != null){
                 for (String featureName : clonedFeatureNames) {
                     if (!existingFeatures.contains(featureName)) {
-                        if (!existingFeatures.contains("unassigned")) {
+                        if (!existingFeatures.contains("unAssigned")) {
                             createUnassignedFeature(newContent);
-                            existingFeatures.add("unassigned");
+                            existingFeatures.add("unAssigned");
                             modified = true;
                         }
                         addFeatureUnderUnassigned(newContent, featureName);

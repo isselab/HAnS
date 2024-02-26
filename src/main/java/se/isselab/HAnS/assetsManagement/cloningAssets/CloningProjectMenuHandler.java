@@ -40,9 +40,7 @@ public class CloningProjectMenuHandler {
     public static void cloneFile(PsiFile file, FeaturesHandler featuresHandler) {
         Project project = file.getProject();
         PsiFileFactory fileFactory = PsiFileFactory.getInstance(project);
-        // Extract content from the original file
         String fileContent = file.getText();
-        // Create a new file with the same content
         PsiFile newFile = fileFactory.createFileFromText(file.getName(), file.getFileType(), fileContent);
         AssetsToClone.clonedFile = newFile;
         saveExtractedFeatureAnnotations(file);
@@ -61,7 +59,7 @@ public class CloningProjectMenuHandler {
         }
     }
 
-    private static void saveExtractedFeatureAnnotations(PsiElement element){
+    public static void saveExtractedFeatureAnnotations(PsiElement element){
         var featuresAnnotated = extractFeatureNames(element);
         if(featuresAnnotated != null )
             FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);

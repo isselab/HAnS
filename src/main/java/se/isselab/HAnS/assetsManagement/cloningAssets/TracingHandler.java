@@ -27,6 +27,7 @@ public class TracingHandler {
     public TracingHandler(AnActionEvent anActionEvent){
         this.anActionEvent = anActionEvent;
     }
+    public TracingHandler(){}
 
     public String createFileOrFolderTrace(){
         try {
@@ -69,12 +70,43 @@ public class TracingHandler {
         }
     }
 
+    public void storeCopyPasteFileTrace(Project project, String sourceFilePath, String targetFilePath){
+        String currentDateAndTime = getCurrentDateAndTime();
+        String textFilePath = getTraceFilePath(project);
+        try {
+            String updatedContent = sourceFilePath + ";" +  targetFilePath + ";" + currentDateAndTime;
+            FileWriter fileWriter = new FileWriter(textFilePath, true);
+            BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
+            bufferFileWriter.newLine();
+            bufferFileWriter.append(updatedContent);
+            storeCopyFeatureTraces(targetFilePath, bufferFileWriter);
+            bufferFileWriter.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void storeFeaturesTrace(String targetPath, BufferedWriter bufferedWriter) {
         if(AssetsToClone.subFeatureTrace != null){
             try {
                 for(String feature : AssetsToClone.subFeatureTrace){
                     String[] targetPathWithFeature = feature.split("/");
-                    String featureTrace = feature + targetPath.substring(0, targetPath.length() - 1) + "/" + targetPathWithFeature[targetPathWithFeature.length - 1] + getCurrentDateAndTime() ;
+                    String featureTrace = feature + targetPath.substring(0, targetPath.length() - 1) + "/" + targetPathWithFeature[targetPathWithFeature.length - 1] + getCurrentDateAndTime();
+                    bufferedWriter.newLine();
+                    bufferedWriter.append(featureTrace);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void storeCopyFeatureTraces(String targetPath, BufferedWriter bufferedWriter){
+        if(AssetsToClone.subFeatureTrace != null){
+            try {
+                for(String feature : AssetsToClone.subFeatureTrace){
+                    String featureTrace = feature + getCurrentDateAndTime();
                     bufferedWriter.newLine();
                     bufferedWriter.append(featureTrace);
                 }
@@ -177,7 +209,17 @@ public class TracingHandler {
                 AssetsToClone.subFeatureTrace.add(subFeatureTrace);
             }
         }
+    }
 
+    public void createCopyFeatureTrace(Project project, String sourceProjectName){
+        List<String> features = FeaturesCodeAnnotations.getInstance().getFeatureNames();
+        if(features.size() != 0){
+            AssetsToClone.subFeatureTrace = new ArrayList<String>();
+            for(String feature : features){
+                String subFeatureTrace = sourceProjectName + "::" + feature + "::";
+                AssetsToClone.subFeatureTrace.add(subFeatureTrace);
+            }
+        }
     }
 
 }
