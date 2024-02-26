@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileCopyEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
+import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
@@ -38,13 +39,17 @@ public class IntegrationStartUp implements StartupActivity {
                         Project project = ProjectUtil.guessProjectForFile(copyEvent.getFile());
                         sourceProjectName = project != null ? project.getName() : "Unknown Project";
                         sourceFile = PsiManager.getInstance(project).findFile(copyEvent.getFile());
-                        if(directoryCloned){
-                            System.out.println("Before folder " + copyEvent.getFile().getParent().getPath());
-                        }
+
                     } else if (event instanceof VFileCreateEvent) {
                         VFileCreateEvent createEvent = (VFileCreateEvent) event;
+                        String newChildPath = createEvent.getChildName(); // Get the name of the created file or directory
+                        VirtualFile parentDirectory = createEvent.getParent();
+                        String fullPath = parentDirectory.getPath() + "/" + newChildPath;
+
                         if (createEvent.isDirectory()) {
-                            directoryCloned = true;
+                            System.out.println("Directory created (possibly by copy): " + fullPath);
+                        } else {
+                            System.out.println("File created (possibly by copy): " + fullPath);
                         }
                     }
                 }
@@ -60,13 +65,15 @@ public class IntegrationStartUp implements StartupActivity {
                             //System.out.println("File copied : " + copyEvent.getFile().getName() + " to " + copyEvent.getPath());
                             targetAssetPath = copyEvent.getPath();
                             manageFileClone(targetAssetPath);
-                        } else if (event instanceof VFileCreateEvent) {
+
+                        }  else if (event instanceof VFileCreateEvent) {
                             VFileCreateEvent createEvent = (VFileCreateEvent) event;
                             if (createEvent.isDirectory()) {
                                 //System.out.println("Folder copied: " + createEvent.getPath());
                                 manageFolderClone(createEvent, project);
                             }
                         }
+
                     }
                 }
             }
@@ -82,9 +89,8 @@ public class IntegrationStartUp implements StartupActivity {
                 }
             }
             private void manageFolderClone(VFileCreateEvent createEvent, Project project) {
-
+                CloneManager.CloneFolderAssets();
             }
-
         });
     }
 }

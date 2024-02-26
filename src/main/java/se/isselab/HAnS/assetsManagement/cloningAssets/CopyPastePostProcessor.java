@@ -2,7 +2,10 @@ package se.isselab.HAnS.assetsManagement.cloningAssets;
 
 import com.intellij.codeInsight.editorActions.TextBlockTransferableData;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -13,7 +16,24 @@ import java.util.ListIterator;
 public class CopyPastePostProcessor extends com.intellij.codeInsight.editorActions.CopyPastePostProcessor {
     @Override
     public @NotNull List<TextBlockTransferableData> collectTransferableData(@NotNull PsiFile psiFile, @NotNull Editor editor, int @NotNull [] ints, int @NotNull [] ints1) {
-        System.out.println(psiFile.getName());
+        PsiElement startElement = psiFile.findElementAt(ints[0]);
+        while (startElement != null && !(startElement instanceof PsiMethod) && !(startElement instanceof PsiClass)) {
+            startElement = startElement.getParent();
+        }
+        PsiMethod copiedMethod = null;
+        PsiClass copiedClass = null;
+        if (startElement instanceof PsiMethod) {
+            copiedMethod = (PsiMethod) startElement;
+            System.out.println(copiedMethod.getName());
+            CloneManager.CloneMethodAssets(psiFile, copiedMethod);
+        }else if(startElement instanceof PsiClass) {
+            copiedClass = (PsiClass) startElement;
+            System.out.println(copiedClass.getName());
+            CloneManager.CloneClassAssets(psiFile, copiedClass);
+        } else {
+            CloneManager.CloneBlockAssets(psiFile);
+        }
+
         List<TextBlockTransferableData> data = new List<TextBlockTransferableData>() {
             @Override
             public int size() {
