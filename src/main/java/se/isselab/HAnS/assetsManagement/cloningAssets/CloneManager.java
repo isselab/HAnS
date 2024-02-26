@@ -8,6 +8,10 @@ public class CloneManager {
         TracingHandler tracingHandler = new TracingHandler();
         FeaturesHandler featuresHandler = new FeaturesHandler(project);
         CloningProjectMenuHandler.saveExtractedFeatureAnnotations(psiFile);
+        AssetsToClone.featuresAnnotations = featuresHandler.findFeatureToFileMappings(psiFile);
+        if(AssetsToClone.featuresAnnotations != null){
+            FeaturesCodeAnnotations.getInstance().addFeatures(AssetsToClone.featuresAnnotations);
+        }
         featuresHandler.addFeaturesToFeatureModel();
         tracingHandler.createCopyFeatureTrace(project, sourceProjectName);
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);

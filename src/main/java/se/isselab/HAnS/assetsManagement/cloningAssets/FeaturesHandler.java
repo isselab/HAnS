@@ -102,11 +102,11 @@ public class FeaturesHandler {
     }
 
     private void createUnassignedFeature(StringBuilder content) {
-        content.append("\nunassigned");
+        content.append("\nunAssigned");
     }
 
     private void addFeatureUnderUnassigned(StringBuilder content, String featureName) {
-        String unassignedFeaturePattern = "\nunassigned";
+        String unassignedFeaturePattern = "\nunAssigned";
 
         // Find the index where the "unassigned" feature is located
         int unassignedIndex = content.indexOf(unassignedFeaturePattern);
