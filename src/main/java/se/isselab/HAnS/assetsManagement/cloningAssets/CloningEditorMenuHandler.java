@@ -47,7 +47,7 @@ public class CloningEditorMenuHandler {
         saveExtractedFeatureAnnotations(methodAtCaret);
     }
 
-    private static void saveExtractedFeatureAnnotations(PsiElement element){
+    public static void saveExtractedFeatureAnnotations(PsiElement element){
         var featuresAnnotated = extractFeatureNames(element);
         if(featuresAnnotated != null )
             FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);

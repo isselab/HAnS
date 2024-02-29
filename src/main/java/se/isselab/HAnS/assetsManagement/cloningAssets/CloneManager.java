@@ -1,6 +1,7 @@
 package se.isselab.HAnS.assetsManagement.cloningAssets;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
@@ -17,17 +18,21 @@ public class CloneManager {
         featuresHandler.addFeaturesToFeatureModel();
         tracingHandler.createCopyFeatureTrace(project, sourceProjectName);
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
+        AssetsToClone.resetClones();
     }
     public static void CloneFolderAssets(){
 
     }
-    public static void CloneClassAssets(PsiFile file, PsiClass copiedClass){
-
+    public static void CloneClassAssets(Project project, PsiFile file, PsiClass copiedClass){
+        TracingHandler tracingHandler = new TracingHandler();
+        FeaturesHandler featuresHandler = new FeaturesHandler(project);
+        CloningEditorMenuHandler.saveExtractedFeatureAnnotations(copiedClass);
+        featuresHandler.addFeaturesToFeatureModel();
     }
-    public static void CloneMethodAssets(PsiFile file, PsiMethod copiedMethod){
-
-    }
-    public static void CloneBlockAssets(PsiFile file){
-
+    public static void CloneMethodAssets(Project project, PsiFile file, PsiMethod copiedMethod){
+        TracingHandler tracingHandler = new TracingHandler();
+        FeaturesHandler featuresHandler = new FeaturesHandler(project);
+        CloningEditorMenuHandler.saveExtractedFeatureAnnotations(copiedMethod);
+        featuresHandler.addFeaturesToFeatureModel();
     }
 }

@@ -106,7 +106,7 @@ public class TracingHandler {
         if(AssetsToClone.subFeatureTrace != null){
             try {
                 for(String feature : AssetsToClone.subFeatureTrace){
-                    String featureTrace = feature + getCurrentDateAndTime();
+                    String featureTrace = feature;
                     bufferedWriter.newLine();
                     bufferedWriter.append(featureTrace);
                 }
@@ -216,7 +216,7 @@ public class TracingHandler {
         if(features.size() != 0){
             AssetsToClone.subFeatureTrace = new ArrayList<String>();
             for(String feature : features){
-                String subFeatureTrace = sourceProjectName + "::" + feature + "::";
+                String subFeatureTrace = sourceProjectName + "::" + feature;
                 AssetsToClone.subFeatureTrace.add(subFeatureTrace);
             }
         }
