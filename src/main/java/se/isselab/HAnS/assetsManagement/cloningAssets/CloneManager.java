@@ -23,16 +23,26 @@ public class CloneManager {
     public static void CloneFolderAssets(){
 
     }
-    public static void CloneClassAssets(Project project, PsiFile file, PsiClass copiedClass){
+    public static void CloneClassAssets(Project project, String sourceProjectName, String sourcePath, String targetPath, PsiClass copiedClass, String currentClassName){
         TracingHandler tracingHandler = new TracingHandler();
         FeaturesHandler featuresHandler = new FeaturesHandler(project);
         CloningEditorMenuHandler.saveExtractedFeatureAnnotations(copiedClass);
         featuresHandler.addFeaturesToFeatureModel();
+        tracingHandler.createCopyFeatureTrace(project, sourceProjectName);
+        String className = (currentClassName.length() > 0) ? currentClassName : copiedClass.getName();
+        sourcePath = sourcePath + "/" + copiedClass.getName();
+        targetPath = targetPath + "/" + className;
+        tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
     }
-    public static void CloneMethodAssets(Project project, PsiFile file, PsiMethod copiedMethod){
+    public static void CloneMethodAssets(Project project, String sourceProjectName, String sourcePath, String targetPath, String className, PsiMethod copiedMethod, String currentClassName, String currentMethodName){
         TracingHandler tracingHandler = new TracingHandler();
         FeaturesHandler featuresHandler = new FeaturesHandler(project);
         CloningEditorMenuHandler.saveExtractedFeatureAnnotations(copiedMethod);
         featuresHandler.addFeaturesToFeatureModel();
+        tracingHandler.createCopyFeatureTrace(project, sourceProjectName);
+        String methodName = (currentMethodName.length() > 0) ? currentMethodName : copiedMethod.getName();
+        sourcePath = sourcePath + "/" + className + "/" + copiedMethod.getName();
+        targetPath = targetPath + "/" + currentClassName + "/" + methodName;
+        tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
     }
 }
