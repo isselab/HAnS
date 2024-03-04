@@ -11,6 +11,8 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
     PsiClass copiedClass;
     PsiMethod copiedMethod;
@@ -23,7 +25,6 @@ public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
         int startLine = document.getLineNumber(ints[0]);
         int endLine = document.getLineNumber(ints1[0]);
         boolean isMultiLineCopy = endLine > startLine;
-        System.out.println(startLine +" start " + endLine + " end " + isMultiLineCopy);
         if(isMultiLineCopy){
             PsiElement startElement = psiFile.findElementAt(ints[0]);
             while (startElement != null && !(startElement instanceof PsiMethod) && !(startElement instanceof PsiClass)) {
@@ -46,33 +47,34 @@ public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
         String currentClassName = "";
         if (psiFile != null && editor != null) {
             int caretOffset = editor.getCaretModel().getOffset();
-            PsiElement elementAtCaret = psiFile.findElementAt(caretOffset);
+            PsiElement methodAtCaret = psiFile.findElementAt(caretOffset);
+            PsiElement classAtCaret = psiFile.findElementAt(caretOffset);
             PsiMethod currentMethod = null;
-            while (elementAtCaret != null) {
-                if (elementAtCaret instanceof PsiMethod) {
-                    currentMethod = (PsiMethod) elementAtCaret;
+            while (methodAtCaret != null) {
+                if (methodAtCaret instanceof PsiMethod) {
+                    currentMethod = (PsiMethod) methodAtCaret;
                     break;
                 }
-                elementAtCaret = elementAtCaret.getParent();
+                methodAtCaret = methodAtCaret.getParent();
             }
             if(currentMethod != null){
                 currentMethodName = currentMethod.getName();
             }
             PsiClass currentClass = null;
-            while (elementAtCaret != null) {
-                if (elementAtCaret instanceof PsiClass) {
-                    currentClass = (PsiClass) elementAtCaret;
+            while (classAtCaret != null) {
+                if (classAtCaret instanceof PsiClass) {
+                    currentClass = (PsiClass) classAtCaret;
                     break;
                 }
-                elementAtCaret = elementAtCaret.getParent();
+                classAtCaret = classAtCaret.getParent();
             }
             if(currentClass != null){
                 currentClassName = currentClass.getName();
             }
         }
-        System.out.println("method" + currentMethodName);
-        System.out.println("class" + currentClassName);
-
+        var featuresAnnotated = FeaturesHandler.getFeaturesAnnotationsFromText(s);
+        if(featuresAnnotated != null )
+            FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);
         if (copiedClass != null) {
             VirtualFile virtualFile = psiFile.getVirtualFile();
             if (virtualFile != null) {

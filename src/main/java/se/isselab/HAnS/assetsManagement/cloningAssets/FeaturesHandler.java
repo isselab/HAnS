@@ -18,6 +18,8 @@ import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationFileNameImpl;
 import se.isselab.HAnS.folderAnnotation.psi.impl.FolderAnnotationLpqImpl;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FeaturesHandler {
     Project project;
@@ -195,6 +197,23 @@ public class FeaturesHandler {
             return featuresElements;
         return null;
 
+    }
+    public static List<String> getFeaturesAnnotationsFromText(String copiedText){
+        List<String> features = new ArrayList<>();
+        String regex = "// &(?:line|begin)\\[([^\\]]+)\\]";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(copiedText);
+        while (matcher.find()) {
+            String[] featureParts = matcher.group(1).split("::");
+            for (String part : featureParts) {
+                if (!part.isEmpty() && !features.contains(part)) {
+                    features.add(part);
+                }
+            }
+        }
+        if(features.size() != 0)
+            return features;
+        return null;
     }
 
 }
