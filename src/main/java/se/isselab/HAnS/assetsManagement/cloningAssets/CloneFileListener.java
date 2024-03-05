@@ -11,14 +11,13 @@ import com.intellij.openapi.vfs.newvfs.BulkFileListener;
 import com.intellij.openapi.vfs.newvfs.events.VFileCopyEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
-import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class IntegrationStartUp implements StartupActivity {
+public class CloneFileListener implements StartupActivity {
     private static final long DEBOUNCE_DELAY_MS = 500;
     private long lastEventTime = 0;
     @Override

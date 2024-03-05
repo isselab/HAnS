@@ -117,10 +117,14 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
-        <postStartupActivity implementation="se.isselab.HAnS.assetsManagement.cloningAssets.IntegrationStartUp"/>
+        <postStartupActivity implementation="se.isselab.HAnS.assetsManagement.cloningAssets.CloneFileListener"/>
         <copyPastePreProcessor implementation="se.isselab.HAnS.assetsManagement.cloningAssets.CloneCopyPastePreProcessor"/>
+        <editorNotificationProvider implementation="se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingProvider"/>
     </extensions>
-
+    <applicationListeners>
+        <listener class="se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingListener"
+                  topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+    </applicationListeners>
     <actions>
         <action id="RenameFeature"
                 class="se.isselab.HAnS.actions.RenameAction"
