@@ -1,5 +1,6 @@
 <!--
 Copyright [2021] [Herman Jansson & Johan Martinson]
+Copyright [2024] [David Stechow & Philipp Kusmierz]
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,137 +15,150 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <idea-plugin>
-    <id>${PLUGIN_ID}</id>
-    <name>HAnS: Helping Annotate Software</name>
-    <vendor email="johan.t.martinson+HAnS@gmail.com" url="https://bitbucket.org/easelab/hans-text/">Johan Martinson and Herman Jansson</vendor>
-
-    <description><![CDATA[
-    Providing support for editing embedded feature annotations
-    ]]></description>
+    <name>HAnS (Helping Annotate Software)</name>
+    <version>0.0.4</version>
+    <id>se.isselab.hans</id>
+    <vendor email="johan.t.martinson+HAnS@gmail.com" url="https://github.com/isselab/HAnS">Johan Martinson and Herman Jansson</vendor>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
-    <!--<depends>com.intellij.modules.java</depends>-->
-
-    <!-- &begin[ColorSettingsPage] -->
-    <extensions defaultExtensionNs="com.intellij">
-        <colorSettingsPage implementation="se.ch.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
-        <applicationService serviceImplementation="se.ch.HAnS.annotationLogger.SessionTracker"/>
-        <projectService serviceImplementation="se.ch.HAnS.annotationLogger.ProjectCloseService"/>
-        <postStartupActivity implementation="se.ch.HAnS.annotationLogger.PluginStartupActivity"/>
-        <applicationConfigurable instance="se.ch.HAnS.annotationLogger.HansAnnotationLoggingPage"/>
-    </extensions>
-    <!-- &end[ColorSettingsPage] -->
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[HAnS::FeatureModel] -->
-        <fileType name="Feature Model File" implementationClass="se.ch.HAnS.featureModel.FeatureModelFileType"
+        <fileType name="Feature Model File" implementationClass="se.isselab.HAnS.featureModel.FeatureModelFileType"
                   fieldName="INSTANCE" language="FeatureModel" extensions="feature-model"/>
         <lang.parserDefinition language="FeatureModel"
-                               implementationClass="se.ch.HAnS.featureModel.FeatureModelParserDefinition"/>
+                               implementationClass="se.isselab.HAnS.featureModel.FeatureModelParserDefinition"/>
         <!-- &end[HAnS::FeatureModel] -->
 
         <!-- &begin[HAnS::FileAnnotation] -->
-        <fileType name="File Annotation File" implementationClass="se.ch.HAnS.fileAnnotation.FileAnnotationFileType"
+        <fileType name="File Annotation File" implementationClass="se.isselab.HAnS.fileAnnotation.FileAnnotationFileType"
                   fieldName="INSTANCE" language="FileAnnotation" extensions="feature-to-file"/>
         <lang.parserDefinition language="FileAnnotation"
-                                implementationClass="se.ch.HAnS.fileAnnotation.FileAnnotationParserDefinition"/>
+                                implementationClass="se.isselab.HAnS.fileAnnotation.FileAnnotationParserDefinition"/>
         <!-- &end[HAnS::FileAnnotation] -->
 
         <!-- &begin[HAnS::FolderAnnotation] -->
-        <fileType name="Feature To Folder File" implementationClass="se.ch.HAnS.folderAnnotation.FolderAnnotationFileType"
+        <fileType name="Feature To Folder File" implementationClass="se.isselab.HAnS.folderAnnotation.FolderAnnotationFileType"
                   fieldName="INSTANCE" language="FolderAnnotation" extensions="feature-to-folder"/>
         <lang.parserDefinition language="FolderAnnotation"
-                               implementationClass="se.ch.HAnS.folderAnnotation.FolderAnnotationParserDefinition"/>
+                               implementationClass="se.isselab.HAnS.folderAnnotation.FolderAnnotationParserDefinition"/>
         <!-- &end[HAnS::FolderAnnotation] -->
 
         <!-- &begin[HAnS::CodeAnnotation] -->
-        <fileType name="Code Annotation File" implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationFileType"
+        <fileType name="Code Annotation File" implementationClass="se.isselab.HAnS.codeAnnotation.CodeAnnotationFileType"
                   fieldName="INSTANCE" language="CodeAnnotations" extensions="code-annotation"/>
         <lang.parserDefinition language="CodeAnnotations"
-                               implementationClass="se.ch.HAnS.codeAnnotation.CodeAnnotationParserDefinition"/>
+                               implementationClass="se.isselab.HAnS.codeAnnotation.CodeAnnotationParserDefinition"/>
         <!-- &end[HAnS::CodeAnnotation] -->
 
         <!-- &begin[CodeCompletion] -->
         <completion.contributor language="any"
-                                implementationClass="se.ch.HAnS.codeCompletion.FileCompletionContributor"/>
+                                implementationClass="se.isselab.HAnS.codeCompletion.FileCompletionContributor"/>
         <!-- &end[CodeCompletion] -->
 
         <!-- &begin[SyntaxHighlighting] -->
         <!-- &begin[SyntaxHighlighting::FeatureModel] -->
         <lang.syntaxHighlighterFactory language="FeatureModel"
-                                       implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/>
+                                       implementationClass="se.isselab.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighterFactory"/>
         <annotator language="FeatureModel"
-                   implementationClass="se.ch.HAnS.syntaxHighlighting.featureModel.FeatureModelAnnotator"/>
+                   implementationClass="se.isselab.HAnS.syntaxHighlighting.featureModel.FeatureModelAnnotator"/>
         <!-- &end[SyntaxHighlighting::FeatureModel] -->
 
         <!-- &begin[SyntaxHighlighting::FolderAnnotation] -->
-        <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.isselab.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationSyntaxHighlighterFactory"/>
         <annotator language="FolderAnnotation"
-                   implementationClass="se.ch.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationAnnotator"/>
+                   implementationClass="se.isselab.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationAnnotator"/>
         <!-- &end[SyntaxHighlighting::FolderAnnotation] -->
 
         <!-- &begin[SyntaxHighlighting::FileAnnotation] -->
-        <lang.syntaxHighlighterFactory language="FileAnnotation" implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FileAnnotation]-->
+        <lang.syntaxHighlighterFactory language="FileAnnotation" implementationClass="se.isselab.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FileAnnotation]-->
         <annotator language="FileAnnotation"
-                   implementationClass="se.ch.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationAnnotator"/>
+                   implementationClass="se.isselab.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationAnnotator"/>
         <!-- &end[SyntaxHighlighting::FileAnnotation] -->
 
         <!-- &begin[SyntaxHighlighting::CodeAnnotation] -->
-        <lang.syntaxHighlighterFactory language="CodeAnnotations" implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::CodeAnnotation]-->
+        <lang.syntaxHighlighterFactory language="CodeAnnotations"
+                                       implementationClass="se.isselab.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::CodeAnnotation]-->
         <annotator language="CodeAnnotations"
-                   implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationAnnotator"/>
+                   implementationClass="se.isselab.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationAnnotator"/>
         <!-- &end[SyntaxHighlighting::CodeAnnotation] -->
 
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/HAnSDarcula.xml"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/HAnSDefault.xml"/>
+
+        <!-- &begin[ColorSettingsPage] -->
+        <colorSettingsPage implementation="se.isselab.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
+        <!-- &end[ColorSettingsPage] -->
+
         <!-- &end[SyntaxHighlighting] -->
 
         <!-- &begin[Injection] -->
-        <multiHostInjector implementation="se.ch.HAnS.codeAnnotation.CodeAnnotationInjector"/>
+        <multiHostInjector implementation="se.isselab.HAnS.codeAnnotation.CodeAnnotationInjector"/>
         <!-- &end[Injection] -->
 
         <!-- &begin[FeatureView] -->
         <toolWindow id="Feature Model View" secondary="true" anchor="left"
-                    factoryClass="se.ch.HAnS.featureView.FeatureViewFactory"/>
+                    factoryClass="se.isselab.HAnS.featureView.FeatureViewFactory"/>
         <!-- &end[FeatureView] -->
 
         <!-- &begin[Referencing] -->
-        <psi.referenceContributor implementation="se.ch.HAnS.referencing.FeatureReferenceContributor" language=""/>
+        <psi.referenceContributor implementation="se.isselab.HAnS.referencing.FeatureReferenceContributor" language=""/>
         <lang.findUsagesProvider language="FeatureModel"
-                                 implementationClass="se.ch.HAnS.referencing.FeatureFindUsagesProvider"/>
-        <useScopeEnlarger implementation="se.ch.HAnS.FeatureAnnotationScopeEnlarger"/>
-        <psi.referenceContributor implementation="se.ch.HAnS.referencing.FileReferenceContributor" language=""/>
-        <renameInputValidator implementation="se.ch.HAnS.referencing.FeatureNameInputValidator"/>
+                                 implementationClass="se.isselab.HAnS.referencing.FeatureFindUsagesProvider"/>
+        <useScopeEnlarger implementation="se.isselab.HAnS.FeatureAnnotationScopeEnlarger"/>
+        <psi.referenceContributor implementation="se.isselab.HAnS.referencing.FileReferenceContributor" language=""/>
+        <renameInputValidator implementation="se.isselab.HAnS.referencing.FeatureNameInputValidator"/>
         <!-- &end[Referencing] -->
 
         <!-- &begin[FileTemplate] -->
-        <fileTemplateGroup implementation="se.ch.HAnS.actions.newFile.EFAFileTemplateManager"/>
+        <fileTemplateGroup implementation="se.isselab.HAnS.actions.newFile.EFAFileTemplateManager"/>
         <!-- &end[FileTemplate] -->
         <!-- &begin[LiveTemplate] -->
         <defaultLiveTemplates file="/liveTemplates/EFA.xml"/>
-        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
-        <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
+        <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
+        <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
-        <psi.treeChangeListener implementation="se.ch.HAnS.annotationLogger.CustomDocumentListener"/>
+
+        <moduleService serviceImplementation="se.isselab.HAnS.annotationLogger.SessionTracker"/>
+        <projectService serviceImplementation="se.isselab.HAnS.annotationLogger.ProjectCloseService"/>
+        <postStartupActivity implementation="se.isselab.HAnS.annotationLogger.PluginStartupActivity"/>
+        <applicationConfigurable instance="se.isselab.HAnS.annotationLogger.HansAnnotationLoggingPage" displayName="HAnS Logger"/>
+
+
+        <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService"
+                        serviceInterface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
     </extensions>
 
+    <extensionPoints>
+        <!-- &begin[Service]-->
+        <extensionPoint
+                name="featureService"
+                interface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
+        <!-- &end[Service]-->
+        <!-- &begin[Callback]-->
+        <extensionPoint
+                name="hansCallback"
+                interface="se.isselab.HAnS.featureExtension.HAnSCallback"/>
+        <!-- &end[Callback]-->
+
+    </extensionPoints>
     <actions>
         <action id="RenameFeature"
-                class="se.ch.HAnS.actions.RenameAction"
+                class="se.isselab.HAnS.actions.RenameAction"
                 text="Rename..."
                 description="Rename feature">
             <add-to-group group-id="StructureViewPopupMenu" anchor="first"/>
         </action>
         <action id="AddFeature"
-                class="se.ch.HAnS.actions.AddAction"
+                class="se.isselab.HAnS.actions.AddAction"
                 text="Add..." description="Add feature"
                 icon="AllIcons.General.Add">
             <add-to-group group-id="StructureViewPopupMenu" anchor="after" relative-to-action="RenameFeature"/>
         </action>
         <action id="DeleteFeature"
-                class="se.ch.HAnS.actions.DeleteAction"
+                class="se.isselab.HAnS.actions.DeleteAction"
                 text="Delete..."
                 description="Delete feature"
                 icon="AllIcons.General.Remove">
@@ -153,7 +167,7 @@ limitations under the License.
 
         <!-- &begin[NewFile] -->
         <action id="CreateNewFileAction"
-                class="se.ch.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"
+                class="se.isselab.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"
                 description="Create new feature mappings">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
@@ -164,5 +178,4 @@ limitations under the License.
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
     </actions>
-
 </idea-plugin>

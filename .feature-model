@@ -23,6 +23,16 @@ HAnS
         CodeAnnotation
         ColorSettingsPage
     Referencing
+        FeatureLocation
+    Metrics
+        LineCount
+        FeatureFileMapping
+        Scattering
+        Tangling
+    ExtensionPoint
+        Callback
+        Service
+    FileHighlighter
     FeatureView
     FileTemplate
         NewFile
