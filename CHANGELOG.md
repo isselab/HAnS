@@ -2,7 +2,10 @@
 
 ## [Unreleased]
 
+## [0.0.4] - 2024-03-06
+
 ### Added
+
 - Extension points for metrics.
 - A metrics service to calculate the different metrics.
 - Supported metrics:
@@ -13,18 +16,14 @@
 - Badge to the discord community.
 
 ### Changed
+
 - Upgrade Gradle version from 8.4 to 8.6.
 - Upgrade gradle files from groovy to kotlin. 
 - Upgrade action scripts to new versions
 
-### Deprecated
-
-### Removed
-
 ### Fixed
-- Contributor link to Kuzzi04
 
-### Security
+- Contributor link to Kuzzi04
 
 ## [0.0.3] - 2023-12-21
 
@@ -74,7 +73,8 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.4...HEAD
+[0.0.4]: https://github.com/isselab/HAnS/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/isselab/HAnS/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/isselab/HAnS/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/isselab/HAnS/commits/v0.0.1
