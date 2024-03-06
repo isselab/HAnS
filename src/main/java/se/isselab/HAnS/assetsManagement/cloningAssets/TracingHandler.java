@@ -181,7 +181,7 @@ public class TracingHandler {
         return "CodeBlock";
     }
 
-    private String getTraceFilePath(Project project){
+    public static String getTraceFilePath(Project project){
         //return System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\trace-db.txt";
         if (project == null) return null;
 

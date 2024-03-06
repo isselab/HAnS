@@ -3,6 +3,7 @@ package se.isselab.HAnS.assetsManagement.propagatingToAsset;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -10,9 +11,15 @@ import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import se.isselab.HAnS.assetsManagement.cloningAssets.TracingHandler;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class PropagatingProvider extends EditorNotifications.Provider<EditorNotificationPanel>{
     private final Project myProject;
+    private static boolean sourceFileChanged;
     public PropagatingProvider(Project project){
         myProject = project;
     }
@@ -23,13 +30,14 @@ public class PropagatingProvider extends EditorNotifications.Provider<EditorNoti
     @Nullable
     @Override
     public EditorNotificationPanel createNotificationPanel(@NotNull VirtualFile file, @NotNull FileEditor fileEditor, @NotNull Project project) {
+        System.out.println(file.getPath());
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
         boolean cloned = isCloned(psiFile);
-        if (cloned) {
+        if (cloned && sourceFileChanged) {
             EditorNotificationPanel panel = new EditorNotificationPanel();
             panel.setText("This file was copied/cloned. Click on Propagate to get the changes from the source file.");
             panel.createActionLabel("Propagate Changes", () -> {
-                propagateChanges();
+                propagateChanges(psiFile);
             });
             panel.createActionLabel("Cancel", () -> {
                 panel.setVisible(false);
@@ -40,10 +48,47 @@ public class PropagatingProvider extends EditorNotifications.Provider<EditorNoti
     }
 
     private boolean isCloned(PsiFile file) {
-        //TODO check if file is cloned
-        return true;
+        Project project = file.getProject();
+        List<List<String>> parsedLines = getTraces(project);
+        for(int i = 0; i < parsedLines.size(); i++){
+            if(parsedLines.get(i).get(1).equals(file.getVirtualFile().getPath()))
+                return true;
+        }
+        return false;
     }
-    private void propagateChanges(){
-        //TODO propagate changes of file
+    private void propagateChanges(PsiFile file){
+        //TODO propagate changes to file
+    }
+
+    public static boolean fileIsChanged(Project project, VirtualFile sourceFile){
+        List<List<String>> parsedLines = getTraces(project);
+        for(int i = 0; i < parsedLines.size(); i++){
+            if(parsedLines.get(i).get(0).equals(sourceFile.getPath()))
+            {
+                sourceFileChanged = true;
+                VirtualFile clonedFile = LocalFileSystem.getInstance().findFileByPath(parsedLines.get(i).get(1));
+                EditorNotifications.getInstance(project).updateNotifications(clonedFile);
+                return true;
+            }
+
+        }
+        sourceFileChanged = false;
+        return false;
+    }
+    public static List<List<String>> getTraces(Project project){
+        List<List<String>> parsedLines = new ArrayList<>();
+        String traceFilePath = TracingHandler.getTraceFilePath(project);
+        VirtualFile traceFile = LocalFileSystem.getInstance().findFileByPath(traceFilePath);
+        if(traceFile.exists()){
+            PsiFile traceDBFile = PsiManager.getInstance(project).findFile(traceFile);
+            String[] lines = traceDBFile.getText().split("\n");
+            for (String line : lines) {
+                if (line.contains(";")) {
+                    List<String> parts = Arrays.asList(line.split(";"));
+                    parsedLines.add(parts);
+                }
+            }
+        }
+        return parsedLines;
     }
 }

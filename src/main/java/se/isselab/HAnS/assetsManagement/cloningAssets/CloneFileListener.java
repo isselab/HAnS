@@ -8,12 +8,14 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.newvfs.BulkFileListener;
+import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileCopyEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
+import se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingProvider;
 
 import java.util.List;
 
@@ -72,7 +74,10 @@ public class CloneFileListener implements StartupActivity {
                                 manageFolderClone(createEvent, project);
                             }
                         }
-
+                        else if(event instanceof VFileContentChangeEvent){
+                            PropagatingProvider.fileIsChanged(project, event.getFile());
+                            System.out.println("One File was changed " + event.getFile().getPath());
+                        }
                     }
                 }
             }
