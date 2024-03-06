@@ -14,4 +14,4 @@ updates:
     directory: "/"
     target-branch: "next"
     schedule:
-      interval: "daily"
+      interval: "daily" 
