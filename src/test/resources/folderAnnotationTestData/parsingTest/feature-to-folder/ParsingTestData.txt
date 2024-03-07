@@ -1,0 +1,8 @@
+FeatureToFolder file(0,14)
+  FolderAnnotationLpqImpl(LPQ)(0,4)
+    FolderAnnotationFeatureImpl(FEATURE)(0,4)
+      PsiElement(FolderAnnotationTokenType.FEATURENAME)('HAnS')(0,4)
+  PsiWhiteSpace('\n\n')(4,6)
+  FolderAnnotationLpqImpl(LPQ)(6,14)
+    FolderAnnotationFeatureImpl(FEATURE)(6,14)
+      PsiElement(FolderAnnotationTokenType.FEATURENAME)('FeatureA')(6,14)
