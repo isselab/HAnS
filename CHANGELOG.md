@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+- Feature to folder can be mapped with file extension .feature-folder and .feature-to-folder
+- Feature to file can be mapped with file extension .feature-file and .feature-to-file
+
 ## [0.0.4] - 2024-03-06
 
 ### Added
