@@ -41,7 +41,7 @@ public class FileAnnotationFileType extends LanguageFileType {
 
     @Override
     public @NotNull String getDefaultExtension() {
-        return "feature-to-file";
+        return "feature-file";
     }
 
     @Override

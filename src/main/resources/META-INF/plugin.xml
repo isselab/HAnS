@@ -40,14 +40,14 @@ limitations under the License.
 
         <!-- &begin[HAnS::FileAnnotation] -->
         <fileType name="File Annotation File" implementationClass="se.isselab.HAnS.fileAnnotation.FileAnnotationFileType"
-                  fieldName="INSTANCE" language="FileAnnotation" extensions="feature-to-file"/>
+                  fieldName="INSTANCE" language="FileAnnotation" extensions="feature-file;feature-to-file"/>
         <lang.parserDefinition language="FileAnnotation"
                                 implementationClass="se.isselab.HAnS.fileAnnotation.FileAnnotationParserDefinition"/>
         <!-- &end[HAnS::FileAnnotation] -->
 
         <!-- &begin[HAnS::FolderAnnotation] -->
         <fileType name="Feature To Folder File" implementationClass="se.isselab.HAnS.folderAnnotation.FolderAnnotationFileType"
-                  fieldName="INSTANCE" language="FolderAnnotation" extensions="feature-to-folder"/>
+                  fieldName="INSTANCE" language="FolderAnnotation" extensions="feature-folder;feature-to-folder"/>
         <lang.parserDefinition language="FolderAnnotation"
                                implementationClass="se.isselab.HAnS.folderAnnotation.FolderAnnotationParserDefinition"/>
         <!-- &end[HAnS::FolderAnnotation] -->

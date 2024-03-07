@@ -41,7 +41,7 @@ public class FolderAnnotationFileType extends LanguageFileType {
 
     @Override
     public @NotNull String getDefaultExtension() {
-        return "feature-to-folder";
+        return "feature-folder";
     }
 
     @Override
