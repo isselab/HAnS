@@ -1,0 +1,8 @@
+Root
+    FeatureA
+    FeatureB
+    FeatureC
+        ChildFeatureA
+        ChildFeatureB
+        ChildFeatureC
+    Illeagal-Feature-Name
