@@ -20,8 +20,10 @@ public class CloneManager {
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
         AssetsToClone.resetClones();
     }
-    public static void CloneFolderAssets(){
-
+    public static void CloneFolderAssets(Project project, String sourcePath, String targetPath){
+        TracingHandler tracingHandler = new TracingHandler();
+        tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
+        AssetsToClone.resetClones();
     }
     public static void CloneClassAssets(Project project, String sourceProjectName, String sourcePath, String targetPath, PsiClass copiedClass, String currentClassName){
         TracingHandler tracingHandler = new TracingHandler();
