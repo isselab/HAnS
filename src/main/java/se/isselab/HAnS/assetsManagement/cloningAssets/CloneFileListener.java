@@ -15,6 +15,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
+import se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingService;
 import se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingProvider;
 
 import java.util.List;

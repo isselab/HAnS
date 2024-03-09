@@ -1,27 +1,31 @@
 package se.isselab.HAnS.assetsManagement.propagatingToAsset;
 
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
-import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.FilenameIndex;
-import com.intellij.psi.search.GlobalSearchScope;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+@Service(Service.Level.PROJECT)
+public final class PropagatingService {
+    private final Project myProject;
 
-public class PropagatingService {
-    Project myProject = ProjectManager.getInstance().getDefaultProject();
-
-    public PropagatingService(Project project) {
-        this.myProject = project;
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    public PropagatingService(Project project){
+        myProject = project;
     }
-    public void ServiceMethod(VirtualFile openedVirtualFile) {
+
+    public void startChecking() {
+        Runnable checkTask = this::checkEvent;
+        scheduler.scheduleAtFixedRate(checkTask, 0, 3, TimeUnit.SECONDS);
+    }
+
+    private void checkEvent() {
+        System.out.println("Checking for event...");
+    }
+
+    public void dispose() {
+        scheduler.shutdown();
     }
 }

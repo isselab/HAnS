@@ -121,10 +121,12 @@ limitations under the License.
         <copyPastePreProcessor implementation="se.isselab.HAnS.assetsManagement.cloningAssets.CloneCopyPastePreProcessor"/>
         <editorNotificationProvider implementation="se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingProvider"/>
     </extensions>
+    <!--
     <applicationListeners>
-        <listener class="se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingListener"
+        <listener class="se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingService"
                   topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
     </applicationListeners>
+    -->
     <actions>
         <action id="RenameFeature"
                 class="se.isselab.HAnS.actions.RenameAction"
