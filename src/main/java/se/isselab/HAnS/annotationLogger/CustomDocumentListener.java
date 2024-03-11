@@ -306,7 +306,7 @@ public class CustomDocumentListener implements PsiTreeChangeListener, Disposable
 
     @Override
     public void dispose() {
-
+        Disposer.dispose(this);
     }
 
     /**

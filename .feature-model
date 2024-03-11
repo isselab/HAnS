@@ -37,3 +37,4 @@ HAnS
     FileTemplate
         NewFile
     Quickfix
+	Logger

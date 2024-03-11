@@ -26,7 +26,7 @@ public class HansAnnotationLoggingPage implements Configurable {
 
     private JButton chooseDirectoryButton;
     private JLabel selectedDirectoryLabel;
-    private static final String LOGGING_DIRECTORY_KEY = "loggingDirectory";
+    private static final String LOGGING_DIRECTORY_KEY = ".";
 
 
     @Nls(capitalization = Nls.Capitalization.Title)

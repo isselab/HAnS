@@ -121,10 +121,12 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
 
+        <!-- &begin[Logger]-->
         <moduleService serviceImplementation="se.isselab.HAnS.annotationLogger.SessionTracker"/>
         <projectService serviceImplementation="se.isselab.HAnS.annotationLogger.ProjectCloseService"/>
         <postStartupActivity implementation="se.isselab.HAnS.annotationLogger.PluginStartupActivity"/>
         <applicationConfigurable instance="se.isselab.HAnS.annotationLogger.HansAnnotationLoggingPage" displayName="HAnS Logger"/>
+        <!-- &end[Logger]-->
 
 
         <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService"

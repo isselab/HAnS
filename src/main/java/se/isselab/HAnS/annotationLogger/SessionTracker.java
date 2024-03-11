@@ -16,7 +16,7 @@ import java.time.Duration;
 @Service
 public final class SessionTracker {
     // Threshold time (in milliseconds) for considering the user as idle
-    private static final int IDLE_THRESHOLD_MS = 30 * 1000; // 30 seconds
+    private static final int IDLE_THRESHOLD_MS = 5 * 1000; // 30 seconds
 
     // Last recorded active time
     private Instant lastActiveTime;
