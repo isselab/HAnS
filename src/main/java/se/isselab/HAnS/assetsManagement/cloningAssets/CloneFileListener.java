@@ -14,6 +14,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileCopyEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +33,7 @@ public class CloneFileListener implements StartupActivity {
     public void runActivity(@NotNull Project project) {
         ApplicationManager.getApplication().getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
             boolean directoryCloned = false;
+            boolean fileInDirectoryCloned = false;
             PsiFile sourceFile;
             String sourceAssetPath = "";
             String targetAssetPath = "";
@@ -57,14 +59,15 @@ public class CloneFileListener implements StartupActivity {
                             String[] fileSplitted = sourceFilePath.split("/");
                             String directoryPath = buildSourceDirectoryPath(fileSplitted);
                             sourceAssetPath = directoryPath;
+                            fileInDirectoryCloned = true;
                         }
 
                     } else if (event instanceof VFileCreateEvent) {
                         VFileCreateEvent createEvent = (VFileCreateEvent) event;
                         if (createEvent.isDirectory()) {
                             String directoryName = createEvent.getChildName();
-                            boolean cloned = directoryIsCloned(directoryName);
-                            if(cloned)
+                            boolean directoryFound = directoryIsCloned(directoryName);
+                            if(directoryFound)
                                 directoryCloned = true;
                         }
                     }
@@ -120,16 +123,22 @@ public class CloneFileListener implements StartupActivity {
                     }
                 }
             }
+            /**
+             * create folder trace only if that folder was found in the same and other instaces and content from it was cloned
+             * */
             private void manageFolderClone() {
-                VirtualFile targetVirtualFile = LocalFileSystem.getInstance().findFileByPath(targetAssetPath);
-                if (targetVirtualFile != null) {
-                    Project targetProject = ProjectUtil.guessProjectForFile(targetVirtualFile);
-                    if (targetProject != null) {
-                        CloneManager.CloneFolderAssets(targetProject, sourceAssetPath, targetAssetPath);
-                    } else {
-                        System.out.println("No project found");
+                if(fileInDirectoryCloned){
+                    VirtualFile targetVirtualFile = LocalFileSystem.getInstance().findFileByPath(targetAssetPath);
+                    if (targetVirtualFile != null) {
+                        Project targetProject = ProjectUtil.guessProjectForFile(targetVirtualFile);
+                        if (targetProject != null) {
+                            CloneManager.CloneFolderAssets(targetProject, sourceAssetPath, targetAssetPath);
+                        } else {
+                            System.out.println("No project found");
+                        }
                     }
                 }
+                fileInDirectoryCloned = false;
             }
 
             private String buildSourceDirectoryPath(String[] filePath){
