@@ -3,6 +3,7 @@ package se.isselab.HAnS.assetsManagement.cloningAssets;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
 
@@ -20,8 +21,12 @@ public class CloneManager {
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
         AssetsToClone.resetClones();
     }
-    public static void CloneFolderAssets(Project project, String sourcePath, String targetPath){
+    public static void CloneFolderAssets(Project project, PsiElement dir, String sourceProjectName, String sourcePath, String targetPath){
         TracingHandler tracingHandler = new TracingHandler();
+        FeaturesHandler featuresHandler = new FeaturesHandler(project);
+        CloningProjectMenuHandler.saveExtractedFeatureAnnotations(dir);
+        featuresHandler.addFeaturesToFeatureModel();
+        tracingHandler.createCopyFeatureTrace(project, sourceProjectName);
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
         AssetsToClone.resetClones();
     }

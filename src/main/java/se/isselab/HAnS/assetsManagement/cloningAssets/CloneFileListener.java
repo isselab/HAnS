@@ -50,8 +50,7 @@ public class CloneFileListener implements StartupActivity {
                         if(!directoryCloned){
                             VFileCopyEvent copyEvent = (VFileCopyEvent) event;
                             sourceAssetPath = copyEvent.getFile().getPath();
-                            Project project = ProjectUtil.guessProjectForFile(copyEvent.getFile());
-                            sourceProjectName = project != null ? project.getName() : "Unknown Project";
+                            sourceProjectName = getSourceProjectName(copyEvent);
                             sourceFile = PsiManager.getInstance(project).findFile(copyEvent.getFile());
                         } else {
                             VFileCopyEvent copyEvent = (VFileCopyEvent) event;
@@ -59,6 +58,7 @@ public class CloneFileListener implements StartupActivity {
                             String[] fileSplitted = sourceFilePath.split("/");
                             String directoryPath = buildSourceDirectoryPath(fileSplitted);
                             sourceAssetPath = directoryPath;
+                            sourceProjectName = getSourceProjectName(copyEvent);
                             fileInDirectoryCloned = true;
                         }
 
@@ -128,11 +128,13 @@ public class CloneFileListener implements StartupActivity {
              * */
             private void manageFolderClone() {
                 if(fileInDirectoryCloned){
+                    VirtualFile sourceDirectory = LocalFileSystem.getInstance().findFileByPath(sourceAssetPath);
+                    PsiDirectory psiDirectory = PsiManager.getInstance(project).findDirectory(sourceDirectory);
                     VirtualFile targetVirtualFile = LocalFileSystem.getInstance().findFileByPath(targetAssetPath);
                     if (targetVirtualFile != null) {
                         Project targetProject = ProjectUtil.guessProjectForFile(targetVirtualFile);
                         if (targetProject != null) {
-                            CloneManager.CloneFolderAssets(targetProject, sourceAssetPath, targetAssetPath);
+                            CloneManager.CloneFolderAssets(targetProject, psiDirectory, sourceProjectName, sourceAssetPath, targetAssetPath);
                         } else {
                             System.out.println("No project found");
                         }
@@ -163,6 +165,10 @@ public class CloneFileListener implements StartupActivity {
                     }
                 }
                 return false;
+            }
+            private String getSourceProjectName(VFileCopyEvent copyEvent){
+                Project project = ProjectUtil.guessProjectForFile(copyEvent.getFile());
+                return project != null ? project.getName() : "Unknown Project";
             }
 
             private boolean directoryExistsInProject(VirtualFile directory, String directoryName) {
