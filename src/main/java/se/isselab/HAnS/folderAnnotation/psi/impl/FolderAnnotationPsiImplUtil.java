@@ -22,7 +22,7 @@ import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
 
 public class FolderAnnotationPsiImplUtil {
 
-    //&begin[Referencing]
+    //&end[Referencing]
     public static String getName(FolderAnnotationLpq feature) {
         ASTNode featureNode = feature.getNode();
         if (featureNode != null) {
