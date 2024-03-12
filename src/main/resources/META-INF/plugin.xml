@@ -121,6 +121,11 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
 
+        <!-- &begin[MetricsView]-->
+        <toolWindow id="MetricsView" anchor="bottom"
+                    factoryClass="se.isselab.HAnS.metricsView.MetricsViewFactory" />
+        <!-- &end[MetricsView]-->
+
         <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService" serviceInterface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
     </extensions>
 
