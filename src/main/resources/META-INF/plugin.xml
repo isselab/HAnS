@@ -24,6 +24,7 @@ limitations under the License.
     <!-- &begin[ColorSettingsPage] -->
     <extensions defaultExtensionNs="com.intellij">
         <colorSettingsPage implementation="se.isselab.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
+        <applicationConfigurable instance="se.isselab.HAnS.assetsManagement.HansAssetsManagementPage"/>
     </extensions>
     <!-- &end[ColorSettingsPage] -->
 
