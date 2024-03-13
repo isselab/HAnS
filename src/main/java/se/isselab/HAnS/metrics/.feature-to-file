@@ -5,4 +5,7 @@ FeatureScattering.java
 Scattering
 
 FeatureMetrics.java
-FeatureFileMapping, Tangling, Scattering
+FeatureFileMapping, Tangling, Scattering, NestingDepths, NumberOfAnnotatedFiles, NumberOfFeatures
+
+ProjectStructureTree.java
+NestingDepths, NumberOfAnnotatedFiles, NumberOfFeatures

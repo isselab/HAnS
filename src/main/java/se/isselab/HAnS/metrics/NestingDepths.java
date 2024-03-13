@@ -10,10 +10,12 @@ public class NestingDepths {
      * @param featureLPQ The feature's LPQ used to identify it.
      * @return An Integer representing the total number of files annotated with the specified feature.
      */
+    // &begin[NumberOfAnnotatedFiles]
     public static Integer getNumberOfAnnotatedFiles(ProjectStructureTree tree, String featureLPQ) {
        int NoAF = countNumberOfAnnotatedFiles(tree, featureLPQ);
        return NoAF;
     }
+    // &end[NumberOfAnnotatedFiles]
 
     /**
      * Retrieves the number of features within the specified item (folder, file) in the project structure tree.
@@ -22,6 +24,7 @@ public class NestingDepths {
      * @param pathToItem The path to the item (folder, file) within the project structure tree.
      * @return An Integer representing the number of features within the specified item. Returns -1 if the item is not found.
      */
+    // &begin[NumberOfFeatures]
     public static Integer getNumberOfFeatures(ProjectStructureTree tree, String pathToItem) {
         // find corresponding node in the Project Tree
         ProjectStructureTree treeNode = findProjectTreeNode(tree, pathToItem);
@@ -31,7 +34,9 @@ public class NestingDepths {
         countNumberOfFeaturesInItem(treeNode, features);
         return features.size();
     }
+    // &end[NumberOfFeatures]
 
+    // &begin[NestingDepths]
     /**
      * Calculates the maximum nesting depth of a specific feature within the project tree.
      *
@@ -82,6 +87,7 @@ public class NestingDepths {
             }
         }
     }
+    // &end[NestingDepths]
 
     private static ProjectStructureTree findProjectTreeNode(ProjectStructureTree node, String path) {
         if (node != null && node.getPath().equals(path)) {
@@ -99,6 +105,7 @@ public class NestingDepths {
         return null;
     }
 
+    // &begin[NumberOfFeatures]
     private static void countNumberOfFeaturesInItem(ProjectStructureTree node, Set<String> features) {
         if (!node.getFeatureList().isEmpty()) {
             features.addAll(node.getFeatureList());
@@ -108,9 +115,10 @@ public class NestingDepths {
                 countNumberOfFeaturesInItem(child, features);
             }
         }
-
     }
+    // &end[NumberOfFeatures]
 
+    // &begin[NumberOfAnnotatedFiles]
     private static int countNumberOfAnnotatedFiles(ProjectStructureTree node, String targetFeatureLPQ) {
         int count = 0;
 
@@ -126,4 +134,5 @@ public class NestingDepths {
 
         return count;
     }
+    // &end[NumberOfAnnotatedFiles]
 }
