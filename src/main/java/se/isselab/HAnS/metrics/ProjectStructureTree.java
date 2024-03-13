@@ -80,13 +80,6 @@ public class ProjectStructureTree {
         return children;
     }
 
-    public static void printTree(ProjectStructureTree node, String indent) {
-        System.out.println(indent + node.getName() + " " + node.depth + " " + node.featureList.toString()+ " " + node.getType());
-        for (ProjectStructureTree child : node.getChildren()) {
-            printTree(child, indent + "-");
-        }
-    }
-
     private static boolean isReadOnly(File file) {
         // Check if the file/folder is read-only
         return !file.canWrite() || file.getPath().endsWith(".class");
