@@ -170,8 +170,5 @@ limitations under the License.
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
 
-        <action id="se.isselab.HAnS.TestDepthMetrics" class="se.isselab.HAnS.TestDepthMetrics" text="testingMetrics">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-        </action>
     </actions>
 </idea-plugin>
