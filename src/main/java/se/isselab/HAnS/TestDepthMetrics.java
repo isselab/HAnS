@@ -4,12 +4,10 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
-import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
-import se.isselab.HAnS.metrics.FeatureDepths;
+import se.isselab.HAnS.metrics.NestingDepths;
 import se.isselab.HAnS.metrics.ProjectStructureTree;
 
 import java.io.IOException;
@@ -36,12 +34,15 @@ public class TestDepthMetrics extends AnAction {
         ProjectStructureTree.printTree(projectTree, "-");
 
         List<FeatureModelFeature> features = FeatureModelUtil.findFeatures(e.getProject());
+        FeatureModelFeature feature1 = features.get(1);
+//        FeatureModelPsiImplUtil.renameFeature(feature1, "");
+
         String featureExampleLPQ = features.get((int)(Math.random() * features.size()) + 1).getLPQText();
         System.out.println("Random Lpq " + featureExampleLPQ);
-        System.out.println(FeatureDepths.getAvgNestingDepth(projectTree, featureExampleLPQ));
-        System.out.println(FeatureDepths.getMaxNestingDepth(projectTree, featureExampleLPQ));
-        System.out.println(FeatureDepths.getMinNestingDepth(projectTree, featureExampleLPQ));
-        System.out.println(FeatureDepths.getNumberOfAnnotatedFiles(projectTree, featureExampleLPQ));
+        System.out.println(NestingDepths.getAvgNestingDepth(projectTree, featureExampleLPQ));
+        System.out.println(NestingDepths.getMaxNestingDepth(projectTree, featureExampleLPQ));
+        System.out.println(NestingDepths.getMinNestingDepth(projectTree, featureExampleLPQ));
+        System.out.println(NestingDepths.getNumberOfAnnotatedFiles(projectTree, featureExampleLPQ));
 
         List<Path> allFolders;
         try {
@@ -51,7 +52,7 @@ public class TestDepthMetrics extends AnAction {
             int randomFolderIndex = (int)(Math.random() * allFolders.size());
             String pathToRandomFolder = allFolders.get(randomFolderIndex).toString();
             System.out.println("Random folder " + pathToRandomFolder);
-            System.out.println(FeatureDepths.getNumberOfFeatures(projectTree, pathToRandomFolder));
+            System.out.println(NestingDepths.getNumberOfFeatures(projectTree, pathToRandomFolder));
         } catch (IOException exception) { exception.printStackTrace(); }
 
     }
