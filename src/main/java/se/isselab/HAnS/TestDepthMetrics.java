@@ -31,7 +31,7 @@ public class TestDepthMetrics extends AnAction {
         System.out.println(getFeatureModelPath());
         int depth = 0;
         ProjectStructureTree projectTree = ProjectStructureTree.buildTree(e.getProject());
-        ProjectStructureTree.printTree(projectTree, "-");
+//        ProjectStructureTree.printTree(projectTree, "-");
 
         List<FeatureModelFeature> features = FeatureModelUtil.findFeatures(e.getProject());
         FeatureModelFeature feature1 = features.get(1);
