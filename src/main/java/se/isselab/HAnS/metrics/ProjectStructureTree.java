@@ -1,16 +1,22 @@
 package se.isselab.HAnS.metrics;
 
+import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiComment;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiRecursiveElementWalkingVisitor;
+import com.intellij.psi.*;
 import com.intellij.psi.impl.PsiManagerImpl;
+import com.intellij.psi.impl.source.tree.injected.InjectedLanguageManagerImpl;
+import com.intellij.psi.impl.source.tree.injected.InjectedReferenceVisitor;
+import com.intellij.psi.injection.ReferenceInjector;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.ProcessingContext;
+import kotlinx.html.P;
 import org.jetbrains.annotations.NotNull;
-import se.isselab.HAnS.codeAnnotation.psi.CodeAnnotationVisitor;
+import se.isselab.HAnS.codeAnnotation.psi.*;
+import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationLinemarkerImpl;
+import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationLpqImpl;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReference;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationLpq;
@@ -218,133 +224,53 @@ public class ProjectStructureTree {
     }
 
     private void processCode(Project project, File file, ProjectStructureTree parent) {
-
         PsiFile foundFile = fileToPsi(project, file);
+        if (foundFile == null) {
+            return;
+        }
 
-        AtomicReference<Set<String>> featureLPQs = new AtomicReference<>(new HashSet<>());
+        AtomicReference<Integer> lineDepth = new AtomicReference<>(parent.getDepth() + 1);
+        foundFile.accept(new PsiRecursiveElementWalkingVisitor() {
+            @Override
+            public void visitElement(@NotNull PsiElement element) {
 
-        if (foundFile != null) {
-            foundFile.accept(new PsiRecursiveElementWalkingVisitor() {
-                @Override
-                public void visitElement(@NotNull PsiElement element) {
-                    if (element instanceof PsiComment) {
-                        String comment = element.getText();
-                        if (comment.contains("&begin") || comment.contains("&end") || comment.contains("&line")) {
-                            featureLPQs.updateAndGet(
-                                    currentList -> {
-                                        currentList.addAll(extractLPQsFromInlineAnnotation(comment));
-                                        return currentList;
-                                    });
-                        }
+                if (element instanceof PsiComment) {
+                    PsiComment comment = (PsiComment) element;
+                    if (comment.getTokenType().toString().equals("END_OF_LINE_COMMENT")) {
+                        InjectedLanguageManager.getInstance(project).enumerate(comment, ((injectedPsi, places) -> {
+                            for (PsiLanguageInjectionHost.Shred place : places) {
+                                if (place.getHost() == comment) {
+                                    for (PsiElement el : injectedPsi.getChildren()) {
+                                        if (el instanceof CodeAnnotationLinemarker) {
+                                            for (CodeAnnotationLpq lpq : ((CodeAnnotationLinemarker) el).getParameter().getLpqList()) {
+                                                ProjectStructureTree pst = new ProjectStructureTree(lpq.getName(), parent.getPath(), Type.LINE, lineDepth.get());
+                                                pst.featureList.add(lpq.getName());
+                                                parent.children.add(pst);
+                                            }
+                                        }
+                                        if (el instanceof CodeAnnotationBeginmarker) {
+                                            List<CodeAnnotationLpq> lpqList = ((CodeAnnotationBeginmarker) el).getParameter().getLpqList();
+                                            for (CodeAnnotationLpq lpq : lpqList) {
+                                                ProjectStructureTree pst = new ProjectStructureTree(lpq.getName(), parent.getPath(), Type.LINE, lineDepth.get());
+                                                pst.featureList.add(lpq.getName());
+                                                parent.children.add(pst);
+                                            }
+                                            lineDepth.set(lineDepth.get() + lpqList.size()); ;
+                                        }
+                                        if (el instanceof CodeAnnotationEndmarker) {
+                                            List<CodeAnnotationLpq> lpqList = ((CodeAnnotationEndmarker) el).getParameter().getLpqList();
+                                            lineDepth.set(lineDepth.get() - lpqList.size());
+                                        }
+                                    }
+                                }
+                            }
+                        }));
                     }
-                    super.visitElement(element);
+
                 }
-            });
-
-            Map<String, Integer> featureDepths = new HashMap<>();
-            if (!featureLPQs.get().isEmpty()) {
-                for (String feature: featureLPQs.get()) {
-                    List<Integer> linesWithFeature = locateCodeAnnotationLinesForFeature(file.getPath(),feature);
-                    for (int targetLineNumber : linesWithFeature) {
-                        int depth = countCodeAnnotationDepth(file.getPath(), targetLineNumber, parent.getDepth());
-                        featureDepths.put(feature, depth);
-                    }
-                }
+                super.visitElement(element);
             }
-            for (Map.Entry<String, Integer> entry : featureDepths.entrySet()) {
-                ProjectStructureTree pst = new ProjectStructureTree(entry.getKey(), parent.getPath(), Type.LINE, entry.getValue());
-                pst.featureList.add(entry.getKey());
-                parent.children.add(pst);
-            }
-
-        }
-    }
-
-    // takes feature-to-code annotation and returns set of feature-LPQs
-    private static Set<String> extractLPQsFromInlineAnnotation(String input) {
-        Set<String> featureList = new HashSet<>();
-        Pattern pattern = Pattern.compile("\\[([^\\]]+)\\]");
-
-        Matcher matcher = pattern.matcher(input);
-        if (matcher.find()) {
-            String content = matcher.group(1);
-
-            // Split the content into individual features using a comma as the delimiter
-            String[] featureArray = content.split(",\\s*");
-
-            for (String feature : featureArray) {
-                featureList.add(feature.trim());
-            }
-        }
-
-        return featureList;
-    }
-
-    // find all lines with feature-to-code annotations with specific feature within specific file
-    private static List<Integer> locateCodeAnnotationLinesForFeature(String filePath, String searchFeature) {
-        List<Integer> matchingLines = new ArrayList<>();
-        String patternStr = "&(begin|line)\\[(?=.*\\b" + searchFeature + "\\b)([^\\]]+)\\]";
-        Pattern pattern= Pattern.compile(patternStr);
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            int lineNumber = 1;
-
-            while ((line = br.readLine()) != null) {
-
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    matchingLines.add(lineNumber);
-                }
-
-                lineNumber++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return matchingLines;
-    }
-
-    // determines depth of a code annotation
-    // goes to line containing the code annotation and then moves up and counts other parent code annotations
-    private static int countCodeAnnotationDepth(String filePath, int targetLineNumber, int parentDepth) {
-        int beginOccurrences = 0;
-        int endOccurrences = 0;
-
-        String patternStringBegin = "&begin\\[\\s*([a-zA-Z]+)\\s*(?:,\\s*([a-zA-Z]+)\\s*)?\\]";
-        String patternStringEnd = "&end\\[\\s*([a-zA-Z]+)\\s*(?:,\\s*([a-zA-Z]+)\\s*)?\\]";
-        Pattern patternBegin = Pattern.compile(patternStringBegin);
-        Pattern patternEnd = Pattern.compile(patternStringEnd);
-
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            int lineNumber = 1;
-
-            while ((line = br.readLine()) != null && lineNumber < targetLineNumber) {
-                Matcher matcher = patternBegin.matcher(line);
-                if (matcher.find()) {
-                    // Extract the matched part of the line
-                    String matchedPart = matcher.group(0);
-                    long commaCount = matchedPart.chars().filter(ch -> ch == ',').count() + 1;
-                    beginOccurrences += (int) commaCount;
-                }
-
-                matcher = patternEnd.matcher(line);
-                if (matcher.find()) {
-                    // Extract the matched part of the line
-                    String matchedPart = matcher.group(0);
-                    long commaCount = matchedPart.chars().filter(ch -> ch == ',').count() + 1;
-                    endOccurrences += (int) commaCount;
-                }
-                lineNumber++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int result = parentDepth + (beginOccurrences-endOccurrences)+1;
-        return result;
+        });
     }
 
     private PsiFile fileToPsi(Project project, File file) {
