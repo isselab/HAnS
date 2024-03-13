@@ -17,6 +17,8 @@ import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.codeAnnotation.psi.*;
 import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationLinemarkerImpl;
 import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationLpqImpl;
+import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
+import se.isselab.HAnS.featureView.FeatureViewFactory;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReference;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationLpq;
@@ -33,6 +35,11 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.intellij.psi.PsiManager.getInstance;
+import static com.intellij.psi.search.FilenameIndex.getAllFilesByExt;
+import static com.intellij.psi.search.FilenameIndex.getVirtualFilesByName;
+import static com.intellij.psi.search.GlobalSearchScope.projectScope;
 
 public class ProjectStructureTree {
 
@@ -87,16 +94,27 @@ public class ProjectStructureTree {
 
     public static ProjectStructureTree buildTree(Project project) {
         ProjectStructureTree tree = new ProjectStructureTree();
-        ProjectStructureTree result = tree.processProjectStructure(project, getFeatureModelPath());
+        ProjectStructureTree result = tree.processProjectStructure(project, getFeatureModelPath(project));
         return result;
     }
 
-    private static String getFeatureModelPath() {
-        Project project = ProjectManager.getInstance().getOpenProjects()[0];
-        return project.getBasePath();
+    // retrieves the path of the root folder where the .feature-model is located
+    private static String getFeatureModelPath(Project project) {
+        var allFilenames = getVirtualFilesByName(".feature-model", projectScope(project));
+        PsiFile psiFile = null;
+        if (allFilenames.size() > 0) {
+            psiFile = getInstance(project).findFile(allFilenames.iterator().next());
+        } else {
+            Collection<VirtualFile> virtualFileCollection = getAllFilesByExt(project, "feature-model");
+            if (!virtualFileCollection.isEmpty()) {
+                psiFile = getInstance(project).findFile(virtualFileCollection.iterator().next());
+            }
+        }
+        return getFeatureModelRootFolderPath(psiFile);
     }
 
     // Method to process the project structure
+    // returns ProjectStructureTree containing all items (feature, folder, code) and their features
     private ProjectStructureTree processProjectStructure(Project project, String rootFolderPath) {
 
         File rootFolder = new File(rootFolderPath);
@@ -162,15 +180,12 @@ public class ProjectStructureTree {
             parent.children.add(fileNode);
 
             // don't process automatically generated files since they can't contain inline annotations
-            if (!isReadOnly(file)) {
+            if (!isReadOnly(file)) { // Logic for regular files
                 this.processCode(project, file, fileNode);
             }
 
         }
-
-
     }
-
 
     // Logic for .feature-to-file
     private static void processFeatureToFile(PsiFile file, ProjectStructureTree parent) {
@@ -216,20 +231,25 @@ public class ProjectStructureTree {
         }
     }
 
+    // process code annotations
     private void processCode(Project project, File file, ProjectStructureTree parent) {
         PsiFile foundFile = fileToPsi(project, file);
         if (foundFile == null) {
             return;
         }
 
+        // base depth of any child inside the file
         AtomicReference<Integer> lineDepth = new AtomicReference<>(parent.getDepth() + 1);
         foundFile.accept(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement element) {
-
+                // visit only PsiComments
                 if (element instanceof PsiComment) {
                     PsiComment comment = (PsiComment) element;
                     if (comment.getTokenType().toString().equals("END_OF_LINE_COMMENT")) {
+                        // iterate over each comment within the file
+                        // if comment is a custom language injection, create new
+                        // ProjectStructureTree node and add it to the tree
                         InjectedLanguageManager.getInstance(project).enumerate(comment, ((injectedPsi, places) -> {
                             for (PsiLanguageInjectionHost.Shred place : places) {
                                 if (place.getHost() == comment) {
@@ -275,4 +295,11 @@ public class ProjectStructureTree {
         if (foundFile == null) { return null; }
         return foundFile;
     }
+
+    private static String getFeatureModelRootFolderPath(PsiFile psiFile) {
+        VirtualFile vFile = psiFile.getOriginalFile().getVirtualFile().getParent();
+        String path = vFile.getPath();
+        return path;
+    }
+
 }
