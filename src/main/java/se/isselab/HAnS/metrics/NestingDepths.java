@@ -1,10 +1,7 @@
 package se.isselab.HAnS.metrics;
-import com.intellij.util.io.Decompressor;
-import se.isselab.HAnS.featureLocation.FeatureFileMapping;
-import se.isselab.HAnS.featureLocation.FeatureLocation;
 import java.util.*;
 
-public class FeatureDepths {
+public class NestingDepths {
 
     // NoAF: Calculate Number of File Annotations: total number of file
     // annotations directly referencing the feature
