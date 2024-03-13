@@ -51,7 +51,7 @@ public class NestingDepths {
         }
     }
 
-    public static ProjectStructureTree  findProjectTreeNode(ProjectStructureTree node, String path) {
+    private static ProjectStructureTree findProjectTreeNode(ProjectStructureTree node, String path) {
         if (node != null && node.getPath().equals(path)) {
             return node;
         }
