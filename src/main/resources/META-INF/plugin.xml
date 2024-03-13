@@ -24,7 +24,6 @@ limitations under the License.
     <!-- &begin[ColorSettingsPage] -->
     <extensions defaultExtensionNs="com.intellij">
         <colorSettingsPage implementation="se.isselab.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
-        <applicationConfigurable instance="se.isselab.HAnS.assetsManagement.HansAssetsManagementPage"/>
     </extensions>
     <!-- &end[ColorSettingsPage] -->
 
@@ -121,6 +120,7 @@ limitations under the License.
         <postStartupActivity implementation="se.isselab.HAnS.assetsManagement.cloningAssets.CloneFileListener"/>
         <copyPastePreProcessor implementation="se.isselab.HAnS.assetsManagement.cloningAssets.CloneCopyPastePreProcessor"/>
         <editorNotificationProvider implementation="se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingProvider"/>
+        <applicationConfigurable instance="se.isselab.HAnS.assetsManagement.HansAssetsManagementPage"/>
     </extensions>
     <!--
     <applicationListeners>

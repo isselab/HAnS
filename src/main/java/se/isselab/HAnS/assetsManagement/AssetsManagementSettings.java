@@ -9,8 +9,10 @@ public class AssetsManagementSettings {
     private JPanel myMainPanel;
     private JCheckBox cloningOption;
     private JCheckBox propagatingOption;
-    private static PropertiesComponent properties = PropertiesComponent.getInstance();
-    private static final String ASSETS_MANAGEMENT_PREF_KEY = "AssetsPref";
+    public static PropertiesComponent properties = PropertiesComponent.getInstance();
+    public static final String ASSETS_MANAGEMENT_PREF_KEY = "AssetsPref";
+    private String selected = "none";
+    private boolean initialized = false;
 
 
 
@@ -25,13 +27,17 @@ public class AssetsManagementSettings {
     }
 
     public boolean isModified() {
-        // Implement logic to check if settings are modified
-        String selected = "none";
+        if(!initialized){
+            init();
+            initialized = true;
+            return false;
+        }
+        selected = "none";
         if(cloningOption.isSelected() && propagatingOption.isSelected()){
             selected = "both";
         }if(cloningOption.isSelected() && !propagatingOption.isSelected()){
             selected = "clone";
-        }if(cloningOption.isSelected() && propagatingOption.isSelected()){
+        }if(!cloningOption.isSelected() && propagatingOption.isSelected()){
             selected = "propagate";
         }
         String current = properties.getValue(ASSETS_MANAGEMENT_PREF_KEY, "none");
@@ -39,10 +45,43 @@ public class AssetsManagementSettings {
     }
 
     public void apply() {
-        // Implement logic to apply settings changes
+        if(cloningOption.isSelected() && propagatingOption.isSelected()){
+            selected = "both";
+        }if(cloningOption.isSelected() && !propagatingOption.isSelected()){
+            selected = "clone";
+        }if(!cloningOption.isSelected() && propagatingOption.isSelected()){
+            selected = "propagate";
+        }if(!cloningOption.isSelected() && !propagatingOption.isSelected()){
+            selected = "none";
+
+        }
+        properties.setValue(ASSETS_MANAGEMENT_PREF_KEY, selected);
     }
 
     public void reset() {
-        // Implement logic to reset settings to their defaults
+        cloningOption.setSelected(false);
+        propagatingOption.setSelected(false);
+    }
+    public void init() {
+        String current = properties.getValue(ASSETS_MANAGEMENT_PREF_KEY, "none");
+        switch(current) {
+            case "both":
+                cloningOption.setSelected(true);
+                propagatingOption.setSelected(true);
+                break;
+            case "clone":
+                cloningOption.setSelected(true);
+                propagatingOption.setSelected(false);
+                break;
+            case "propagate":
+                cloningOption.setSelected(false);
+                propagatingOption.setSelected(true);
+                break;
+            default:
+                cloningOption.setSelected(false);
+                propagatingOption.setSelected(false);
+        }
+        System.out.println(cloningOption.isSelected());
+        System.out.println(propagatingOption.isSelected());
     }
 }

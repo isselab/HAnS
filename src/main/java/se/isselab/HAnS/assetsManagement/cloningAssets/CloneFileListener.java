@@ -18,6 +18,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
+import se.isselab.HAnS.assetsManagement.AssetsManagementSettings;
 import se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingService;
 import se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingProvider;
 
@@ -113,6 +114,10 @@ public class CloneFileListener implements StartupActivity {
                 }
             }
             private void manageFileClone(String targetAssetPath) {
+                if(AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
+                || AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both") ){
+                    System.out.println("cloning activated");
+                }
                 VirtualFile targetVirtualFile = LocalFileSystem.getInstance().findFileByPath(targetAssetPath);
                 if (targetVirtualFile != null) {
                     Project targetProject = ProjectUtil.guessProjectForFile(targetVirtualFile);
