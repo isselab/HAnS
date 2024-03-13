@@ -169,6 +169,5 @@ limitations under the License.
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
-
     </actions>
 </idea-plugin>
