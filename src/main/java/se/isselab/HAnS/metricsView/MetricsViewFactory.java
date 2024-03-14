@@ -28,6 +28,7 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 
+import se.isselab.HAnS.AnnotationIcons;
 import se.isselab.HAnS.featureExtension.FeatureService;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
@@ -51,6 +52,7 @@ public class MetricsViewFactory implements ToolWindowFactory {
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+        toolWindow.setIcon(AnnotationIcons.PluginIcon);
         createButton(project, toolWindow);
         addContent(toolWindow);
     }
