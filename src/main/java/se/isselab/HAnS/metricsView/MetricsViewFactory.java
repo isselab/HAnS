@@ -101,14 +101,8 @@ public class MetricsViewFactory implements ToolWindowFactory {
                 }
             }
         };
-        JBTable table = new JBTable(tableModel);
 
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
-        Comparator<Integer> integerComparator = Comparator.comparingInt(Integer::intValue);
-        sorter.setComparator(1, integerComparator); // Scattering Degree column
-        sorter.setComparator(2, integerComparator); // Tangling Degree column
-        sorter.setComparator(3, integerComparator); // Line Count column
-        table.setRowSorter(sorter);
+        JBTable table = createTable(tableModel);
 
         FeatureService featureService = project.getService(FeatureService.class);
         List<FeatureModelFeature> features = featureService.getFeatures();
@@ -126,6 +120,19 @@ public class MetricsViewFactory implements ToolWindowFactory {
         contentPanel.add(scrollPanel, BorderLayout.CENTER);
         contentPanel.revalidate();
         contentPanel.repaint();
+    }
+
+    private JBTable createTable(DefaultTableModel tableModel) {
+        JBTable table = new JBTable(tableModel);
+
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
+        Comparator<Integer> integerComparator = Comparator.comparingInt(Integer::intValue);
+        sorter.setComparator(1, integerComparator); // Scattering Degree column
+        sorter.setComparator(2, integerComparator); // Tangling Degree column
+        sorter.setComparator(3, integerComparator); // Line Count column
+        table.setRowSorter(sorter);
+
+        return table;
     }
 
     private JBTable populateTable(Project project, JBTable table, List<FeatureModelFeature> features, List<FeatureModelFeature> root, FeatureService featureService) {
