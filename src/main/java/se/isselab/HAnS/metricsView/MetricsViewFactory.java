@@ -101,8 +101,9 @@ public class MetricsViewFactory implements ToolWindowFactory {
                 }
             }
         };
+        JBTable table = new JBTable(tableModel);
 
-        JBTable table = createTable(tableModel);
+        createSorters(tableModel, table);
 
         FeatureService featureService = project.getService(FeatureService.class);
         List<FeatureModelFeature> features = featureService.getFeatures();
@@ -119,20 +120,16 @@ public class MetricsViewFactory implements ToolWindowFactory {
         contentPanel.repaint();
     }
 
-    private JBTable createTable(DefaultTableModel tableModel) {
-        JBTable table = new JBTable(tableModel);
-
+    private void createSorters(DefaultTableModel tableModel, JBTable table) {
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
         Comparator<Integer> integerComparator = Comparator.comparingInt(Integer::intValue);
         sorter.setComparator(1, integerComparator); // Scattering Degree column
         sorter.setComparator(2, integerComparator); // Tangling Degree column
         sorter.setComparator(3, integerComparator); // Line Count column
         table.setRowSorter(sorter);
-
-        return table;
     }
 
-    private JBTable populateTable(Project project, JBTable table, List<FeatureModelFeature> features, List<FeatureModelFeature> root, FeatureService featureService) {
+    private void populateTable(Project project, JBTable table, List<FeatureModelFeature> features, List<FeatureModelFeature> root, FeatureService featureService) {
         for (FeatureModelFeature feature : features) {
             String featureName = feature.getFeatureName();
             FeatureFileMapping featureFileMapping = featureService.getFeatureFileMapping(feature);
@@ -145,7 +142,6 @@ public class MetricsViewFactory implements ToolWindowFactory {
                 ((DefaultTableModel) table.getModel()).addRow(new Object[]{featureName, featureScatteringDegree, featureTanglingDegree, featureLineCount});
             }
         }
-        return table;
     }
 
     private static class IntegerTableCellRenderer extends DefaultTableCellRenderer {
