@@ -103,7 +103,7 @@ public class MetricsViewFactory implements ToolWindowFactory {
         };
         JBTable table = new JBTable(tableModel);
 
-        createSorters(tableModel, table);
+        table.setRowSorter(createSorters(tableModel));
 
         FeatureService featureService = project.getService(FeatureService.class);
         List<FeatureModelFeature> features = featureService.getFeatures();
@@ -120,13 +120,14 @@ public class MetricsViewFactory implements ToolWindowFactory {
         contentPanel.repaint();
     }
 
-    private void createSorters(DefaultTableModel tableModel, JBTable table) {
+    private TableRowSorter<DefaultTableModel> createSorters(DefaultTableModel tableModel) {
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
         Comparator<Integer> integerComparator = Comparator.comparingInt(Integer::intValue);
         sorter.setComparator(1, integerComparator); // Scattering Degree column
         sorter.setComparator(2, integerComparator); // Tangling Degree column
         sorter.setComparator(3, integerComparator); // Line Count column
-        table.setRowSorter(sorter);
+
+        return sorter;
     }
 
     private void populateTable(Project project, JBTable table, List<FeatureModelFeature> features, List<FeatureModelFeature> root, FeatureService featureService) {
