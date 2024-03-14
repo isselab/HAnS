@@ -54,21 +54,16 @@ public class CloningEditorMenuHandler {
     }
 
     private static void getHighlightedBlock(SelectionModel selectionModel, PsiFile psiFile){
-        // Get start and end offsets of the selected text
         int startOffset = selectionModel.getSelectionStart();
         int endOffset = selectionModel.getSelectionEnd();
-        // Get the PSI elements corresponding to these offsets
         PsiElement startElement = psiFile.findElementAt(startOffset);
         PsiElement endElement = psiFile.findElementAt(endOffset);
-        // Create a list to hold all PsiElements within the range
         List<PsiElement> elementsInRange = new ArrayList<>();
-        // Traverse from startElement to endElement and collect PsiElements
         PsiElement currentElement = startElement;
         while (currentElement != null && !currentElement.equals(endElement)) {
             elementsInRange.add(currentElement);
             currentElement = PsiTreeUtil.nextLeaf(currentElement);
         }
-        // Add the endElement to the list if it's not null
         if (endElement != null) {
             elementsInRange.add(endElement);
         }

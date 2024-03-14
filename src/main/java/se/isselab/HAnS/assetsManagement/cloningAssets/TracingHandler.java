@@ -195,7 +195,10 @@ public class TracingHandler {
         Date time = new Date();
         String date = new SimpleDateFormat("MM/dd/yyyy").format(Calendar.getInstance().getTime());
         String[] dateSplitted = date.split("/");
-        String currentTime = (time.getTime() / 1000 / 60 / 60) % 24 + "" + (time.getTime() / 1000 / 60) % 60 + "" + (time.getTime() / 1000) % 60;
+        int hours = (int)((time.getTime() / 1000 / 60 / 60) + 1) % 24;
+        int minutes = (int)(time.getTime() / 1000 / 60) % 60;
+        int seconds = (int)(time.getTime() / 1000) % 60;
+        String currentTime = String.format("%02d%02d%02d", hours, minutes, seconds);
         String dateAndTimeInString = dateSplitted[2] + dateSplitted[0] + dateSplitted[1] + currentTime;
         return dateAndTimeInString;
     }
