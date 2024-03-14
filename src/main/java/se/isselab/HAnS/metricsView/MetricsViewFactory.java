@@ -63,7 +63,7 @@ public class MetricsViewFactory implements ToolWindowFactory {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Run the task in the background
-                ProgressManager.getInstance().run(new Task.Backgroundable(project, "Refreshing Metrics") {
+                ProgressManager.getInstance().run(new Task.Backgroundable(project, "Refreshing metrics") {
                     @Override
                     public void run(@NotNull ProgressIndicator indicator) {
                         refreshTableContent(project, toolWindow);
@@ -106,15 +106,12 @@ public class MetricsViewFactory implements ToolWindowFactory {
 
         FeatureService featureService = project.getService(FeatureService.class);
         List<FeatureModelFeature> features = featureService.getFeatures();
-
         List<FeatureModelFeature> root = featureService.getRootFeatures();
 
         populateTable(project, table, features, root, featureService);
 
         table.setDefaultRenderer(Object.class, new IntegerTableCellRenderer());
-
         table.setAutoCreateRowSorter(true);
-
         JBScrollPane scrollPanel = new JBScrollPane(table);
 
         contentPanel.add(scrollPanel, BorderLayout.CENTER);
