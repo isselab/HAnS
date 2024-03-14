@@ -115,6 +115,20 @@ public class MetricsViewFactory implements ToolWindowFactory {
 
         List<FeatureModelFeature> root = featureService.getRootFeatures();
 
+        populateTable(project, table, features, root, featureService);
+
+        table.setDefaultRenderer(Object.class, new IntegerTableCellRenderer());
+
+        table.setAutoCreateRowSorter(true);
+
+        JBScrollPane scrollPanel = new JBScrollPane(table);
+
+        contentPanel.add(scrollPanel, BorderLayout.CENTER);
+        contentPanel.revalidate();
+        contentPanel.repaint();
+    }
+
+    private JBTable populateTable(Project project, JBTable table, List<FeatureModelFeature> features, List<FeatureModelFeature> root, FeatureService featureService) {
         for (FeatureModelFeature feature : features) {
             String featureName = feature.getFeatureName();
             FeatureFileMapping featureFileMapping = featureService.getFeatureFileMapping(feature);
@@ -127,16 +141,7 @@ public class MetricsViewFactory implements ToolWindowFactory {
                 ((DefaultTableModel) table.getModel()).addRow(new Object[]{featureName, featureScatteringDegree, featureTanglingDegree, featureLineCount});
             }
         }
-
-        table.setDefaultRenderer(Object.class, new IntegerTableCellRenderer());
-
-        table.setAutoCreateRowSorter(true);
-
-        JBScrollPane scrollPanel = new JBScrollPane(table);
-
-        contentPanel.add(scrollPanel, BorderLayout.CENTER);
-        contentPanel.revalidate();
-        contentPanel.repaint();
+        return table;
     }
 
     private static class IntegerTableCellRenderer extends DefaultTableCellRenderer {
