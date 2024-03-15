@@ -264,10 +264,6 @@ public class FeatureModelPsiImplUtil {
             };
             WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
         }
-
-        //FeatureReferenceUtil.rename();
-        //FeatureReferenceUtil.reset();
-
         return newFeatureName;
     }
 
