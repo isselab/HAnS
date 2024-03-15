@@ -1,6 +1,8 @@
 package se.isselab.HAnS.assetsManagement.cloningManagement;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +28,20 @@ public class FeaturesCodeAnnotations {
     }
     public synchronized void addFeatures(List<PsiElement> newElements){
         for(PsiElement element : newElements){
-            if(!this.featureNames.contains(element.getText())){
-                this.featureNames.add(element.getText());
+            if(!this.featureNames.contains(getText(element))){
+                this.featureNames.add(getText(element));
             }
         }
+    }
+    private String getText(PsiElement element) {
+        final String[] textHolder = new String[1];
+        ApplicationManager.getApplication().runReadAction(new Runnable() {
+            @Override
+            public void run() {
+                textHolder[0] = element.getText();
+            }
+        });
+        return textHolder[0];
     }
     public synchronized void clearFeatures(){
         this.featureNames.clear();

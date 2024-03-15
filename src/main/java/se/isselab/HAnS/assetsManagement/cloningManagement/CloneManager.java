@@ -1,10 +1,7 @@
 package se.isselab.HAnS.assetsManagement.cloningManagement;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiMethod;
+import com.intellij.psi.*;
 
 public class CloneManager {
     public static void CloneFileAssets(Project project, PsiFile psiFile,String sourceProjectName, String sourcePath, String targetPath){
@@ -24,6 +21,10 @@ public class CloneManager {
         TracingHandler tracingHandler = new TracingHandler();
         FeaturesHandler featuresHandler = new FeaturesHandler(project);
         FeaturesAnnotationsExtractor.saveExtractedFeatureAnnotations(dir);
+        AssetsToClone.featuresAnnotations = featuresHandler.findFeatureToFolderMappings((PsiDirectory) dir);
+        if(AssetsToClone.featuresAnnotations != null){
+            FeaturesCodeAnnotations.getInstance().addFeatures(AssetsToClone.featuresAnnotations);
+        }
         featuresHandler.addFeaturesToFeatureModel();
         tracingHandler.createCopyFeatureTrace(project, sourceProjectName);
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);

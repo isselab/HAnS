@@ -119,14 +119,11 @@ public class FeaturesHandler {
     private void addFeatureUnderUnassigned(StringBuilder content, String featureName) {
         String unassignedFeaturePattern = "\nunAssigned";
 
-        // Find the index where the "unassigned" feature is located
         int unassignedIndex = content.indexOf(unassignedFeaturePattern);
 
         if (unassignedIndex != -1) {
-            // Assuming each feature is on a new line and child features are indented
             int insertPosition = content.indexOf("\n", unassignedIndex + unassignedFeaturePattern.length());
             if (insertPosition == -1) {
-                // If "unassigned" is the last line, append at the end of the content
                 insertPosition = content.length();
             }
             content.insert(insertPosition, "\n\t" + featureName);
@@ -183,8 +180,9 @@ public class FeaturesHandler {
     public ArrayList<PsiElement> findFeatureToFolderMappings(PsiDirectory psiDirectory){
         ArrayList<PsiElement> featuresElements = new ArrayList<>();
         PsiFile featureFolder = null;
+        PsiFile[] psifiles = getDirectoryPsiFiles(psiDirectory);
         if (psiDirectory != null) {
-            for (PsiFile file : psiDirectory.getFiles()) {
+            for (PsiFile file : psifiles) {
                 if (file.getName().endsWith(".feature-to-folder")) {
                     featureFolder = file;
                     break;
@@ -205,7 +203,17 @@ public class FeaturesHandler {
         if(featuresElements.size() != 0)
             return featuresElements;
         return null;
+    }
 
+    private PsiFile[] getDirectoryPsiFiles(PsiDirectory dir) {
+        final PsiFile[][] files = new PsiFile[1][];
+        ApplicationManager.getApplication().runReadAction(new Runnable() {
+            @Override
+            public void run() {
+                files[0] = dir.getFiles();
+            }
+        });
+        return files[0];
     }
     public static List<String> getFeaturesAnnotationsFromText(String copiedText){
         List<String> features = new ArrayList<>();
