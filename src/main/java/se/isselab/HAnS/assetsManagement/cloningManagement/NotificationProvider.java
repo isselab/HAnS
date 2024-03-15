@@ -2,6 +2,8 @@ package se.isselab.HAnS.assetsManagement.cloningManagement;
 
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -31,15 +33,12 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         System.out.println(file.getPath());
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
         boolean cloned = isCloned(psiFile);
-        boolean isSourceFileChanged = isSourceFileChanged(project, file);
+        boolean isSourceFileChanged = isSourceFileChanged(file);
         if(AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("propagate")
           || AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")) {
             if (cloned && isSourceFileChanged) {
                 EditorNotificationPanel panel = new EditorNotificationPanel();
                 panel.setText("This file is copied/cloned and some changes has been made to the source file. Click on Propagate to get the changes from the source file.");
-                panel.createActionLabel("Propagate Changes", () -> {
-                    propagateChanges(psiFile);
-                });
                 panel.createActionLabel("Cancel", () -> {
                     panel.setVisible(false);
                 });
@@ -49,13 +48,13 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         return null;
     }
 
-    private boolean isSourceFileChanged(Project project, VirtualFile file) {
-        List<List<String>> parsedLines = getTraces(project);
+    private boolean isSourceFileChanged(VirtualFile file) {
+        List<List<String>> parsedLines = getTraces();
         for(int i = 0; i < parsedLines.size(); i++){
             if(parsedLines.get(i).get(1).equals(file.getPath()))
             {
                 VirtualFile sourceFile = LocalFileSystem.getInstance().findFileByPath(parsedLines.get(i).get(0));
-                String lastTimeModification = formatFileModificationTime(sourceFile);
+                String lastTimeModification = getLastModificationTime(sourceFile);
                 if(Long.parseLong(lastTimeModification) > Long.parseLong(parsedLines.get(i).get(2))) return true;
             }
         }
@@ -63,50 +62,61 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
     }
 
     private boolean isCloned(PsiFile file) {
-        Project project = file.getProject();
-        List<List<String>> parsedLines = getTraces(project);
+        List<List<String>> parsedLines = getTraces();
         for(int i = 0; i < parsedLines.size(); i++){
             if(parsedLines.get(i).get(1).equals(file.getVirtualFile().getPath()))
                 return true;
         }
         return false;
     }
-    private void propagateChanges(PsiFile file){
-        //TODO propagate changes to file
-    }
 
     public static void fileIsChanged(Project project, VirtualFile sourceFile){
         if(AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("propagate")
           || AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")) {
-            List<List<String>> parsedLines = getTraces(project);
+            List<List<String>> parsedLines = getTraces();
             for(int i = 0; i < parsedLines.size(); i++){
                 if(parsedLines.get(i).get(0).equals(sourceFile.getPath()))
                 {
                     VirtualFile clonedFile = LocalFileSystem.getInstance().findFileByPath(parsedLines.get(i).get(1));
-                    EditorNotifications.getInstance(project).updateNotifications(clonedFile);
-                    return;
+                    if(clonedFile != null) {
+                        Project targetProject = findProjectForVirtualFile(clonedFile);
+                        EditorNotifications.getInstance(targetProject).updateNotifications(clonedFile);
+                        return;
+                    }
                 }
             }
         }
     }
-    public static List<List<String>> getTraces(Project project){
+    public static List<List<String>> getTraces(){
         List<List<String>> parsedLines = new ArrayList<>();
-        String traceFilePath = TracingHandler.getTraceFilePath(project);
-        VirtualFile traceFile = LocalFileSystem.getInstance().findFileByPath(traceFilePath);
-        if(traceFile.exists()){
-            PsiFile traceDBFile = PsiManager.getInstance(project).findFile(traceFile);
-            String[] lines = traceDBFile.getText().split("\n");
-            for (String line : lines) {
-                if (line.contains(";")) {
-                    List<String> parts = Arrays.asList(line.split(";"));
-                    parsedLines.add(parts);
+        Project[] projects = ProjectManager.getInstance().getOpenProjects();
+        for(Project project : projects){
+            String traceFilePath = TracingHandler.getTraceFilePath(project);
+            VirtualFile traceFile = LocalFileSystem.getInstance().findFileByPath(traceFilePath);
+            if(traceFile.exists()){
+                PsiFile traceDBFile = PsiManager.getInstance(project).findFile(traceFile);
+                String[] lines = traceDBFile.getText().split("\n");
+                for (String line : lines) {
+                    if (line.contains(";")) {
+                        List<String> parts = Arrays.asList(line.split(";"));
+                        parsedLines.add(parts);
+                    }
                 }
             }
         }
         return parsedLines;
     }
 
-    public String formatFileModificationTime(VirtualFile virtualFile) {
+    private static Project findProjectForVirtualFile(VirtualFile file) {
+        for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+            if (ProjectRootManager.getInstance(project).getFileIndex().isInContent(file)) {
+                return project;
+            }
+        }
+        return null;
+    }
+
+    public String getLastModificationTime(VirtualFile virtualFile) {
         long timestamp = virtualFile.getTimeStamp();
         Date fileDate = new Date(timestamp);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
