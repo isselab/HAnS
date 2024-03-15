@@ -1,4 +1,4 @@
-package se.isselab.HAnS.assetsManagement.cloningAssets;
+package se.isselab.HAnS.assetsManagement.cloningManagement;
 
 import com.intellij.psi.PsiElement;
 

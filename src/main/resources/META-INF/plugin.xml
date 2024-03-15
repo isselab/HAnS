@@ -117,17 +117,14 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
-        <postStartupActivity implementation="se.isselab.HAnS.assetsManagement.cloningAssets.CloneFileListener"/>
-        <copyPastePreProcessor implementation="se.isselab.HAnS.assetsManagement.cloningAssets.CloneCopyPastePreProcessor"/>
-        <editorNotificationProvider implementation="se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingProvider"/>
+        <!-- &begin[AssetsManagement]-->
+        <postStartupActivity implementation="se.isselab.HAnS.assetsManagement.cloningManagement.VirtualFileListener"/>
+        <copyPastePreProcessor implementation="se.isselab.HAnS.assetsManagement.cloningManagement.CloneCopyPastePreProcessor"/>
+        <editorNotificationProvider implementation="se.isselab.HAnS.assetsManagement.cloningManagement.NotificationProvider"/>
         <applicationConfigurable instance="se.isselab.HAnS.assetsManagement.HansAssetsManagementPage"/>
+        <!-- &end[AssetsManagement]-->
     </extensions>
-    <!--
-    <applicationListeners>
-        <listener class="se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingService"
-                  topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
-    </applicationListeners>
-    -->
+
     <actions>
         <action id="RenameFeature"
                 class="se.isselab.HAnS.actions.RenameAction"
@@ -161,16 +158,5 @@ limitations under the License.
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
-
-        <action id="CloneAsset" text="Clone Asset" class="se.isselab.HAnS.actions.assetsManagement.CloneAsset">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="first" />
-            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="SurroundFeature" />
-        </action>
-
-        <action id="PasteAsset" text="Paste Cloned Asset" class="se.isselab.HAnS.actions.assetsManagement.PasteClonedAsset">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="first" />
-            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="CloneAsset" />
-        </action>
-
     </actions>
 </idea-plugin>

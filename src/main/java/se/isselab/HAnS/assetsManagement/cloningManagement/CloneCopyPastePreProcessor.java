@@ -1,4 +1,4 @@
-package se.isselab.HAnS.assetsManagement.cloningAssets;
+package se.isselab.HAnS.assetsManagement.cloningManagement;
 
 import com.intellij.codeInsight.editorActions.CopyPastePreProcessor;
 import com.intellij.openapi.editor.Document;
@@ -11,8 +11,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.assetsManagement.AssetsManagementSettings;
-
-import java.util.List;
 
 public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
     PsiClass copiedClass;

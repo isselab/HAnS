@@ -1,4 +1,4 @@
-package se.isselab.HAnS.assetsManagement.propagatingToAsset;
+package se.isselab.HAnS.assetsManagement.cloningManagement;
 
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
@@ -12,14 +12,13 @@ import com.intellij.ui.EditorNotifications;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.assetsManagement.AssetsManagementSettings;
-import se.isselab.HAnS.assetsManagement.cloningAssets.TracingHandler;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class PropagatingProvider extends EditorNotifications.Provider<EditorNotificationPanel>{
+public class NotificationProvider extends EditorNotifications.Provider<EditorNotificationPanel>{
     private final Project myProject;
-    public PropagatingProvider(Project project){
+    public NotificationProvider(Project project){
         myProject = project;
     }
     @Override

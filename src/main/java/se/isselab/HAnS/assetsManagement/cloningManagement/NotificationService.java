@@ -1,18 +1,17 @@
-package se.isselab.HAnS.assetsManagement.propagatingToAsset;
+package se.isselab.HAnS.assetsManagement.cloningManagement;
 
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 @Service(Service.Level.PROJECT)
-public final class PropagatingService {
+public final class NotificationService {
     private final Project myProject;
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    public PropagatingService(Project project){
+    public NotificationService(Project project){
         myProject = project;
     }
 

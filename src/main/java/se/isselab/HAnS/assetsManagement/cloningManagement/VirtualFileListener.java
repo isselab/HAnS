@@ -1,4 +1,4 @@
-package se.isselab.HAnS.assetsManagement.cloningAssets;
+package se.isselab.HAnS.assetsManagement.cloningManagement;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -14,20 +14,17 @@ import com.intellij.openapi.vfs.newvfs.events.VFileCopyEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.assetsManagement.AssetsManagementSettings;
-import se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingService;
-import se.isselab.HAnS.assetsManagement.propagatingToAsset.PropagatingProvider;
 
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class CloneFileListener implements StartupActivity {
+public class VirtualFileListener implements StartupActivity {
     private static final long DEBOUNCE_DELAY_MS = 500;
     private long lastEventTime = 0;
     @Override
@@ -77,7 +74,7 @@ public class CloneFileListener implements StartupActivity {
             /**
              * gets the path of the file from the target location when the paste action is triggered
              * sets target asset path
-             * sets directoryCloned to false to enable creating traces for copies files again
+             * sets directoryCloned to false for creating traces for copied files again
              * **/
             @Override
             public void after(@NotNull List<? extends VFileEvent> events) {
@@ -107,7 +104,7 @@ public class CloneFileListener implements StartupActivity {
                             }
                         }
                         else if(event instanceof VFileContentChangeEvent){
-                            PropagatingProvider.fileIsChanged(project, event.getFile());
+                            NotificationProvider.fileIsChanged(project, event.getFile());
                             System.out.println("One File was changed " + event.getFile().getPath());
                         }
                     }
