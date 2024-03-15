@@ -133,7 +133,7 @@ public class VirtualFileListener implements StartupActivity {
                    || AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both") ){
                     if(fileInDirectoryCloned){
                         VirtualFile sourceDirectory = LocalFileSystem.getInstance().findFileByPath(sourceAssetPath);
-                        PsiDirectory psiDirectory = PsiManager.getInstance(project).findDirectory(sourceDirectory);
+                        PsiDirectory psiDirectory = findPsiDirectory(project, sourceDirectory);
                         VirtualFile targetVirtualFile = LocalFileSystem.getInstance().findFileByPath(targetAssetPath);
                         if (targetVirtualFile != null) {
                             Project targetProject = ProjectUtil.guessProjectForFile(targetVirtualFile);
@@ -147,6 +147,17 @@ public class VirtualFileListener implements StartupActivity {
                     fileInDirectoryCloned = false;
                 }
 
+            }
+
+            private PsiDirectory findPsiDirectory(Project project, VirtualFile dir) {
+                final PsiDirectory[] psiDirectoryHolder = new PsiDirectory[1];
+                ApplicationManager.getApplication().runReadAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        psiDirectoryHolder[0] = PsiManager.getInstance(project).findDirectory(dir);;
+                    }
+                });
+                return psiDirectoryHolder[0];
             }
 
             private String buildSourceDirectoryPath(String[] filePath){

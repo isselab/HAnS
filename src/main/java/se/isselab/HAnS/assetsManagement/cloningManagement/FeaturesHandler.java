@@ -1,5 +1,6 @@
 package se.isselab.HAnS.assetsManagement.cloningManagement;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -7,10 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileVisitor;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiRecursiveElementVisitor;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationFeatureNameImpl;
 import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationFileAnnotationImpl;
@@ -80,12 +78,23 @@ public class FeaturesHandler {
     }
 
     private String readFileContent(VirtualFile file) {
-        Document document = FileDocumentManager.getInstance().getDocument(file);
+        Document document = getDocument(file);
         if (document == null) {
             return null;
         }
 
         return document.getText();
+    }
+
+    private Document getDocument(VirtualFile file) {
+        final Document[] documents = new Document[1];
+        ApplicationManager.getApplication().runReadAction(new Runnable() {
+            @Override
+            public void run() {
+                documents[0] = FileDocumentManager.getInstance().getDocument(file);
+            }
+        });
+        return documents[0];
     }
 
     private Set<String> parseExistingFeatures(String content) {
