@@ -13,7 +13,7 @@ public class CloneManager {
             FeaturesCodeAnnotations.getInstance().addFeatures(AssetsToClone.featuresAnnotations);
         }
         featuresHandler.addFeaturesToFeatureModel();
-        tracingHandler.createCopyFeatureTrace(project, sourceProjectName);
+        tracingHandler.createCopyFeatureTrace(project, sourceProjectName, project.getName());
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
         AssetsToClone.resetClones();
     }
@@ -26,7 +26,7 @@ public class CloneManager {
             FeaturesCodeAnnotations.getInstance().addFeatures(AssetsToClone.featuresAnnotations);
         }
         featuresHandler.addFeaturesToFeatureModel();
-        tracingHandler.createCopyFeatureTrace(project, sourceProjectName);
+        tracingHandler.createCopyFeatureTrace(project, sourceProjectName, project.getName());
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
         AssetsToClone.resetClones();
     }
@@ -34,7 +34,7 @@ public class CloneManager {
         TracingHandler tracingHandler = new TracingHandler();
         FeaturesHandler featuresHandler = new FeaturesHandler(project);
         featuresHandler.addFeaturesToFeatureModel();
-        tracingHandler.createCopyFeatureTrace(project, sourceProjectName);
+        tracingHandler.createCopyFeatureTrace(project, sourceProjectName, project.getName());
         String className = (currentClassName.length() > 0) ? currentClassName : copiedClass.getName();
         sourcePath = sourcePath + "/" + copiedClass.getName();
         targetPath = targetPath + "/" + className;
@@ -45,7 +45,7 @@ public class CloneManager {
         TracingHandler tracingHandler = new TracingHandler();
         FeaturesHandler featuresHandler = new FeaturesHandler(project);
         featuresHandler.addFeaturesToFeatureModel();
-        tracingHandler.createCopyFeatureTrace(project, sourceProjectName);
+        tracingHandler.createCopyFeatureTrace(project, sourceProjectName, project.getName());
         String methodName = (currentMethodName.length() > 0) ? currentMethodName : copiedMethod.getName();
         sourcePath = sourcePath + "/" + className + "/" + copiedMethod.getName();
         targetPath = targetPath + "/" + currentClassName + "/" + methodName;

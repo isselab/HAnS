@@ -25,7 +25,7 @@ public class TracingHandler {
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
             bufferFileWriter.newLine();
             bufferFileWriter.append(updatedContent);
-            storeCopyFeatureTraces(targetFilePath, bufferFileWriter);
+            storeCopyFeatureTraces(currentDateAndTime, bufferFileWriter);
             bufferFileWriter.close();
 
         } catch (Exception e) {
@@ -34,11 +34,11 @@ public class TracingHandler {
     }
 
 
-    private void storeCopyFeatureTraces(String targetPath, BufferedWriter bufferedWriter){
+    private void storeCopyFeatureTraces(String version, BufferedWriter bufferedWriter){
         if(AssetsToClone.subFeatureTrace != null){
             try {
                 for(String feature : AssetsToClone.subFeatureTrace){
-                    String featureTrace = feature;
+                    String featureTrace = feature + ";" + version;
                     bufferedWriter.newLine();
                     bufferedWriter.append(featureTrace);
                 }
@@ -71,12 +71,12 @@ public class TracingHandler {
     }
 
 
-    public void createCopyFeatureTrace(Project project, String sourceProjectName){
+    public void createCopyFeatureTrace(Project project, String sourceProjectName, String targetProjectName){
         List<String> features = FeaturesCodeAnnotations.getInstance().getFeatureNames();
         if(features.size() != 0){
             AssetsToClone.subFeatureTrace = new ArrayList<String>();
             for(String feature : features){
-                String subFeatureTrace = sourceProjectName + "::" + feature;
+                String subFeatureTrace = sourceProjectName + "::" + feature + ";" + targetProjectName + "::" + feature;
                 AssetsToClone.subFeatureTrace.add(subFeatureTrace);
             }
         }
