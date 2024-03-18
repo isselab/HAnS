@@ -54,8 +54,7 @@ public class VirtualFileListener implements StartupActivity {
                             VFileCopyEvent copyEvent = (VFileCopyEvent) event;
                             String sourceFilePath = copyEvent.getFile().getPath();
                             String[] fileSplitted = sourceFilePath.split("/");
-                            String directoryPath = buildSourceDirectoryPath(fileSplitted);
-                            sourceAssetPath = directoryPath;
+                            sourceAssetPath = buildSourceDirectoryPath(fileSplitted);
                             sourceProjectName = getSourceProjectName(copyEvent);
                             fileInDirectoryCloned = true;
                         }
@@ -104,7 +103,7 @@ public class VirtualFileListener implements StartupActivity {
                             }
                         }
                         else if(event instanceof VFileContentChangeEvent){
-                            NotificationProvider.fileIsChanged(project, event.getFile());
+                            NotificationProvider.fileIsChanged(event.getFile());
                             System.out.println("One File was changed " + event.getFile().getPath());
                         }
                     }
@@ -154,7 +153,7 @@ public class VirtualFileListener implements StartupActivity {
                 ApplicationManager.getApplication().runReadAction(new Runnable() {
                     @Override
                     public void run() {
-                        psiDirectoryHolder[0] = PsiManager.getInstance(project).findDirectory(dir);;
+                        psiDirectoryHolder[0] = PsiManager.getInstance(project).findDirectory(dir);
                     }
                 });
                 return psiDirectoryHolder[0];

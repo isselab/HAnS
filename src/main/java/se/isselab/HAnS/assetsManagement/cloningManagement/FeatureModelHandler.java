@@ -31,6 +31,7 @@ public class FeatureModelHandler {
 
         if (featureModelFile != null) {
             String content = readFileContent(featureModelFile);
+            assert content != null : "Feature model empty";
             Set<String> existingFeatures = parseExistingFeatures(content);
 
             boolean modified = false;
@@ -173,7 +174,7 @@ public class FeatureModelHandler {
                 }
             });
         }
-        if(featuresElements.size() != 0)
+        if(!featuresElements.isEmpty())
             return featuresElements;
         return null;
     }
@@ -200,7 +201,7 @@ public class FeatureModelHandler {
                     }
             });
         }
-        if(featuresElements.size() != 0)
+        if(!featuresElements.isEmpty())
             return featuresElements;
         return null;
     }
@@ -228,7 +229,7 @@ public class FeatureModelHandler {
                 }
             }
         }
-        if(features.size() != 0)
+        if(!features.isEmpty())
             return features;
         return null;
     }

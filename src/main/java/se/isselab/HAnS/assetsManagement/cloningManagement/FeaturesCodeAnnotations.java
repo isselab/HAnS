@@ -2,13 +2,12 @@ package se.isselab.HAnS.assetsManagement.cloningManagement;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FeaturesCodeAnnotations {
-    private static FeaturesCodeAnnotations instance = new FeaturesCodeAnnotations();
+    private final static FeaturesCodeAnnotations instance = new FeaturesCodeAnnotations();
     private List<String> featureNames;
 
     private FeaturesCodeAnnotations() {

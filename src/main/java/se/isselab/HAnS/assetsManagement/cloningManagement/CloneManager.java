@@ -13,7 +13,7 @@ public class CloneManager {
             FeaturesCodeAnnotations.getInstance().addFeatures(AssetsAndFeatureTraces.featuresAnnotations);
         }
         featureModelHandler.addFeaturesToFeatureModel();
-        tracingHandler.createCopyFeatureTrace(project, sourceProjectName, project.getName());
+        tracingHandler.createCopyFeatureTrace(sourceProjectName, project.getName());
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
         AssetsAndFeatureTraces.resetTraces();
     }
@@ -26,7 +26,7 @@ public class CloneManager {
             FeaturesCodeAnnotations.getInstance().addFeatures(AssetsAndFeatureTraces.featuresAnnotations);
         }
         featureModelHandler.addFeaturesToFeatureModel();
-        tracingHandler.createCopyFeatureTrace(project, sourceProjectName, project.getName());
+        tracingHandler.createCopyFeatureTrace(sourceProjectName, project.getName());
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
         AssetsAndFeatureTraces.resetTraces();
     }
@@ -34,8 +34,8 @@ public class CloneManager {
         TracingHandler tracingHandler = new TracingHandler();
         FeatureModelHandler featureModelHandler = new FeatureModelHandler(project);
         featureModelHandler.addFeaturesToFeatureModel();
-        tracingHandler.createCopyFeatureTrace(project, sourceProjectName, project.getName());
-        String className = (currentClassName.length() > 0) ? currentClassName : copiedClass.getName();
+        tracingHandler.createCopyFeatureTrace(sourceProjectName, project.getName());
+        String className = (!currentClassName.isEmpty()) ? currentClassName : copiedClass.getName();
         sourcePath = sourcePath + "/" + copiedClass.getName();
         targetPath = targetPath + "/" + className;
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
@@ -45,8 +45,8 @@ public class CloneManager {
         TracingHandler tracingHandler = new TracingHandler();
         FeatureModelHandler featureModelHandler = new FeatureModelHandler(project);
         featureModelHandler.addFeaturesToFeatureModel();
-        tracingHandler.createCopyFeatureTrace(project, sourceProjectName, project.getName());
-        String methodName = (currentMethodName.length() > 0) ? currentMethodName : copiedMethod.getName();
+        tracingHandler.createCopyFeatureTrace(sourceProjectName, project.getName());
+        String methodName = (!currentMethodName.isEmpty()) ? currentMethodName : copiedMethod.getName();
         sourcePath = sourcePath + "/" + className + "/" + copiedMethod.getName();
         targetPath = targetPath + "/" + currentClassName + "/" + methodName;
         tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);

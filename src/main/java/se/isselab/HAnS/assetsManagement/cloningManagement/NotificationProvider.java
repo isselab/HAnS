@@ -19,10 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class NotificationProvider extends EditorNotifications.Provider<EditorNotificationPanel>{
-    private final Project myProject;
-    public NotificationProvider(Project project){
-        myProject = project;
-    }
     @Override
     public @NotNull Key<EditorNotificationPanel> getKey() {
         return Key.create("editor.panel.notification");
@@ -54,8 +50,10 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
             if(parsedLines.get(i).get(1).equals(file.getPath()))
             {
                 VirtualFile sourceFile = LocalFileSystem.getInstance().findFileByPath(parsedLines.get(i).get(0));
-                String lastTimeModification = getLastModificationTime(sourceFile);
-                if(Long.parseLong(lastTimeModification) > Long.parseLong(parsedLines.get(i).get(2))) return true;
+                if(sourceFile != null){
+                    String lastTimeModification = getLastModificationTime(sourceFile);
+                    if(Long.parseLong(lastTimeModification) > Long.parseLong(parsedLines.get(i).get(2))) return true;
+                }
             }
         }
         return false;
@@ -70,7 +68,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         return false;
     }
 
-    public static void fileIsChanged(Project project, VirtualFile sourceFile){
+    public static void fileIsChanged(VirtualFile sourceFile){
         if(AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("propagate")
           || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")) {
             List<List<String>> parsedLines = getTraces();
@@ -80,6 +78,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
                     VirtualFile clonedFile = LocalFileSystem.getInstance().findFileByPath(parsedLines.get(i).get(1));
                     if(clonedFile != null) {
                         Project targetProject = findProjectForVirtualFile(clonedFile);
+                        assert targetProject != null : "targetProject should not be null";
                         EditorNotifications.getInstance(targetProject).updateNotifications(clonedFile);
                         return;
                     }
@@ -93,13 +92,15 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         for(Project project : projects){
             String traceFilePath = TracingHandler.getTraceFilePath(project);
             VirtualFile traceFile = LocalFileSystem.getInstance().findFileByPath(traceFilePath);
-            if(traceFile.exists()){
+            if(traceFile != null){
                 PsiFile traceDBFile = PsiManager.getInstance(project).findFile(traceFile);
-                String[] lines = traceDBFile.getText().split("\n");
-                for (String line : lines) {
-                    if (line.contains(";")) {
-                        List<String> parts = Arrays.asList(line.split(";"));
-                        parsedLines.add(parts);
+                if(traceDBFile != null) {
+                    String[] lines = traceDBFile.getText().split("\n");
+                    for (String line : lines) {
+                        if (line.contains(";")) {
+                            List<String> parts = Arrays.asList(line.split(";"));
+                            parsedLines.add(parts);
+                        }
                     }
                 }
             }

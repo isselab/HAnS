@@ -41,7 +41,7 @@ public class FeaturesAnnotationsExtractor {
             }
         });
 
-        if(featureNames.size() != 0)
+        if(!featureNames.isEmpty())
             return featureNames;
         return null;
     }
