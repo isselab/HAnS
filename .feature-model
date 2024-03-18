@@ -29,6 +29,7 @@ HAnS
         FeatureFileMapping
         Scattering
         Tangling
+    MetricsView
     ExtensionPoint
         Callback
         Service

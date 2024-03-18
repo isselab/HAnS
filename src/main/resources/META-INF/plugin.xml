@@ -1,6 +1,6 @@
 <!--
 Copyright [2021] [Herman Jansson & Johan Martinson]
-Copyright [2024] [David Stechow & Philipp Kusmierz]
+Copyright [2024] [David Stechow & Philipp Kusmierz & Luca Kramer]
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -120,6 +120,11 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
+
+        <!-- &begin[MetricsView]-->
+        <toolWindow id="MetricsView" anchor="bottom"
+                    factoryClass="se.isselab.HAnS.metricsView.MetricsViewFactory" />
+        <!-- &end[MetricsView]-->
 
         <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService" serviceInterface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
     </extensions>
