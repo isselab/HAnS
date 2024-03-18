@@ -24,12 +24,6 @@ limitations under the License.
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
 
-    <!-- &begin[ColorSettingsPage] -->
-    <extensions defaultExtensionNs="com.intellij">
-        <colorSettingsPage implementation="se.isselab.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
-    </extensions>
-    <!-- &end[ColorSettingsPage] -->
-
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[HAnS::FeatureModel] -->
         <fileType name="Feature Model File" implementationClass="se.isselab.HAnS.featureModel.FeatureModelFileType"
@@ -89,6 +83,10 @@ limitations under the License.
         <annotator language="CodeAnnotations"
                    implementationClass="se.isselab.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationAnnotator"/>
         <!-- &end[SyntaxHighlighting::CodeAnnotation] -->
+
+        <!-- &begin[ColorSettingsPage] -->
+        <colorSettingsPage implementation="se.isselab.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
+        <!-- &end[ColorSettingsPage] -->
 
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/HAnSDarcula.xml"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/HAnSDefault.xml"/>
