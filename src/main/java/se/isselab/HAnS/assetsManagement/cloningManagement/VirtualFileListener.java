@@ -17,7 +17,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
-import se.isselab.HAnS.assetsManagement.AssetsManagementSettings;
+import se.isselab.HAnS.assetsManagement.AssetsManagementPreferences;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -111,8 +111,8 @@ public class VirtualFileListener implements StartupActivity {
                 }
             }
             private void manageFileClone(String targetAssetPath) {
-                if(AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
-                || AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both") ){
+                if(AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
+                || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both") ){
                     VirtualFile targetVirtualFile = LocalFileSystem.getInstance().findFileByPath(targetAssetPath);
                     if (targetVirtualFile != null) {
                         Project targetProject = ProjectUtil.guessProjectForFile(targetVirtualFile);
@@ -129,8 +129,8 @@ public class VirtualFileListener implements StartupActivity {
              * create folder trace only if that folder was found in the same and other instaces and content from it was cloned
              * */
             private void manageFolderClone() {
-                if(AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
-                   || AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both") ){
+                if(AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
+                   || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both") ){
                     if(fileInDirectoryCloned){
                         VirtualFile sourceDirectory = LocalFileSystem.getInstance().findFileByPath(sourceAssetPath);
                         PsiDirectory psiDirectory = findPsiDirectory(project, sourceDirectory);

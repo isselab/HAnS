@@ -19,9 +19,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FeaturesHandler {
+public class FeatureModelHandler {
     Project project;
-    public FeaturesHandler(Project project){
+    public FeatureModelHandler(Project project){
         this.project = project;
     }
 

@@ -10,18 +10,15 @@ import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import se.isselab.HAnS.assetsManagement.AssetsManagementSettings;
+import se.isselab.HAnS.assetsManagement.AssetsManagementPreferences;
 
 public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
-    PsiClass copiedClass;
-    PsiMethod copiedMethod;
-    String sourcePath;
-    String sourceProjectName;
+
     @Override
     public @Nullable String preprocessOnCopy(PsiFile psiFile, int[] ints, int[] ints1, String s) {
-        if(AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
-          || AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")) {
-            resetClones();
+        if(AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
+          || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")) {
+            AssetsAndFeatureTraces.resetAssetClones();
             Document document = PsiDocumentManager.getInstance(psiFile.getProject()).getDocument(psiFile);
             int startLine = document.getLineNumber(ints[0]);
             int endLine = document.getLineNumber(ints1[0]);
@@ -31,12 +28,12 @@ public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
                 while (startElement != null && !(startElement instanceof PsiMethod) && !(startElement instanceof PsiClass)) {
                     startElement = startElement.getParent();
                 }
-                sourcePath = psiFile.getVirtualFile().getPath();
-                sourceProjectName = psiFile.getProject().getName();
+                AssetsAndFeatureTraces.sourcePath = psiFile.getVirtualFile().getPath();
+                AssetsAndFeatureTraces.sourceProjectName = psiFile.getProject().getName();
                 if (startElement instanceof PsiMethod) {
-                    copiedMethod = (PsiMethod) startElement;
+                    AssetsAndFeatureTraces.clonedMethod = (PsiMethod) startElement;
                 }else if(startElement instanceof PsiClass) {
-                    copiedClass = (PsiClass) startElement;
+                    AssetsAndFeatureTraces.clonedClass = (PsiClass) startElement;
                 }
             }
         }
@@ -46,8 +43,8 @@ public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
 
     @Override
     public @NotNull String preprocessOnPaste(Project project, PsiFile psiFile, Editor editor, String s, RawText rawText) {
-        if(AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
-          || AssetsManagementSettings.properties.getValue(AssetsManagementSettings.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")){
+        if(AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
+          || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")){
             String currentMethodName = "";
             String currentClassName = "";
             if (psiFile != null && editor != null) {
@@ -77,30 +74,24 @@ public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
                     currentClassName = currentClass.getName();
                 }
             }
-            var featuresAnnotated = FeaturesHandler.getFeaturesAnnotationsFromText(s);
+            var featuresAnnotated = FeatureModelHandler.getFeaturesAnnotationsFromText(s);
             if(featuresAnnotated != null )
                 FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);
-            if (copiedClass != null) {
+            if (AssetsAndFeatureTraces.clonedClass != null) {
                 VirtualFile virtualFile = psiFile.getVirtualFile();
                 if (virtualFile != null) {
                     String targetPath = virtualFile.getPath();
-                    CloneManager.CloneClassAssets(project, sourceProjectName, sourcePath, targetPath, copiedClass, currentClassName);
+                    CloneManager.CloneClassAssets(project, AssetsAndFeatureTraces.sourceProjectName, AssetsAndFeatureTraces.sourcePath, targetPath, AssetsAndFeatureTraces.clonedClass, currentClassName);
                 }
-            } else if(copiedMethod != null){
+            } else if(AssetsAndFeatureTraces.clonedMethod != null){
                 VirtualFile virtualFile = psiFile.getVirtualFile();
                 if (virtualFile != null) {
                     String targetPath = virtualFile.getPath();
-                    PsiClass parentClass = PsiTreeUtil.getParentOfType(copiedMethod, PsiClass.class);
-                    CloneManager.CloneMethodAssets(project,sourceProjectName, sourcePath, targetPath, parentClass.getName(), copiedMethod, currentClassName, currentMethodName );
+                    PsiClass parentClass = PsiTreeUtil.getParentOfType(AssetsAndFeatureTraces.clonedMethod, PsiClass.class);
+                    CloneManager.CloneMethodAssets(project, AssetsAndFeatureTraces.sourceProjectName, AssetsAndFeatureTraces.sourcePath, targetPath, parentClass.getName(), AssetsAndFeatureTraces.clonedMethod, currentClassName, currentMethodName );
                 }
             }
         }
         return s;
-    }
-    private void resetClones(){
-        copiedMethod = null;
-        copiedClass = null;
-        sourcePath = null;
-        sourceProjectName = null;
     }
 }

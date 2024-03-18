@@ -3,25 +3,23 @@ package se.isselab.HAnS.assetsManagement.cloningManagement;
 import com.intellij.psi.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class AssetsToClone {
-    public static PsiFile clonedFile;
-    public static PsiDirectory clonedDirectory;
+public class AssetsAndFeatureTraces {
     public static PsiMethod clonedMethod;
     public static PsiClass clonedClass;
-    public static List<PsiElement> elementsInRange;
-    public static String subAssetTrace;
+    public static String sourceProjectName;
+
+    public static String sourcePath;
     public static ArrayList<String> subFeatureTrace;
     public static ArrayList<PsiElement> featuresAnnotations;
 
-    public static void resetClones() {
-        clonedFile = null;
-        clonedDirectory = null;
+    public static void resetAssetClones() {
         clonedClass = null;
         clonedMethod = null;
-        elementsInRange = null;
-        subAssetTrace = null;
+        sourceProjectName = null;
+        sourcePath = null;
+    }
+    public static void resetTraces() {
         subFeatureTrace = null;
         featuresAnnotations = null;
         FeaturesCodeAnnotations.getInstance().clearFeatures();

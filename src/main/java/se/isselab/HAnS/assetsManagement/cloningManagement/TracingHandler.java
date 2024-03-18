@@ -35,9 +35,9 @@ public class TracingHandler {
 
 
     private void storeCopyFeatureTraces(String version, BufferedWriter bufferedWriter){
-        if(AssetsToClone.subFeatureTrace != null){
+        if(AssetsAndFeatureTraces.subFeatureTrace != null){
             try {
-                for(String feature : AssetsToClone.subFeatureTrace){
+                for(String feature : AssetsAndFeatureTraces.subFeatureTrace){
                     String featureTrace = feature + ";" + version;
                     bufferedWriter.newLine();
                     bufferedWriter.append(featureTrace);
@@ -74,10 +74,10 @@ public class TracingHandler {
     public void createCopyFeatureTrace(Project project, String sourceProjectName, String targetProjectName){
         List<String> features = FeaturesCodeAnnotations.getInstance().getFeatureNames();
         if(features.size() != 0){
-            AssetsToClone.subFeatureTrace = new ArrayList<String>();
+            AssetsAndFeatureTraces.subFeatureTrace = new ArrayList<String>();
             for(String feature : features){
                 String subFeatureTrace = sourceProjectName + "::" + feature + ";" + targetProjectName + "::" + feature;
-                AssetsToClone.subFeatureTrace.add(subFeatureTrace);
+                AssetsAndFeatureTraces.subFeatureTrace.add(subFeatureTrace);
             }
         }
     }

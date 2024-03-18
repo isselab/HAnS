@@ -5,7 +5,7 @@ import com.intellij.ide.util.PropertiesComponent;
 import javax.swing.*;
 import java.awt.*;
 
-public class AssetsManagementSettings {
+public class AssetsManagementPreferences {
     private JPanel myMainPanel;
     private JCheckBox cloningOption;
     private JCheckBox propagatingOption;
