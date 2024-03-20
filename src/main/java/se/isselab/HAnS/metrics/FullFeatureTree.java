@@ -72,13 +72,6 @@ public class FullFeatureTree {
         return children;
     }
 
-    public static void printTree(FullFeatureTree node, String indent) {
-        System.out.println(indent + node.getName() + " " + node.depth + " " + node.featureList.toString()+ " " + node.getType());
-        for (FullFeatureTree child : node.getChildren()) {
-            printTree(child, indent + "-");
-        }
-    }
-
     private static boolean isReadOnly(File file) {
         // Check if the file/folder is read-only
         return !file.canWrite() || file.getPath().endsWith(".class");
@@ -86,8 +79,7 @@ public class FullFeatureTree {
 
     public static FullFeatureTree buildTree(Project project) {
         FullFeatureTree tree = new FullFeatureTree();
-        FullFeatureTree result = tree.processProjectStructure(project, getFeatureModelPath(project));
-        return result;
+        return tree.processProjectStructure(project, getFeatureModelPath(project));
     }
 
     // retrieves the path of the root folder where the .feature-model is located
@@ -167,13 +159,13 @@ public class FullFeatureTree {
                     }
                     if (!(element.getNode().getElementType() instanceof FolderAnnotationTokenType) &&
                         !(element.getNode().getElementType() instanceof FolderAnnotationElementType)) {
-                        if (featureLpq.get().trim().length()>0) {parent.featureList.add(featureLpq.get().trim());}
+                        if (!featureLpq.get().trim().isEmpty()) {parent.featureList.add(featureLpq.get().trim());}
                         featureLpq.set("");
                     }
                     super.visitElement(element);
                 }
             });
-            if (featureLpq.get().trim().length()>0) {parent.featureList.add(featureLpq.get().trim());}
+            if (!featureLpq.get().trim().isEmpty()) {parent.featureList.add(featureLpq.get().trim());}
         } else {
             FullFeatureTree fileNode = new FullFeatureTree(
                     file.getName(), file.getAbsolutePath(), Type.FILE, parent.depth);
@@ -297,8 +289,7 @@ public class FullFeatureTree {
     private static String getFeatureModelRootFolderPath(PsiFile psiFile) {
         if (psiFile!=null) {
             VirtualFile vFile = psiFile.getOriginalFile().getVirtualFile().getParent();
-            String path = vFile.getPath();
-            return path;
+            return vFile.getPath();
         }
         return null;
     }
