@@ -18,8 +18,8 @@ public class AssetsManagementPreferences {
 
     public JComponent getPanel() {
         myMainPanel = new JPanel(new GridLayout(0, 1));
-        cloningOption = new JCheckBox("Enable Cloning Tracing");
-        propagatingOption = new JCheckBox("Enable Propagating Assets");
+        cloningOption = new JCheckBox("Enable Cloning Trace Tracking");
+        propagatingOption = new JCheckBox("Notify on Sources Segment Changes");
         myMainPanel.add(cloningOption);
         myMainPanel.add(propagatingOption);
         properties = PropertiesComponent.getInstance();

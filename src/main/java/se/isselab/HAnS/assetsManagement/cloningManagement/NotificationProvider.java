@@ -34,7 +34,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
           || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")) {
             if (cloned && isSourceFileChanged) {
                 EditorNotificationPanel panel = new EditorNotificationPanel();
-                panel.setText("This file is copied/cloned and some changes has been made to the source file. Click on Propagate to get the changes from the source file.");
+                panel.setText("This file has been cloned and some changes have been made to the source file. Please check the changes for consistency.");
                 panel.createActionLabel("Cancel", () -> {
                     panel.setVisible(false);
                 });
