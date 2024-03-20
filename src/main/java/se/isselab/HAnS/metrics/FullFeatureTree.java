@@ -2,63 +2,44 @@ package se.isselab.HAnS.metrics;
 
 import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.PsiManagerImpl;
-import com.intellij.psi.impl.source.tree.injected.InjectedLanguageManagerImpl;
-import com.intellij.psi.impl.source.tree.injected.InjectedReferenceVisitor;
-import com.intellij.psi.injection.ReferenceInjector;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.ProcessingContext;
-import kotlinx.html.P;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.codeAnnotation.psi.*;
-import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationLinemarkerImpl;
-import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationLpqImpl;
-import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
-import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
-import se.isselab.HAnS.featureModel.psi.FeatureModelTokenType;
-import se.isselab.HAnS.featureView.FeatureViewFactory;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReference;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationLpq;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationElementType;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
-import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationTokenType;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.intellij.psi.PsiManager.getInstance;
 import static com.intellij.psi.search.FilenameIndex.getAllFilesByExt;
 import static com.intellij.psi.search.FilenameIndex.getVirtualFilesByName;
 import static com.intellij.psi.search.GlobalSearchScope.projectScope;
 
-public class ProjectStructureTree {
+public class FullFeatureTree {
 
     private String name;
     private String path;
     private Type type;
     private int depth;
     private HashSet<String> featureList;
-    private List<ProjectStructureTree> children;
+    private List<FullFeatureTree> children;
 
     public enum Type {FOLDER, FILE, LINE}
 
-    public ProjectStructureTree() {}
+    public FullFeatureTree() {}
 
-    public ProjectStructureTree(String name, String path, Type type, int depth) {
+    public FullFeatureTree(String name, String path, Type type, int depth) {
         this.name = name;
         this.path = path;
         this.type = type;
@@ -87,8 +68,15 @@ public class ProjectStructureTree {
         return featureList;
     }
 
-    public List<ProjectStructureTree> getChildren() {
+    public List<FullFeatureTree> getChildren() {
         return children;
+    }
+
+    public static void printTree(FullFeatureTree node, String indent) {
+        System.out.println(indent + node.getName() + " " + node.depth + " " + node.featureList.toString()+ " " + node.getType());
+        for (FullFeatureTree child : node.getChildren()) {
+            printTree(child, indent + "-");
+        }
     }
 
     private static boolean isReadOnly(File file) {
@@ -96,9 +84,9 @@ public class ProjectStructureTree {
         return !file.canWrite() || file.getPath().endsWith(".class");
     }
 
-    public static ProjectStructureTree buildTree(Project project) {
-        ProjectStructureTree tree = new ProjectStructureTree();
-        ProjectStructureTree result = tree.processProjectStructure(project, getFeatureModelPath(project));
+    public static FullFeatureTree buildTree(Project project) {
+        FullFeatureTree tree = new FullFeatureTree();
+        FullFeatureTree result = tree.processProjectStructure(project, getFeatureModelPath(project));
         return result;
     }
 
@@ -119,22 +107,22 @@ public class ProjectStructureTree {
 
     // Method to process the project structure
     // returns ProjectStructureTree containing all items (feature, folder, code) and their features
-    private ProjectStructureTree processProjectStructure(Project project, String rootFolderPath) {
+    private FullFeatureTree processProjectStructure(Project project, String rootFolderPath) {
 
         File rootFolder = new File(rootFolderPath);
         if (!rootFolder.exists() || !rootFolder.isDirectory()) {
             throw new IllegalArgumentException("Invalid root folder path");
         }
 
-        ProjectStructureTree root = new ProjectStructureTree(
-                rootFolder.getName(), rootFolderPath, ProjectStructureTree.Type.FOLDER, 0);
+        FullFeatureTree root = new FullFeatureTree(
+                rootFolder.getName(), rootFolderPath, FullFeatureTree.Type.FOLDER, 0);
 
         this.processFolder(project, rootFolder, root);
 
         return root;
     }
 
-    private void processFolder(Project project, File folder, ProjectStructureTree parent) {
+    private void processFolder(Project project, File folder, FullFeatureTree parent) {
         Queue<File> specialFilesQueue = new LinkedList<>(); // save .feature-to-file in the folder for later processing
         File[] files = folder.listFiles();
 
@@ -144,8 +132,8 @@ public class ProjectStructureTree {
 
         for (File file : files) {
             if (file.isDirectory()) {
-                ProjectStructureTree folderNode = new ProjectStructureTree(
-                        file.getName(), file.getAbsolutePath(), ProjectStructureTree.Type.FOLDER, parent.depth + 1);
+                FullFeatureTree folderNode = new FullFeatureTree(
+                        file.getName(), file.getAbsolutePath(), FullFeatureTree.Type.FOLDER, parent.depth + 1);
                 parent.children.add(folderNode);
                 processFolder(project, file, folderNode);
             } else if (file.isFile()) {
@@ -163,7 +151,7 @@ public class ProjectStructureTree {
         }
     }
 
-    private void processFile(Project project, File file, ProjectStructureTree parent, Queue<File> featureToFileQueue) {
+    private void processFile(Project project, File file, FullFeatureTree parent, Queue<File> featureToFileQueue) {
         PsiFile foundFile = fileToPsi(project, file);
 
         if (foundFile instanceof FileAnnotationFile) { // Logic for .feature-to-file
@@ -187,7 +175,7 @@ public class ProjectStructureTree {
             });
             if (featureLpq.get().trim().length()>0) {parent.featureList.add(featureLpq.get().trim());}
         } else {
-            ProjectStructureTree fileNode = new ProjectStructureTree(
+            FullFeatureTree fileNode = new FullFeatureTree(
                     file.getName(), file.getAbsolutePath(), Type.FILE, parent.depth);
             parent.children.add(fileNode);
 
@@ -200,7 +188,7 @@ public class ProjectStructureTree {
     }
 
     // Logic for .feature-to-file
-    private static void processFeatureToFile(PsiFile file, ProjectStructureTree parent) {
+    private static void processFeatureToFile(PsiFile file, FullFeatureTree parent) {
         Map<Set<String>, Set<String>> filesToFeatures = new HashMap<>();
         AtomicReference<Set<String>> fileList = new AtomicReference<>(new HashSet<>());
         AtomicReference<Set<String>> featureList = new AtomicReference<>(new HashSet<>());
@@ -234,7 +222,7 @@ public class ProjectStructureTree {
             Set<String> fileNames = entry.getKey();
             Set<String> featureSet = entry.getValue();
 
-            for (ProjectStructureTree child : parent.children) {
+            for (FullFeatureTree child : parent.children) {
                 if (fileNames.contains(child.getPath())) {
                     child.getFeatureList().addAll(featureSet);
                 }
@@ -244,7 +232,7 @@ public class ProjectStructureTree {
     }
 
     // process code annotations
-    private void processCode(Project project, File file, ProjectStructureTree parent) {
+    private void processCode(Project project, File file, FullFeatureTree parent) {
         PsiFile foundFile = fileToPsi(project, file);
         if (foundFile == null) {
             return;
@@ -268,7 +256,7 @@ public class ProjectStructureTree {
                                     for (PsiElement el : injectedPsi.getChildren()) {
                                         if (el instanceof CodeAnnotationLinemarker) {
                                             for (CodeAnnotationLpq lpq : ((CodeAnnotationLinemarker) el).getParameter().getLpqList()) {
-                                                ProjectStructureTree pst = new ProjectStructureTree(lpq.getName(), parent.getPath(), Type.LINE, lineDepth.get());
+                                                FullFeatureTree pst = new FullFeatureTree(lpq.getName(), parent.getPath(), Type.LINE, lineDepth.get());
                                                 pst.featureList.add(lpq.getName());
                                                 parent.children.add(pst);
                                             }
@@ -276,7 +264,7 @@ public class ProjectStructureTree {
                                         if (el instanceof CodeAnnotationBeginmarker) {
                                             List<CodeAnnotationLpq> lpqList = ((CodeAnnotationBeginmarker) el).getParameter().getLpqList();
                                             for (CodeAnnotationLpq lpq : lpqList) {
-                                                ProjectStructureTree pst = new ProjectStructureTree(lpq.getName(), parent.getPath(), Type.LINE, lineDepth.get());
+                                                FullFeatureTree pst = new FullFeatureTree(lpq.getName(), parent.getPath(), Type.LINE, lineDepth.get());
                                                 pst.featureList.add(lpq.getName());
                                                 parent.children.add(pst);
                                             }

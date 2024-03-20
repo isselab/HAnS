@@ -11,7 +11,7 @@ public class NestingDepths {
      * @return An Integer representing the total number of files annotated with the specified feature.
      */
     // &begin[NumberOfAnnotatedFiles]
-    public static Integer getNumberOfAnnotatedFiles(ProjectStructureTree tree, String featureLPQ) {
+    public static Integer getNumberOfAnnotatedFiles(FullFeatureTree tree, String featureLPQ) {
        int NoAF = countNumberOfAnnotatedFiles(tree, featureLPQ);
        return NoAF;
     }
@@ -25,9 +25,9 @@ public class NestingDepths {
      * @return An Integer representing the number of features within the specified item. Returns -1 if the item is not found.
      */
     // &begin[NumberOfFeatures]
-    public static Integer getNumberOfFeatures(ProjectStructureTree tree, String pathToItem) {
+    public static Integer getNumberOfFeatures(FullFeatureTree tree, String pathToItem) {
         // find corresponding node in the Project Tree
-        ProjectStructureTree treeNode = findProjectTreeNode(tree, pathToItem);
+        FullFeatureTree treeNode = findProjectTreeNode(tree, pathToItem);
         // count number of Features
         if (treeNode == null) return -1;
         List<String> features = new ArrayList<>();
@@ -44,7 +44,7 @@ public class NestingDepths {
      * @param feature The LPQ of the feature.
      * @return An Optional Integer containing the maximum nesting depth of the feature, or empty if the feature is not found.
      */
-    public static Optional<Integer> getMaxNestingDepth(ProjectStructureTree tree, String feature) {
+    public static Optional<Integer> getMaxNestingDepth(FullFeatureTree tree, String feature) {
         return getFeatureDepths(tree, feature).stream().max(Integer::compareTo);
     }
 
@@ -55,7 +55,7 @@ public class NestingDepths {
      * @param feature The LPQ of the feature.
      * @return An Optional Integer containing the minimum nesting depth of the feature, or empty if the feature is not found.
      */
-    public static Optional<Integer> getMinNestingDepth(ProjectStructureTree tree, String feature) {
+    public static Optional<Integer> getMinNestingDepth(FullFeatureTree tree, String feature) {
         return getFeatureDepths(tree, feature).stream().min(Integer::compareTo);
     }
 
@@ -66,37 +66,37 @@ public class NestingDepths {
      * @param feature The LPQ of the feature.
      * @return An Optional Integer containing the average nesting depth of the feature, or empty if the feature is not found.
      */
-    public static OptionalDouble getAvgNestingDepth(ProjectStructureTree tree, String feature) {
+    public static OptionalDouble getAvgNestingDepth(FullFeatureTree tree, String feature) {
         return getFeatureDepths(tree, feature).stream().mapToDouble(Integer::doubleValue).average();
     }
 
-    private static ArrayList<Integer> getFeatureDepths(ProjectStructureTree tree, String targetFeatureLPQ) {
+    private static ArrayList<Integer> getFeatureDepths(FullFeatureTree tree, String targetFeatureLPQ) {
         ArrayList<Integer> occurrences = new ArrayList<>();
         findAndStoreFeatureDepthsRecursive(tree, targetFeatureLPQ, occurrences);
         return occurrences;
     }
 
-    private static void findAndStoreFeatureDepthsRecursive(ProjectStructureTree node, String targetFeatureLPQ, ArrayList<Integer> occurrences) {
+    private static void findAndStoreFeatureDepthsRecursive(FullFeatureTree node, String targetFeatureLPQ, ArrayList<Integer> occurrences) {
         if (node.getFeatureList() != null && node.getFeatureList().contains(targetFeatureLPQ)) {
             occurrences.add(node.getDepth());
         }
 
         if (node.getChildren() != null) {
-            for (ProjectStructureTree child : node.getChildren()) {
+            for (FullFeatureTree child : node.getChildren()) {
                 findAndStoreFeatureDepthsRecursive(child, targetFeatureLPQ, occurrences);
             }
         }
     }
     // &end[NestingDepths]
 
-    private static ProjectStructureTree findProjectTreeNode(ProjectStructureTree node, String path) {
+    private static FullFeatureTree findProjectTreeNode(FullFeatureTree node, String path) {
         if (node != null && node.getPath().equals(path)) {
             return node;
         }
 
         if (!node.getChildren().isEmpty()) {
-            for (ProjectStructureTree child : node.getChildren()) {
-                ProjectStructureTree result = findProjectTreeNode(child, path);
+            for (FullFeatureTree child : node.getChildren()) {
+                FullFeatureTree result = findProjectTreeNode(child, path);
                 if (result != null) {
                     return result;
                 }
@@ -106,12 +106,12 @@ public class NestingDepths {
     }
 
     // &begin[NumberOfFeatures]
-    private static void countNumberOfFeaturesInItem(ProjectStructureTree node, List<String> features) {
+    private static void countNumberOfFeaturesInItem(FullFeatureTree node, List<String> features) {
         if (!node.getFeatureList().isEmpty()) {
             features.addAll(node.getFeatureList());
         }
         if (!node.getChildren().isEmpty()) {
-            for (ProjectStructureTree child : node.getChildren()) {
+            for (FullFeatureTree child : node.getChildren()) {
                 countNumberOfFeaturesInItem(child, features);
             }
         }
@@ -119,15 +119,15 @@ public class NestingDepths {
     // &end[NumberOfFeatures]
 
     // &begin[NumberOfAnnotatedFiles]
-    private static int countNumberOfAnnotatedFiles(ProjectStructureTree node, String targetFeatureLPQ) {
+    private static int countNumberOfAnnotatedFiles(FullFeatureTree node, String targetFeatureLPQ) {
         int count = 0;
 
-        if (node.getType() == ProjectStructureTree.Type.FILE && node.getFeatureList().contains(targetFeatureLPQ)) {
+        if (node.getType() == FullFeatureTree.Type.FILE && node.getFeatureList().contains(targetFeatureLPQ)) {
             count++;
         }
 
         if (node.getChildren() != null) {
-            for (ProjectStructureTree child : node.getChildren()) {
+            for (FullFeatureTree child : node.getChildren()) {
                 count += countNumberOfAnnotatedFiles(child, targetFeatureLPQ);
             }
         }
