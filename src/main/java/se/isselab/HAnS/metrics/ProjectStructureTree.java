@@ -17,12 +17,16 @@ import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.codeAnnotation.psi.*;
 import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationLinemarkerImpl;
 import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationLpqImpl;
+import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
+import se.isselab.HAnS.featureModel.psi.FeatureModelTokenType;
 import se.isselab.HAnS.featureView.FeatureViewFactory;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReference;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationLpq;
+import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationElementType;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
+import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationTokenType;
 
 import java.io.BufferedReader;
@@ -165,15 +169,23 @@ public class ProjectStructureTree {
         if (foundFile instanceof FileAnnotationFile) { // Logic for .feature-to-file
             featureToFileQueue.add(file);
         } else if (foundFile instanceof FolderAnnotationFile) { // Logic for .feature-to-folder
+            AtomicReference<String> featureLpq = new AtomicReference<>("");
+
             foundFile.accept(new PsiRecursiveElementWalkingVisitor() {
                 @Override
                 public void visitElement(@NotNull PsiElement element) {
                     if (element.getNode().getElementType() instanceof FolderAnnotationTokenType) {
-                        parent.featureList.add(element.getText());
+                        featureLpq.set(featureLpq.get()+element.getText());
+                    }
+                    if (!(element.getNode().getElementType() instanceof FolderAnnotationTokenType) &&
+                        !(element.getNode().getElementType() instanceof FolderAnnotationElementType)) {
+                        if (featureLpq.get().trim().length()>0) {parent.featureList.add(featureLpq.get().trim());}
+                        featureLpq.set("");
                     }
                     super.visitElement(element);
                 }
             });
+            if (featureLpq.get().trim().length()>0) {parent.featureList.add(featureLpq.get().trim());}
         } else {
             ProjectStructureTree fileNode = new ProjectStructureTree(
                     file.getName(), file.getAbsolutePath(), Type.FILE, parent.depth);
