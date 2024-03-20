@@ -94,7 +94,7 @@ public class FullFeatureTree {
     private static String getFeatureModelPath(Project project) {
         var allFilenames = getVirtualFilesByName(".feature-model", projectScope(project));
         PsiFile psiFile = null;
-        if (allFilenames.size() > 0) {
+        if (!allFilenames.isEmpty()) {
             psiFile = getInstance(project).findFile(allFilenames.iterator().next());
         } else {
             Collection<VirtualFile> virtualFileCollection = getAllFilesByExt(project, "feature-model");
@@ -291,15 +291,16 @@ public class FullFeatureTree {
         VirtualFile virtualFile = localFileSystem.findFileByIoFile(file);
         if (virtualFile == null) { return null; }
 
-        PsiFile foundFile = PsiManagerImpl.getInstance(project).findFile(virtualFile);
-        if (foundFile == null) { return null; }
-        return foundFile;
+        return PsiManagerImpl.getInstance(project).findFile(virtualFile);
     }
 
     private static String getFeatureModelRootFolderPath(PsiFile psiFile) {
-        VirtualFile vFile = psiFile.getOriginalFile().getVirtualFile().getParent();
-        String path = vFile.getPath();
-        return path;
+        if (psiFile!=null) {
+            VirtualFile vFile = psiFile.getOriginalFile().getVirtualFile().getParent();
+            String path = vFile.getPath();
+            return path;
+        }
+        return null;
     }
 
 }
