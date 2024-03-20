@@ -30,7 +30,7 @@ public class NestingDepths {
         ProjectStructureTree treeNode = findProjectTreeNode(tree, pathToItem);
         // count number of Features
         if (treeNode == null) return -1;
-        Set<String> features = new HashSet<>();
+        List<String> features = new ArrayList<>();
         countNumberOfFeaturesInItem(treeNode, features);
         return features.size();
     }
@@ -106,7 +106,7 @@ public class NestingDepths {
     }
 
     // &begin[NumberOfFeatures]
-    private static void countNumberOfFeaturesInItem(ProjectStructureTree node, Set<String> features) {
+    private static void countNumberOfFeaturesInItem(ProjectStructureTree node, List<String> features) {
         if (!node.getFeatureList().isEmpty()) {
             features.addAll(node.getFeatureList());
         }
