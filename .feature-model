@@ -29,7 +29,9 @@ HAnS
         FeatureFileMapping
         Scattering
         Tangling
-    MetricsView
+        NestingDepths
+        NumberOfAnnotatedFiles
+        NumberOfFeatures
     ExtensionPoint
         Callback
         Service
