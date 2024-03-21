@@ -2,9 +2,14 @@ package se.isselab.HAnS.assetsManagement.cloningManagement;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -62,7 +67,24 @@ public class TracingHandler {
             String cleanedUrl = url.replaceFirst("^file://", "");
             cleanedUrls.add(cleanedUrl);
         }
-        return cleanedUrls.get(0) + "/trace-db.txt";
+        String path = cleanedUrls.get(0) + "/.trace-db.txt";
+        VirtualFile vFile = VirtualFileManager.getInstance().findFileByUrl(vFiles.get(0));
+        if(vFile == null) {
+            try {
+                File file = new File(path);
+                File parentDir = file.getParentFile();
+                VirtualFile vParentDir = VfsUtil.findFileByIoFile(parentDir, false);
+                if (vParentDir != null && !vParentDir.exists()) {
+                    return null;
+                }
+                vFile = vParentDir.createChildData(null, ".trace-db.txt");
+                return vFile.getUrl().replaceFirst("^file://", "");
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return path;
     }
 
     public String getCurrentDateAndTime(){

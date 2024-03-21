@@ -110,8 +110,7 @@ public class VirtualFileListener implements StartupActivity {
                 }
             }
             private void manageFileClone(String targetAssetPath) {
-                if(AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
-                || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both") ){
+                if(AssetsAndFeatureTraces.isAllPreference() || AssetsAndFeatureTraces.isClonePreference() || AssetsAndFeatureTraces.isCloneAndPropagatePreference() || AssetsAndFeatureTraces.isCloneAndShowClonePreference()){
                     VirtualFile targetVirtualFile = LocalFileSystem.getInstance().findFileByPath(targetAssetPath);
                     if (targetVirtualFile != null) {
                         Project targetProject = ProjectUtil.guessProjectForFile(targetVirtualFile);
@@ -128,8 +127,7 @@ public class VirtualFileListener implements StartupActivity {
              * create folder trace only if that folder was found in the same and other instaces and content from it was cloned
              * */
             private void manageFolderClone() {
-                if(AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
-                   || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both") ){
+                if(AssetsAndFeatureTraces.isAllPreference() || AssetsAndFeatureTraces.isClonePreference() || AssetsAndFeatureTraces.isCloneAndPropagatePreference() || AssetsAndFeatureTraces.isCloneAndShowClonePreference()){
                     if(fileInDirectoryCloned){
                         VirtualFile sourceDirectory = LocalFileSystem.getInstance().findFileByPath(sourceAssetPath);
                         PsiDirectory psiDirectory = findPsiDirectory(project, sourceDirectory);

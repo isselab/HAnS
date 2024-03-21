@@ -30,12 +30,27 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
         boolean cloned = isCloned(psiFile);
         boolean isSourceFileChanged = isSourceFileChanged(file);
-        if(AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("propagate")
-          || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")) {
+        if(AssetsAndFeatureTraces.isAllPreference() || AssetsAndFeatureTraces.isShowClonePreference() || AssetsAndFeatureTraces.isShowCloneAndPropagatePreference() || AssetsAndFeatureTraces.isCloneAndShowClonePreference()) {
+            if (cloned && !isSourceFileChanged) {
+                EditorNotificationPanel panel = new EditorNotificationPanel();
+                panel.setText("This file has been cloned. To show the source file click on Show Source");
+                panel.createActionLabel("Show Source", () -> {
+                    //TODO
+                });
+                panel.createActionLabel("Hide", () -> {
+                    panel.setVisible(false);
+                });
+                return panel;
+            }
+        }
+        if(AssetsAndFeatureTraces.isAllPreference() || AssetsAndFeatureTraces.isPropagatePreference() || AssetsAndFeatureTraces.isCloneAndPropagatePreference() || AssetsAndFeatureTraces.isShowCloneAndPropagatePreference()) {
             if (cloned && isSourceFileChanged) {
                 EditorNotificationPanel panel = new EditorNotificationPanel();
                 panel.setText("This file has been cloned and some changes have been made to the source file. Please check the changes for consistency.");
-                panel.createActionLabel("Cancel", () -> {
+                panel.createActionLabel("Show Source", () -> {
+                    //TODO
+                });
+                panel.createActionLabel("Hide", () -> {
                     panel.setVisible(false);
                 });
                 return panel;
@@ -69,8 +84,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
     }
 
     public static void fileIsChanged(VirtualFile sourceFile){
-        if(AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("propagate")
-          || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")) {
+        if(AssetsAndFeatureTraces.isAllPreference() || AssetsAndFeatureTraces.isPropagatePreference() || AssetsAndFeatureTraces.isCloneAndPropagatePreference() || AssetsAndFeatureTraces.isShowCloneAndPropagatePreference()) {
             List<List<String>> parsedLines = getTraces();
             for(int i = 0; i < parsedLines.size(); i++){
                 if(parsedLines.get(i).get(0).equals(sourceFile.getPath()))
