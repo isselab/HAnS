@@ -264,10 +264,6 @@ public class FeatureModelPsiImplUtil {
             };
             WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
         }
-
-        //FeatureReferenceUtil.rename();
-        //FeatureReferenceUtil.reset();
-
         return newFeatureName;
     }
 
@@ -286,17 +282,11 @@ public class FeatureModelPsiImplUtil {
 
     private static void deleteFromFeatureModelWithChildren(@NotNull PsiElement feature) {
         Document document = PsiDocumentManager.getInstance(feature.getProject()).getDocument(feature.getContainingFile());
-        int startOffset = feature.getTextOffset();
-        int endOffset = feature.getTextOffset() + feature.getNode().getTextLength();
-
         if (document != null) {
-            String documentText = document.getText();
-            String sub = documentText.substring(0, startOffset);
-            String remainder = documentText.substring(endOffset);
-            String newContent = sub.concat(remainder);
+            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(feature.getTextOffset()));
+            int lineEndOffset = document.getLineEndOffset(document.getLineNumber(feature.getTextOffset())) + 1;
             Runnable r = () -> {
-                document.setReadOnly(false);
-                document.setText(newContent);
+                document.deleteString(lineStartOffset, lineEndOffset);
             };
             WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
         }

@@ -1,6 +1,6 @@
 <!--
 Copyright [2021] [Herman Jansson & Johan Martinson]
-Copyright [2024] [David Stechow & Philipp Kusmierz]
+Copyright [2024] [David Stechow & Philipp Kusmierz & Luca Kramer]
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,12 +23,6 @@ limitations under the License.
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
-
-    <!-- &begin[ColorSettingsPage] -->
-    <extensions defaultExtensionNs="com.intellij">
-        <colorSettingsPage implementation="se.isselab.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
-    </extensions>
-    <!-- &end[ColorSettingsPage] -->
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[HAnS::FeatureModel] -->
@@ -90,6 +84,10 @@ limitations under the License.
                    implementationClass="se.isselab.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationAnnotator"/>
         <!-- &end[SyntaxHighlighting::CodeAnnotation] -->
 
+        <!-- &begin[ColorSettingsPage] -->
+        <colorSettingsPage implementation="se.isselab.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
+        <!-- &end[ColorSettingsPage] -->
+
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/HAnSDarcula.xml"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/HAnSDefault.xml"/>
         <!-- &end[SyntaxHighlighting] -->
@@ -120,6 +118,11 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
+
+        <!-- &begin[MetricsView]-->
+        <toolWindow id="MetricsView" anchor="bottom"
+                    factoryClass="se.isselab.HAnS.metricsView.MetricsViewFactory" />
+        <!-- &end[MetricsView]-->
 
         <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService" serviceInterface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
     </extensions>
