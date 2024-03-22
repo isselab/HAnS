@@ -1,6 +1,11 @@
 package se.isselab.HAnS.assetsManagement.cloningManagement;
 
+import com.intellij.diff.DiffContentFactory;
+import com.intellij.diff.DiffManager;
+import com.intellij.diff.contents.DiffContent;
+import com.intellij.diff.requests.SimpleDiffRequest;
 import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.roots.ProjectRootManager;
@@ -32,10 +37,17 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         boolean isSourceFileChanged = isSourceFileChanged(file);
         if(AssetsAndFeatureTraces.isAllPreference() || AssetsAndFeatureTraces.isShowClonePreference() || AssetsAndFeatureTraces.isShowCloneAndPropagatePreference() || AssetsAndFeatureTraces.isCloneAndShowClonePreference()) {
             if (cloned && !isSourceFileChanged) {
+                String sourceFilePath = getSourcePath(file);
                 EditorNotificationPanel panel = new EditorNotificationPanel();
                 panel.setText("This file has been cloned. To show the source file click on Show Source");
-                panel.createActionLabel("Show Source", () -> {
-                    //TODO
+                panel.createActionLabel("Show Source File", () -> {
+                    VirtualFile sourceFile = LocalFileSystem.getInstance().findFileByPath(sourceFilePath);
+                    if (sourceFile != null && project != null) {
+                        FileEditorManager.getInstance(project).openFile(sourceFile, true);
+                        panel.setVisible(false);
+                    } else {
+                        System.out.println("file was not found");
+                    }
                 });
                 panel.createActionLabel("Hide", () -> {
                     panel.setVisible(false);
@@ -47,8 +59,11 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
             if (cloned && isSourceFileChanged) {
                 EditorNotificationPanel panel = new EditorNotificationPanel();
                 panel.setText("This file has been cloned and some changes have been made to the source file. Please check the changes for consistency.");
-                panel.createActionLabel("Show Source", () -> {
-                    //TODO
+                panel.createActionLabel("Merge Changes", () -> {
+                    String sourceFilePath = getSourcePath(file);
+                    VirtualFile sourceFile = LocalFileSystem.getInstance().findFileByPath(sourceFilePath);
+                    openMergeWindow(project, sourceFile, file);
+                    panel.setVisible(false);
                 });
                 panel.createActionLabel("Hide", () -> {
                     panel.setVisible(false);
@@ -72,6 +87,24 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
             }
         }
         return false;
+    }
+    private void openMergeWindow(Project project, VirtualFile sourceFile, VirtualFile clonedFile) {
+        DiffContentFactory contentFactory = DiffContentFactory.getInstance();
+        DiffContent sourceFileContent = contentFactory.create(project, sourceFile);
+        DiffContent clonedFileContent = contentFactory.create(project, clonedFile);
+        SimpleDiffRequest diffRequest = new SimpleDiffRequest("Merge Changes", sourceFileContent, clonedFileContent, "Source File", "Cloned File");
+        DiffManager.getInstance().showDiff(project, diffRequest);
+    }
+
+    private String getSourcePath(VirtualFile file) {
+        List<List<String>> parsedLines = getTraces();
+        for(int i = 0; i < parsedLines.size(); i++){
+            if(parsedLines.get(i).get(1).equals(file.getPath()))
+            {
+                return parsedLines.get(i).get(0);
+            }
+        }
+        return null;
     }
 
     private boolean isCloned(PsiFile file) {
