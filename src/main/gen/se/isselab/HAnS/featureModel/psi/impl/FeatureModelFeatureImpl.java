@@ -83,10 +83,7 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
 
   @Override
   public void addWithChildren(FeatureModelFeature childFeature) {
-    System.out.println("addWithChildren");
-//    System.out.println(childFeature.getName());
-//    FeatureModelPsiImplUtil.addFeature(childFeature);
-    FeatureModelPsiImplUtil.addFeatureWithChildren(this.getLPQText(), childFeature);
+    FeatureModelPsiImplUtil.addFeatureWithChildren(this, childFeature);
   }
 
   @Override

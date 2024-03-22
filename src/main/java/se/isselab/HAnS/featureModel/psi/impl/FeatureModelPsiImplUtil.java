@@ -17,13 +17,17 @@ package se.isselab.HAnS.featureModel.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.refactoring.rename.RenameDialog;
+import groovy.json.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
@@ -32,7 +36,7 @@ import se.isselab.HAnS.referencing.FeatureReferenceUtil;
 
 import javax.swing.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
@@ -242,124 +246,57 @@ public class FeatureModelPsiImplUtil {
         return feature;
     }
 
-    public static void addFeatureWithChildren(@NotNull String parentLpq, @NotNull FeatureModelFeature childFeature) {
-        System.out.println("Found feature-----");
-        System.out.println("child" +childFeature.getLPQText());
-        FeatureModelFeature parentFeature = getFeatureFromLPQ(childFeature.getProject(), parentLpq);
-        System.out.println("parent" +parentFeature.getLPQText());
+    // generates String with feature tree
+    public static String generateTreeString(FeatureModelFeature feature, int level) {
+        StringBuilder sb = new StringBuilder();
 
-        FeatureModelPsiImplUtil.addToFeatureModel(parentFeature, childFeature.getFeatureName());
-        AtomicReference<FeatureModelFeature> newChild = new AtomicReference<FeatureModelFeature>();
-        Arrays.stream(parentFeature.getChildren()).forEach(child -> {
-            if(((FeatureModelFeature)child).getFeatureName().equals(childFeature.getFeatureName())) {
-                newChild.set((FeatureModelFeature)child);
-            }
-        });
-
-
-//        AtomicReference<PsiElement> newChild = null;
-//        Arrays.asList(parentFeature.getChildren()).stream().forEach(featureChild -> {
-//            if(((FeatureModelFeature) featureChild).getLPQText().equals(childFeature.getLPQText())) {
-//                newChild.set(featureChild);
-//            }
-//        });
-
-        for (PsiElement child : childFeature.getChildren()) {
-            addFeatureWithChildren(newChild.get().getLPQText(), (FeatureModelFeature) child);
-//            addFeatureWithChildren(childFeature, (FeatureModelFeature) child);
+        // Indentation based on the level
+        for (int i = 0; i < level * 4; i++) {
+            sb.append(" ");
         }
 
-//        // extract child feature with its children
-//        Document document = PsiDocumentManager.getInstance(childFeature.getProject()).getDocument(childFeature.getContainingFile());
-//        int startOffset = childFeature.getTextOffset();
-//        int endOffset = childFeature.getTextOffset() + childFeature.getNode().getTextLength();
-//        String child = "";
-//
-//        if (document != null) {
-//            String documentText = document.getText();
-//            String sub = documentText.substring(0, startOffset);
-//            child = documentText.substring(startOffset, endOffset);
-//            System.out.println(child);
-//            System.out.println(child.length());
-//            String remainder = documentText.substring(endOffset);
-//            String newContent = sub.concat(remainder);
-//            Runnable r = () -> {
-//                document.setReadOnly(false);
-//                document.setText(newContent);
-//            };
-//            WriteCommandAction.runWriteCommandAction(childFeature.getProject(), r);
-//        }
-//
-//        int offset = parentFeature.getTextOffset() + Objects.requireNonNull(parentFeature.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getTextLength();
-//
-//        int indent;
-//
-//        if (parentFeature.getParent() instanceof PsiFile) {
-//            indent = 4;
-//        }
-//        else if (parentFeature.getPrevSibling() instanceof FeatureModelFeature) {
-//            indent = parentFeature.getPrevSibling().getLastChild().getTextLength() + 4; // TODO: Make indentation setting dependent
-//        }
-//        else {
-//            indent = parentFeature.getPrevSibling().getTextLength() + 4;
-//        }
-//
-//        if (document != null) {
-//            String documentText = document.getText();
-//            String sub = documentText.substring(0, offset);
-//            String remainder = documentText.substring(offset);
-//            String newContent = sub.concat("\n" + String.format("%1$" + (indent) + "s", "") + child).concat(remainder);
-//            Runnable r = () -> {
-//                document.setReadOnly(false);
-//                document.setText(newContent);
-//            };
-//            WriteCommandAction.runWriteCommandAction(parentFeature.getProject(), r);
-//        }
+        sb.append(feature.getName()).append("\n"); // add current feature name
 
-//        PsiFile file = childFeature.getContainingFile();
-//        AtomicReference<PsiElement> prevElement = new AtomicReference<PsiElement>(); // Array to hold the previous element (indent for our child element)
-//        AtomicReference<PsiElement> childElement = new AtomicReference<PsiElement>(); // Array to hold the previous element (indent for our child element)
-//        AtomicReference<PsiElement> parentElement = new AtomicReference<PsiElement>(); // Array to hold the previous element (indent for our child element)
-//
-//
-//            file.accept(new PsiRecursiveElementWalkingVisitor() {
-//                @Override
-//                public void visitElement(@NotNull PsiElement element) {
-////                    System.out.println(element.getNode().getElementType().toString().equals("FeatureModelTokenType.INDENT"));
-//                    if (element.getNode().getElementType().toString().equals("FEATURE")) {
-//                        if (((FeatureModelFeature) element).getLPQText().equals(childFeature.getLPQText())) {
-//                            childElement.set(element);
-//                        }
-//                        if (((FeatureModelFeature) element).getLPQText().equals(parentFeature.getLPQText())) {
-//                            parentElement.set(element);
-//                        }
-//                    }
-//                    if (element.getNode().getElementType() instanceof FeatureModelTokenType) {
-//                        prevElement.set(element);
-//                    }
-//                    super.visitElement(element);
-//                }
-//            });
-//
-//        WriteCommandAction.runWriteCommandAction(childFeature.getProject(), () -> {
-//            FeatureModelFeature f = (FeatureModelFeature) childElement.get();
-//            for(PsiElement el : f.getChildren()) {
-//                el.delete();
-//            }
-//
-//            System.out.println(f.getNode().getElementType());
-//
-//            System.out.println(prevElement.get().getNode().getElementType());
-//            f.delete();
-//            prevElement.get().delete(); // delete indent before feature
-//        });
+        // Recursively process children with increased indentation level
+        for (PsiElement child : feature.getChildren()) {
+            sb.append(generateTreeString(((FeatureModelFeature)child), level + 1));
+        }
 
-
-
-
+        return sb.toString();
     }
 
+    public static void addFeatureWithChildren(@NotNull FeatureModelFeature parentFeature, @NotNull FeatureModelFeature childFeature) {
+        Project projectInstance = ReadAction.compute(parentFeature::getProject);
+        Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(ReadAction.compute(parentFeature::getContainingFile));
+        if (document != null) {
+            PsiElement prevSibling = ReadAction.compute(parentFeature::getPrevSibling);
+            int indent;
+            // if root feature -> 4
+            // otherwise indent of parentFeature + 4
+            if (prevSibling instanceof PsiFile) {
+                indent = 4;
+            } else {
+                int parentOffset = ReadAction.compute(parentFeature::getTextOffset);
+                int parentLineOffset = document.getLineStartOffset(document.getLineNumber(parentOffset));
+                indent = (parentOffset - parentLineOffset) + 4;
+            }
+            int level = indent / 4;
 
+            // create string representation of child feature with its children and
+            // append it to .feature-model file right after parent feature
+            String result = generateTreeString(childFeature, level);
+
+            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(ReadAction.compute(parentFeature::getTextOffset)) + 1);
+            String beforeLine = document.getText().substring(0, lineStartOffset);
+            String remainder = document.getText().substring(lineStartOffset);
+            String newString = beforeLine.concat(result).concat(remainder);
+            Runnable r = () -> {
+                document.setReadOnly(false);
+                document.setText(newString);
+            };
+            WriteCommandAction.runWriteCommandAction(projectInstance, r);
+        }
+    }
 
     public static String addToFeatureModel(@NotNull FeatureModelFeature feature, String newFeatureName) {
         Document document = PsiDocumentManager.getInstance(feature.getProject()).getDocument(feature.getContainingFile());
@@ -395,6 +332,19 @@ public class FeatureModelPsiImplUtil {
         return newFeatureName;
     }
 
+    public static FeatureModelFeature deleteFromFeatureModel(@NotNull PsiElement feature) {
+        Document document = PsiDocumentManager.getInstance(ReadAction.compute(feature::getProject)).getDocument(ReadAction.compute(feature::getContainingFile));
+        if (document!= null) {
+            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(feature.getTextOffset()));
+            int lineEndOffset = document.getLineEndOffset(document.getLineNumber(feature.getTextOffset() + feature.getNode().getTextLength())-1);
+            WriteCommandAction.runWriteCommandAction(ReadAction.compute(feature::getProject), () -> {
+                document.deleteString(lineStartOffset, lineEndOffset+1);
+            });
+            return (FeatureModelFeature) feature;
+        }
+        return null;
+    }
+
     public static int deleteFeature(@NotNull PsiElement feature){
         int response = Messages.showOkCancelDialog(
                 "Are you sure you want to remove the feature from the list?",
@@ -406,19 +356,6 @@ public class FeatureModelPsiImplUtil {
             deleteFromFeatureModelWithChildren(feature);
         }
         return 1;
-    }
-
-    public static FeatureModelFeature deleteFromFeatureModel(@NotNull PsiElement feature) {
-
-        Document document = PsiDocumentManager.getInstance(feature.getProject()).getDocument(feature.getContainingFile());
-        int lineStartOffset = document.getLineStartOffset(document.getLineNumber(feature.getTextOffset()));
-        int lineEndOffset = document.getLineEndOffset(document.getLineNumber(feature.getTextOffset() + feature.getNode().getTextLength())-1);
-
-        WriteCommandAction.runWriteCommandAction(feature.getProject(), () -> {
-            document.deleteString(lineStartOffset, lineEndOffset+1);
-        });
-
-        return (FeatureModelFeature) feature;
     }
 
     private static void deleteFromFeatureModelWithChildren(@NotNull PsiElement feature) {
