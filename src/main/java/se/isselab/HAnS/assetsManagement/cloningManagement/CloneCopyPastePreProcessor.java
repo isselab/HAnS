@@ -16,8 +16,7 @@ public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
 
     @Override
     public @Nullable String preprocessOnCopy(PsiFile psiFile, int[] ints, int[] ints1, String s) {
-        if(AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
-          || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")) {
+        if(AssetsAndFeatureTraces.isAllPreference() || AssetsAndFeatureTraces.isClonePreference() || AssetsAndFeatureTraces.isCloneAndPropagatePreference() || AssetsAndFeatureTraces.isCloneAndShowClonePreference()) {
             AssetsAndFeatureTraces.resetAssetClones();
             Document document = PsiDocumentManager.getInstance(psiFile.getProject()).getDocument(psiFile);
             int startLine = document.getLineNumber(ints[0]);
@@ -43,8 +42,7 @@ public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
 
     @Override
     public @NotNull String preprocessOnPaste(Project project, PsiFile psiFile, Editor editor, String s, RawText rawText) {
-        if(AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone")
-          || AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("both")){
+        if(AssetsAndFeatureTraces.isAllPreference() || AssetsAndFeatureTraces.isClonePreference() || AssetsAndFeatureTraces.isCloneAndPropagatePreference() || AssetsAndFeatureTraces.isCloneAndShowClonePreference()){
             String currentMethodName = "";
             String currentClassName = "";
             if (psiFile != null && editor != null) {

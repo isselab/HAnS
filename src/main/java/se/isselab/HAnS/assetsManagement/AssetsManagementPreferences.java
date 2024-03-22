@@ -68,6 +68,7 @@ public class AssetsManagementPreferences {
 
     public void reset() {
         cloningOption.setSelected(false);
+        showCloneOption.setSelected(false);
         propagatingOption.setSelected(false);
     }
     public void init() {
@@ -113,8 +114,5 @@ public class AssetsManagementPreferences {
                 showCloneOption.setSelected(false);
                 propagatingOption.setSelected(false);
         }
-        System.out.println(cloningOption.isSelected());
-        System.out.println(showCloneOption.isSelected());
-        System.out.println(propagatingOption.isSelected());
     }
 }

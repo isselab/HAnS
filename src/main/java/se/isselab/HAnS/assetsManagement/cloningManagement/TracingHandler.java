@@ -27,7 +27,7 @@ public class TracingHandler {
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
             bufferFileWriter.newLine();
             bufferFileWriter.append(updatedContent);
-            storeCopyFeatureTraces(currentDateAndTime, bufferFileWriter);
+            storeCopyFeatureTraces(bufferFileWriter);
             bufferFileWriter.newLine();
             bufferFileWriter.close();
 
@@ -37,11 +37,11 @@ public class TracingHandler {
     }
 
 
-    private void storeCopyFeatureTraces(String version, BufferedWriter bufferedWriter){
+    private void storeCopyFeatureTraces(BufferedWriter bufferedWriter){
         if(AssetsAndFeatureTraces.subFeatureTrace != null){
             try {
                 for(String feature : AssetsAndFeatureTraces.subFeatureTrace){
-                    String featureTrace = feature + ";" + version;
+                    String featureTrace = feature;
                     bufferedWriter.newLine();
                     bufferedWriter.append(featureTrace);
                 }
@@ -104,7 +104,8 @@ public class TracingHandler {
         if(!features.isEmpty()){
             AssetsAndFeatureTraces.subFeatureTrace = new ArrayList<>();
             for(String feature : features){
-                String subFeatureTrace = sourceProjectName + "::" + feature + ";" + targetProjectName + "::" + feature;
+                boolean isUnassigned = feature.contains("unAssigned");
+                String subFeatureTrace = !isUnassigned ? sourceProjectName + "::" + feature + ";" + targetProjectName + "::" + feature : sourceProjectName + "::" + feature.substring(12) + ";" + targetProjectName + "::" + feature;
                 AssetsAndFeatureTraces.subFeatureTrace.add(subFeatureTrace);
             }
         }

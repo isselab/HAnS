@@ -27,6 +27,7 @@ public class FeatureModelHandler {
 
     public void addFeaturesToFeatureModel(){
         List<String> clonedFeatureNames = FeaturesCodeAnnotations.getInstance().getFeatureNames();
+        List<String> modifiedFeatureNames = new ArrayList<>();
         VirtualFile featureModelFile = findFeatureModelFile(project);
 
         if (featureModelFile != null) {
@@ -45,12 +46,15 @@ public class FeatureModelHandler {
                             modified = true;
                         }
                         addFeatureUnderUnassigned(newContent, featureName);
+                        featureName = "unAssigned::" + featureName;
                         modified = true;
                     }
+                    modifiedFeatureNames.add(featureName);
                 }
             }
             if (modified) {
                 writeBackToFile(featureModelFile, newContent.toString(), project);
+                FeaturesCodeAnnotations.getInstance().setFeatureNames(modifiedFeatureNames);
             }
         }
     }
