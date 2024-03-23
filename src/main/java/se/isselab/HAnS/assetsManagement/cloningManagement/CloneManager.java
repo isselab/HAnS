@@ -14,7 +14,7 @@ public class CloneManager {
         }
         featureModelHandler.addFeaturesToFeatureModel();
         tracingHandler.createCopyFeatureTrace(sourceProjectName, project.getName());
-        tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
+        tracingHandler.storeCopyPasteFileTrace(project, sourceProjectName, sourcePath, targetPath);
         AssetsAndFeatureTraces.resetTraces();
     }
     public static void CloneFolderAssets(Project project, PsiElement dir, String sourceProjectName, String sourcePath, String targetPath){
@@ -27,7 +27,7 @@ public class CloneManager {
         }
         featureModelHandler.addFeaturesToFeatureModel();
         tracingHandler.createCopyFeatureTrace(sourceProjectName, project.getName());
-        tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
+        tracingHandler.storeCopyPasteFileTrace(project, sourceProjectName, sourcePath, targetPath);
         AssetsAndFeatureTraces.resetTraces();
     }
     public static void CloneClassAssets(Project project, String sourceProjectName, String sourcePath, String targetPath, PsiClass copiedClass, String currentClassName){
@@ -38,7 +38,7 @@ public class CloneManager {
         String className = (!currentClassName.isEmpty()) ? currentClassName : copiedClass.getName();
         sourcePath = sourcePath + "/" + copiedClass.getName();
         targetPath = targetPath + "/" + className;
-        tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
+        tracingHandler.storeCopyPasteFileTrace(project, sourceProjectName, sourcePath, targetPath);
         AssetsAndFeatureTraces.resetTraces();
     }
     public static void CloneMethodAssets(Project project, String sourceProjectName, String sourcePath, String targetPath, String className, PsiMethod copiedMethod, String currentClassName, String currentMethodName){
@@ -49,7 +49,7 @@ public class CloneManager {
         String methodName = (!currentMethodName.isEmpty()) ? currentMethodName : copiedMethod.getName();
         sourcePath = sourcePath + "/" + className + "/" + copiedMethod.getName();
         targetPath = targetPath + "/" + currentClassName + "/" + methodName;
-        tracingHandler.storeCopyPasteFileTrace(project, sourcePath, targetPath);
+        tracingHandler.storeCopyPasteFileTrace(project, sourceProjectName, sourcePath, targetPath);
         AssetsAndFeatureTraces.resetTraces();
     }
 }

@@ -76,15 +76,17 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
 
     private boolean isSourceFileChanged(VirtualFile file) {
         List<List<String>> parsedLines = getTraces();
-        for(int i = 0; i < parsedLines.size(); i++){
-            if(parsedLines.get(i).get(1).equals(file.getPath()))
-            {
-                VirtualFile sourceFile = LocalFileSystem.getInstance().findFileByPath(parsedLines.get(i).get(0));
-                if(sourceFile != null){
-                    String lastTimeModification = getLastModificationTime(sourceFile);
-                    if(Long.parseLong(lastTimeModification) > Long.parseLong(parsedLines.get(i).get(2))) return true;
+        if(parsedLines.size() > 1){
+            for(int i = 0; i < parsedLines.size(); i++){
+                if(parsedLines.get(i).get(1).equals(file.getPath()))
+                {
+                    VirtualFile sourceFile = LocalFileSystem.getInstance().findFileByPath(parsedLines.get(i).get(0));
+                    if(sourceFile != null){
+                        String lastTimeModification = getLastModificationTime(sourceFile);
+                        if(Long.parseLong(lastTimeModification) > Long.parseLong(parsedLines.get(i).get(2))) return true;
+                    }
                 }
-            }
+        }
         }
         return false;
     }
@@ -109,9 +111,11 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
 
     private boolean isCloned(PsiFile file) {
         List<List<String>> parsedLines = getTraces();
-        for(int i = 0; i < parsedLines.size(); i++){
-            if(parsedLines.get(i).get(1).equals(file.getVirtualFile().getPath()))
-                return true;
+        if(parsedLines.size() > 1){
+            for(int i = 0; i < parsedLines.size(); i++){
+                if(parsedLines.get(i).get(1).equals(file.getVirtualFile().getPath()))
+                    return true;
+            }
         }
         return false;
     }
@@ -119,21 +123,24 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
     public static void fileIsChanged(VirtualFile sourceFile){
         if(AssetsAndFeatureTraces.isAllPreference() || AssetsAndFeatureTraces.isPropagatePreference() || AssetsAndFeatureTraces.isCloneAndPropagatePreference() || AssetsAndFeatureTraces.isShowCloneAndPropagatePreference()) {
             List<List<String>> parsedLines = getTraces();
-            for(int i = 0; i < parsedLines.size(); i++){
-                if(parsedLines.get(i).get(0).equals(sourceFile.getPath()))
-                {
-                    VirtualFile clonedFile = LocalFileSystem.getInstance().findFileByPath(parsedLines.get(i).get(1));
-                    if(clonedFile != null) {
-                        Project targetProject = findProjectForVirtualFile(clonedFile);
-                        assert targetProject != null : "targetProject should not be null";
-                        EditorNotifications.getInstance(targetProject).updateNotifications(clonedFile);
-                        return;
+            if(parsedLines.size() > 1){
+                for(int i = 0; i < parsedLines.size(); i++){
+                    if(parsedLines.get(i).get(0).equals(sourceFile.getPath()))
+                    {
+                        VirtualFile clonedFile = LocalFileSystem.getInstance().findFileByPath(parsedLines.get(i).get(1));
+                        if(clonedFile != null) {
+                            Project targetProject = findProjectForVirtualFile(clonedFile);
+                            assert targetProject != null : "targetProject should not be null";
+                            EditorNotifications.getInstance(targetProject).updateNotifications(clonedFile);
+                            return;
+                        }
                     }
                 }
             }
         }
     }
     public static List<List<String>> getTraces(){
+        PathsMapping pathsMapping = PathsMapping.getInstance();
         List<List<String>> parsedLines = new ArrayList<>();
         Project[] projects = ProjectManager.getInstance().getOpenProjects();
         for(Project project : projects){
@@ -146,6 +153,10 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
                     for (String line : lines) {
                         if (line.contains(";")) {
                             List<String> parts = Arrays.asList(line.split(";"));
+                            String source = pathsMapping.paths.get(parts.get(0));
+                            String target = pathsMapping.paths.get(parts.get(1));
+                            parts.set(0, source);
+                            parts.set(1, target);
                             parsedLines.add(parts);
                         }
                     }

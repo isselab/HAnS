@@ -122,6 +122,7 @@ limitations under the License.
         <copyPastePreProcessor implementation="se.isselab.HAnS.assetsManagement.cloningManagement.CloneCopyPastePreProcessor"/>
         <editorNotificationProvider implementation="se.isselab.HAnS.assetsManagement.cloningManagement.NotificationProvider"/>
         <applicationConfigurable instance="se.isselab.HAnS.assetsManagement.HansAssetsManagementPage"/>
+        <applicationService serviceImplementation="se.isselab.HAnS.assetsManagement.cloningManagement.PathsMapping"/>
         <!-- &end[AssetsManagement]-->
     </extensions>
 
