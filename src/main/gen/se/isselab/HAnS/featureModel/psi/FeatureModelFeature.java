@@ -22,7 +22,7 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   void addFeature();
 
-  String addToFeatureModel(String lpq);
+  boolean addToFeatureModel(String lpq);
 
   void addWithChildren(FeatureModelFeature childFeature);
 

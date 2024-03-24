@@ -17,17 +17,13 @@ package se.isselab.HAnS.featureModel.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.Computable;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.refactoring.rename.RenameDialog;
-import groovy.json.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
@@ -36,7 +32,6 @@ import se.isselab.HAnS.referencing.FeatureReferenceUtil;
 
 import javax.swing.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
@@ -83,7 +78,6 @@ public class FeatureModelPsiImplUtil {
             FeatureReferenceUtil.getLPQ(element, newName);
 
             FeatureReferenceUtil.setElementsToRenameWhenRenaming(element, newName);
-
             ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
             if (featureNode != null) {
                 FeatureModelFeature feature = FeatureModelElementFactory.createFeature(element.getProject(), newName);
@@ -298,7 +292,24 @@ public class FeatureModelPsiImplUtil {
         }
     }
 
-    public static String addToFeatureModel(@NotNull FeatureModelFeature feature, String newFeatureName) {
+
+    public static String addFeatureToFeatureModel(@NotNull FeatureModelFeature element, String newName) {
+        FeatureModelPsiImplUtil.addToFeatureModel(element, newName);
+
+        FeatureReferenceUtil.getLPQ(element, newName);
+        FeatureReferenceUtil.setElementsToRenameWhenRenaming(element, newName);
+
+        final Project projectInstance = ReadAction.compute(element::getProject);
+        WriteCommandAction.runWriteCommandAction(projectInstance, () -> {
+            PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
+        });
+
+        FeatureReferenceUtil.rename();
+        FeatureReferenceUtil.reset();
+        return newName;
+    }
+
+    private static String addToFeatureModel(@NotNull FeatureModelFeature feature, String newFeatureName) {
         Document document = PsiDocumentManager.getInstance(feature.getProject()).getDocument(feature.getContainingFile());
         int offset = feature.getTextOffset() + Objects.requireNonNull(feature.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getTextLength();
 
@@ -335,8 +346,9 @@ public class FeatureModelPsiImplUtil {
     public static FeatureModelFeature deleteFromFeatureModel(@NotNull PsiElement feature) {
         Document document = PsiDocumentManager.getInstance(ReadAction.compute(feature::getProject)).getDocument(ReadAction.compute(feature::getContainingFile));
         if (document!= null) {
-            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(feature.getTextOffset()));
-            int lineEndOffset = document.getLineEndOffset(document.getLineNumber(feature.getTextOffset() + feature.getNode().getTextLength())-1);
+            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(ReadAction.compute(feature::getTextOffset)));
+            ASTNode featureNode = ReadAction.compute(feature::getNode);
+            int lineEndOffset = document.getLineEndOffset(document.getLineNumber(ReadAction.compute(feature::getTextOffset) + ReadAction.compute(featureNode::getTextLength))-1);
             WriteCommandAction.runWriteCommandAction(ReadAction.compute(feature::getProject), () -> {
                 document.deleteString(lineStartOffset, lineEndOffset+1);
             });

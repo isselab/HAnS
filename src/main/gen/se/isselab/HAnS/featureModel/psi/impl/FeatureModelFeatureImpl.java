@@ -62,18 +62,22 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   }
 
   @Override
-  public String addToFeatureModel(String lpq) {
+  public boolean addToFeatureModel(String lpq) {
     if (lpq == null || "".equals(lpq.trim()) || !Pattern.matches("[[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]*", lpq.trim())) {
-      return null;
+      return false;
     }
     else {
-      PsiElement[] l = this.getChildren();
+      PsiElement[] l = ReadAction.compute(this::getChildren);
       for (PsiElement e : l) {
         if (Objects.requireNonNull(e.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getText().equals(lpq)) {
-          return null;
+          return false;
         }
       }
-      return FeatureModelPsiImplUtil.addToFeatureModel(this, lpq.trim());
+      Runnable r = () -> {
+        FeatureModelPsiImplUtil.addFeatureToFeatureModel(this, lpq.trim());
+      };
+      WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
+      return true;
     }
   }
 
@@ -83,18 +87,18 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
       return false;
     }
     else {
-      PsiElement parent = this.getParent();
+      PsiElement parent = ReadAction.compute(this::getParent);
       if (parent != null && parent instanceof FeatureModelFeature) {
-        PsiElement[] parentNodeChildren = this.getParent().getChildren();
+        PsiElement[] parentNodeChildren = ReadAction.compute(parent::getChildren);
         for (PsiElement e : parentNodeChildren) {
-          // if already exists child with same name stop the execution
+          // if child with same name already exists stop the execution
           if (Objects.requireNonNull(e.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getText().equals(lpq)) {
             return false;
           }
         }
       }
       Runnable r = () -> {
-        FeatureModelPsiImplUtil.setName(this, lpq);
+        FeatureModelPsiImplUtil.setName(this, lpq.trim());
       };
       WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
       return true;
