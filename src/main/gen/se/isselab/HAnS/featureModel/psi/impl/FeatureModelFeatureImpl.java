@@ -4,6 +4,8 @@ package se.isselab.HAnS.featureModel.psi.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
@@ -73,7 +75,31 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
       }
       return FeatureModelPsiImplUtil.addToFeatureModel(this, lpq.trim());
     }
+  }
 
+  @Override
+  public boolean renameInFeatureModel(String lpq) {
+    if (lpq == null || "".equals(lpq.trim()) || !Pattern.matches("[[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]*", lpq.trim())) {
+      return false;
+    }
+    else {
+      PsiElement parent = this.getParent();
+      if (parent != null && parent instanceof FeatureModelFeature) {
+        PsiElement[] parentNodeChildren = this.getParent().getChildren();
+        for (PsiElement e : parentNodeChildren) {
+          // if already exists child with same name stop the execution
+          if (Objects.requireNonNull(e.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getText().equals(lpq)) {
+            return false;
+          }
+        }
+      }
+      Runnable r = () -> {
+        FeatureModelPsiImplUtil.setName(this, lpq);
+      };
+      WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
+      return true;
+    }
+//    FeatureModelPsiImplUtil.rename(this, newName);
   }
 
   @Override

@@ -28,6 +28,8 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   FeatureModelFeature deleteFromFeatureModel();
 
+  boolean renameInFeatureModel(String newName);
+
   int deleteFeature();
 
   String getName();
