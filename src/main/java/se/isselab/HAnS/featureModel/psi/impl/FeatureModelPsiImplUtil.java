@@ -352,6 +352,9 @@ public class FeatureModelPsiImplUtil {
             WriteCommandAction.runWriteCommandAction(ReadAction.compute(feature::getProject), () -> {
                 document.deleteString(lineStartOffset, lineEndOffset+1);
             });
+            FeatureReferenceUtil.setElementsToDelete((FeatureModelFeature) feature);
+            FeatureReferenceUtil.delete();
+            FeatureReferenceUtil.reset();
             return (FeatureModelFeature) feature;
         }
         return null;
