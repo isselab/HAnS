@@ -1,14 +1,10 @@
 package se.isselab.HAnS.assetsManagement.cloningManagement;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,15 +18,13 @@ public class TracingHandler {
     public TracingHandler(){}
 
 
-    public void storeCopyPasteFileTrace(Project project, String sourceProjectName, String sourceFilePath, String targetFilePath){
+    public void storeCloneTrace(Project project, String sourceProjectName, String sourceFilePath, String targetFilePath){
         PathsMapping pathsMapping = PathsMapping.getInstance();
-        System.out.println(pathsMapping.paths.isEmpty());
         String sourceFileRelativePath = getRelativePath(sourceFilePath, sourceProjectName);
         String targetFileRelativePath = getRelativePath(targetFilePath, project.getName());
         Map<String, String> paths = pathsMapping.paths;
         pathsMapping.paths.put(sourceFileRelativePath, sourceFilePath);
         pathsMapping.paths.put(targetFileRelativePath, targetFilePath);
-        System.out.println(pathsMapping.paths.isEmpty());
         String currentDateAndTime = getCurrentDateAndTime();
         String textFilePath = getTraceFilePath(project);
         try {

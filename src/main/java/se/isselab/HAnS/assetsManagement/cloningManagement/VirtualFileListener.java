@@ -104,7 +104,6 @@ public class VirtualFileListener implements StartupActivity {
                         }
                         else if(event instanceof VFileContentChangeEvent){
                             NotificationProvider.fileIsChanged(event.getFile());
-                            System.out.println("One File was changed " + event.getFile().getPath());
                         }
                     }
                 }
