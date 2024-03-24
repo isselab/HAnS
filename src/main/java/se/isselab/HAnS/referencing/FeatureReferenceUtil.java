@@ -21,6 +21,7 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.tree.injected.InjectedLanguageEditorUtil;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureModel.psi.FeatureModelElementFactory;
@@ -183,7 +184,6 @@ public class FeatureReferenceUtil {
                 InjectedLanguageManager injManager = InjectedLanguageManager.getInstance(entry.getKey().getProject());
 
                 PsiLanguageInjectionHost host = injManager.getInjectionHost(reference.getElement());
-                System.out.println(host.getText());
 
                 WriteCommandAction.runWriteCommandAction(ReadAction.compute(entry.getKey()::getProject), host::delete);
             }
@@ -194,10 +194,11 @@ public class FeatureReferenceUtil {
         Map<FeatureModelFeature, List<PsiReference>> toDelete = new HashMap<>();
 
         List<PsiElement> elementsToDelete= getElementsToDelete(element);
+        GlobalSearchScope scope = GlobalSearchScope.allScope(element.getProject());
 
         for (PsiElement e : elementsToDelete) {
             List<PsiReference> referencedElements = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(e)) {
+            for (PsiReference reference : ReferencesSearch.search(e, scope)) {
                 referencedElements.add(reference);
             }
             toDelete.put(((FeatureModelFeature) e), referencedElements);
