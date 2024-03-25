@@ -346,14 +346,23 @@ public class FeatureModelPsiImplUtil {
     public static FeatureModelFeature deleteFromFeatureModel(@NotNull PsiElement feature) {
         Document document = PsiDocumentManager.getInstance(ReadAction.compute(feature::getProject)).getDocument(ReadAction.compute(feature::getContainingFile));
         if (document!= null) {
+            FeatureReferenceUtil.setElementsToDelete((FeatureModelFeature) feature);
+            FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
+
             int lineStartOffset = document.getLineStartOffset(document.getLineNumber(ReadAction.compute(feature::getTextOffset)));
             ASTNode featureNode = ReadAction.compute(feature::getNode);
             int lineEndOffset = document.getLineEndOffset(document.getLineNumber(ReadAction.compute(feature::getTextOffset) + ReadAction.compute(featureNode::getTextLength))-1);
-            WriteCommandAction.runWriteCommandAction(ReadAction.compute(feature::getProject), () -> {
+
+            Project projectInstance = ReadAction.compute(feature::getProject);
+            WriteCommandAction.runWriteCommandAction(projectInstance, () -> {
                 document.deleteString(lineStartOffset, lineEndOffset+1);
+                PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
             });
-            FeatureReferenceUtil.setElementsToDelete((FeatureModelFeature) feature);
-            FeatureReferenceUtil.delete();
+
+            WriteCommandAction.runWriteCommandAction(ReadAction.compute(feature::getProject), () -> {
+                FeatureReferenceUtil.delete();
+                FeatureReferenceUtil.rename();
+            });
             FeatureReferenceUtil.reset();
             return (FeatureModelFeature) feature;
         }

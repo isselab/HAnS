@@ -24,6 +24,7 @@ import com.intellij.psi.impl.source.tree.injected.InjectedLanguageEditorUtil;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.deft.Obj;
 import se.isselab.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
@@ -184,16 +185,18 @@ public class FeatureReferenceUtil {
                 InjectedLanguageManager injManager = InjectedLanguageManager.getInstance(entry.getKey().getProject());
 
                 PsiLanguageInjectionHost host = injManager.getInjectionHost(reference.getElement());
+                if (host != null) { host.delete(); }
+                else { reference.getElement().delete();}
 
-                WriteCommandAction.runWriteCommandAction(ReadAction.compute(entry.getKey()::getProject), host::delete);
             }
         }
     }
 
+
     public static void setElementsToDelete(FeatureModelFeature element) {
         Map<FeatureModelFeature, List<PsiReference>> toDelete = new HashMap<>();
 
-        List<PsiElement> elementsToDelete= getElementsToDelete(element);
+        List<PsiElement> elementsToDelete= getElementsToDelete(element)[0];
         GlobalSearchScope scope = GlobalSearchScope.allScope(element.getProject());
 
         for (PsiElement e : elementsToDelete) {
@@ -208,18 +211,64 @@ public class FeatureReferenceUtil {
         mapToRemove = toDelete;
     }
 
+    public static void setElementsToRenameWhenDeleting(FeatureModelFeature element) {
+        Map<FeatureModelFeature, List<PsiReference>> toRename = new HashMap<>();
 
-    private static List<PsiElement> getElementsToDelete(FeatureModelFeature element) {
-        List<PsiElement> elementsToDelete= new ArrayList<>();
-        traverseFeatureToRemove(element, elementsToDelete);
-        return elementsToDelete;
+        List[] result = getElementsToDelete(element);
+        List<PsiElement> toRemove = result[0];
+        List<String> lpqToRemove = result[1];
+
+        List<FeatureModelFeature> elementsToRename = new ArrayList<>();
+        for (PsiElement feature : toRemove) {
+            elementsToRename.addAll(getElementsToRenameWhenDeleting(((FeatureModelFeature) feature), lpqToRemove));
+        }
+
+        for (FeatureModelFeature e : elementsToRename) {
+            List<PsiReference> referencedElements = new ArrayList<>();
+            for (PsiReference reference : ReferencesSearch.search(e)) {
+                referencedElements.add(reference);
+            }
+            toRename.put(e, referencedElements);
+        }
+
+        mapToRename = toRename;
     }
 
-    private static void traverseFeatureToRemove(FeatureModelFeature parentFeature, List<PsiElement> featureList) {
+    private static List<FeatureModelFeature> getElementsToRenameWhenDeleting(FeatureModelFeature element, List<String> lpqToRemove) {
+        List<FeatureModelFeature> elementsToRename= new ArrayList<>();
+        element.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
+            @Override
+            public void visitElement(@NotNull PsiElement e) {
+                if (e instanceof FeatureModelFeature){
+                    if (((FeatureModelFeature) e).getLPQText().contains(element.getFeatureName()) &&
+                        !(lpqToRemove.contains(((FeatureModelFeature) e).getLPQText()))) {
+                        elementsToRename.add((FeatureModelFeature) e);
+                    }
+                }
+                super.visitElement(e);
+            }
+        });
+        return elementsToRename;
+    }
+
+
+    private static List[] getElementsToDelete(FeatureModelFeature element) {
+        List<PsiElement> elementsToDelete= new ArrayList<>();
+        List<String> lpqToDelete= new ArrayList<>();
+        traverseFeatureToRemove(element, elementsToDelete, lpqToDelete);
+
+        List[] result = new List[2];
+        result[0] = elementsToDelete;
+        result[1] = lpqToDelete;
+        return result;
+    }
+
+    private static void traverseFeatureToRemove(FeatureModelFeature parentFeature, List<PsiElement> featureList, List<String> lpqList) {
         featureList.add(parentFeature);
+        lpqList.add(parentFeature.getLPQText());
         PsiElement[] children = parentFeature.getChildren();
         for (PsiElement child : children) {
-            traverseFeatureToRemove(((FeatureModelFeature) child), featureList);
+            traverseFeatureToRemove(((FeatureModelFeature) child), featureList, lpqList);
         }
     }
 
