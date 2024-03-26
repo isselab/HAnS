@@ -17,14 +17,10 @@ package se.isselab.HAnS.referencing;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.injection.InjectedLanguageManager;
-import com.intellij.openapi.application.ReadAction;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.*;
-import com.intellij.psi.impl.source.tree.injected.InjectedLanguageEditorUtil;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.deft.Obj;
 import se.isselab.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
@@ -39,6 +35,9 @@ public class FeatureReferenceUtil {
 
     private static Map<FeatureModelFeature, List<PsiReference>> mapToRename = new HashMap<>();
     private static Map<FeatureModelFeature, List<PsiReference>> mapToRemove = new HashMap<>();
+
+    private static Map<String, List<PsiReference>> mapToRenameWhenAdding = new HashMap<>();
+
 
     public static String getLPQ(FeatureModelFeature feature, String newName) {
         if (lpq == null) {
@@ -69,6 +68,10 @@ public class FeatureReferenceUtil {
 
     public static Map<FeatureModelFeature, List<PsiReference>> getElementsToRemove() {
         return mapToRemove;
+    }
+
+    public static Map<String, List<PsiReference>> getMapToRenameWhenAdding() {
+        return mapToRenameWhenAdding;
     }
 
     private static String setLPQ(FeatureModelFeature feature, String newName) {
@@ -255,7 +258,7 @@ public class FeatureReferenceUtil {
     private static List[] getElementsToDelete(FeatureModelFeature element) {
         List<PsiElement> elementsToDelete= new ArrayList<>();
         List<String> lpqToDelete= new ArrayList<>();
-        traverseFeatureToRemove(element, elementsToDelete, lpqToDelete);
+        traverseFeatureWithChildren(element, elementsToDelete, lpqToDelete);
 
         List[] result = new List[2];
         result[0] = elementsToDelete;
@@ -263,13 +266,55 @@ public class FeatureReferenceUtil {
         return result;
     }
 
-    private static void traverseFeatureToRemove(FeatureModelFeature parentFeature, List<PsiElement> featureList, List<String> lpqList) {
+    private static void traverseFeatureWithChildren(FeatureModelFeature parentFeature, List<PsiElement> featureList, List<String> lpqList) {
         featureList.add(parentFeature);
         lpqList.add(parentFeature.getLPQText());
         PsiElement[] children = parentFeature.getChildren();
         for (PsiElement child : children) {
-            traverseFeatureToRemove(((FeatureModelFeature) child), featureList, lpqList);
+            traverseFeatureWithChildren(((FeatureModelFeature) child), featureList, lpqList);
         }
+    }
+
+    public static void updateChildAfterAdded(List<String> oldlpqList, List<String> newlpqList) {
+        addingOrDeleting = true;
+        Map<String, List<PsiReference>> toUpdate = getMapToRenameWhenAdding();
+
+        for (int i = 0; i < oldlpqList.size(); i++) {
+
+            for (Map.Entry<String, List<PsiReference>> entry : toUpdate.entrySet()) {
+                if (entry.getKey().equals(oldlpqList.get(i))) {
+
+                    for (PsiReference reference:entry.getValue()) {
+                        reference.handleElementRename(newlpqList.get(i));
+                    }
+
+                    toUpdate.remove(entry.getKey());
+                    break;
+                }
+            }
+        }
+    }
+
+    public static void setElementsToRenameAfterAddingWithChildren(FeatureModelFeature element) {
+        Map<String, List<PsiReference>> toUpdate = new HashMap<>();
+
+        List<PsiElement> elementsToUpdate= getElementsToRenameAfterAddingWithChildren(element);
+        for (PsiElement e : elementsToUpdate) {
+            List<PsiReference> referencedElements = new ArrayList<>();
+            for (PsiReference reference : ReferencesSearch.search(e)) {
+                referencedElements.add(reference);
+            }
+            toUpdate.put(((FeatureModelFeature) e).getLPQText(), referencedElements);
+        }
+        mapToRenameWhenAdding = toUpdate;
+    }
+
+    private static List<PsiElement> getElementsToRenameAfterAddingWithChildren(FeatureModelFeature element) {
+        List<PsiElement> elementsToUpdate= new ArrayList<>();
+        List<String> lpqToDelete= new ArrayList<>();
+
+        traverseFeatureWithChildren(element, elementsToUpdate, lpqToDelete);
+        return elementsToUpdate;
     }
 
 }

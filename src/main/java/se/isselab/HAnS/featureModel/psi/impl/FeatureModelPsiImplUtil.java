@@ -32,6 +32,7 @@ import se.isselab.HAnS.referencing.FeatureReferenceUtil;
 
 import javax.swing.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
@@ -241,7 +242,7 @@ public class FeatureModelPsiImplUtil {
     }
 
     // generates String with feature tree
-    public static String generateTreeString(FeatureModelFeature feature, int level) {
+    private static String generateTreeString(FeatureModelFeature feature, int level) {
         StringBuilder sb = new StringBuilder();
 
         // Indentation based on the level
@@ -259,18 +260,62 @@ public class FeatureModelPsiImplUtil {
         return sb.toString();
     }
 
+    private static void generateListOfLpqs(FeatureModelFeature feature, List<String> lpqs) {
+        lpqs.add(feature.getLPQText());
+        for (PsiElement child : feature.getChildren()) {
+            generateListOfLpqs(((FeatureModelFeature) child), lpqs);
+        }
+    }
+
+    public static void moveFeatureWithChildren(@NotNull FeatureModelFeature parentFeature, @NotNull FeatureModelFeature childFeature) {
+        final Project projectInstance = ReadAction.compute(parentFeature::getProject);
+
+        // stores childFeature with children to perform rename of references
+        FeatureReferenceUtil.setElementsToRenameAfterAddingWithChildren(childFeature);
+
+        // stores old lpqs of childFeature with its kids to rename references
+        List<String> oldLpqs = new ArrayList<>();
+        generateListOfLpqs(childFeature, oldLpqs);
+
+        // deletes lines containing childFeature and its kids
+        childFeature.deleteFromFeatureModel();
+
+        // updates the feature model file to avoid renaming deleted features
+        PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
+
+        // locates childFeature below parent
+        addFeatureWithChildren(parentFeature, childFeature);
+
+        // finds new element that corresponds to childFeature, since original childFeature no longer exists in Psi tree
+        AtomicReference<FeatureModelFeature> newChild = new AtomicReference<>();
+        Arrays.stream(parentFeature.getChildren()).forEach(child -> {
+            if(((FeatureModelFeature) child).getLPQText().contains(childFeature.getFeatureName())) {
+                newChild.set((FeatureModelFeature) child);
+            }
+        });
+        List<String> newLpqs = new ArrayList<>();
+        generateListOfLpqs(newChild.get(), newLpqs);
+
+        // renames features of child element tree
+        FeatureReferenceUtil.updateChildAfterAdded(oldLpqs, newLpqs);
+
+        FeatureReferenceUtil.reset();
+
+    }
+
     public static void addFeatureWithChildren(@NotNull FeatureModelFeature parentFeature, @NotNull FeatureModelFeature childFeature) {
         Project projectInstance = ReadAction.compute(parentFeature::getProject);
-        Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(ReadAction.compute(parentFeature::getContainingFile));
+
+        Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(parentFeature.getContainingFile());
         if (document != null) {
-            PsiElement prevSibling = ReadAction.compute(parentFeature::getPrevSibling);
+            PsiElement prevSibling = parentFeature.getPrevSibling();
             int indent;
             // if root feature -> 4
             // otherwise indent of parentFeature + 4
             if (prevSibling instanceof PsiFile) {
                 indent = 4;
             } else {
-                int parentOffset = ReadAction.compute(parentFeature::getTextOffset);
+                int parentOffset = parentFeature.getTextOffset();
                 int parentLineOffset = document.getLineStartOffset(document.getLineNumber(parentOffset));
                 indent = (parentOffset - parentLineOffset) + 4;
             }
@@ -280,15 +325,23 @@ public class FeatureModelPsiImplUtil {
             // append it to .feature-model file right after parent feature
             String result = generateTreeString(childFeature, level);
 
-            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(ReadAction.compute(parentFeature::getTextOffset)) + 1);
+            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(parentFeature.getTextOffset()) + 1);
             String beforeLine = document.getText().substring(0, lineStartOffset);
             String remainder = document.getText().substring(lineStartOffset);
             String newString = beforeLine.concat(result).concat(remainder);
-            Runnable r = () -> {
-                document.setReadOnly(false);
-                document.setText(newString);
-            };
-            WriteCommandAction.runWriteCommandAction(projectInstance, r);
+
+            document.setReadOnly(false);
+            document.setText(newString);
+
+            // update features outside childFeature
+            String newName = childFeature.getName();
+            FeatureReferenceUtil.getLPQ(parentFeature, newName);
+            FeatureReferenceUtil.setElementsToRenameWhenRenaming(parentFeature, newName);
+
+            PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
+
+            FeatureReferenceUtil.rename();
+            FeatureReferenceUtil.reset();
         }
     }
 
@@ -300,9 +353,8 @@ public class FeatureModelPsiImplUtil {
         FeatureReferenceUtil.setElementsToRenameWhenRenaming(element, newName);
 
         final Project projectInstance = ReadAction.compute(element::getProject);
-        WriteCommandAction.runWriteCommandAction(projectInstance, () -> {
-            PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
-        });
+
+        PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
 
         FeatureReferenceUtil.rename();
         FeatureReferenceUtil.reset();
@@ -344,25 +396,33 @@ public class FeatureModelPsiImplUtil {
     }
 
     public static FeatureModelFeature deleteFromFeatureModel(@NotNull PsiElement feature) {
-        Document document = PsiDocumentManager.getInstance(ReadAction.compute(feature::getProject)).getDocument(ReadAction.compute(feature::getContainingFile));
+        Project projectInstance = feature.getProject();
+        Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
+        if (document!= null) {
+            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(feature.getTextOffset()));
+            ASTNode featureNode = feature.getNode();
+            int lineEndOffset = document.getLineEndOffset(document.getLineNumber(feature.getTextOffset() + featureNode.getTextLength())-1);
+            document.deleteString(lineStartOffset, lineEndOffset+1);
+
+            return (FeatureModelFeature) feature;
+        }
+        return null;
+    }
+    public static FeatureModelFeature deleteFeatureWithAnnotations(@NotNull PsiElement feature) {
+        Project projectInstance = feature.getProject();
+        Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
         if (document!= null) {
             FeatureReferenceUtil.setElementsToDelete((FeatureModelFeature) feature);
             FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
 
-            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(ReadAction.compute(feature::getTextOffset)));
-            ASTNode featureNode = ReadAction.compute(feature::getNode);
-            int lineEndOffset = document.getLineEndOffset(document.getLineNumber(ReadAction.compute(feature::getTextOffset) + ReadAction.compute(featureNode::getTextLength))-1);
+            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(feature.getTextOffset()));
+            ASTNode featureNode = feature.getNode();
+            int lineEndOffset = document.getLineEndOffset(document.getLineNumber(feature.getTextOffset() + featureNode.getTextLength())-1);
+            document.deleteString(lineStartOffset, lineEndOffset+1);
+            PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
 
-            Project projectInstance = ReadAction.compute(feature::getProject);
-            WriteCommandAction.runWriteCommandAction(projectInstance, () -> {
-                document.deleteString(lineStartOffset, lineEndOffset+1);
-                PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
-            });
-
-            WriteCommandAction.runWriteCommandAction(ReadAction.compute(feature::getProject), () -> {
-                FeatureReferenceUtil.delete();
-                FeatureReferenceUtil.rename();
-            });
+            FeatureReferenceUtil.delete();
+            FeatureReferenceUtil.rename();
             FeatureReferenceUtil.reset();
             return (FeatureModelFeature) feature;
         }

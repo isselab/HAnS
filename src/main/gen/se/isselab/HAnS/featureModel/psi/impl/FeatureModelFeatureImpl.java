@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
@@ -103,17 +104,43 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
       WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
       return true;
     }
-//    FeatureModelPsiImplUtil.rename(this, newName);
   }
 
   @Override
+  public void moveFeatureWithChildren(FeatureModelFeature childFeature) {
+    Project projectInstance = ReadAction.compute(this::getProject);
+    Runnable r = () -> {
+      ReadAction.run(() -> {FeatureModelPsiImplUtil.moveFeatureWithChildren(this, childFeature);});
+    };
+    WriteCommandAction.runWriteCommandAction(projectInstance, r);
+  }
+
+
+  @Override
   public FeatureModelFeature deleteFromFeatureModel() {
-    return FeatureModelPsiImplUtil.deleteFromFeatureModel(this);
+    Runnable r = () -> {
+      ReadAction.run(() -> {FeatureModelPsiImplUtil.deleteFromFeatureModel(this);});
+    };
+    WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
+    return this;
+  }
+
+  @Override
+  public FeatureModelFeature deleteFeatureWithAnnotations() {
+    Runnable r = () -> {
+      ReadAction.run(() -> {FeatureModelPsiImplUtil.deleteFeatureWithAnnotations(this);});
+    };
+    WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
+    return this;
   }
 
   @Override
   public void addWithChildren(FeatureModelFeature childFeature) {
-    FeatureModelPsiImplUtil.addFeatureWithChildren(this, childFeature);
+    Runnable r = () -> {
+      ReadAction.run(() -> {FeatureModelPsiImplUtil.addFeatureWithChildren(this, childFeature);});
+    };
+    WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
+
   }
 
   @Override
