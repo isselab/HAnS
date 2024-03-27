@@ -1,6 +1,8 @@
 # HAnS - Helping Annotate Software #
-*`Version 1.0`*
+# This repo has been moved to [www.github.com/isselab/HAnS](https://github.com/isselab/HAnS)
 
+
+------------------------------------------
 HAnS is a plugin that aims to help developers with annotating software. The annotations themselves are a proven help with
 locating features, so-called feature location.
 
