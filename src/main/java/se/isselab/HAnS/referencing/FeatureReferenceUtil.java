@@ -17,6 +17,8 @@ package se.isselab.HAnS.referencing;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.injection.InjectedLanguageManager;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
@@ -26,6 +28,7 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class FeatureReferenceUtil {
 
@@ -188,8 +191,19 @@ public class FeatureReferenceUtil {
                 InjectedLanguageManager injManager = InjectedLanguageManager.getInstance(entry.getKey().getProject());
 
                 PsiLanguageInjectionHost host = injManager.getInjectionHost(reference.getElement());
-                if (host != null) { host.delete(); }
-                else { reference.getElement().delete();}
+                if (host != null) { // if comment annotation
+                    host.delete();
+                }
+                else { // if feature to folder/file annotation
+                    if (reference.getElement().getNextSibling() != null && reference.getElement().getNextSibling().getText().equals(" ")) {
+                        reference.getElement().getNextSibling().delete(); // remove space after element
+                    }
+                    reference.getElement().delete();
+                }
+            }
+        }
+    }
+
 
             }
         }

@@ -414,14 +414,15 @@ public class FeatureModelPsiImplUtil {
         if (document!= null) {
             FeatureReferenceUtil.setElementsToDelete((FeatureModelFeature) feature);
             FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
+            FeatureReferenceUtil.delete();
 
             int lineStartOffset = document.getLineStartOffset(document.getLineNumber(feature.getTextOffset()));
             ASTNode featureNode = feature.getNode();
             int lineEndOffset = document.getLineEndOffset(document.getLineNumber(feature.getTextOffset() + featureNode.getTextLength())-1);
             document.deleteString(lineStartOffset, lineEndOffset+1);
+
             PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
 
-            FeatureReferenceUtil.delete();
             FeatureReferenceUtil.rename();
             FeatureReferenceUtil.reset();
             return (FeatureModelFeature) feature;
