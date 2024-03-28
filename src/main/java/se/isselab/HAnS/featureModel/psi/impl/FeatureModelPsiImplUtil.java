@@ -336,7 +336,7 @@ public class FeatureModelPsiImplUtil {
             // update features outside childFeature
             String newName = childFeature.getName();
             FeatureReferenceUtil.getLPQ(parentFeature, newName);
-            FeatureReferenceUtil.setElementsToRenameWhenRenaming(parentFeature, newName);
+            FeatureReferenceUtil.setElementsToRenameWhenAdding(parentFeature, newName);
 
             PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
 
@@ -350,7 +350,7 @@ public class FeatureModelPsiImplUtil {
         FeatureModelPsiImplUtil.addToFeatureModel(element, newName);
 
         FeatureReferenceUtil.getLPQ(element, newName);
-        FeatureReferenceUtil.setElementsToRenameWhenRenaming(element, newName);
+        FeatureReferenceUtil.setElementsToRenameWhenAdding(element, newName);
 
         final Project projectInstance = ReadAction.compute(element::getProject);
 

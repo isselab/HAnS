@@ -173,7 +173,7 @@ public class FeatureReferenceUtil {
         element.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement e) {
-                if (e instanceof FeatureModelFeature){
+                if (e instanceof FeatureModelFeature && ((FeatureModelFeature) e).getLPQText().contains(newName)){
                     elementsToRename.add((FeatureModelFeature) e);
                 }
                 super.visitElement(e);
