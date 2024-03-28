@@ -237,7 +237,7 @@ public class FeatureModelPsiImplUtil {
     private static FeatureModelFeature getFeatureFromLPQ(Project project, String lpq) {
         List<FeatureModelFeature> listOfFeatures = ReadAction.compute(() -> FeatureModelUtil.findLPQ(project, lpq));
         if (listOfFeatures.isEmpty()) { return null; }
-        FeatureModelFeature feature = (FeatureModelFeature) listOfFeatures.get(0);
+        FeatureModelFeature feature = listOfFeatures.get(0);
         return feature;
     }
 
