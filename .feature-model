@@ -29,6 +29,9 @@ HAnS
         FeatureFileMapping
         Scattering
         Tangling
+        NestingDepths
+        NumberOfAnnotatedFiles
+        NumberOfFeatures
     MetricsView
     ExtensionPoint
         Callback

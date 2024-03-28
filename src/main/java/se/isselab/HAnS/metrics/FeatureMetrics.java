@@ -31,6 +31,9 @@ public class FeatureMetrics {
     private FeatureModelFeature feature = null;
     private int tanglingDegree = -1;
     private int scatteringDegree = -1;
+    private int maxNestingDepth = -1;
+    private int minNestingDepth = -1;
+    private int avgNestingDepth = -1;
 
     /**
      * Generate empty Feature Metrics for error handling.
@@ -81,6 +84,20 @@ public class FeatureMetrics {
         this.scatteringDegree = scatteringDegree;
     }
 
+    /**
+     * Generate Feature Metrics with Feature, Tangling Degree and Scattering Degree
+     *
+     * @param feature         FeatureModelFeature
+     * @param maxNestingDepth         maximum nesting depth of a {@link FeatureModelFeature}
+     * @param minNestingDepth         minimum nesting depth of a {@link FeatureModelFeature}
+     * @param avgNestingDepth         average nesting depth of a {@link FeatureModelFeature}
+     */
+    public FeatureMetrics(FeatureModelFeature feature, int maxNestingDepth, int minNestingDepth, int avgNestingDepth) {
+        this.feature = feature;
+        this.maxNestingDepth = maxNestingDepth;
+        this.minNestingDepth = minNestingDepth;
+        this.avgNestingDepth = avgNestingDepth;
+    }
 
     // Getter-Methods
 
@@ -125,4 +142,19 @@ public class FeatureMetrics {
     public int getScatteringDegree() {
         return scatteringDegree;
     }
+
+    /**
+     * @return Maximum nesting depth a feature or -1 if nesting depths were not calculated
+     */
+    public int getMaximumNestingDepth() { return maxNestingDepth; }
+
+    /**
+     * @return Minimum nesting depth a feature or -1 if nesting depths were not calculated
+     */
+    public int getMinimumNestingDepth() { return minNestingDepth; }
+
+    /**
+     * @return Average nesting depth a feature or -1 if nesting depths were not calculated
+     */
+    public int getAverageNestingDepth() { return avgNestingDepth; }
 }
