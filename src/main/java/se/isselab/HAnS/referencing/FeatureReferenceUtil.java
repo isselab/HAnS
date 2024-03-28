@@ -205,10 +205,6 @@ public class FeatureReferenceUtil {
     }
 
 
-            }
-        }
-    }
-
 
     public static void setElementsToDelete(FeatureModelFeature element) {
         Map<FeatureModelFeature, List<PsiReference>> toDelete = new HashMap<>();
