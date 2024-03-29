@@ -1,4 +1,4 @@
-package se.isselab.HAnS.assetsManagement.cloningManagement;
+package se.isselab.HAnS.assetsManagement.cloneManagement;
 
 import com.intellij.diff.DiffContentFactory;
 import com.intellij.diff.DiffManager;
@@ -18,7 +18,6 @@ import com.intellij.ui.EditorNotificationPanel;
 import com.intellij.ui.EditorNotifications;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import se.isselab.HAnS.assetsManagement.AssetsManagementPreferences;
 
 import java.text.SimpleDateFormat;
 import java.util.*;

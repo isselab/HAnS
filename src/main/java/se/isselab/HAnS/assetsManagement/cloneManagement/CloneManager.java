@@ -1,4 +1,4 @@
-package se.isselab.HAnS.assetsManagement.cloningManagement;
+package se.isselab.HAnS.assetsManagement.cloneManagement;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;

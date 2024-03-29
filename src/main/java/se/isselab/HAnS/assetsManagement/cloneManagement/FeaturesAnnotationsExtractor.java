@@ -1,4 +1,4 @@
-package se.isselab.HAnS.assetsManagement.cloningManagement;
+package se.isselab.HAnS.assetsManagement.cloneManagement;
 
 import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.application.ApplicationManager;

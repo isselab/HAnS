@@ -1,4 +1,4 @@
-package se.isselab.HAnS.assetsManagement.cloningManagement;
+package se.isselab.HAnS.assetsManagement.cloneManagement;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -64,9 +64,7 @@ public class FeatureModelHandler {
         if (projectBaseDir == null) {
             return null;
         }
-
         final VirtualFile[] foundFile = new VirtualFile[1];
-
         // VfsUtil to visit each file and directory starting from the base directory
         VfsUtil.visitChildrenRecursively(projectBaseDir, new VirtualFileVisitor<Void>() {
             @Override
@@ -78,7 +76,6 @@ public class FeatureModelHandler {
                 return true; // Continue searching
             }
         });
-
         return foundFile[0];
     }
 
@@ -87,7 +84,6 @@ public class FeatureModelHandler {
         if (document == null) {
             return null;
         }
-
         return document.getText();
     }
 
@@ -105,7 +101,6 @@ public class FeatureModelHandler {
     private Set<String> parseExistingFeatures(String content) {
         Set<String> features = new HashSet<>();
         Scanner scanner = new Scanner(content);
-
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine().trim();
             if (!line.isEmpty()) {
@@ -113,7 +108,6 @@ public class FeatureModelHandler {
             }
         }
         scanner.close();
-
         return features;
     }
 
@@ -123,9 +117,7 @@ public class FeatureModelHandler {
 
     private void addFeatureUnderUnassigned(StringBuilder content, String featureName) {
         String unassignedFeaturePattern = "\nUNASSIGNED";
-
         int unassignedIndex = content.indexOf(unassignedFeaturePattern);
-
         if (unassignedIndex != -1) {
             int insertPosition = content.indexOf("\n", unassignedIndex + unassignedFeaturePattern.length());
             if (insertPosition == -1) {

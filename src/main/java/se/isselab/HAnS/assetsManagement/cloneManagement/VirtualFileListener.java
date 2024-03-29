@@ -1,4 +1,4 @@
-package se.isselab.HAnS.assetsManagement.cloningManagement;
+package se.isselab.HAnS.assetsManagement.cloneManagement;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
@@ -17,7 +17,6 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
-import se.isselab.HAnS.assetsManagement.AssetsManagementPreferences;
 
 import java.util.List;
 import java.util.concurrent.Executors;
