@@ -3,6 +3,7 @@
 [![Version](https://img.shields.io/jetbrains/plugin/v/22759.svg)](https://plugins.jetbrains.com/plugin/22759)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/22759.svg)](https://plugins.jetbrains.com/plugin/22759)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Static Badge](https://img.shields.io/badge/-HAnS%20Community-darkgrey?logo=Discord&logoColor=%23FFF&labelColor=%235865F2&color=%23000000)](https://discord.gg/7hgRnRnW9r)
 
 <!-- Plugin description -->
 HAnS is a plugin that aims to help developers with annotating software assets with features.
