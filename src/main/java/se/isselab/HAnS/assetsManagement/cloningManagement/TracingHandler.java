@@ -20,9 +20,8 @@ public class TracingHandler {
 
     public void storeCloneTrace(Project project, String sourceProjectName, String sourceFilePath, String targetFilePath){
         PathsMapping pathsMapping = PathsMapping.getInstance();
-        String sourceFileRelativePath = getRelativePath(sourceFilePath, sourceProjectName);
-        String targetFileRelativePath = getRelativePath(targetFilePath, project.getName());
-        Map<String, String> paths = pathsMapping.paths;
+        String sourceFileRelativePath = getRelativePath(project, sourceFilePath, sourceProjectName);
+        String targetFileRelativePath = getRelativePath(project, targetFilePath, project.getName());
         pathsMapping.paths.put(sourceFileRelativePath, sourceFilePath);
         pathsMapping.paths.put(targetFileRelativePath, targetFilePath);
         String currentDateAndTime = getCurrentDateAndTime();
@@ -110,14 +109,17 @@ public class TracingHandler {
         if(!features.isEmpty()){
             AssetsAndFeatureTraces.subFeatureTrace = new ArrayList<>();
             for(String feature : features){
-                boolean isUnassigned = feature.contains("unAssigned");
+                boolean isUnassigned = feature.contains("UNASSIGNED");
                 String subFeatureTrace = !isUnassigned ? sourceProjectName + "::" + feature + ";" + targetProjectName + "::" + feature : sourceProjectName + "::" + feature.substring(12) + ";" + targetProjectName + "::" + feature;
                 AssetsAndFeatureTraces.subFeatureTrace.add(subFeatureTrace);
             }
         }
     }
 
-    public String getRelativePath(String path, String projectName) {
+    public String getRelativePath(Project project, String path, String projectName) {
+        if(project.getName().equals(projectName)){
+            return path.substring(path.indexOf(projectName) + projectName.length() + 1);
+        }
         return path.substring(path.indexOf(projectName));
     }
 

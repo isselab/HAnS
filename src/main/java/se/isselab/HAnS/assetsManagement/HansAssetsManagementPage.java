@@ -11,7 +11,7 @@ public class HansAssetsManagementPage implements Configurable {
     private AssetsManagementPreferences assetsManagementPreferences;
     @Override
     public @NlsContexts.ConfigurableName String getDisplayName() {
-        return "Assets Management Page";
+        return "Clone Management Page";
     }
 
     @Override

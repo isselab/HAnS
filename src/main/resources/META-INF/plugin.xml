@@ -117,13 +117,13 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
-        <!-- &begin[AssetsManagement]-->
+        <!-- &begin[CloneManagement]-->
         <postStartupActivity implementation="se.isselab.HAnS.assetsManagement.cloningManagement.VirtualFileListener"/>
         <copyPastePreProcessor implementation="se.isselab.HAnS.assetsManagement.cloningManagement.CloneCopyPastePreProcessor"/>
         <editorNotificationProvider implementation="se.isselab.HAnS.assetsManagement.cloningManagement.NotificationProvider"/>
         <applicationConfigurable instance="se.isselab.HAnS.assetsManagement.HansAssetsManagementPage"/>
         <applicationService serviceImplementation="se.isselab.HAnS.assetsManagement.cloningManagement.PathsMapping"/>
-        <!-- &end[AssetsManagement]-->
+        <!-- &end[CloneManagement]-->
     </extensions>
 
     <actions>

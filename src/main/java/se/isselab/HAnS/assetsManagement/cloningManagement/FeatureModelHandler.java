@@ -40,13 +40,13 @@ public class FeatureModelHandler {
             if(clonedFeatureNames != null){
                 for (String featureName : clonedFeatureNames) {
                     if (!existingFeatures.contains(featureName)) {
-                        if (!existingFeatures.contains("unAssigned")) {
+                        if (!existingFeatures.contains("UNASSIGNED")) {
                             createUnassignedFeature(newContent);
-                            existingFeatures.add("unAssigned");
+                            existingFeatures.add("UNASSIGNED");
                             modified = true;
                         }
                         addFeatureUnderUnassigned(newContent, featureName);
-                        featureName = "unAssigned::" + featureName;
+                        featureName = "UNASSIGNED::" + featureName;
                         modified = true;
                     }
                     modifiedFeatureNames.add(featureName);
@@ -118,11 +118,11 @@ public class FeatureModelHandler {
     }
 
     private void createUnassignedFeature(StringBuilder content) {
-        content.append("\nunAssigned");
+        content.append("\nUNASSIGNED");
     }
 
     private void addFeatureUnderUnassigned(StringBuilder content, String featureName) {
-        String unassignedFeaturePattern = "\nunAssigned";
+        String unassignedFeaturePattern = "\nUNASSIGNED";
 
         int unassignedIndex = content.indexOf(unassignedFeaturePattern);
 
