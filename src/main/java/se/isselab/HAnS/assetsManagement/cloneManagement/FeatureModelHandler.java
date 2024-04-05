@@ -24,6 +24,7 @@ public class FeatureModelHandler {
     public FeatureModelHandler(Project project){
         this.project = project;
     }
+    public FeatureModelHandler(){}
 
     public void addFeaturesToFeatureModel(){
         List<String> clonedFeatureNames = FeaturesCodeAnnotations.getInstance().getFeatureNames();
