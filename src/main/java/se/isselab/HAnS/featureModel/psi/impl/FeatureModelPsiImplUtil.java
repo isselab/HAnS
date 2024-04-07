@@ -26,6 +26,8 @@ import com.intellij.psi.*;
 import com.intellij.refactoring.rename.RenameDialog;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import se.isselab.HAnS.CodeEditorModal;
+import se.isselab.HAnS.FeatureAnnotationToDelete;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.*;
 import se.isselab.HAnS.referencing.FeatureReferenceUtil;
@@ -426,6 +428,38 @@ public class FeatureModelPsiImplUtil {
             FeatureReferenceUtil.rename();
             FeatureReferenceUtil.reset();
             return (FeatureModelFeature) feature;
+        }
+        return null;
+    }
+
+    public static FeatureModelFeature deleteFeatureWithCode(@NotNull PsiElement feature) {
+        Project projectInstance = feature.getProject();
+        Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
+        if (document!= null) {
+            Set<FeatureAnnotationToDelete> annotations = FeatureReferenceUtil.setElementsToDropWhenDeletingMain((FeatureModelFeature) feature);
+            if (!annotations.isEmpty()) {
+                CodeEditorModal modal = new CodeEditorModal(feature.getProject());
+                modal.setFileList(annotations);
+
+                boolean exitCode = modal.showAndGet();
+                if (exitCode) { // OK
+                    deleteFeatureWithCode(feature);
+                } else {
+                    System.out.println("Canceled");
+                    return null;
+                }
+            } else {
+                FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
+                FeatureReferenceUtil.deleteWithCode();
+
+                deleteFromFeatureModel(feature);
+
+                PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
+
+                FeatureReferenceUtil.rename();
+                FeatureReferenceUtil.reset();
+                return (FeatureModelFeature) feature;
+            }
         }
         return null;
     }

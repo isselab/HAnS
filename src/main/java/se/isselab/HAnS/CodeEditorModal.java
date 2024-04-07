@@ -42,13 +42,13 @@ import java.util.Set;
 public class CodeEditorModal extends DialogWrapper {
     Project project;
     public CustomEditorField codeTextArea;
-    private ArrayList<ArrayList<Object>> files;
+    private ArrayList<FeatureAnnotationToDelete> files;
     private int currentIndex;
     JPanel panel;
     JButton nextButton;
     JLabel titleLabel;
 
-    private ArrayList<Object> currentElement;
+    private FeatureAnnotationToDelete currentElement;
 
     public CodeEditorModal(Project project) {
         super(project);
@@ -108,7 +108,7 @@ public class CodeEditorModal extends DialogWrapper {
         if (titleLabel != null) {
             panel.remove(titleLabel);
         }
-        VirtualFile psiFile = FileDocumentManager.getInstance().getFile((Document)currentElement.get(1));
+        VirtualFile psiFile = FileDocumentManager.getInstance().getFile(currentElement.getDocument());
         String documentUri = psiFile.getCanonicalPath();
         String[] parts = documentUri.split("/");
         String result = psiFile.getName();
@@ -117,8 +117,8 @@ public class CodeEditorModal extends DialogWrapper {
         }
         String num = currentIndex+1 + "/" + this.files.size();
         String text = "<html><div style='text-align: center; margin: 10px; text-align:left;'>" +
-                num + ": Feature " + currentElement.get(4) + " was tangled with " +
-                currentElement.get(0) + " using " + currentElement.get(5) + " annotation " + " in file " + result + ". <br/>"
+                num + ": Feature " + currentElement.getMainFeatureLPQ() + " was tangled with " +
+                currentElement.getTangledFeatureLPQ() + " using " + currentElement.getAnnotationType() + " annotation " + " in file " + result + ". <br/>"
                 + "Please untangle the features to proceed with deletion. </div></html>";
         titleLabel = new JLabel(text, SwingConstants.CENTER);
 
@@ -127,11 +127,11 @@ public class CodeEditorModal extends DialogWrapper {
         panel.add(titleLabel, BorderLayout.NORTH);
     }
     private void onNextButtonClicked() {
+        currentIndex += 1;
         if (currentIndex < this.files.size()-1) {
-            currentIndex += 1;
 
             currentElement = this.files.get(currentIndex);
-            Document currentElementDoc = (Document) currentElement.get(1);
+            Document currentElementDoc = currentElement.getDocument();
 
             System.out.println(currentIndex);
             System.out.println(currentElement);
@@ -171,11 +171,11 @@ public class CodeEditorModal extends DialogWrapper {
         codeTextArea.setFileType(fileType);
 
         codeTextArea.getEditor().getCaretModel().moveToOffset(0);
-        codeTextArea.selectText(codeTextArea.getDocument().getLineStartOffset((Integer) currentElement.get(2)), codeTextArea.getDocument().getLineEndOffset((Integer) currentElement.get(3)));
+        codeTextArea.selectText(codeTextArea.getDocument().getLineStartOffset(currentElement.getStartLine()), codeTextArea.getDocument().getLineEndOffset(currentElement.getEndLine()));
     }
 
-    public void setFileList(Set<ArrayList<Object>> filesSet) {
-        ArrayList<ArrayList<Object>> files = new ArrayList<>(filesSet);
+    public void setFileList(Set<FeatureAnnotationToDelete> filesSet) {
+        ArrayList<FeatureAnnotationToDelete> files = new ArrayList<>(filesSet);
 
         System.out.println(Arrays.toString(files.toArray()));
         this.files = files;
@@ -183,7 +183,7 @@ public class CodeEditorModal extends DialogWrapper {
         currentElement = this.files.get(currentIndex);
         System.out.println(currentIndex);
         System.out.println(currentElement);
-        Document currentElementDoc = (Document) currentElement.get(1);
+        Document currentElementDoc = currentElement.getDocument();
 
         createNewTitle();
 
@@ -285,3 +285,4 @@ class CustomEditorField extends LanguageTextField {
 //        return editor
 //    }
 }
+
