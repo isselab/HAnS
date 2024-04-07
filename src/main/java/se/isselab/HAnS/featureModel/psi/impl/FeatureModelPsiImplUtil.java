@@ -442,14 +442,15 @@ public class FeatureModelPsiImplUtil {
                 modal.setFileList(annotations);
 
                 boolean exitCode = modal.showAndGet();
-                if (exitCode) { // OK
+                if (exitCode) { // if OK was clicked try again
                     deleteFeatureWithCode(feature);
                 } else {
                     System.out.println("Canceled");
                     return null;
                 }
-            } else {
+            } else { // if no tangled features are present
                 FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
+                FeatureReferenceUtil.setMapToDeleteWithCode((FeatureModelFeature) feature);
                 FeatureReferenceUtil.deleteWithCode();
 
                 deleteFromFeatureModel(feature);
