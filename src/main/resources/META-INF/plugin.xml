@@ -124,6 +124,7 @@ limitations under the License.
         <editorNotificationProvider implementation="se.isselab.HAnS.assetsManagement.cloneManagement.NotificationProvider"/>
         <applicationConfigurable instance="se.isselab.HAnS.assetsManagement.HansAssetsManagementPage"/>
         <applicationService serviceImplementation="se.isselab.HAnS.assetsManagement.cloneManagement.PathsMapping"/>
+        <applicationService serviceImplementation="se.isselab.HAnS.assetsManagement.CloneManagementSettingsState"/>
         <!-- &end[CloneManagement]-->
 
         <!-- &begin[MetricsView]-->

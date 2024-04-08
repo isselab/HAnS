@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class HansAssetsManagementPage implements Configurable {
-    private AssetsManagementPreferences assetsManagementPreferences;
+    private CloneManagementSettingsComponent cloneManagementSettingsComponent;
     @Override
     public @NlsContexts.ConfigurableName String getDisplayName() {
         return "Clone Management Page";
@@ -16,28 +16,28 @@ public class HansAssetsManagementPage implements Configurable {
 
     @Override
     public @Nullable JComponent createComponent() {
-        assetsManagementPreferences = new AssetsManagementPreferences();
-        return assetsManagementPreferences.getPanel();
+        cloneManagementSettingsComponent = new CloneManagementSettingsComponent();
+        return cloneManagementSettingsComponent.getPanel();
     }
 
     @Override
     public boolean isModified() {
-        return assetsManagementPreferences.isModified();
+        return cloneManagementSettingsComponent.isModified();
     }
 
     @Override
     public void apply() throws ConfigurationException {
-        assetsManagementPreferences.apply();
+        cloneManagementSettingsComponent.apply();
     }
 
     @Override
     public void reset() {
-        assetsManagementPreferences.reset();
+        cloneManagementSettingsComponent.reset();
     }
 
     @Override
     public void disposeUIResources() {
-        assetsManagementPreferences = null;
+        cloneManagementSettingsComponent = null;
     }
 
     @Override

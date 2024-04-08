@@ -1,11 +1,12 @@
 package se.isselab.HAnS.assetsManagement;
 
 import com.intellij.ide.util.PropertiesComponent;
+import com.intellij.openapi.application.ApplicationManager;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class AssetsManagementPreferences {
+public class CloneManagementSettingsComponent {
     private JPanel myMainPanel;
     private JCheckBox cloningOption;
     private JCheckBox propagatingOption;
@@ -14,8 +15,9 @@ public class AssetsManagementPreferences {
     public static final String ASSETS_MANAGEMENT_PREF_KEY = "AssetsPref";
     private String selected = "none";
     private boolean initialized = false;
-
-
+    public static CloneManagementSettingsComponent getInstance(){
+        return ApplicationManager.getApplication().getService(CloneManagementSettingsComponent.class);
+    }
 
     public JComponent getPanel() {
         myMainPanel = new JPanel(new GridLayout(0, 1));
@@ -114,5 +116,14 @@ public class AssetsManagementPreferences {
                 showCloneOption.setSelected(false);
                 propagatingOption.setSelected(false);
         }
+    }
+    public void setCloningOption(boolean flag){
+        cloningOption.setSelected(true);
+    }
+    public void setShowCloneOption(boolean flag){
+        showCloneOption.setSelected(true);
+    }
+    public void setPropagatingOption(boolean flag){
+        propagatingOption.setSelected(true);
     }
 }

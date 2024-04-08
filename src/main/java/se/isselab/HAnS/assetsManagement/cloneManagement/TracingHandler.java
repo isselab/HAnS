@@ -41,7 +41,6 @@ public class TracingHandler {
         }
     }
 
-
     private void storeCopyFeatureTraces(BufferedWriter bufferedWriter){
         if(AssetsAndFeatureTraces.subFeatureTrace != null){
             try {
@@ -73,13 +72,13 @@ public class TracingHandler {
             cleanedUrls.add(cleanedUrl);
         }
         String path = cleanedUrls.get(0) + "/.trace-db.txt";
-        VirtualFile vFile = VirtualFileManager.getInstance().findFileByUrl(vFiles.get(0));
+        VirtualFile vFile = VirtualFileManager.getInstance().findFileByUrl(vFiles.get(0) + "/.trace-db.txt");
         if(vFile == null) {
             try {
                 File file = new File(path);
                 File parentDir = file.getParentFile();
                 VirtualFile vParentDir = VfsUtil.findFileByIoFile(parentDir, false);
-                if (vParentDir != null && !vParentDir.exists()) {
+                if (vParentDir == null) {
                     return null;
                 }
                 vFile = vParentDir.createChildData(null, ".trace-db.txt");

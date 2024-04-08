@@ -1,7 +1,7 @@
 package se.isselab.HAnS.assetsManagement.cloneManagement;
 
 import com.intellij.psi.*;
-import se.isselab.HAnS.assetsManagement.AssetsManagementPreferences;
+import se.isselab.HAnS.assetsManagement.CloneManagementSettingsComponent;
 
 import java.util.ArrayList;
 
@@ -26,24 +26,24 @@ public class AssetsAndFeatureTraces {
         FeaturesCodeAnnotations.getInstance().clearFeatures();
     }
     public static boolean isAllPreference(){
-        return AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("All");
+        return CloneManagementSettingsComponent.properties.getValue(CloneManagementSettingsComponent.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("All");
     }
     public static boolean isClonePreference(){
-        return AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone");
+        return CloneManagementSettingsComponent.properties.getValue(CloneManagementSettingsComponent.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone");
     }
     public static boolean isPropagatePreference(){
-        return AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("propagate");
+        return CloneManagementSettingsComponent.properties.getValue(CloneManagementSettingsComponent.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("propagate");
     }
     public static boolean isShowClonePreference(){
-        return AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("showClone");
+        return CloneManagementSettingsComponent.properties.getValue(CloneManagementSettingsComponent.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("showClone");
     }
     public static boolean isCloneAndPropagatePreference(){
-        return AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("cloneAndPropagate");
+        return CloneManagementSettingsComponent.properties.getValue(CloneManagementSettingsComponent.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("cloneAndPropagate");
     }
     public static boolean isCloneAndShowClonePreference(){
-        return AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("cloneAndShowClone");
+        return CloneManagementSettingsComponent.properties.getValue(CloneManagementSettingsComponent.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("cloneAndShowClone");
     }
     public static boolean isShowCloneAndPropagatePreference(){
-        return AssetsManagementPreferences.properties.getValue(AssetsManagementPreferences.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("showCloneAndPropagate");
+        return CloneManagementSettingsComponent.properties.getValue(CloneManagementSettingsComponent.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("showCloneAndPropagate");
     }
 }
