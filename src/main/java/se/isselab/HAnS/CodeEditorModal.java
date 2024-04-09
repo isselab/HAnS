@@ -127,9 +127,8 @@ public class CodeEditorModal extends DialogWrapper {
         panel.add(titleLabel, BorderLayout.NORTH);
     }
     private void onNextButtonClicked() {
-        currentIndex += 1;
         if (currentIndex < this.files.size()-1) {
-
+            currentIndex += 1;
             currentElement = this.files.get(currentIndex);
             Document currentElementDoc = currentElement.getDocument();
 

@@ -404,7 +404,10 @@ public class FeatureModelPsiImplUtil {
             int lineStartOffset = document.getLineStartOffset(document.getLineNumber(feature.getTextOffset()));
             ASTNode featureNode = feature.getNode();
             int lineEndOffset = document.getLineEndOffset(document.getLineNumber(feature.getTextOffset() + featureNode.getTextLength())-1);
-            document.deleteString(lineStartOffset, lineEndOffset+1);
+            Runnable r = () -> {
+                document.deleteString(lineStartOffset, lineEndOffset+1);
+            };
+            WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
 
             return (FeatureModelFeature) feature;
         }
@@ -421,7 +424,8 @@ public class FeatureModelPsiImplUtil {
             int lineStartOffset = document.getLineStartOffset(document.getLineNumber(feature.getTextOffset()));
             ASTNode featureNode = feature.getNode();
             int lineEndOffset = document.getLineEndOffset(document.getLineNumber(feature.getTextOffset() + featureNode.getTextLength())-1);
-            document.deleteString(lineStartOffset, lineEndOffset+1);
+
+            document.replaceString(lineStartOffset, lineEndOffset, " ".repeat(lineEndOffset-lineStartOffset));
 
             PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
 
@@ -436,8 +440,10 @@ public class FeatureModelPsiImplUtil {
         Project projectInstance = feature.getProject();
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
         if (document!= null) {
+
             Set<FeatureAnnotationToDelete> annotations = FeatureReferenceUtil.setElementsToDropWhenDeletingMain((FeatureModelFeature) feature);
             if (!annotations.isEmpty()) {
+                System.out.println("_______tangled features present________");
                 CodeEditorModal modal = new CodeEditorModal(feature.getProject());
                 modal.setFileList(annotations);
 
@@ -449,11 +455,12 @@ public class FeatureModelPsiImplUtil {
                     return null;
                 }
             } else { // if no tangled features are present
+                System.out.println("_______no tangled features present________");
                 FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
                 FeatureReferenceUtil.setMapToDeleteWithCode((FeatureModelFeature) feature);
                 FeatureReferenceUtil.deleteWithCode();
-
-                deleteFromFeatureModel(feature);
+//
+//                deleteFromFeatureModel(feature);
 
                 PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
 
