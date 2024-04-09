@@ -20,6 +20,7 @@ import se.isselab.HAnS.assetsManagement.HansAssetsManagementPage;
 import se.isselab.HAnS.assetsManagement.cloneManagement.TracingHandler;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -60,22 +61,6 @@ public class CloneTracingTests extends BasePlatformTestCase {
             }
         });
     }
-    public void testStoreCloneTrace(){
-        VirtualFile fileToCopy = myFixture.configureByFile("CloneFile.java").getVirtualFile();
-        ApplicationManager.getApplication().runWriteAction(() -> {
-            try {
-                VirtualFile[] vFiles = ProjectRootManager.getInstance(myFixture.getProject()).getContentRoots();
-                VirtualFile traceFile = VfsTestUtil.createFile(vFiles[0], ".trace-db.txt");
-                VfsUtil.saveText(traceFile, "content");
-                traceFile.refresh(false, false);
-                //tracingHandler.storeCloneTrace(myFixture.getProject(), myFixture.getProject().getName(), fileToCopy.getPath(), fileToCopy.getPath());
-                String content = VfsUtilCore.loadText(traceFile);
-                assertTrue("Trace was not stored", !content.isEmpty());
-            } catch (Exception e) {
-                fail("Failed to create src directory or .trace-db.txt file");
-            }
-        });
-    }
 
     public void testCloneFile(){
         ApplicationManager.getApplication().runWriteAction(() -> {
@@ -106,26 +91,64 @@ public class CloneTracingTests extends BasePlatformTestCase {
     }
 
     public void testCloneFragment(){
-        WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+        ApplicationManager.getApplication().runWriteAction(() -> {
             try {
-                VirtualFile[] vFiles = ProjectRootManager.getInstance(myFixture.getProject()).getContentRoots();
-                VirtualFile sourceFile = myFixture.getTempDirFixture().createFile("source.java", "public class cloneFile {\\n\" +\n" +
-                        "                        \"    String test = \\\"test\\\"; // &line[Test]\\n\" +\n" +
-                        "                        \"}");
-                assertNotNull(sourceFile);
-                myFixture.createFile(".trace-db.txt", "");
+                //myFixture.configureByFile("CloneFile.java");
+                VirtualFile sourceFile = myFixture.getTempDirFixture().createFile("CloneFile.java", "public class cloneFile {\n" +
+                        "    String test = \"test\"; // &line[Test]\n" +
+                        "    }\n" +
+                        "}");
                 myFixture.openFileInEditor(sourceFile);
-                Editor editor = myFixture.getEditor();
-                Document document = editor.getDocument();
-                editor.getSelectionModel().setSelection(0, document.getTextLength());
                 myFixture.performEditorAction(IdeActions.ACTION_COPY);
                 myFixture.performEditorAction(IdeActions.ACTION_PASTE);
-                VirtualFile traceFile = VirtualFileManager.getInstance().findFileByUrl(vFiles[0] + "/.trace-db.txt");
-                assertNotNull("trace file not created", traceFile);
+
+                String tempDir = System.getProperty("java.io.tmpdir").replace(File.separatorChar, '/');
+                if (!tempDir.endsWith("/")) {
+                    tempDir += "/";
+                }
+                String fileUrl = "file://" + tempDir + ".trace-db.txt";
+                VirtualFile traceFile = VirtualFileManager.getInstance().findFileByUrl(fileUrl);
+                String content = VfsUtilCore.loadText(traceFile);
+
+                assertNotNull("Trace File was not created", traceFile);
+                assertTrue("Trace was not stored", !content.isEmpty());
+                traceFile.delete(CloneTracingTests.class);
             } catch (Exception e) {
                 fail("Failed to create files or copy content: " + e.getMessage());
             }
         });
     }
 
+    public void testTraceParsing() {
+        ApplicationManager.getApplication().runWriteAction(() -> {
+        try {
+            myFixture.configureByFile("CloneFile.java");
+            myFixture.performEditorAction(IdeActions.ACTION_COPY);
+            myFixture.performEditorAction(IdeActions.ACTION_PASTE);
+
+            String tempDir = System.getProperty("java.io.tmpdir").replace(File.separatorChar, '/');
+            if (!tempDir.endsWith("/")) {
+                tempDir += "/";
+            }
+            String fileUrl = "file://" + tempDir + ".trace-db.txt";
+
+            VirtualFile traceFile = VirtualFileManager.getInstance().findFileByUrl(fileUrl);
+            String content = VfsUtilCore.loadText(traceFile);
+            String[] lines = content.split("\n");
+            Pattern pattern = Pattern.compile("^[^;]+;[^;]+(?:;[^;]+)?$");
+
+            for (String line : lines) {
+                line = line.trim();
+                if(line.equals(""))
+                    continue;
+                boolean matches = pattern.matcher(line).matches();
+                assertTrue("Line does not match the expected format: " + line, matches);
+            }
+            traceFile.delete(CloneTracingTests.class);
+        } catch (Exception e) {
+            fail("Failed to create files or copy content: " + e.getMessage());
+        }
+        });
+    }
 }
+

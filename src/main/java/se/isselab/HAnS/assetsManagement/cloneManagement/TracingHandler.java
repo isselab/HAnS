@@ -26,6 +26,7 @@ public class TracingHandler {
         pathsMapping.paths.put(targetFileRelativePath, targetFilePath);
         String currentDateAndTime = getCurrentDateAndTime();
         String textFilePath = getTraceFilePath(project);
+        String test = System.getProperty("java.io.tmpdir") + File.separator + ".trace-db.txt";
         try {
             String updatedContent = sourceFileRelativePath + ";" +  targetFileRelativePath + ";" + currentDateAndTime;
             FileWriter fileWriter = new FileWriter(textFilePath, true);
@@ -72,22 +73,6 @@ public class TracingHandler {
             cleanedUrls.add(cleanedUrl);
         }
         String path = cleanedUrls.get(0) + "/.trace-db.txt";
-        VirtualFile vFile = VirtualFileManager.getInstance().findFileByUrl(vFiles.get(0) + "/.trace-db.txt");
-        if(vFile == null) {
-            try {
-                File file = new File(path);
-                File parentDir = file.getParentFile();
-                VirtualFile vParentDir = VfsUtil.findFileByIoFile(parentDir, false);
-                if (vParentDir == null) {
-                    return null;
-                }
-                vFile = vParentDir.createChildData(null, ".trace-db.txt");
-                return vFile.getUrl().replaceFirst("^file://", "");
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
         return path;
     }
 
