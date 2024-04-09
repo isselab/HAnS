@@ -11,9 +11,7 @@ import org.jetbrains.annotations.Nullable;
         storages = @Storage("plugin.xml")
 )
 public class CloneManagementSettingsState implements PersistentStateComponent<CloneManagementSettingsState> {
-    public boolean cloneOption;
-    public boolean showCloneOption;
-    public boolean propagatingOption;
+    String prefKey = "All";
     @Override
     public @Nullable CloneManagementSettingsState getState() {
         return this;

@@ -117,13 +117,7 @@ public class CloneManagementSettingsComponent {
                 propagatingOption.setSelected(false);
         }
     }
-    public void setCloningOption(boolean flag){
-        cloningOption.setSelected(true);
-    }
-    public void setShowCloneOption(boolean flag){
-        showCloneOption.setSelected(true);
-    }
-    public void setPropagatingOption(boolean flag){
-        propagatingOption.setSelected(true);
+    public void setAssetsManagementPrefKey(String value) {
+        properties.setValue(ASSETS_MANAGEMENT_PREF_KEY, value);
     }
 }

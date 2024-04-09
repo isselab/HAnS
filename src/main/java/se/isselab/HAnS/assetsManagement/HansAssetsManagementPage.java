@@ -44,4 +44,8 @@ public class HansAssetsManagementPage implements Configurable {
     public void cancel() {
         Configurable.super.cancel();
     }
+
+    public CloneManagementSettingsComponent getCloneManagementSettingsComponent() {
+        return this.cloneManagementSettingsComponent;
+    }
 }
