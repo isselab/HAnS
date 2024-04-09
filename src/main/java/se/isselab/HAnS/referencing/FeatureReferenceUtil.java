@@ -17,6 +17,7 @@ package se.isselab.HAnS.referencing;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.injection.InjectedLanguageManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
@@ -228,7 +229,7 @@ public class FeatureReferenceUtil {
         for (Map.Entry<FeatureModelFeature, ArrayList<Object>> entry : featureToAnnotations.entrySet()) {
             FeatureModelFeature feature = entry.getKey();
             ArrayList<Object> annotations = entry.getValue();
-            Map<Document, ArrayList<Range>> codeAnnotations = (Map<Document, ArrayList<Range>>) annotations.get(0);
+            Map<Document, Set<Integer>> codeAnnotations = (Map<Document, Set<Integer>>) annotations.get(0);
             List<PsiReference> fileFolderAnnotation = (List<PsiReference>) annotations.get(1);
             codeAnnotations.entrySet().forEach(codeAnnotation -> {
 
@@ -237,38 +238,23 @@ public class FeatureReferenceUtil {
                 System.out.println(document);
 //                System.out.println(annotationElement.getStartLine());
 //                System.out.println(annotationElement.getEndLine());
-                ArrayList<Range> rangesOfAnnotations = codeAnnotation.getValue();
+                Set<Integer> linesToExclude = codeAnnotation.getValue();
                 String newDocumentText = "";
                 String documentText = document.getText();
-                int start = 0;
-                int end = document.getLineEndOffset(document.getLineCount()-1);
-                for (Range range : rangesOfAnnotations) {
-                    System.out.println(start);
-                    System.out.println(end);
-                    end = document.getLineStartOffset((int) range.getMinimum());
-                    newDocumentText.concat(documentText.substring(start, end));
-                    start = document.getLineStartOffset((int) range.getMaximum()+1);
+                for (int i = 0 ; i < document.getLineCount(); i++) {
+                    if (linesToExclude.contains(i)) {
+                        continue;
+                    }
+                    String line = documentText.substring(document.getLineStartOffset(i), document.getLineEndOffset(i)).concat("\n");
+                    newDocumentText = newDocumentText.concat(line);
                 }
-                end = document.getLineEndOffset(document.getLineCount()-1);
-                newDocumentText.concat(documentText.substring(start, end));
-
-//                int start = document.getLineStartOffset(annotationElement.getStartLine());
-//                int end = document.getLineEndOffset(annotationElement.getEndLine());
-//                System.out.println(start);
-//                System.out.println(end);
-//                String documentText = document.getText();
-//                String sub = documentText.substring(0, start);
-//                String remainder = documentText.substring(end);
-//                System.out.println(sub);
-//                System.out.println(remainder);
-//                String newContent = sub.concat(remainder);
-//                System.out.println(newContent);
+                String newText = newDocumentText;
                 System.out.println(newDocumentText);
                 Runnable r = () -> {
                     document.setReadOnly(false);
-                    document.setText(newDocumentText);
+                    document.setText(newText);
                 };
-//                    WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
+                WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
             });
 
 
@@ -278,7 +264,10 @@ public class FeatureReferenceUtil {
                     reference.getElement().getNextSibling().getText().equals(" ")) {
                     reference.getElement().getNextSibling().delete(); // remove space after element
                 }
-                reference.getElement().delete(); // remove element
+                Runnable r = () -> {
+                    reference.getElement().delete(); // remove element
+                };
+                WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
             });
         }
     }
@@ -290,7 +279,7 @@ public class FeatureReferenceUtil {
             FeatureModelFeature childFeature = (FeatureModelFeature) child;
 
             FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, childFeature);
-            Map<Document, ArrayList<Range>> codeAnnotations = getCodeAnnotations(fileToAnnotation, childFeature); // code Annotations
+            Map<Document, Set<Integer>> codeAnnotations = getCodeAnnotations(fileToAnnotation, childFeature); // code Annotations
 
             System.out.println("codeAnnotations----]]]]]]]]]]]]]");
             codeAnnotations.entrySet().forEach(codeAnnotation -> {
@@ -316,35 +305,25 @@ public class FeatureReferenceUtil {
         });
     }
 
-    private static Map<Document, ArrayList<Range>> getCodeAnnotations(FeatureFileMapping fileToAnnotation, FeatureModelFeature feature) {
-        Map<String, ArrayList<Range>> mapToDrop = new HashMap<>(); // documentName -> ranges of annotation blocks
+    private static Map<Document, Set<Integer>> getCodeAnnotations(FeatureFileMapping fileToAnnotation, FeatureModelFeature feature) {
+        Map<String, Set<Integer>> mapToDrop = new HashMap<>(); // documentName -> ranges of annotation blocks
 
         for (FeatureLocation fm : fileToAnnotation.getFeatureLocations()) {
             fm.getFeatureLocations().stream().forEach(block -> {
                 if (fm.getAnnotationType().equals(FeatureFileMapping.AnnotationType.code)) {
 
-                    ArrayList<Range> entry = mapToDrop.get(fm.getMappedPath());
+                    Set<Integer> entry = mapToDrop.get(fm.getMappedPath());
 
                     if (entry == null) {
-                        entry = new ArrayList<Range>();
-                        entry.add(Range.between(block.getStartLine(), block.getEndLine()));
+                        entry = new HashSet<>();
+                        for (int i = block.getStartLine(); i < block.getEndLine()+1; i++) {
+                            entry.add(i);
+                        }
                         mapToDrop.put(fm.getMappedPath(), entry);
                     } else {
-                        AtomicInteger start = new AtomicInteger();
-                        AtomicInteger end = new AtomicInteger();
-                        entry.forEach(entr -> {
-                            ArrayList<Integer> result = getRange(block.getStartLine(), block.getEndLine(), (int) entr.getMinimum(), (int) entr.getMaximum());
-                            if (result == null) {
-                                start.set(block.getStartLine());
-                                end.set(block.getEndLine());
-                            } else {
-                                start.set(result.get(0));
-                                end.set(result.get(1));
-                            }
-                            System.out.println((int) entr.getMinimum() + " "+ (int) entr.getMaximum());
-                            System.out.println(start + " " + end);
-                        });
-                        entry.add(Range.between(start.get(), end.get()));
+                        for (int i = block.getStartLine(); i < block.getEndLine()+1; i++) {
+                            entry.add(i);
+                        }
                     }
 //                    FeatureAnnotationToDelete elementToDrop = new FeatureAnnotationToDelete();
 
@@ -357,19 +336,15 @@ public class FeatureReferenceUtil {
                 }
             });
         }
-        mapToDrop.values().stream().forEach(value -> {
-            value.sort((c1, c2) -> {
-                if((int) c1.getMinimum() < (int) c2.getMinimum()) { return -1; }
-                else if((int) c1.getMinimum() == (int) c2.getMinimum()) { return 0; }
-                return 1;
-            });
-        });
+
         // substitute string to document
-        Map<Document, ArrayList<Range>> result = mapToDrop.entrySet().stream()
+        Map<Document, Set<Integer>> result = mapToDrop.entrySet().stream()
                 .collect(Collectors.toMap(entry -> {
                     VirtualFile file = LocalFileSystem.getInstance().findFileByPath(entry.getKey());
                     return FileDocumentManager.getInstance().getDocument(file);
-                }, entry -> entry.getValue()));
+                }, entry -> {
+                    return entry.getValue().stream().sorted().collect(Collectors.toSet());
+                }));
         return result;
     }
 
