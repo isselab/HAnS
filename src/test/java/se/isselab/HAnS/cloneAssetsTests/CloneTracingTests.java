@@ -1,11 +1,15 @@
 package se.isselab.HAnS.cloneAssetsTests;
 
+import com.intellij.execution.application.ApplicationConfigurable;
 import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ConfigurableGroup;
+import com.intellij.openapi.options.ex.ConfigurableExtensionPointUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VfsUtil;
@@ -22,7 +26,9 @@ import se.isselab.HAnS.assetsManagement.cloneManagement.TracingHandler;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class CloneTracingTests extends BasePlatformTestCase {
@@ -149,6 +155,10 @@ public class CloneTracingTests extends BasePlatformTestCase {
             fail("Failed to create files or copy content: " + e.getMessage());
         }
         });
+    }
+
+    public void testChangeAssetPref() {
+
     }
 }
 
