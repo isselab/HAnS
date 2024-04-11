@@ -36,6 +36,9 @@ import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
+import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReference;
+import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
+import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationTokenType;
 import se.isselab.HAnS.metrics.FeatureTangling;
 
 import javax.print.Doc;
@@ -215,6 +218,15 @@ public class FeatureReferenceUtil {
                 else { // if feature to folder/file annotation
                     if (reference.getElement().getNextSibling() != null && reference.getElement().getNextSibling().getText().equals(" ")) {
                         reference.getElement().getNextSibling().delete(); // remove space after element
+                    }
+
+                    if (reference.getElement().getPrevSibling() == null && reference.getElement().getNextSibling() == null) { // if it's last feature mapped to file
+                        if (reference.getElement().getParent().getPrevSibling() != null) { // if newline exists
+                            if (reference.getElement().getParent().getPrevSibling().getPrevSibling() != null &&
+                                reference.getElement().getParent().getPrevSibling().getPrevSibling() instanceof FileAnnotationFileReferences) { // get file list
+                                reference.getElement().getParent().getPrevSibling().getPrevSibling().delete(); // delete all files
+                            }
+                        }
                     }
                     reference.getElement().delete();
                 }

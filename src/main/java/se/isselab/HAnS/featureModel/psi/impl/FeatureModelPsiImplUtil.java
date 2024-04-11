@@ -421,11 +421,7 @@ public class FeatureModelPsiImplUtil {
             FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
             FeatureReferenceUtil.delete();
 
-            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(feature.getTextOffset()));
-            ASTNode featureNode = feature.getNode();
-            int lineEndOffset = document.getLineEndOffset(document.getLineNumber(feature.getTextOffset() + featureNode.getTextLength())-1);
-
-            document.replaceString(lineStartOffset, lineEndOffset, " ".repeat(lineEndOffset-lineStartOffset));
+            deleteFromFeatureModel(feature);
 
             PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
 
@@ -459,7 +455,7 @@ public class FeatureModelPsiImplUtil {
                 FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
                 FeatureReferenceUtil.setMapToDeleteWithCode((FeatureModelFeature) feature);
                 FeatureReferenceUtil.deleteWithCode();
-//
+
 //                deleteFromFeatureModel(feature);
 
                 PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
