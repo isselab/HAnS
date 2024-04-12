@@ -1,8 +1,0 @@
-FeatureModelLanguage.java FeatureModel.bnf FeatureModel.flex FeatureModelLexerAdapter.java
-FeatureModel::Language
-
-FeatureModelFileType.java
-FeatureModel::File
-
-FeatureFindUsagesProvider.java FeatureModelReference.java FeatureModelReferenceContributor.java FeatureRefactoringSupportProvider.java
-Referencing

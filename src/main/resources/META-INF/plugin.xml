@@ -96,6 +96,10 @@ limitations under the License.
                    implementationClass="se.ch.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationAnnotator"/>
         <!-- &end[SyntaxHighlighting::CodeAnnotation] -->
 
+        <!-- &begin[ColorSettingsPage] -->
+        <colorSettingsPage implementation="se.isselab.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
+        <!-- &end[ColorSettingsPage] -->
+
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/HAnSDarcula.xml"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/HAnSDefault.xml"/>
         <!-- &end[SyntaxHighlighting] -->
@@ -126,8 +130,28 @@ limitations under the License.
         <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.ch.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
+
+        <!-- &begin[MetricsView]-->
+        <toolWindow id="MetricsView" anchor="bottom"
+                    factoryClass="se.isselab.HAnS.metricsView.MetricsViewFactory" />
+        <!-- &end[MetricsView]-->
+
+        <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService" serviceInterface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
     </extensions>
 
+    <extensionPoints>
+        <!-- &begin[Service]-->
+        <extensionPoint
+                name="featureService"
+                interface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
+        <!-- &end[Service]-->
+        <!-- &begin[Callback]-->
+        <extensionPoint
+                name="hansCallback"
+                interface="se.isselab.HAnS.featureExtension.HAnSCallback"/>
+        <!-- &end[Callback]-->
+
+    </extensionPoints>
     <actions>
         <action id="RenameFeature"
                 class="se.ch.HAnS.actions.RenameAction"
