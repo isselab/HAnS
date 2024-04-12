@@ -68,6 +68,16 @@ public class CloneTracingTests extends BasePlatformTestCase {
         });
     }
 
+    public void testGetRelativePath() {
+        String pathDifferentName = "/users/example/ExampleProject/src/dir";
+        String pathSameName = "GetRelativePath/src/dir";
+        String projectName = "ExampleProject";
+        String resultDifferentProjectNames = new TracingHandler().getRelativePath(myFixture.getProject(), pathDifferentName, projectName);
+        String resultSametProjectNames = new TracingHandler().getRelativePath(myFixture.getProject(), pathSameName, "GetRelativePath");
+        assertEquals("ExampleProject/src/dir", resultDifferentProjectNames);
+        assertEquals("src/dir", resultSametProjectNames);
+    }
+
     public void testCloneFile(){
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
@@ -76,20 +86,25 @@ public class CloneTracingTests extends BasePlatformTestCase {
                 VirtualFile dir1 = VfsTestUtil.createDir(vFiles[0], "dir1");
                 VirtualFile dir2 = VfsTestUtil.createDir(vFiles[0], "dir2");
                 VirtualFile fileInDir1 = VfsTestUtil.createFile(dir1, "testFile.java", "" +
-                        "public class cloneFile {\n" +
+                        "public class testFile {\n" +
                         "    String test = \"test\"; // &line[Test]\n" +
                         "}");
-                hansAssetsManagementPage.getCloneManagementSettingsComponent().setAssetsManagementPrefKey("All");
-                //VirtualFile copiedFile = fileInDir1.copy(this, dir2, "copiedFile.java");
-                VirtualFile copiedFile = myFixture.copyFileToProject("CloneFile.java");
-                VirtualFile traceFile = VirtualFileManager.getInstance().findFileByUrl(vFiles[0] + "/.trace-db.txt");
+                VirtualFile copiedFile = fileInDir1.copy(this, dir2, "copiedFile.java");
+                //VirtualFile copiedFile = myFixture.copyFileToProject("CloneFile.java");
+                //VirtualFile traceFile = VirtualFileManager.getInstance().findFileByUrl(vFiles[0] + "/.trace-db.txt");
+                String tempDir = System.getProperty("java.io.tmpdir").replace(File.separatorChar, '/');
+                if (!tempDir.endsWith("/")) {
+                    tempDir += "/";
+                }
+                String fileUrl = "file://" + tempDir + ".trace-db.txt";
+                VirtualFile traceFile = VirtualFileManager.getInstance().findFileByUrl(fileUrl);
                 assertNotNull("trace file not created", traceFile);
                 assertTrue("Directory 2 should contain the copied file", Arrays.asList(dir2.getChildren()).contains(copiedFile));
                 String content = VfsUtilCore.loadText(copiedFile);
-                assertEquals("public class cloneFile {\n" +
+                assertEquals("public class copiedFile {\n" +
                         "    String test = \"test\"; // &line[Test]\n" +
                         "}", content);
-
+                traceFile.delete(CloneTracingTests.class);
             } catch (IOException e) {
                 fail("IOException during test: " + e.getMessage());
             }

@@ -29,7 +29,7 @@ public class TracingHandler {
         String test = System.getProperty("java.io.tmpdir") + File.separator + ".trace-db.txt";
         try {
             String updatedContent = sourceFileRelativePath + ";" +  targetFileRelativePath + ";" + currentDateAndTime;
-            FileWriter fileWriter = new FileWriter(textFilePath, true);
+            FileWriter fileWriter = new FileWriter(test, true);
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
             bufferFileWriter.newLine();
             bufferFileWriter.append(updatedContent);
