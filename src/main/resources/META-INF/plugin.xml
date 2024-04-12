@@ -32,6 +32,9 @@ limitations under the License.
         <colorSettingsPage implementation="se.ch.HAnS.syntaxHighlighting.HansColorSettingsPage"/>
     </extensions>
     <!-- &end[ColorSettingsPage] -->
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable instance="se.ch.HAnS.configurationPage.ConfigurationPage"/>
+    </extensions>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[HAnS::FeatureModel] -->
