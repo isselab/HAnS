@@ -26,10 +26,9 @@ public class TracingHandler {
         pathsMapping.paths.put(targetFileRelativePath, targetFilePath);
         String currentDateAndTime = getCurrentDateAndTime();
         String textFilePath = getTraceFilePath(project);
-        String test = System.getProperty("java.io.tmpdir") + File.separator + ".trace-db.txt";
         try {
             String updatedContent = sourceFileRelativePath + ";" +  targetFileRelativePath + ";" + currentDateAndTime;
-            FileWriter fileWriter = new FileWriter(test, true);
+            FileWriter fileWriter = new FileWriter(textFilePath, true);
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
             bufferFileWriter.newLine();
             bufferFileWriter.append(updatedContent);
@@ -57,15 +56,16 @@ public class TracingHandler {
     }
 
     public static String getTraceFilePath(Project project){
-        //return System.getProperty("user.home") + "\\Documents\\BA\\HAnS\\trace-db.txt";
         if (project == null) return null;
-        /** Alternative solution for getting the base directory*/
+        /** Alternative solutions for getting the base directory*/
         /* List<String> projectUrls = new ArrayList<>();
         ProjectRootManager.getInstance(project).getFileIndex().iterateContent(file -> {
             System.out.println("File: " + file.getPath());
             projectUrls.add(file.getPath());
             return true;
         });*/
+        /////////////////////////////////////////////////////////
+        /*
         List<String> vFiles = ProjectRootManager.getInstance(project).getContentRootUrls();
         List<String> cleanedUrls = new ArrayList<>();
         for (String url : vFiles) {
@@ -73,7 +73,9 @@ public class TracingHandler {
             cleanedUrls.add(cleanedUrl);
         }
         String path = cleanedUrls.get(0) + "/.trace-db.txt";
-        return path;
+
+         */
+        return project.getBasePath() + "/.trace-db.txt" ;
     }
 
     public String getCurrentDateAndTime(){

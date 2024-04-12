@@ -1,32 +1,21 @@
 package se.isselab.HAnS.cloneAssetsTests;
 
-import com.intellij.execution.application.ApplicationConfigurable;
 import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurableGroup;
-import com.intellij.openapi.options.ex.ConfigurableExtensionPointUtil;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.testFramework.EditorTestUtil;
+import com.intellij.testFramework.EdtTestUtil;
 import com.intellij.testFramework.VfsTestUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
-import se.isselab.HAnS.assetsManagement.CloneManagementSettingsComponent;
+import se.isselab.HAnS.assetsManagement.CloneManagementSettingsState;
 import se.isselab.HAnS.assetsManagement.HansAssetsManagementPage;
+import se.isselab.HAnS.assetsManagement.cloneManagement.NotificationProvider;
 import se.isselab.HAnS.assetsManagement.cloneManagement.TracingHandler;
-
 import javax.swing.*;
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -58,8 +47,6 @@ public class CloneTracingTests extends BasePlatformTestCase {
     public void testGetTraceFilePath() {
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
-                VirtualFile[] vFiles = ProjectRootManager.getInstance(myFixture.getProject()).getContentRoots();
-                VirtualFile traceFile = VfsTestUtil.createFile(vFiles[0], ".trace-db.txt");
                 String traceFilePath = TracingHandler.getTraceFilePath(myFixture.getProject());
                 assertNotNull("Trace file path was not found", traceFilePath);
             } catch (Exception e) {
@@ -78,6 +65,8 @@ public class CloneTracingTests extends BasePlatformTestCase {
         assertEquals("src/dir", resultSametProjectNames);
     }
 
+
+
     public void testCloneFile(){
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
@@ -90,14 +79,8 @@ public class CloneTracingTests extends BasePlatformTestCase {
                         "    String test = \"test\"; // &line[Test]\n" +
                         "}");
                 VirtualFile copiedFile = fileInDir1.copy(this, dir2, "copiedFile.java");
-                //VirtualFile copiedFile = myFixture.copyFileToProject("CloneFile.java");
-                //VirtualFile traceFile = VirtualFileManager.getInstance().findFileByUrl(vFiles[0] + "/.trace-db.txt");
-                String tempDir = System.getProperty("java.io.tmpdir").replace(File.separatorChar, '/');
-                if (!tempDir.endsWith("/")) {
-                    tempDir += "/";
-                }
-                String fileUrl = "file://" + tempDir + ".trace-db.txt";
-                VirtualFile traceFile = VirtualFileManager.getInstance().findFileByUrl(fileUrl);
+                String file = myFixture.getProject().getBasePath() + "/.trace-db.txt";
+                VirtualFile traceFile = VfsTestUtil.findFileByCaseSensitivePath(file);
                 assertNotNull("trace file not created", traceFile);
                 assertTrue("Directory 2 should contain the copied file", Arrays.asList(dir2.getChildren()).contains(copiedFile));
                 String content = VfsUtilCore.loadText(copiedFile);
@@ -122,15 +105,9 @@ public class CloneTracingTests extends BasePlatformTestCase {
                 myFixture.openFileInEditor(sourceFile);
                 myFixture.performEditorAction(IdeActions.ACTION_COPY);
                 myFixture.performEditorAction(IdeActions.ACTION_PASTE);
-
-                String tempDir = System.getProperty("java.io.tmpdir").replace(File.separatorChar, '/');
-                if (!tempDir.endsWith("/")) {
-                    tempDir += "/";
-                }
-                String fileUrl = "file://" + tempDir + ".trace-db.txt";
-                VirtualFile traceFile = VirtualFileManager.getInstance().findFileByUrl(fileUrl);
+                String file = myFixture.getProject().getBasePath() + "/.trace-db.txt";
+                VirtualFile traceFile = VfsTestUtil.findFileByCaseSensitivePath(file);
                 String content = VfsUtilCore.loadText(traceFile);
-
                 assertNotNull("Trace File was not created", traceFile);
                 assertTrue("Trace was not stored", !content.isEmpty());
                 traceFile.delete(CloneTracingTests.class);
@@ -146,14 +123,8 @@ public class CloneTracingTests extends BasePlatformTestCase {
             myFixture.configureByFile("CloneFile.java");
             myFixture.performEditorAction(IdeActions.ACTION_COPY);
             myFixture.performEditorAction(IdeActions.ACTION_PASTE);
-
-            String tempDir = System.getProperty("java.io.tmpdir").replace(File.separatorChar, '/');
-            if (!tempDir.endsWith("/")) {
-                tempDir += "/";
-            }
-            String fileUrl = "file://" + tempDir + ".trace-db.txt";
-
-            VirtualFile traceFile = VirtualFileManager.getInstance().findFileByUrl(fileUrl);
+            String file = myFixture.getProject().getBasePath() + "/.trace-db.txt";
+            VirtualFile traceFile = VfsTestUtil.findFileByCaseSensitivePath(file);
             String content = VfsUtilCore.loadText(traceFile);
             String[] lines = content.split("\n");
             Pattern pattern = Pattern.compile("^[^;]+;[^;]+(?:;[^;]+)?$");
@@ -165,6 +136,8 @@ public class CloneTracingTests extends BasePlatformTestCase {
                 boolean matches = pattern.matcher(line).matches();
                 assertTrue("Line does not match the expected format: " + line, matches);
             }
+            List<List<String>> traces = NotificationProvider.getTraces();
+            assertNotNull(traces);
             traceFile.delete(CloneTracingTests.class);
         } catch (Exception e) {
             fail("Failed to create files or copy content: " + e.getMessage());
@@ -172,8 +145,12 @@ public class CloneTracingTests extends BasePlatformTestCase {
         });
     }
 
-    public void testChangeAssetPref() {
 
+
+    public void testChangeAssetPref() {
+        CloneManagementSettingsState hans = ServiceManager.getService(CloneManagementSettingsState.class);
+        assertNotNull(hans.getState());
+        //hansAssetsManagementPage.getCloneManagementSettingsComponent().setAssetsManagementPrefKey("all");
     }
 }
 

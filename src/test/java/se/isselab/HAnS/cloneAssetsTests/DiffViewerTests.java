@@ -1,24 +1,15 @@
 package se.isselab.HAnS.cloneAssetsTests;
 
-import com.intellij.diff.DiffContentFactory;
-import com.intellij.diff.DiffManager;
-import com.intellij.diff.contents.DiffContent;
-import com.intellij.diff.requests.SimpleDiffRequest;
-import com.intellij.diff.util.DiffUtil;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.testFramework.VfsTestUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.junit.Before;
 import org.junit.Test;
+import se.isselab.HAnS.assetsManagement.cloneManagement.NotificationProvider;
 
 public class DiffViewerTests extends BasePlatformTestCase {
-    private Project mockProject;
     private VirtualFile mockSourceFile;
     private VirtualFile mockClonedFile;
-    private DiffContentFactory mockContentFactory;
-    private DiffContent mockSourceFileContent;
-    private DiffContent mockClonedFileContent;
-    private DiffManager mockDiffManager;
 
     @Before
     @Override
@@ -28,6 +19,12 @@ public class DiffViewerTests extends BasePlatformTestCase {
 
     @Test
     public void testOpenMergeWindow() {
-
+        mockSourceFile = VfsTestUtil.createFile(myFixture.getProject().getBaseDir(), "SourceFile.java");
+        mockClonedFile = VfsTestUtil.createFile(myFixture.getProject().getBaseDir(), "ClonedFile.java");
+        myFixture.openFileInEditor(mockSourceFile);
+        myFixture.openFileInEditor(mockClonedFile);
+        NotificationProvider notif = new NotificationProvider();
+        notif.openMergeWindow(myFixture.getProject(), mockSourceFile, mockClonedFile);
+        assertTrue(true);
     }
 }

@@ -1,4 +1,4 @@
-public class cloneFile {
+public class ClonedFile {
     String test = "test"; // &line[Test]
     }
 }

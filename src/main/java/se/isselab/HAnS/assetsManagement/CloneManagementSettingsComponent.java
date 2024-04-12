@@ -117,7 +117,10 @@ public class CloneManagementSettingsComponent {
                 propagatingOption.setSelected(false);
         }
     }
-    public void setAssetsManagementPrefKey(String value) {
+    public static void setAssetsManagementPrefKey(String value) {
         properties.setValue(ASSETS_MANAGEMENT_PREF_KEY, value);
+    }
+    public static String getAssetsManagementPrefKey() {
+        return properties.getValue(ASSETS_MANAGEMENT_PREF_KEY, "none");
     }
 }

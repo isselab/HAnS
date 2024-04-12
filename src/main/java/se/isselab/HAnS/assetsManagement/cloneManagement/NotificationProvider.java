@@ -85,7 +85,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         }
         return false;
     }
-    private void openMergeWindow(Project project, VirtualFile sourceFile, VirtualFile clonedFile) {
+    public void openMergeWindow(Project project, VirtualFile sourceFile, VirtualFile clonedFile) {
         DiffContentFactory contentFactory = DiffContentFactory.getInstance();
         DiffContent sourceFileContent = contentFactory.create(project, sourceFile);
         DiffContent clonedFileContent = contentFactory.create(project, clonedFile);
@@ -93,7 +93,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         DiffManager.getInstance().showDiff(project, diffRequest);
     }
 
-    private String getSourcePath(VirtualFile file) {
+    public static String getSourcePath(VirtualFile file) {
         List<List<String>> parsedLines = getTraces();
         for(int i = 0; i < parsedLines.size(); i++){
             if(parsedLines.get(i).get(1).equals(file.getPath()))
@@ -168,7 +168,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         return null;
     }
 
-    public String getLastModificationTime(VirtualFile virtualFile) {
+    public static String getLastModificationTime(VirtualFile virtualFile) {
         long timestamp = virtualFile.getTimeStamp();
         Date fileDate = new Date(timestamp);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
