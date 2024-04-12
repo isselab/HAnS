@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  **/
-package se.ch.HAnS.configurationPage;
+package se.ch.HAnS.settingsPage;
 
 import com.intellij.openapi.options.*;
 import com.intellij.openapi.options.Configurable;
@@ -26,7 +26,7 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class ConfigurationPage implements Configurable {
+public class SettingsPageHanS implements Configurable {
     @Override
     public @NlsContexts.ConfigurableName String getDisplayName() {
         return "HanS Plugin Settings";

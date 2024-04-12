@@ -33,7 +33,7 @@ limitations under the License.
     </extensions>
     <!-- &end[ColorSettingsPage] -->
     <extensions defaultExtensionNs="com.intellij">
-        <applicationConfigurable instance="se.ch.HAnS.configurationPage.ConfigurationPage"/>
+        <applicationConfigurable instance="se.ch.HAnS.settingsPage.SettingsPageHanS"/>
     </extensions>
 
     <extensions defaultExtensionNs="com.intellij">
