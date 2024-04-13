@@ -171,7 +171,7 @@ public class CodeEditorModal extends DialogWrapper {
 
     private void createHeader2(String featureLpq, String path) {
         if (header2 != null) {
-            panel.remove(header1);
+            panel.remove(header2);
         }
         constraints.gridy = 5;
         constraints.gridheight = 1;
@@ -324,7 +324,7 @@ public class CodeEditorModal extends DialogWrapper {
                 ArrayList<Object> tangled2 = getFileFolder(currentElement.getTangledFeatureLPQ());
                 Document doc2 = (Document) tangled2.get(0);
                 updateCodeTextArea(codeTextArea2, doc2, (int) tangled2.get(1), (int) tangled2.get(2));
-                createHeader1(currentElement.getTangledFeatureLPQ(), FileDocumentManager.getInstance().getFile(doc2).getPath());
+                createHeader2(currentElement.getTangledFeatureLPQ(), FileDocumentManager.getInstance().getFile(doc2).getPath());
 
             }
         }
@@ -356,41 +356,66 @@ public class CodeEditorModal extends DialogWrapper {
         ArrayList<Object> result = new ArrayList<>();
         if (parentFolder != null) {
             Arrays.stream(parentFolder.getChildren()).forEach(child -> {
-                if (child.getPath().contains(".feature-to-file")) {
-                    Document childFile = FileDocumentManager.getInstance().getDocument(child);
-                    if (childFile != null) {
-                        int index = childFile.getText().indexOf(featureLpq);
-                        if (index != -1) {
-                            int line = childFile.getLineNumber(index);
-                            int startOffset = childFile.getLineStartOffset(line-1);
-                            int endOffset = childFile.getLineEndOffset(line);
-                            result.add(childFile);
-                            result.add(startOffset);
-                            result.add(endOffset);
+                System.out.println("each child: " + child);
+                if (!child.isDirectory()) {
+                    if (child.getPath().contains(".feature-to-file")) {
+                        Document childFile = FileDocumentManager.getInstance().getDocument(child);
+                        if (childFile != null) {
+                            System.out.println("File child file: " + childFile);
+                            System.out.println("featureLpq" + featureLpq);
+                            int index = childFile.getText().indexOf(featureLpq);
+                            System.out.println("File index: " + index);
 
-                            System.out.println(startOffset + " " + endOffset);
-                            System.out.println(child.getFileType());
-                            System.out.println(child.getPath());
+                            while (index >= 0) {
+                                int line = childFile.getLineNumber(index);
+                                String substr = childFile.getText().substring(
+                                        childFile.getLineStartOffset(line - 1),
+                                        childFile.getLineEndOffset(line - 1)
+                                );
+                                System.out.println("virtualFile.getName() " + virtualFile.getName());
+                                if (substr.contains(virtualFile.getName())) {
+                                    result.add(childFile);
+                                    result.add(index);
+                                    result.add(index + featureLpq.length());
+                                    System.out.println(index + " " + index + featureLpq.length());
+                                    System.out.println(child.getFileType());
+                                    System.out.println(child.getPath());
+                                    break;
+                                }
+                                index = childFile.getText().indexOf(featureLpq, index + 1);
+                            }
+                            System.out.println("File index 2: " + index);
                         }
-                    }
 
-                } else if (child.getPath().contains(".feature-to-folder")) {
-                    Document childFolder = FileDocumentManager.getInstance().getDocument(child);
-                    if (childFolder != null) {
-                        String text = childFolder.getText();
-                        int startOffset = text.indexOf(featureLpq);
-                        int endOffset = startOffset+featureLpq.length();
-                        result.add(childFolder);
-                        result.add(startOffset);
-                        result.add(endOffset);
+                    } else if (child.getPath().contains(".feature-to-folder")) {
+                        Document childFolder = FileDocumentManager.getInstance().getDocument(child);
+                        System.out.println("Folder child: " + childFolder);
+                        System.out.println("featureLpq" + featureLpq);
+                        if (childFolder != null) {
+                            String text = childFolder.getText();
+                            int startOffset = text.indexOf(featureLpq);
+                            int endOffset = startOffset + featureLpq.length();
+                            System.out.println("Folder start offset: " + startOffset);
+                            if (startOffset != -1) {
+                                result.add(childFolder);
+                                result.add(startOffset);
+                                result.add(endOffset);
 
-                        System.out.println(startOffset + " " + endOffset);
-                        System.out.println(child.getFileType());
-                        System.out.println(child.getPath());
+                                System.out.println(startOffset + " " + endOffset);
+                                System.out.println(child.getFileType());
+                                System.out.println(child.getPath());
+                            }
+
+                        }
                     }
                 }
             });
         }
+        System.out.println(result.get(0));
+        System.out.println(result.get(1));
+        System.out.println(result.get(2));
+        System.out.println(" size " + result.size());
+
         return result;
     }
 }

@@ -421,7 +421,7 @@ public class FeatureModelPsiImplUtil {
             FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
             FeatureReferenceUtil.delete();
 
-            deleteFromFeatureModel(feature);
+//            deleteFromFeatureModel(feature);
 
             PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
 
