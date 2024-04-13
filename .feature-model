@@ -1,4 +1,5 @@
 HAnS
+    SettingsPage
     FeatureModel
         Language
         File
@@ -41,3 +42,4 @@ HAnS
     FileTemplate
         NewFile
     Quickfix
+

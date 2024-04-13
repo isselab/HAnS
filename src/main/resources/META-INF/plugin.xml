@@ -31,6 +31,9 @@ limitations under the License.
         <lang.parserDefinition language="FeatureModel"
                                implementationClass="se.isselab.HAnS.featureModel.FeatureModelParserDefinition"/>
         <!-- &end[HAnS::FeatureModel] -->
+        <!-- &begin[SettingsPage] -->
+        <applicationConfigurable instance="se.isselab.HAnS.settingsPage.SettingsPageHanS"/>
+        <!-- &end[SettingsPage] -->
 
         <!-- &begin[HAnS::FileAnnotation] -->
         <fileType name="File Annotation File" implementationClass="se.isselab.HAnS.fileAnnotation.FileAnnotationFileType"
@@ -126,6 +129,8 @@ limitations under the License.
 
         <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService" serviceInterface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
     </extensions>
+
+
 
     <extensionPoints>
         <!-- &begin[Service]-->
