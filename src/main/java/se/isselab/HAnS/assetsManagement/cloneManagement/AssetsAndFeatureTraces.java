@@ -26,7 +26,7 @@ public class AssetsAndFeatureTraces {
         FeaturesCodeAnnotations.getInstance().clearFeatures();
     }
     public static boolean isAllPreference(){
-        return CloneManagementSettingsComponent.properties.getValue(CloneManagementSettingsComponent.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("none");
+        return CloneManagementSettingsComponent.properties.getValue(CloneManagementSettingsComponent.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("All");
     }
     public static boolean isClonePreference(){
         return CloneManagementSettingsComponent.properties.getValue(CloneManagementSettingsComponent.ASSETS_MANAGEMENT_PREF_KEY, "none").equals("clone");

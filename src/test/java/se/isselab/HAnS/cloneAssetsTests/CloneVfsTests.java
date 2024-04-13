@@ -36,14 +36,9 @@ public class CloneVfsTests extends BasePlatformTestCase {
                 sourceFile.copy(this, destDir, sourceFile.getName());
                 VirtualFile copiedFile = destDir.findChild(sourceFile.getName());
                 String actualContent = new String(copiedFile.contentsToByteArray());
-                //VirtualFile ff = VfsUtil.refreshAndFindChild( myFixture.getProject().getBaseDir(), ".trace-db.txt");
-                //String file = myFixture.getProject().getBasePath() + "/.trace-db.txt";
-                //VirtualFile traceFile = VfsTestUtil.findFileByCaseSensitivePath(file);
-                //assertNotNull("trace file not created", traceFile);
                 assertTrue("File not found",copiedFile != null);
                 assertEquals("The file name should match the source file name.", sourceFile.getName(), copiedFile.getName());
                 assertEquals("The file content should match the expected content.", content, actualContent);
-                //traceFile.delete(CloneTracingTests.class);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

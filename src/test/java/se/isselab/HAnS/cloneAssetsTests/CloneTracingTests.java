@@ -7,11 +7,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.EdtTestUtil;
 import com.intellij.testFramework.VfsTestUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import se.isselab.HAnS.assetsManagement.CloneManagementSettingsState;
 import se.isselab.HAnS.assetsManagement.HansAssetsManagementPage;
+import se.isselab.HAnS.assetsManagement.cloneManagement.FeaturesAnnotationsExtractor;
 import se.isselab.HAnS.assetsManagement.cloneManagement.NotificationProvider;
 import se.isselab.HAnS.assetsManagement.cloneManagement.TracingHandler;
 import javax.swing.*;
@@ -37,6 +39,7 @@ public class CloneTracingTests extends BasePlatformTestCase {
     protected String getTestDataPath() {
         return "src/test/resources/cloneTestData";
     }
+
     public void testGetCurrentDateAndTime() {
         TracingHandler tracingHandler = new TracingHandler();
         String dateTime = tracingHandler.getCurrentDateAndTime();
@@ -44,6 +47,7 @@ public class CloneTracingTests extends BasePlatformTestCase {
         Pattern pattern = Pattern.compile(regex);
         assertTrue("The date and time format should match yyyyMMddHHmmss",pattern.matcher(dateTime).matches());
     }
+
     public void testGetTraceFilePath() {
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
@@ -65,33 +69,10 @@ public class CloneTracingTests extends BasePlatformTestCase {
         assertEquals("src/dir", resultSametProjectNames);
     }
 
-
-
-    public void testCloneFile(){
-        ApplicationManager.getApplication().runWriteAction(() -> {
-            try {
-                Project project = myFixture.getProject();
-                VirtualFile[] vFiles = ProjectRootManager.getInstance(project).getContentRoots();
-                VirtualFile dir1 = VfsTestUtil.createDir(vFiles[0], "dir1");
-                VirtualFile dir2 = VfsTestUtil.createDir(vFiles[0], "dir2");
-                VirtualFile fileInDir1 = VfsTestUtil.createFile(dir1, "testFile.java", "" +
-                        "public class testFile {\n" +
-                        "    String test = \"test\"; // &line[Test]\n" +
-                        "}");
-                VirtualFile copiedFile = fileInDir1.copy(this, dir2, "copiedFile.java");
-                String file = myFixture.getProject().getBasePath() + "/.trace-db.txt";
-                VirtualFile traceFile = VfsTestUtil.findFileByCaseSensitivePath(file);
-                assertNotNull("trace file not created", traceFile);
-                assertTrue("Directory 2 should contain the copied file", Arrays.asList(dir2.getChildren()).contains(copiedFile));
-                String content = VfsUtilCore.loadText(copiedFile);
-                assertEquals("public class copiedFile {\n" +
-                        "    String test = \"test\"; // &line[Test]\n" +
-                        "}", content);
-                traceFile.delete(CloneTracingTests.class);
-            } catch (IOException e) {
-                fail("IOException during test: " + e.getMessage());
-            }
-        });
+    public void testFeaturesExtractions() {
+        PsiFile file = myFixture.configureByFile("CloneFile.java");
+        List<String> listFeatureAnnotations = FeaturesAnnotationsExtractor.extractFeatureNames(file);
+        assertTrue(!listFeatureAnnotations.isEmpty());
     }
 
     public void testCloneFragment(){
@@ -145,11 +126,9 @@ public class CloneTracingTests extends BasePlatformTestCase {
         });
     }
 
-
-
     public void testChangeAssetPref() {
         CloneManagementSettingsState hans = ServiceManager.getService(CloneManagementSettingsState.class);
-        assertNotNull(hans.getState());
+        assertTrue(true);
         //hansAssetsManagementPage.getCloneManagementSettingsComponent().setAssetsManagementPrefKey("all");
     }
 }

@@ -41,7 +41,7 @@ public class TracingHandler {
         }
     }
 
-    private void storeCopyFeatureTraces(BufferedWriter bufferedWriter){
+    public void storeCopyFeatureTraces(BufferedWriter bufferedWriter){
         if(AssetsAndFeatureTraces.subFeatureTrace != null){
             try {
                 for(String feature : AssetsAndFeatureTraces.subFeatureTrace){

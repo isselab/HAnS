@@ -72,7 +72,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         return null;
     }
 
-    private boolean isSourceFileChanged(VirtualFile file) {
+    public boolean isSourceFileChanged(VirtualFile file) {
         List<List<String>> parsedLines = getTraces();
         for (int i = 0; i < parsedLines.size(); i++) {
             if (parsedLines.get(i).get(1).equals(file.getPath())) {
@@ -104,7 +104,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         return null;
     }
 
-    private boolean isCloned(PsiFile file) {
+    public boolean isCloned(PsiFile file) {
         List<List<String>> parsedLines = getTraces();
         for(int i = 0; i < parsedLines.size(); i++){
             if(parsedLines.get(i).get(1).equals(file.getVirtualFile().getPath()))
@@ -159,7 +159,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         return parsedLines;
     }
 
-    private static Project findProjectForVirtualFile(VirtualFile file) {
+    public static Project findProjectForVirtualFile(VirtualFile file) {
         for (Project project : ProjectManager.getInstance().getOpenProjects()) {
             if (ProjectRootManager.getInstance(project).getFileIndex().isInContent(file)) {
                 return project;

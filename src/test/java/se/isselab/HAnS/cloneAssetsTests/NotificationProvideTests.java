@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.VfsTestUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
@@ -52,7 +53,7 @@ public class NotificationProvideTests extends BasePlatformTestCase {
     }
 
     @Test
-    public void testGetSourcePath(){
+    public void testGetSourcePath() throws IOException {
         VirtualFile sourceDir = createDir();
         VirtualFile destDir = createDir();
         VirtualFile sourceFile = addChild(sourceDir, "source.java", false);
@@ -62,15 +63,13 @@ public class NotificationProvideTests extends BasePlatformTestCase {
                 "}";
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
-                //TODO create vfs copy event
                 sourceFile.setBinaryContent(content.getBytes());
                 sourceFile.copy(this, destDir, sourceFile.getName());
-                VirtualFile copiedFile = destDir.findChild(sourceFile.getName());
-                String actualContent = new String(copiedFile.contentsToByteArray());
+                VirtualFile ff = VfsUtil.refreshAndFindChild( myFixture.getProject().getBaseDir(), ".trace-db.txt");
                 String file = myFixture.getProject().getBasePath() + "/.trace-db.txt";
                 VirtualFile traceFile = VfsTestUtil.findFileByCaseSensitivePath(file);
-                String path = NotificationProvider.getSourcePath(myFixture.copyFileToProject("CloneFile.java"));
-                assertNotNull(path);
+                //String path = NotificationProvider.getSourcePath(myFixture.copyFileToProject("CloneFile.java"));
+                assertNotNull(traceFile);
                 traceFile.delete(CloneTracingTests.class);
             } catch (Exception e) {
                 fail("Failed to create files or copy content: " + e.getMessage());

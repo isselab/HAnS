@@ -17,7 +17,7 @@ public class FeaturesAnnotationsExtractor {
             FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);
     }
 
-    private static List<String> extractFeatureNames(PsiElement elements) {
+    public static List<String> extractFeatureNames(PsiElement elements) {
         List<String> featureNames = new ArrayList<>();
         ApplicationManager.getApplication().runReadAction(new Runnable() {
             @Override
