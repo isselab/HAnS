@@ -454,7 +454,7 @@ public class FeatureModelPsiImplUtil {
                 System.out.println("_______no tangled features present________");
                 FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
                 FeatureReferenceUtil.setMapToDeleteWithCode((FeatureModelFeature) feature);
-                FeatureReferenceUtil.deleteWithCode();
+//                FeatureReferenceUtil.deleteWithCode();
 
 //                deleteFromFeatureModel(feature);
 

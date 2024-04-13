@@ -15,7 +15,8 @@ public class FeatureAnnotationToDelete {
     private Document document;
     private int startLine;
     private int endLine;
-    private FeatureFileMapping.AnnotationType annotationType;
+    private FeatureFileMapping.AnnotationType tangledAnnotationType;
+    private FeatureFileMapping.AnnotationType mainAnnotationType;
 
     public FeatureAnnotationToDelete() {
         this.tangledFeatureLPQ = null;
@@ -25,7 +26,8 @@ public class FeatureAnnotationToDelete {
         this.document = null;
         this.startLine = -1;
         this.endLine = -1;
-        this.annotationType = null;
+        this.tangledAnnotationType = null;
+        this.mainAnnotationType = null;
     }
 
 
@@ -37,7 +39,7 @@ public class FeatureAnnotationToDelete {
             mainFeature2 = this.mainFeature.getLPQText();
         }
 
-        return Objects.hash(tangledFeatureLPQ, mainFeatureLPQ, mainFeature2, filePath, document, startLine, endLine, annotationType);
+        return Objects.hash(tangledFeatureLPQ, mainFeatureLPQ, mainFeature2, filePath, document, startLine, endLine, tangledAnnotationType, mainAnnotationType);
     }
 
     @Override
@@ -76,8 +78,11 @@ public class FeatureAnnotationToDelete {
         equals = endLine == featureAnnotationToDelete.endLine;
         System.out.println("endLine comparison: " + equals);
 
-        equals = annotationType == featureAnnotationToDelete.annotationType;
-        System.out.println("annotationType comparison: " + equals);
+        equals = tangledAnnotationType == featureAnnotationToDelete.tangledAnnotationType;
+        System.out.println("tangledAnnotationType comparison: " + equals);
+
+        equals = mainAnnotationType == featureAnnotationToDelete.mainAnnotationType;
+        System.out.println("mainAnnotationType comparison: " + equals);
 
 
         return Objects.equals(tangledFeatureLPQ, featureAnnotationToDelete.tangledFeatureLPQ) &&
@@ -87,7 +92,8 @@ public class FeatureAnnotationToDelete {
                 document == featureAnnotationToDelete.document &&
                 startLine == featureAnnotationToDelete.startLine &&
                 endLine == featureAnnotationToDelete.endLine &&
-                annotationType == featureAnnotationToDelete.annotationType;
+                tangledAnnotationType == featureAnnotationToDelete.tangledAnnotationType &&
+                mainAnnotationType == featureAnnotationToDelete.mainAnnotationType;
     }
 
     //    public FeatureAnnotationToDelete(String mainFeature,
@@ -126,8 +132,12 @@ public class FeatureAnnotationToDelete {
 //        this.endLine = endLine;
 //    }
 
-    public void setAnnotationType(FeatureFileMapping.AnnotationType annotationType) {
-        this.annotationType = annotationType;
+    public void setTangledAnnotationType(FeatureFileMapping.AnnotationType tangledAnnotationType) {
+        this.tangledAnnotationType = tangledAnnotationType;
+    }
+
+    public void setMainAnnotationType(FeatureFileMapping.AnnotationType mainAnnotationType) {
+        this.mainAnnotationType = mainAnnotationType;
     }
 
     public void setDocument(Document document) {
@@ -158,9 +168,11 @@ public class FeatureAnnotationToDelete {
         this.tangledFeatureLPQ = tangledFeatureLPQ;
     }
 
-    public FeatureFileMapping.AnnotationType getAnnotationType() {
-        return annotationType;
+    public FeatureFileMapping.AnnotationType getTangledAnnotationType() {
+        return tangledAnnotationType;
     }
+
+    public FeatureFileMapping.AnnotationType getMainAnnotationType() { return mainAnnotationType; }
 
     public Document getDocument() {
         return document;

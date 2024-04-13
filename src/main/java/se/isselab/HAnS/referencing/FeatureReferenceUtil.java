@@ -36,15 +36,11 @@ import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReference;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationTokenType;
 import se.isselab.HAnS.metrics.FeatureTangling;
 
-import javax.print.Doc;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -216,22 +212,51 @@ public class FeatureReferenceUtil {
                     host.delete();
                 }
                 else { // if feature to folder/file annotation
-                    if (reference.getElement().getNextSibling() != null && reference.getElement().getNextSibling().getText().equals(" ")) {
-                        reference.getElement().getNextSibling().delete(); // remove space after element
-                    }
-
-                    if (reference.getElement().getPrevSibling() == null && reference.getElement().getNextSibling() == null) { // if it's last feature mapped to file
-                        if (reference.getElement().getParent().getPrevSibling() != null) { // if newline exists
-                            if (reference.getElement().getParent().getPrevSibling().getPrevSibling() != null &&
-                                reference.getElement().getParent().getPrevSibling().getPrevSibling() instanceof FileAnnotationFileReferences) { // get file list
-                                reference.getElement().getParent().getPrevSibling().getPrevSibling().delete(); // delete all files
-                            }
-                        }
-                    }
-                    reference.getElement().delete();
+                    deleteFileFolderAnnotation(entry.getKey().getProject(), reference);
                 }
             }
         }
+    }
+
+    private static void deleteFileFolderAnnotation(Project project, PsiReference reference) {
+//        if (reference.getElement().getNextSibling() != null && reference.getElement().getNextSibling().getText().equals(" ")) {
+//            reference.getElement().getNextSibling().delete(); // remove space after element
+//        }
+//
+//        if (reference.getElement().getPrevSibling() == null && reference.getElement().getNextSibling() == null) { // if it's last feature mapped to file
+//            if (reference.getElement().getParent().getPrevSibling() != null) { // if newline exists
+//                if (reference.getElement().getParent().getPrevSibling().getPrevSibling() != null &&
+//                        reference.getElement().getParent().getPrevSibling().getPrevSibling() instanceof FileAnnotationFileReferences) { // get file list
+//                    reference.getElement().getParent().getPrevSibling().getPrevSibling().delete(); // delete all files
+//                }
+//            }
+//        }
+//        reference.getElement().delete();
+
+        if (reference.getElement().getNextSibling() != null &&
+                reference.getElement().getNextSibling().getText().equals(" ")) {
+            Runnable r = () -> {
+                reference.getElement().getNextSibling().delete(); // remove space after element
+            };
+            WriteCommandAction.runWriteCommandAction(project, r);
+        }
+
+        if (reference.getElement().getPrevSibling() == null && reference.getElement().getNextSibling() == null) { // if it's last feature mapped to file
+            if (reference.getElement().getParent().getPrevSibling() != null) { // if newline exists
+                if (reference.getElement().getParent().getPrevSibling().getPrevSibling() != null &&
+                        reference.getElement().getParent().getPrevSibling().getPrevSibling() instanceof FileAnnotationFileReferences) { // get file list
+                    Runnable r = () -> {
+                        reference.getElement().getParent().getPrevSibling().getPrevSibling().delete(); // delete all files
+                    };
+                    WriteCommandAction.runWriteCommandAction(project, r);
+                }
+            }
+        }
+
+        Runnable r = () -> {
+            reference.getElement().delete(); // remove element
+        };
+        WriteCommandAction.runWriteCommandAction(project, r);
     }
 
     public static void deleteWithCode() {
@@ -246,10 +271,11 @@ public class FeatureReferenceUtil {
             codeAnnotations.entrySet().forEach(codeAnnotation -> {
 
 //                FeatureAnnotationToDelete annotationElement = (FeatureAnnotationToDelete) annotation;
-                Document document = codeAnnotation.getKey();
-                System.out.println(document);
 //                System.out.println(annotationElement.getStartLine());
 //                System.out.println(annotationElement.getEndLine());
+
+                Document document = codeAnnotation.getKey();
+                System.out.println(document);
                 Set<Integer> linesToExclude = codeAnnotation.getValue();
                 String newDocumentText = "";
                 String documentText = document.getText();
@@ -269,17 +295,9 @@ public class FeatureReferenceUtil {
                 WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
             });
 
-
             fileFolderAnnotation.forEach(annotation -> {
                 PsiReference reference = annotation;
-                if (reference.getElement().getNextSibling() != null &&
-                    reference.getElement().getNextSibling().getText().equals(" ")) {
-                    reference.getElement().getNextSibling().delete(); // remove space after element
-                }
-                Runnable r = () -> {
-                    reference.getElement().delete(); // remove element
-                };
-                WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
+                deleteFileFolderAnnotation(feature.getProject(), reference);
             });
         }
     }
@@ -376,7 +394,7 @@ public class FeatureReferenceUtil {
 //        }
         System.out.println("=============affectedPlaces");
         for (FeatureAnnotationToDelete entry : result) {
-            System.out.println(entry.getMainFeatureLPQ() + " " + entry.getDocument() + " " + entry.getStartLine() + " " +entry.getEndLine() + " " + entry.getTangledFeatureLPQ() + " " + entry.getAnnotationType() );
+            System.out.println(entry.getMainFeatureLPQ() + " " + entry.getDocument() + " " + entry.getStartLine() + " " +entry.getEndLine() + " " + entry.getTangledFeatureLPQ() + " " + entry.getTangledAnnotationType()+ " " + entry.getMainAnnotationType() );
         }
         return result;
     }
@@ -387,6 +405,14 @@ public class FeatureReferenceUtil {
 
         FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, feature); // Feature -> FeatureLocations, each FeatureLocation -> FeatureBlocks
         ArrayList<FeatureAnnotationToDelete> baseFeatureLocations = getBaseFeatureLocations(fileToAnnotation, feature); // parentFeature, mapped File, start, end
+        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        baseFeatureLocations.stream().forEach(location -> {
+            System.out.println(location.getMainFeatureLPQ());
+            System.out.println(location.getMainAnnotationType());
+            System.out.println(location.getFilePath());
+            System.out.println(location.getStartLine());
+            System.out.println(location.getEndLine());
+        });
 
         HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = FeatureTangling.getTanglingMap(projectInstance); // Feature -> Features (tangled)
         HashSet<FeatureModelFeature> tangledFeatures = getTangledFeatures(tanglingMap, feature); // tangled features of specific Feature N
@@ -396,7 +422,7 @@ public class FeatureReferenceUtil {
         Set<FeatureAnnotationToDelete> affectedPlaces = processLocations(baseFeatureLocations, tangledLocations);
         System.out.println("=============affectedPlaces");
         for (FeatureAnnotationToDelete entry : affectedPlaces) {
-            System.out.println(entry.getMainFeatureLPQ() + " " + entry.getDocument() + " " + entry.getStartLine() + " " +entry.getEndLine() + " " + entry.getTangledFeatureLPQ() + " " + entry.getAnnotationType() );
+            System.out.println(entry.getMainFeatureLPQ() + " " + entry.getDocument() + " " + entry.getStartLine() + " " +entry.getEndLine() + " " + entry.getTangledFeatureLPQ() + " " + entry.getMainAnnotationType()+ " " + entry.getTangledAnnotationType() );
         }
         return affectedPlaces;
 
@@ -421,9 +447,22 @@ public class FeatureReferenceUtil {
                                 element.setStartLine(fl.getStartLine()); // 2: starting line of tangling
                                 element.setEndLine(fl.getEndLine()); // 3: end line of tangling
                                 element.setMainFeatureLPQ(feature.getLPQText()); // 4: feature it's tangled with
-                                element.setAnnotationType(location.getAnnotationType()); // 5: annotation type of tangled annotation
+                                System.out.println(location.getAnnotationType());
+                                System.out.println(baseLocation.getAnnotationType());
+//                                if (baseLocation.getAnnotationType().equals(FeatureFileMapping.AnnotationType.file) ||
+//                                    location.getAnnotationType().equals(FeatureFileMapping.AnnotationType.file)) {
+//                                    element.setAnnotationType(FeatureFileMapping.AnnotationType.file);
+//                                } else if (baseLocation.getAnnotationType().equals(FeatureFileMapping.AnnotationType.folder) ||
+//                                        location.getAnnotationType().equals(FeatureFileMapping.AnnotationType.folder)) {
+//                                    element.setAnnotationType(FeatureFileMapping.AnnotationType.folder);
+//                                } else {
+//                                    element.setAnnotationType(location.getAnnotationType()); // 5: annotation type of tangled annotation
+//                                }
+                                element.setTangledAnnotationType(location.getAnnotationType()); // 5: annotation type of tangled annotation
+//                                element.setMainAnnotationType(baseLocation.getAnnotationType()); // 5: annotation type of tangled annotation
+
                                 storeInterlockedLocations.add(element);
-                                System.out.println(element.getTangledFeatureLPQ() + " " + element.getFilePath() + " " + element.getStartLine() + " " + element.getEndLine() + " " + element.getAnnotationType()+ " " + element.getMainFeatureLPQ());
+                                System.out.println(element.getTangledFeatureLPQ() + " " + element.getFilePath() + " " + element.getStartLine() + " " + element.getEndLine() + " " + element.getTangledAnnotationType()+ " " + element.getMainFeatureLPQ());
                             }
                         }
 
@@ -458,6 +497,7 @@ public class FeatureReferenceUtil {
                 annotation.setFilePath(fm.getMappedPath());
                 annotation.setStartLine(block.getStartLine());
                 annotation.setEndLine(block.getEndLine());
+                annotation.setMainAnnotationType(fm.getAnnotationType());
 
                 annotations.add(annotation);
             }
@@ -496,15 +536,34 @@ public class FeatureReferenceUtil {
                     VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByPath(tangledLocation.getFilePath()); // add file
                     newElement.setDocument(FileDocumentManager.getInstance().getDocument(virtualFile)); // 1: document of annotation
 
-                    ArrayList<Integer> rangeResult = getRange(baseLocation.getStartLine(), baseLocation.getEndLine(), tangledLocation.getStartLine(), tangledLocation.getEndLine());
+                    newElement.setMainFeatureLPQ(tangledLocation.getMainFeatureLPQ()); // 4: Main feature it's tangled with
+                    newElement.setTangledAnnotationType(tangledLocation.getTangledAnnotationType()); // 5: tangled feature annotation type
+                    newElement.setMainAnnotationType(baseLocation.getMainAnnotationType()); // 6: main annotation type
 
-                    if (rangeResult != null) {
-                        newElement.setStartLine(rangeResult.get(0)); // 2: start lien
-                        newElement.setEndLine(rangeResult.get(1)); // 3: end line
-                        newElement.setMainFeatureLPQ(tangledLocation.getMainFeatureLPQ()); // 4: Main feature it's tangled with
-                        newElement.setAnnotationType(tangledLocation.getAnnotationType()); // 5: annotation type
+                    if (tangledLocation.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) &&
+                        baseLocation.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.code)) {
+                        ArrayList<Integer> rangeResult = getRange(baseLocation.getStartLine(), baseLocation.getEndLine(), tangledLocation.getStartLine(), tangledLocation.getEndLine());
+                        if (rangeResult != null) {
+                            newElement.setStartLine(rangeResult.get(0)); // 2: start line
+                            newElement.setEndLine(rangeResult.get(1)); // 3: end line
+                            result.add(newElement);
+                        }
+                    } else if (tangledLocation.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) &&
+                            !baseLocation.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.code)) {
+                        newElement.setStartLine(tangledLocation.getStartLine()); // 2: start line
+                        newElement.setEndLine(tangledLocation.getEndLine()); // 3: end line
+                        result.add(newElement);
+                    } else if (!tangledLocation.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) &&
+                            baseLocation.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.code)) {
+                        newElement.setStartLine(baseLocation.getStartLine()); // 2: start line
+                        newElement.setEndLine(baseLocation.getEndLine()); // 3: end line
+                        result.add(newElement);
+                    } else {
+                        newElement.setStartLine(0); // 2: start line
+                        newElement.setEndLine(0); // 3: end line
                         result.add(newElement);
                     }
+
                 }
             });
         });
