@@ -456,16 +456,18 @@ class CustomEditorField extends LanguageTextField {
 //        editor.setHighlighter(EditorHighlighterFactory.getInstance().createEditorHighlighter(project, new LightVirtualFile(fileName)));
 //        editor.setHighlighter(EditorColorsManager.getInstance().getGlobalScheme().getAttributes(EditorColorsManager.DEFAULT_SCHEME_NAME).getExternalName());
         editor.setEmbeddedIntoDialogWrapper(true);
-        if (!editor.isDisposed()) {
-            editor.getDocument().addDocumentListener(new DocumentListener() {
-                @Override
-                public void documentChanged(@NotNull DocumentEvent event) {
-                    ApplicationManager.getApplication().invokeLater(() -> {
+
+        editor.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void documentChanged(@NotNull DocumentEvent event) {
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    if (!editor.isDisposed()) {
                         CodeFoldingManager.getInstance(project).updateFoldRegions(editor);
-                    }, ModalityState.NON_MODAL);
-                }
-            });
-        }
+                    }
+                }, ModalityState.NON_MODAL);
+            }
+        });
+
         return editor;
     }
 
