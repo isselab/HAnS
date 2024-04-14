@@ -356,15 +356,11 @@ public class CodeEditorModal extends DialogWrapper {
         ArrayList<Object> result = new ArrayList<>();
         if (parentFolder != null) {
             Arrays.stream(parentFolder.getChildren()).forEach(child -> {
-                System.out.println("each child: " + child);
                 if (!child.isDirectory()) {
                     if (child.getPath().contains(".feature-to-file")) {
                         Document childFile = FileDocumentManager.getInstance().getDocument(child);
                         if (childFile != null) {
-                            System.out.println("File child file: " + childFile);
-                            System.out.println("featureLpq" + featureLpq);
                             int index = childFile.getText().indexOf(featureLpq);
-                            System.out.println("File index: " + index);
 
                             while (index >= 0) {
                                 int line = childFile.getLineNumber(index);
@@ -372,44 +368,51 @@ public class CodeEditorModal extends DialogWrapper {
                                         childFile.getLineStartOffset(line - 1),
                                         childFile.getLineEndOffset(line - 1)
                                 );
-                                System.out.println("virtualFile.getName() " + virtualFile.getName());
                                 if (substr.contains(virtualFile.getName())) {
-                                    result.add(childFile);
-                                    result.add(index);
-                                    result.add(index + featureLpq.length());
-                                    System.out.println(index + " " + index + featureLpq.length());
-                                    System.out.println(child.getFileType());
-                                    System.out.println(child.getPath());
+                                    result.add(childFile); result.add(index); result.add(index + featureLpq.length());
                                     break;
                                 }
                                 index = childFile.getText().indexOf(featureLpq, index + 1);
                             }
-                            System.out.println("File index 2: " + index);
                         }
 
                     } else if (child.getPath().contains(".feature-to-folder")) {
                         Document childFolder = FileDocumentManager.getInstance().getDocument(child);
-                        System.out.println("Folder child: " + childFolder);
-                        System.out.println("featureLpq" + featureLpq);
                         if (childFolder != null) {
                             String text = childFolder.getText();
                             int startOffset = text.indexOf(featureLpq);
                             int endOffset = startOffset + featureLpq.length();
-                            System.out.println("Folder start offset: " + startOffset);
                             if (startOffset != -1) {
-                                result.add(childFolder);
-                                result.add(startOffset);
-                                result.add(endOffset);
-
-                                System.out.println(startOffset + " " + endOffset);
-                                System.out.println(child.getFileType());
-                                System.out.println(child.getPath());
+                                result.add(childFolder); result.add(startOffset); result.add(endOffset);
                             }
-
                         }
                     }
                 }
             });
+            if (result.isEmpty()) { // if nothing was found in root folder of tangled feature mapping,
+                                    // process some higher level feature-to-folder mappings
+                VirtualFile newParent = parentFolder.getParent();
+                while (newParent != null) {
+                    for(VirtualFile child : newParent.getChildren()) {
+                        if (child.getPath().contains(".feature-to-folder")) {
+                            Document childFolder = FileDocumentManager.getInstance().getDocument(child);
+                            if (childFolder != null) {
+                                String text = childFolder.getText();
+                                int startOffset = text.indexOf(featureLpq);
+                                int endOffset = startOffset + featureLpq.length();
+                                if (startOffset != -1) {
+                                    result.add(childFolder); result.add(startOffset); result.add(endOffset);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (!result.isEmpty()) {
+                        break;
+                    }
+                    newParent = newParent.getParent();
+                }
+            }
         }
         System.out.println(result.get(0));
         System.out.println(result.get(1));
