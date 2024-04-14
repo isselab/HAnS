@@ -82,7 +82,7 @@ public class TracingHandler {
         Date time = new Date();
         String date = new SimpleDateFormat("MM/dd/yyyy").format(Calendar.getInstance().getTime());
         String[] dateSplitted = date.split("/");
-        int hours = (int)((time.getTime() / 1000 / 60 / 60) + 1) % 24;
+        int hours = (int)((time.getTime() / 1000 / 60 / 60) + 2) % 24;
         int minutes = (int)(time.getTime() / 1000 / 60) % 60;
         int seconds = (int)(time.getTime() / 1000) % 60;
         String currentTime = String.format("%02d%02d%02d", hours, minutes, seconds);

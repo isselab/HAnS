@@ -30,8 +30,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
     @Nullable
     @Override
     public EditorNotificationPanel createNotificationPanel(@NotNull VirtualFile file, @NotNull FileEditor fileEditor, @NotNull Project project) {
-        PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
-        boolean cloned = isCloned(psiFile);
+        boolean cloned = isCloned(file);
         boolean isSourceFileChanged = isSourceFileChanged(file);
         if(AssetsAndFeatureTraces.isAllPreference() || AssetsAndFeatureTraces.isShowClonePreference() || AssetsAndFeatureTraces.isShowCloneAndPropagatePreference() || AssetsAndFeatureTraces.isCloneAndShowClonePreference()) {
             if (cloned && !isSourceFileChanged) {
@@ -72,7 +71,7 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         return null;
     }
 
-    public boolean isSourceFileChanged(VirtualFile file) {
+    public static boolean isSourceFileChanged(VirtualFile file) {
         List<List<String>> parsedLines = getTraces();
         for (int i = 0; i < parsedLines.size(); i++) {
             if (parsedLines.get(i).get(1).equals(file.getPath())) {
@@ -104,10 +103,10 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
         return null;
     }
 
-    public boolean isCloned(PsiFile file) {
+    public static boolean isCloned(VirtualFile file) {
         List<List<String>> parsedLines = getTraces();
         for(int i = 0; i < parsedLines.size(); i++){
-            if(parsedLines.get(i).get(1).equals(file.getVirtualFile().getPath()))
+            if(parsedLines.get(i).get(1).equals(file.getPath()))
                 return true;
         }
         return false;

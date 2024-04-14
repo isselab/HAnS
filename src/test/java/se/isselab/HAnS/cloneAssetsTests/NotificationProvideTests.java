@@ -54,6 +54,30 @@ public class NotificationProvideTests extends BasePlatformTestCase {
         String lastModificationTime = NotificationProvider.getLastModificationTime(file);
         assertNotNull(lastModificationTime);
     }
+    @Test
+    public void testIsCloned() throws Exception {
+        VirtualFile sourceDir = createDir();
+        VirtualFile destDir = createDir();
+        VirtualFile sourceFile = addChild(sourceDir, "source.java", false);
+        String content = "public class cloneFile {\n" +
+                "    String test = \"test\"; // &line[Test]\n" +
+                "    }\n" +
+                "}";
+        CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
+        settingsState.prefKey = "All";
+        ApplicationManager.getApplication().runWriteAction(() -> {
+            try {
+                sourceFile.setBinaryContent(content.getBytes());
+                VirtualFile copiedFile = sourceFile.copy(this, destDir, sourceFile.getName());
+                VirtualFile traceFile = VfsUtil.refreshAndFindChild( myFixture.getProject().getBaseDir(), ".trace-db.txt");
+                boolean isCloned = NotificationProvider.isCloned(copiedFile);
+                assertTrue(isCloned);
+                traceFile.delete(CloneTracingTests.class);
+            } catch (Exception e) {
+                fail("Failed to create files or copy content: " + e.getMessage());
+            }
+        });
+    }
 
     @Test
     public void testGetSourcePath() throws IOException {
@@ -69,18 +93,45 @@ public class NotificationProvideTests extends BasePlatformTestCase {
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 sourceFile.setBinaryContent(content.getBytes());
-                sourceFile.copy(this, destDir, sourceFile.getName());
-                VirtualFile ff = VfsUtil.refreshAndFindChild( myFixture.getProject().getBaseDir(), ".trace-db.txt");
-                String file = myFixture.getProject().getBasePath() + "/.trace-db.txt";
-                VirtualFile traceFile = VfsTestUtil.findFileByCaseSensitivePath(file);
-                //String path = NotificationProvider.getSourcePath(myFixture.copyFileToProject("CloneFile.java"));
-                assertNotNull(traceFile);
+                VirtualFile copiedFile = sourceFile.copy(this, destDir, sourceFile.getName());
+                VirtualFile traceFile = VfsUtil.refreshAndFindChild( myFixture.getProject().getBaseDir(), ".trace-db.txt");
+                String path = NotificationProvider.getSourcePath(copiedFile);
+                assertNotNull(path);
                 traceFile.delete(CloneTracingTests.class);
             } catch (Exception e) {
                 fail("Failed to create files or copy content: " + e.getMessage());
             }
         });
     }
+
+    @Test
+    public void testisSourceFileChanged() throws Exception{
+        VirtualFile sourceDir = createDir();
+        VirtualFile destDir = createDir();
+        VirtualFile sourceFile = addChild(sourceDir, "source.java", false);
+        String content = "public class cloneFile {\n" +
+                "    String test = \"test\"; // &line[Test]\n" +
+                "    }\n" +
+                "}";
+        CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
+        settingsState.prefKey = "All";
+        ApplicationManager.getApplication().runWriteAction(() -> {
+            try {
+                sourceFile.setBinaryContent(content.getBytes());
+                VirtualFile copiedFile = sourceFile.copy(this, destDir, sourceFile.getName());
+                Thread.sleep(1000);
+                sourceFile.setBinaryContent("newContent".getBytes());
+                VirtualFile traceFile = VfsUtil.refreshAndFindChild( myFixture.getProject().getBaseDir(), ".trace-db.txt");
+                boolean isSourceFileChanged = NotificationProvider.isSourceFileChanged(copiedFile);
+                assertTrue(isSourceFileChanged);
+                traceFile.delete(CloneTracingTests.class);
+            } catch (Exception e) {
+                fail("Failed to create files or copy content: " + e.getMessage());
+            }
+        });
+
+    }
+
     private VirtualFile addChild(VirtualFile dir, String name, boolean directory) throws IOException {
         return WriteAction.computeAndWait(() -> {
             if (directory) {

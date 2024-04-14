@@ -19,16 +19,11 @@ import java.util.regex.Pattern;
 
 public class CloneTracingTests extends BasePlatformTestCase {
     TracingHandler tracingHandler;
-    CloneManagementSettingsConfigurable cloneManagementSettingsConfigurable;
-    JComponent settings;
-
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         tracingHandler = new TracingHandler();
-        cloneManagementSettingsConfigurable = new CloneManagementSettingsConfigurable();
-        settings = cloneManagementSettingsConfigurable.createComponent();
     }
     @Override
     protected String getTestDataPath() {
@@ -44,14 +39,8 @@ public class CloneTracingTests extends BasePlatformTestCase {
     }
 
     public void testGetTraceFilePath() {
-        ApplicationManager.getApplication().runWriteAction(() -> {
-            try {
-                String traceFilePath = TracingHandler.getTraceFilePath(myFixture.getProject());
-                assertNotNull("Trace file path was not found", traceFilePath);
-            } catch (Exception e) {
-                fail("Failed to create src directory or .trace-db.txt file");
-            }
-        });
+        String traceFilePath = TracingHandler.getTraceFilePath(myFixture.getProject());
+        assertNotNull("Trace file path was not found", traceFilePath);
     }
 
     public void testGetRelativePath() {
@@ -122,12 +111,6 @@ public class CloneTracingTests extends BasePlatformTestCase {
             fail("Failed to create files or copy content: " + e.getMessage());
         }
         });
-    }
-
-    public void testChangeAssetPref() {
-        CloneManagementSettingsState hans = ServiceManager.getService(CloneManagementSettingsState.class);
-        assertTrue(true);
-        //hansAssetsManagementPage.getCloneManagementSettingsComponent().setAssetsManagementPrefKey("all");
     }
 }
 
