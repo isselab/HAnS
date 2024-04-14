@@ -448,14 +448,16 @@ public class FeatureModelPsiImplUtil {
                     deleteFeatureWithCode(feature);
                 } else {
                     System.out.println("Canceled");
+                    modal.disposeIfNeeded();
                     return null;
                 }
+//                modal.disposeIfNeeded();
             } else { // if no tangled features are present
                 System.out.println("_______no tangled features present________");
                 FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
                 FeatureReferenceUtil.setMapToDeleteWithCode((FeatureModelFeature) feature);
 //                FeatureReferenceUtil.deleteWithCode();
-
+//
 //                deleteFromFeatureModel(feature);
 
                 PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();

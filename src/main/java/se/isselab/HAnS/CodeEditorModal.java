@@ -200,7 +200,7 @@ public class CodeEditorModal extends DialogWrapper {
         String num = currentIndex+1 + "/" + this.files.size();
         String text = "<html><div style='margin: 10px 10px 0 10px; text-align:left;'>" +
                 num + ": Feature " + currentElement.getMainFeatureLPQ() + " was tangled with " +
-                currentElement.getTangledFeatureLPQ() + " using " + currentElement.getTangledAnnotationType() + " annotation " + " in file " + result + ". <br/>"
+                currentElement.getTangledFeatureLPQ() + " in file " + result + ". <br/>"
                 + "Please untangle the features to proceed with deletion. </div></html>";
         titleLabel = new JLabel(text, SwingConstants.CENTER);
 
@@ -220,27 +220,19 @@ public class CodeEditorModal extends DialogWrapper {
         if (currentIndex < this.files.size()-1) {
             currentIndex += 1;
             currentElement = this.files.get(currentIndex);
-//            Document currentElementDoc = currentElement.getDocument();
 
             System.out.println(currentIndex);
             System.out.println(currentElement);
 
             createNewTitle();
-//            createNewCodeTextArea1();
-//            createNewCodeTextArea2();
 
             setCodeTextArea();
-
-
-//            setCodeTextArea(codeTextArea1, currentElementDoc, PsiDocumentManager.getInstance(project).getPsiFile(currentElementDoc).getFileType());
-//            setCodeTextArea(codeTextArea2, currentElementDoc, PsiDocumentManager.getInstance(project).getPsiFile(currentElementDoc).getFileType());
+            if (currentIndex == this.files.size()-1)  {
+                nextButton.setEnabled(false);
+            }
         } else {
             nextButton.setEnabled(false);
         }
-
-//        String enteredText = codeTextArea.getText();
-//        System.out.println("Entered text: " + enteredText);
-//        close(DialogWrapper.OK_EXIT_CODE);// Close the dialog
     }
 
     @Nullable
@@ -464,15 +456,16 @@ class CustomEditorField extends LanguageTextField {
 //        editor.setHighlighter(EditorHighlighterFactory.getInstance().createEditorHighlighter(project, new LightVirtualFile(fileName)));
 //        editor.setHighlighter(EditorColorsManager.getInstance().getGlobalScheme().getAttributes(EditorColorsManager.DEFAULT_SCHEME_NAME).getExternalName());
         editor.setEmbeddedIntoDialogWrapper(true);
-        editor.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void documentChanged(@NotNull DocumentEvent event) {
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    CodeFoldingManager.getInstance(project).updateFoldRegions(editor);
-                }, ModalityState.NON_MODAL);
-            }
-        });
-
+        if (!editor.isDisposed()) {
+            editor.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void documentChanged(@NotNull DocumentEvent event) {
+                    ApplicationManager.getApplication().invokeLater(() -> {
+                        CodeFoldingManager.getInstance(project).updateFoldRegions(editor);
+                    }, ModalityState.NON_MODAL);
+                }
+            });
+        }
         return editor;
     }
 
