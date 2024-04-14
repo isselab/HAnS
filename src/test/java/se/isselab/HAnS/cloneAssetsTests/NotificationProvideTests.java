@@ -10,6 +10,7 @@ import com.intellij.testFramework.VfsTestUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.junit.Before;
 import org.junit.Test;
+import se.isselab.HAnS.assetsManagement.CloneManagementSettingsState;
 import se.isselab.HAnS.assetsManagement.cloneManagement.NotificationProvider;
 
 import java.io.File;
@@ -32,6 +33,8 @@ public class NotificationProvideTests extends BasePlatformTestCase {
     public void testGetTraces(){
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
+                CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
+                settingsState.prefKey = "All";
                 myFixture.configureByFile("CloneFile.java");
                 myFixture.performEditorAction(IdeActions.ACTION_COPY);
                 myFixture.performEditorAction(IdeActions.ACTION_PASTE);
@@ -61,6 +64,8 @@ public class NotificationProvideTests extends BasePlatformTestCase {
                 "    String test = \"test\"; // &line[Test]\n" +
                 "    }\n" +
                 "}";
+        CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
+        settingsState.prefKey = "All";
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 sourceFile.setBinaryContent(content.getBytes());

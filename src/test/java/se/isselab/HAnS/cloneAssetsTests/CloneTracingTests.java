@@ -3,28 +3,23 @@ package se.isselab.HAnS.cloneAssetsTests;
 import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-import com.intellij.testFramework.EdtTestUtil;
 import com.intellij.testFramework.VfsTestUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import se.isselab.HAnS.assetsManagement.CloneManagementSettingsState;
-import se.isselab.HAnS.assetsManagement.HansAssetsManagementPage;
+import se.isselab.HAnS.assetsManagement.CloneManagementSettingsConfigurable;
 import se.isselab.HAnS.assetsManagement.cloneManagement.FeaturesAnnotationsExtractor;
 import se.isselab.HAnS.assetsManagement.cloneManagement.NotificationProvider;
 import se.isselab.HAnS.assetsManagement.cloneManagement.TracingHandler;
 import javax.swing.*;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class CloneTracingTests extends BasePlatformTestCase {
     TracingHandler tracingHandler;
-    HansAssetsManagementPage hansAssetsManagementPage;
+    CloneManagementSettingsConfigurable cloneManagementSettingsConfigurable;
     JComponent settings;
 
 
@@ -32,8 +27,8 @@ public class CloneTracingTests extends BasePlatformTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         tracingHandler = new TracingHandler();
-        hansAssetsManagementPage = new HansAssetsManagementPage();
-        settings = hansAssetsManagementPage.createComponent();
+        cloneManagementSettingsConfigurable = new CloneManagementSettingsConfigurable();
+        settings = cloneManagementSettingsConfigurable.createComponent();
     }
     @Override
     protected String getTestDataPath() {
@@ -78,7 +73,8 @@ public class CloneTracingTests extends BasePlatformTestCase {
     public void testCloneFragment(){
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
-                //myFixture.configureByFile("CloneFile.java");
+                CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
+                settingsState.prefKey = "All";
                 VirtualFile sourceFile = myFixture.getTempDirFixture().createFile("CloneFile.java", "public class cloneFile {\n" +
                         "    String test = \"test\"; // &line[Test]\n" +
                         "    }\n" +
@@ -101,6 +97,8 @@ public class CloneTracingTests extends BasePlatformTestCase {
     public void testTraceParsing() {
         ApplicationManager.getApplication().runWriteAction(() -> {
         try {
+            CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
+            settingsState.prefKey = "All";
             myFixture.configureByFile("CloneFile.java");
             myFixture.performEditorAction(IdeActions.ACTION_COPY);
             myFixture.performEditorAction(IdeActions.ACTION_PASTE);

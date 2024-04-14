@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class HansAssetsManagementPage implements Configurable {
+public class CloneManagementSettingsConfigurable implements Configurable {
     private CloneManagementSettingsComponent cloneManagementSettingsComponent;
     @Override
     public @NlsContexts.ConfigurableName String getDisplayName() {

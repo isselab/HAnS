@@ -11,6 +11,8 @@ import com.intellij.testFramework.VfsTestUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import org.junit.Before;
 import org.junit.Test;
+import se.isselab.HAnS.assetsManagement.CloneManagementSettingsState;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +32,8 @@ public class CloneVfsTests extends BasePlatformTestCase {
                 "    String test = \"test\"; // &line[Test]\n" +
                 "    }\n" +
                 "}";
+        CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
+        settingsState.prefKey = "All";
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 sourceFile.setBinaryContent(content.getBytes());

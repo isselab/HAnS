@@ -12,7 +12,6 @@ public class CloneManagementSettingsComponent {
     private JCheckBox propagatingOption;
     private JCheckBox showCloneOption;
     public static PropertiesComponent properties = PropertiesComponent.getInstance();
-    public static final String ASSETS_MANAGEMENT_PREF_KEY = "AssetsPref";
     private String selected = "none";
     private boolean initialized = false;
     public static CloneManagementSettingsComponent getInstance(){
@@ -27,11 +26,11 @@ public class CloneManagementSettingsComponent {
         myMainPanel.add(cloningOption);
         myMainPanel.add(showCloneOption);
         myMainPanel.add(propagatingOption);
-        properties = PropertiesComponent.getInstance();
         return myMainPanel;
     }
 
     public boolean isModified() {
+        CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
         if(!initialized){
             init();
             initialized = true;
@@ -39,13 +38,14 @@ public class CloneManagementSettingsComponent {
         }
         selected = "none";
         setSelected();
-        String current = properties.getValue(ASSETS_MANAGEMENT_PREF_KEY, "none");
+        String current = settingsState.prefKey;
         return !selected.equals(current);
     }
 
     public void apply() {
+        CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
         setSelected();
-        properties.setValue(ASSETS_MANAGEMENT_PREF_KEY, selected);
+        settingsState.prefKey = selected;
     }
 
     public void setSelected(){
@@ -74,8 +74,8 @@ public class CloneManagementSettingsComponent {
         propagatingOption.setSelected(false);
     }
     public void init() {
-        String current = properties.getValue(ASSETS_MANAGEMENT_PREF_KEY, "none");
-        switch(current) {
+        CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
+        switch(settingsState.prefKey) {
             case "All":
                 cloningOption.setSelected(true);
                 showCloneOption.setSelected(true);
@@ -116,11 +116,5 @@ public class CloneManagementSettingsComponent {
                 showCloneOption.setSelected(false);
                 propagatingOption.setSelected(false);
         }
-    }
-    public static void setAssetsManagementPrefKey(String value) {
-        properties.setValue(ASSETS_MANAGEMENT_PREF_KEY, value);
-    }
-    public static String getAssetsManagementPrefKey() {
-        return properties.getValue(ASSETS_MANAGEMENT_PREF_KEY, "none");
     }
 }

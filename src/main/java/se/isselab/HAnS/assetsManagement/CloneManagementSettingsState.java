@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
         storages = @Storage("plugin.xml")
 )
 public class CloneManagementSettingsState implements PersistentStateComponent<CloneManagementSettingsState> {
-    String prefKey = "All";
+    public String prefKey = "none";
     @Override
     public @Nullable CloneManagementSettingsState getState() {
         return this;
@@ -21,7 +21,7 @@ public class CloneManagementSettingsState implements PersistentStateComponent<Cl
     public void loadState(@NotNull CloneManagementSettingsState state) {
 
     }
-    static CloneManagementSettingsState getInstance() {
+    public static CloneManagementSettingsState getInstance() {
         return ApplicationManager.getApplication().getService(CloneManagementSettingsState.class);
     }
 }
