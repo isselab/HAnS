@@ -436,28 +436,24 @@ public class FeatureModelPsiImplUtil {
         Project projectInstance = feature.getProject();
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
         if (document!= null) {
-
             Set<FeatureAnnotationToDelete> annotations = FeatureReferenceUtil.setElementsToDropWhenDeletingMain((FeatureModelFeature) feature);
             if (!annotations.isEmpty()) {
-                System.out.println("_______tangled features present________");
                 CodeEditorModal modal = new CodeEditorModal(feature.getProject());
                 modal.setFileList(annotations);
 
                 boolean exitCode = modal.showAndGet();
+                PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
                 if (exitCode) { // if OK was clicked try again
                     deleteFeatureWithCode(feature);
                 } else {
-                    System.out.println("Canceled");
                     modal.disposeIfNeeded();
                     return false;
                 }
-//                modal.disposeIfNeeded();
             } else { // if no tangled features are present
-                System.out.println("_______no tangled features present________");
                 FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
                 FeatureReferenceUtil.setMapToDeleteWithCode((FeatureModelFeature) feature);
-                FeatureReferenceUtil.deleteWithCode();
 
+                FeatureReferenceUtil.deleteWithCode();
                 deleteFromFeatureModel(feature);
 
                 PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();

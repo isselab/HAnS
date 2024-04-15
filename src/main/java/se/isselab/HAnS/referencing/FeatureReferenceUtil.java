@@ -287,7 +287,6 @@ public class FeatureReferenceUtil {
     }
 
     public static void deleteWithCode() {
-        System.out.println("DELETE WITH CODE --------------");
         Map<FeatureModelFeature, ArrayList<Object>> featureToAnnotations = getMapToDeleteWithCode();
         // feature -> list of either PsiReference or FeatureAnnotationToDelete
         for (Map.Entry<FeatureModelFeature, ArrayList<Object>> entry : featureToAnnotations.entrySet()) {
@@ -296,13 +295,7 @@ public class FeatureReferenceUtil {
             Map<Document, Set<Integer>> codeAnnotations = (Map<Document, Set<Integer>>) annotations.get(0);
             List<PsiReference> fileFolderAnnotation = (List<PsiReference>) annotations.get(1);
             codeAnnotations.entrySet().forEach(codeAnnotation -> {
-
-//                FeatureAnnotationToDelete annotationElement = (FeatureAnnotationToDelete) annotation;
-//                System.out.println(annotationElement.getStartLine());
-//                System.out.println(annotationElement.getEndLine());
-
                 Document document = codeAnnotation.getKey();
-                System.out.println(document);
                 Set<Integer> linesToExclude = codeAnnotation.getValue();
                 String newDocumentText = "";
                 String documentText = document.getText();
@@ -314,7 +307,6 @@ public class FeatureReferenceUtil {
                     newDocumentText = newDocumentText.concat(line);
                 }
                 String newText = newDocumentText;
-                System.out.println(newDocumentText);
                 Runnable r = () -> {
                     document.setReadOnly(false);
                     document.setText(newText);
@@ -338,12 +330,6 @@ public class FeatureReferenceUtil {
             FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, childFeature);
             Map<Document, Set<Integer>> codeAnnotations = getCodeAnnotations(fileToAnnotation, childFeature); // code Annotations
 
-            System.out.println("codeAnnotations----]]]]]]]]]]]]]");
-            codeAnnotations.entrySet().forEach(codeAnnotation -> {
-                System.out.println(codeAnnotation.getKey());
-                System.out.println(Arrays.toString(codeAnnotation.getValue().toArray()));
-            });
-
             List<PsiReference> fileAndFolderAnnotations = new ArrayList<>();
             for (PsiReference reference : ReferencesSearch.search(child)) {
                 InjectedLanguageManager injManager = InjectedLanguageManager.getInstance(projectInstance);
@@ -353,9 +339,7 @@ public class FeatureReferenceUtil {
                     fileAndFolderAnnotations.add(reference);
                 }
             }
-            System.out.println(childFeature.getLPQText());
 
-            System.out.println(Arrays.toString(fileAndFolderAnnotations.toArray()));
             mapToDeleteWithCode.put(childFeature, new ArrayList<>());
             mapToDeleteWithCode.get(childFeature).add(codeAnnotations);
             mapToDeleteWithCode.get(childFeature).add(fileAndFolderAnnotations);
@@ -382,14 +366,6 @@ public class FeatureReferenceUtil {
                             entry.add(i);
                         }
                     }
-//                    FeatureAnnotationToDelete elementToDrop = new FeatureAnnotationToDelete();
-
-//                    VirtualFile file = LocalFileSystem.getInstance().findFileByPath(fm.getMappedPath());
-//                    elementToDrop.setDocument(FileDocumentManager.getInstance().getDocument(file));
-
-//                    elementToDrop.setStartLine(block.getStartLine());
-//                    elementToDrop.setEndLine(block.getEndLine());
-//                    mapToDrop.add(elementToDrop);
                 }
             });
         }
@@ -415,10 +391,6 @@ public class FeatureReferenceUtil {
             result.addAll(places);
         }
 
-//        if (result.isEmpty()) {
-//            System.out.println(getMapToDeleteWithCode().toString());
-////            deleteWithCode();
-//        }
         System.out.println("=============affectedPlaces");
         for (FeatureAnnotationToDelete entry : result) {
             System.out.println(entry.getMainFeatureLPQ() + " " + entry.getDocument() + " " + entry.getStartLine() + " " +entry.getEndLine() + " " + entry.getTangledFeatureLPQ() + " " + entry.getTangledAnnotationType()+ " " + entry.getMainAnnotationType() );
@@ -432,14 +404,6 @@ public class FeatureReferenceUtil {
 
         FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, feature); // Feature -> FeatureLocations, each FeatureLocation -> FeatureBlocks
         ArrayList<FeatureAnnotationToDelete> baseFeatureLocations = getBaseFeatureLocations(fileToAnnotation, feature); // parentFeature, mapped File, start, end
-        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-        baseFeatureLocations.stream().forEach(location -> {
-            System.out.println(location.getMainFeatureLPQ());
-            System.out.println(location.getMainAnnotationType());
-            System.out.println(location.getFilePath());
-            System.out.println(location.getStartLine());
-            System.out.println(location.getEndLine());
-        });
 
         HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = FeatureTangling.getTanglingMap(projectInstance); // Feature -> Features (tangled)
         HashSet<FeatureModelFeature> tangledFeatures = getTangledFeatures(tanglingMap, feature); // tangled features of specific Feature N
@@ -447,12 +411,7 @@ public class FeatureReferenceUtil {
         ArrayList<FeatureAnnotationToDelete> tangledLocations = getTangledLocations(projectInstance, feature, tangledFeatures, fileToAnnotation, featureTreeLPQs);
 
         Set<FeatureAnnotationToDelete> affectedPlaces = processLocations(baseFeatureLocations, tangledLocations);
-        System.out.println("=============affectedPlaces");
-        for (FeatureAnnotationToDelete entry : affectedPlaces) {
-            System.out.println(entry.getMainFeatureLPQ() + " " + entry.getDocument() + " " + entry.getStartLine() + " " +entry.getEndLine() + " " + entry.getTangledFeatureLPQ() + " " + entry.getMainAnnotationType()+ " " + entry.getTangledAnnotationType() );
-        }
         return affectedPlaces;
-
     }
 
     private static ArrayList<FeatureAnnotationToDelete> getTangledLocations(Project projectInstance, FeatureModelFeature feature, HashSet<FeatureModelFeature> tangledFeatures, FeatureFileMapping fileToAnnotation, List<String> featureTreeLPQs) {
@@ -474,22 +433,9 @@ public class FeatureReferenceUtil {
                                 element.setStartLine(fl.getStartLine()); // 2: starting line of tangling
                                 element.setEndLine(fl.getEndLine()); // 3: end line of tangling
                                 element.setMainFeatureLPQ(feature.getLPQText()); // 4: feature it's tangled with
-                                System.out.println(location.getAnnotationType());
-                                System.out.println(baseLocation.getAnnotationType());
-//                                if (baseLocation.getAnnotationType().equals(FeatureFileMapping.AnnotationType.file) ||
-//                                    location.getAnnotationType().equals(FeatureFileMapping.AnnotationType.file)) {
-//                                    element.setAnnotationType(FeatureFileMapping.AnnotationType.file);
-//                                } else if (baseLocation.getAnnotationType().equals(FeatureFileMapping.AnnotationType.folder) ||
-//                                        location.getAnnotationType().equals(FeatureFileMapping.AnnotationType.folder)) {
-//                                    element.setAnnotationType(FeatureFileMapping.AnnotationType.folder);
-//                                } else {
-//                                    element.setAnnotationType(location.getAnnotationType()); // 5: annotation type of tangled annotation
-//                                }
                                 element.setTangledAnnotationType(location.getAnnotationType()); // 5: annotation type of tangled annotation
-//                                element.setMainAnnotationType(baseLocation.getAnnotationType()); // 5: annotation type of tangled annotation
 
                                 storeInterlockedLocations.add(element);
-                                System.out.println(element.getTangledFeatureLPQ() + " " + element.getFilePath() + " " + element.getStartLine() + " " + element.getEndLine() + " " + element.getTangledAnnotationType()+ " " + element.getMainFeatureLPQ());
                             }
                         }
 
@@ -535,22 +481,6 @@ public class FeatureReferenceUtil {
     }
 
     private static Set<FeatureAnnotationToDelete> processLocations(ArrayList<FeatureAnnotationToDelete> baseLocations, ArrayList<FeatureAnnotationToDelete> tangledLocations) {
-//        System.out.println("=============");
-//        for (ArrayList<Object> entry : baseLocations) {
-//            System.out.println(entry.get(0) + " " + entry.get(1)+ " " +entry.get(2)+ " " + entry.get(3));
-//        }
-//        System.out.println("=============");
-//        for (ArrayList<Object> entry : tangledLocations) {
-//            System.out.println(entry.get(0) + " " + entry.get(1)+ " " +entry.get(2)+ " " + entry.get(3));
-//        }
-        System.out.println("=============");
-        for (FeatureAnnotationToDelete entry : baseLocations) {
-            System.out.println(entry.getMainFeatureLPQ() + " " + entry.getFilePath() + " " + entry.getStartLine() + " " +entry.getEndLine() );
-        }
-        System.out.println("=============");
-        for (FeatureAnnotationToDelete entry : tangledLocations) {
-            System.out.println(entry.getMainFeatureLPQ() + " " + entry.getFilePath() + " " + entry.getStartLine() + " " +entry.getEndLine() );
-        }
         Set<FeatureAnnotationToDelete> result = new HashSet<>();
         baseLocations.forEach(baseLocation -> {
 
@@ -559,7 +489,6 @@ public class FeatureReferenceUtil {
                     FeatureAnnotationToDelete newElement = new FeatureAnnotationToDelete();
                     newElement.setTangledFeatureLPQ(tangledLocation.getTangledFeatureLPQ()); // 0: add name of tangled feature
 
-//                    newElement.add(tangledLocation.get(1)); // add name of common file
                     VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByPath(tangledLocation.getFilePath()); // add file
                     newElement.setDocument(FileDocumentManager.getInstance().getDocument(virtualFile)); // 1: document of annotation
 
@@ -626,166 +555,6 @@ public class FeatureReferenceUtil {
         return null;
     }
 
-//    public static Set<ArrayList<Object>>  setElementsToDropWhenDeleting2(FeatureModelFeature feature) {
-//
-//        Project projectInstance = feature.getProject();
-//
-//        FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, feature);
-//        ArrayList<ArrayList<Object>> baseFeaturelocations = new ArrayList();
-//
-//        for (FeatureLocation fm : fileToAnnotation.getFeatureLocations()) {
-//            System.out.println("----------");
-//            System.out.println(fm.getAnnotationType());
-//            System.out.println(fm.getMappedFeature().getLPQText());
-//            System.out.println(fm.getMappedPath());
-//            System.out.println();
-//            for (FeatureLocationBlock block : fm.getFeatureLocations()) {
-//                ArrayList<Object> location = new ArrayList();
-//                location.add(feature.getLPQText());
-//                location.add(fm.getMappedPath());
-//
-//                location.add(block.getStartLine());
-//                location.add(block.getEndLine());
-//
-//                baseFeaturelocations.add(location);
-//                System.out.println("    " + block.getStartLine());
-//                System.out.println("    " + block.getEndLine());
-//            }
-//        }
-//        HashSet<FeatureModelFeature> tangledFeatures= new HashSet<>();
-//        HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = FeatureTangling.getTanglingMap(projectInstance);
-//        for (FeatureModelFeature key : tanglingMap.keySet()) {
-//            System.out.println("-----feature");
-//            System.out.println(key.getLPQText());
-//            System.out.println("    tangled features");
-//            for (FeatureModelFeature value : tanglingMap.get(key)) {
-//                System.out.println(value.getLPQText());
-//            }
-//
-//            if(key.getLPQText().equals(feature.getLPQText())) {
-//                tangledFeatures = tanglingMap.get(key);
-//            }
-//        }
-//
-//        ArrayList<ArrayList<Object>> storeInterlockedLocations = new ArrayList<>();
-//
-//        for (FeatureModelFeature tangled : tangledFeatures) { // for each feature tangled with A
-//            ArrayList<FeatureLocation> tangledLocations = FeatureLocationManager.getFeatureFileMapping(projectInstance, tangled).getFeatureLocations();
-//            for (FeatureLocation location : tangledLocations) {
-//                fileToAnnotation.getFeatureLocations().forEach(baseLocation -> {
-//                    if (baseLocation.getMappedPath().equals(location.getMappedPath())) {
-//
-//                        for (FeatureLocationBlock fl : location.getFeatureLocations()) {
-//                            ArrayList element = new ArrayList() {};
-//                            element.add(location.getMappedFeature().getLPQText());
-//                            element.add(location.getMappedPath());
-//
-//                            element.add(fl.getStartLine());
-//                            element.add(fl.getEndLine());
-//                            storeInterlockedLocations.add(element);
-//                            System.out.println(location.getMappedFeature().getLPQText() + " " + location.getMappedPath() + " " + element.get(2) + " " + element.get(3));
-//                        }
-//
-//                    };
-//                });
-//            }
-//        }
-//
-//        Set<ArrayList<Object>> affectedPlaces = processLocations(baseFeaturelocations, storeInterlockedLocations);
-//        System.out.println("=============affectedPlaces");
-//        for (ArrayList<Object> entry : affectedPlaces) {
-////            VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByPath((String) entry.get(1));
-////            System.out.println(virtualFile);
-////            if (virtualFile != null) {
-////                System.out.println();
-////                entry.set(1, FileDocumentManager.getInstance().getDocument(virtualFile));
-////            }
-//            System.out.println(entry.get(0) + " " + entry.get(1)+ " " +entry.get(2)+ " " + entry.get(3));
-//        }
-//        return affectedPlaces;
-
-//        Document document =
-//                PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
-//
-//        EditorTextField editorTextField = new EditorTextField(document, projectInstance, feature.getContainingFile().getFileType());
-//
-//        CodeEditorModal cem = new CodeEditorModal(projectInstance);
-//        cem.show();
-
-//        JDialog contentPanel = new JDialog();
-////        contentPanel.setLocationRelativeTo(getParentWindow);
-//        JComponent component = editorTextField.getComponent();
-//        contentPanel.add(component);
-//        component.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-//        component.setVisible(true);
-//        contentPanel.setVisible(true);
-//        scrollPaneCode.setViewportView(component);
-
-// =========== =============== =============== ===============
-//        AtomicReference<String> errorText = new AtomicReference<>("Deleting feature might affect other tangled features: ");
-//        if (!tangledFeatures.isEmpty()) {
-//            tangledFeatures.forEach(f -> errorText.set(errorText.get() + f.getLPQText() + ","));
-//            errorText.set(errorText.get().substring(0,errorText.get().length()-1));
-//            return;
-//        }
-// =========== =============== =============== ===============
-
-
-//        Map<String, List<Object>> fileToAnnotation = getListOfFileToAnnotationsOfFeature(projectInstance, feature);
-//        for (Map.Entry<String, List<Object>> test : fileToAnnotation.entrySet()) {
-//            System.out.println(test.getKey());
-//            for (Object test2 : test.getValue()) {
-//                System.out.println(test2.toString());
-//            }
-//        }
-
-//    }
-
-    // returns
-    // filename (String)
-    // -> list of line numbers of annotations of a given feature (List<Object>)
-    private static Map<String, List<Object>> getListOfFileToAnnotationsOfFeature(Project projectInstance, FeatureModelFeature feature) {
-        Map<String, List<Object>> fileToAnnotation = new HashMap<>();
-
-        for (PsiReference reference : ReferencesSearch.search(feature)) {
-
-            InjectedLanguageManager injManager = InjectedLanguageManager.getInstance(projectInstance);
-
-            PsiLanguageInjectionHost host = injManager.getInjectionHost(reference.getElement());
-            if (host != null) {
-
-                Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(host.getContainingFile());
-                String filePath = host.getContainingFile().getVirtualFile().getPath();
-
-                AtomicReference<Map.Entry<String, List<Object>>> entry = new AtomicReference<>();
-                fileToAnnotation.entrySet().stream().forEach(entryVal ->
-                {
-                    if(entryVal.getKey().equals(filePath)){
-                        entry.set(entryVal);
-                    }
-                });
-                if (entry.get() == null) {
-                    entry.set(Map.entry(filePath, new ArrayList<>()));
-                    fileToAnnotation.put(entry.get().getKey(), entry.get().getValue());
-                }
-
-                List<Object> commentAndLine = new ArrayList<>();
-                String comment = host.getText();
-                int lineNum = document.getLineNumber(host.getTextOffset()) ;
-                commentAndLine.add(comment);
-                commentAndLine.add(lineNum);
-                entry.get().getValue().add(commentAndLine);
-
-                System.out.println(host.getText());
-                System.out.println(host.getTextOffset());
-                System.out.println(document.getLineNumber(host.getTextOffset()));
-            }
-
-        }
-        return fileToAnnotation;
-    }
-
-
     public static void setElementsToDelete(FeatureModelFeature element) {
         Map<FeatureModelFeature, List<PsiReference>> toDelete = new HashMap<>();
 
@@ -823,11 +592,6 @@ public class FeatureReferenceUtil {
             }
             toRename.put(e, referencedElements);
         }
-        System.out.println("-----map to rename------");
-        toRename.forEach((key, value) -> {
-            System.out.println(key.getLPQText());
-            System.out.println(Arrays.toString(value.toArray()));
-        });
         mapToRename = toRename;
     }
 

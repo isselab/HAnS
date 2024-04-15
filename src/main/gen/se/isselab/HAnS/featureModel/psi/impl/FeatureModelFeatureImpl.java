@@ -136,13 +136,6 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   @Override
   public boolean deleteFeatureWithCode() {
     boolean result = FeatureModelPsiImplUtil.deleteFeatureWithCode(this);
-//    AtomicBoolean result = new AtomicBoolean();
-//    Runnable r = () -> {
-//      ReadAction.run(() -> {
-//        result.set(FeatureModelPsiImplUtil.deleteFeatureWithCode(this));});
-//    };
-//    WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
-//    return result.get();
     return result;
   }
 
