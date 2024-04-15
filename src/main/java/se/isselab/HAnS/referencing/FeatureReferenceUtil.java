@@ -110,7 +110,7 @@ public class FeatureReferenceUtil {
         });
         ASTNode featureNode = e[0].getNode().findChildByType(FeatureModelTypes.FEATURENAME);
         if (featureNode != null) {
-            se.isselab.HAnS.featureModel.psi.FeatureModelFeature tmpFeature = FeatureModelElementFactory.createFeature(e[0].getProject(), newName);
+            FeatureModelFeature tmpFeature = FeatureModelElementFactory.createFeature(e[0].getProject(), newName);
             ASTNode newKeyNode = tmpFeature.getFirstChild().getNode();
             e[0].getNode().replaceChild(featureNode, newKeyNode);
         }
@@ -209,9 +209,36 @@ public class FeatureReferenceUtil {
 
                 PsiLanguageInjectionHost host = injManager.getInjectionHost(reference.getElement());
                 if (host != null) { // if comment annotation
-                    host.delete();
-                }
-                else { // if feature to folder/file annotation
+                    AtomicReference<Document> doc = new AtomicReference<>();
+                    if (reference.getElement().getParent().getChildren().length > 1) { // if annotation has multiple features e.g. begin[FeatureA, FeatureB]
+                        Runnable r = () -> {
+                            PsiElement parent = reference.getElement().getParent();
+                            String parentPsi = parent.getText(); // e.g. [A, B ,  C]
+                            String[] array = parentPsi.replaceAll("\\[|\\]|\\s", "").split(","); // transform to list of features {A, B, C}
+
+                            ArrayList<String> featuresArr = new ArrayList<>(Arrays.asList(array)); // transform to arraylist
+                            featuresArr.remove(reference.getElement().getText()); // remove our element from arraylist
+                            String[] resultFeatureArr = featuresArr.toArray(new String[0]); // back to List
+
+                            PsiFile file = reference.getElement().getContainingFile();
+
+                            doc.set(FileDocumentManager.getInstance().getDocument(file.getVirtualFile()));
+                            int startLine = parent.getTextOffset(); // get start/end offsets of parent brackets [A, B ,  C]
+                            int endLine = parent.getTextOffset() + parent.getTextLength();
+
+                            doc.get().replaceString(startLine, endLine, Arrays.toString(resultFeatureArr)); // replace parent with new annotated feature list without our feature
+                        };
+                        WriteCommandAction.runWriteCommandAction(entry.getKey().getProject(), r);
+                        PsiDocumentManager.getInstance(entry.getKey().getProject()).commitDocument(doc.get());
+
+                    } else if (reference.getElement().getParent().getChildren().length == 1) {
+                        Runnable r = () -> {
+                            host.delete(); // otherwise delete whole comment (annotation)
+                        };
+                        WriteCommandAction.runWriteCommandAction(entry.getKey().getProject(), r);
+                    }
+
+                } else { // if feature to folder/file annotation
                     deleteFileFolderAnnotation(entry.getKey().getProject(), reference);
                 }
             }
@@ -234,7 +261,7 @@ public class FeatureReferenceUtil {
 //        reference.getElement().delete();
 
         if (reference.getElement().getNextSibling() != null &&
-                reference.getElement().getNextSibling().getText().equals(" ")) {
+            reference.getElement().getNextSibling().getText().equals(" ")) {
             Runnable r = () -> {
                 reference.getElement().getNextSibling().delete(); // remove space after element
             };
