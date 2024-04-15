@@ -421,7 +421,7 @@ public class FeatureModelPsiImplUtil {
             FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
             FeatureReferenceUtil.delete();
 
-//            deleteFromFeatureModel(feature);
+            deleteFromFeatureModel(feature);
 
             PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
 
@@ -432,7 +432,7 @@ public class FeatureModelPsiImplUtil {
         return null;
     }
 
-    public static FeatureModelFeature deleteFeatureWithCode(@NotNull PsiElement feature) {
+    public static boolean deleteFeatureWithCode(@NotNull PsiElement feature) {
         Project projectInstance = feature.getProject();
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
         if (document!= null) {
@@ -449,25 +449,25 @@ public class FeatureModelPsiImplUtil {
                 } else {
                     System.out.println("Canceled");
                     modal.disposeIfNeeded();
-                    return null;
+                    return false;
                 }
 //                modal.disposeIfNeeded();
             } else { // if no tangled features are present
                 System.out.println("_______no tangled features present________");
                 FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
                 FeatureReferenceUtil.setMapToDeleteWithCode((FeatureModelFeature) feature);
-//                FeatureReferenceUtil.deleteWithCode();
-//
-//                deleteFromFeatureModel(feature);
+                FeatureReferenceUtil.deleteWithCode();
+
+                deleteFromFeatureModel(feature);
 
                 PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
 
                 FeatureReferenceUtil.rename();
                 FeatureReferenceUtil.reset();
-                return (FeatureModelFeature) feature;
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     public static int deleteFeature(@NotNull PsiElement feature){

@@ -4,6 +4,7 @@ import com.intellij.codeInsight.folding.CodeFoldingManager;
 import com.intellij.lang.Language;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.WriteActionAware;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.ScrollType;
@@ -47,6 +48,7 @@ public class CodeEditorModal extends DialogWrapper {
     GridBagConstraints constraints;
     JButton nextButton;
     JLabel titleLabel;
+
 
     private FeatureAnnotationToDelete currentElement;
 
@@ -202,7 +204,7 @@ public class CodeEditorModal extends DialogWrapper {
                 num + ": Feature " + currentElement.getMainFeatureLPQ() + " was tangled with " +
                 currentElement.getTangledFeatureLPQ() + " in file " + result + ". <br/>"
                 + "Please untangle the features to proceed with deletion. </div></html>";
-        titleLabel = new JLabel(text, SwingConstants.CENTER);
+        titleLabel = new JLabel(text);
 
         // Set the font and size of the label
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -413,12 +415,14 @@ public class CodeEditorModal extends DialogWrapper {
 
         return result;
     }
+
 }
 
-class CustomEditorField extends LanguageTextField {
+class CustomEditorField extends LanguageTextField  {
     EditorEx editor;
     Document document;
     Project project;
+
 
     public CustomEditorField(Language language, Project project) {
 
@@ -428,6 +432,7 @@ class CustomEditorField extends LanguageTextField {
         this.setOneLineMode(false);
         this.setEnabled(true);
         this.setPreferredSize(new Dimension(600, 298));
+        this.setViewer(false);
 
         createEditor();
     }
@@ -457,16 +462,16 @@ class CustomEditorField extends LanguageTextField {
 //        editor.setHighlighter(EditorColorsManager.getInstance().getGlobalScheme().getAttributes(EditorColorsManager.DEFAULT_SCHEME_NAME).getExternalName());
         editor.setEmbeddedIntoDialogWrapper(true);
 
-        editor.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void documentChanged(@NotNull DocumentEvent event) {
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    if (!editor.isDisposed()) {
-                        CodeFoldingManager.getInstance(project).updateFoldRegions(editor);
-                    }
-                }, ModalityState.NON_MODAL);
-            }
-        });
+//        editor.getDocument().addDocumentListener(new DocumentListener() {
+//            @Override
+//            public void documentChanged(@NotNull DocumentEvent event) {
+//                ApplicationManager.getApplication().invokeLater(() -> {
+//                    if (!editor.isDisposed()) {
+//                        CodeFoldingManager.getInstance(project).updateFoldRegions(editor);
+//                    }
+//                }, ModalityState.NON_MODAL);
+//            }
+//        });
 
         return editor;
     }

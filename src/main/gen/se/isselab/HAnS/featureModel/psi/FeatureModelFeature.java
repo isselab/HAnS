@@ -31,6 +31,7 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
   void moveFeatureWithChildren(FeatureModelFeature childFeature);
 
   FeatureModelFeature deleteFeatureWithAnnotations();
+  boolean deleteFeatureWithCode();
 
   boolean renameInFeatureModel(String newName);
 
