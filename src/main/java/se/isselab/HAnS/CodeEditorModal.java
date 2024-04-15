@@ -1,99 +1,69 @@
 package se.isselab.HAnS;
 
-import com.intellij.codeInsight.folding.CodeFoldingManager;
 import com.intellij.lang.Language;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.application.WriteActionAware;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.EditorSettings;
 import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
-import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.ui.LanguageTextField;
-import org.bouncycastle.jcajce.provider.symmetric.ARIA;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import se.isselab.HAnS.codeAnnotation.CodeAnnotationLanguage;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 
-import javax.print.Doc;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
 public class CodeEditorModal extends DialogWrapper {
     Project project;
-    public CustomEditorField codeTextArea1;
-    public CustomEditorField codeTextArea2;
+    // 1st file editor with header
     JLabel header1;
+    public CustomEditorField codeTextArea1;
+    // 2nd file editor with header
     JLabel header2;
+    public CustomEditorField codeTextArea2;
+    // top header
+    JLabel titleLabel;
+    // files of all tangled feature pairs
     private ArrayList<FeatureAnnotationToDelete> files;
+    // current tangled pair of features
     private int currentIndex;
+    private FeatureAnnotationToDelete currentElement;
+
     JPanel panel;
     GridBagConstraints constraints;
     JButton nextButton;
-    JLabel titleLabel;
-
-
-    private FeatureAnnotationToDelete currentElement;
 
     public CodeEditorModal(Project project) {
         super(project);
-        System.out.println("CodeEditorModal() ====== ");
-        System.out.println(project);
         this.project = project;
         setTitle("Resolve tangling conflicts");
         setSize(700, 700);
         init();
     }
 
-
-    private void saveCode() {
-        String code = codeTextArea1.getText();
-        // Add logic to save the code
-        dispose();
-    }
-
     @Override
     protected @Nullable JComponent createCenterPanel() {
-        System.out.println("createCenterPanel() ====== ");
-//        panel = new JPanel(new BorderLayout());
-//        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        // create general grid
         panel = new JPanel(new GridBagLayout());
-        System.out.println(panel.getWidth());
-        System.out.println(panel.getHeight());
-
         constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridwidth = 1;
-
         constraints.fill = GridBagConstraints.NONE;
-//        constraints.insets = new Insets(5, 5, 5, 5);
 
-//        Language javaLanguage = Language.findLanguageByID("JAVA");
-//        codeTextArea = new CustomEditorField(javaLanguage, this.project);
-
-//        codeTextArea.setOneLineMode(false);
-//        codeTextArea.setEnabled(true);
-//        codeTextArea.setPreferredSize(new Dimension(600, 600));
-
+        // create next button and add to panel
         nextButton = new JButton("Next");
-
         nextButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -101,11 +71,6 @@ public class CodeEditorModal extends DialogWrapper {
                 onNextButtonClicked();
             }
         });
-//        createNewCodeTextArea1();
-//        createNewCodeTextArea2();
-
-//        panel.add(codeTextArea, BorderLayout.CENTER);
-//        panel.add(titleLabel, BorderLayout.NORTH);
         constraints.gridy = 9;
         constraints.gridheight = 1;
         constraints.gridx = 0;
@@ -114,8 +79,8 @@ public class CodeEditorModal extends DialogWrapper {
         return panel;
     }
 
+    // create custom editor text area for 1st file
     private void createNewCodeTextArea1(boolean one) {
-
         if (codeTextArea1 != null) {
             panel.remove(codeTextArea1);
         }
@@ -136,25 +101,6 @@ public class CodeEditorModal extends DialogWrapper {
         panel.add(codeTextArea1, constraints);
     }
 
-
-    private void createNewCodeTextArea2() {
-        if (codeTextArea2 != null) {
-            panel.remove(codeTextArea2);
-        }
-        Language javaLanguage = Language.findLanguageByID("JAVA");
-        codeTextArea2 = new CustomEditorField(javaLanguage, this.project);
-
-        constraints.gridy = 6;
-        constraints.gridheight = 3;
-        constraints.gridx = 0;
-        constraints.gridwidth = 1;
-        constraints.weightx = 1.0;
-        constraints.weighty = 1.0;
-
-        constraints.fill = GridBagConstraints.BOTH;
-        panel.add(codeTextArea2, constraints);
-    }
-
     private void createHeader1(String featureLpq, String path) {
         if (header1!= null) {
             panel.remove(header1);
@@ -169,6 +115,24 @@ public class CodeEditorModal extends DialogWrapper {
         header1 = new JLabel("<html><div style='margin: 10px; text-align:left;'>Feature " + featureLpq + " in " + path +"</div></html>");
         header1.setFont(new Font("Arial", Font.BOLD, 14));
         panel.add(header1, constraints);
+    }
+
+    // create custom editor text area for 2nd file
+    private void createNewCodeTextArea2() {
+        if (codeTextArea2 != null) {
+            panel.remove(codeTextArea2);
+        }
+        Language javaLanguage = Language.findLanguageByID("JAVA");
+        codeTextArea2 = new CustomEditorField(javaLanguage, this.project);
+
+        constraints.gridy = 6;
+        constraints.gridheight = 3;
+        constraints.gridx = 0;
+        constraints.gridwidth = 1;
+        constraints.weightx = 1.0;
+        constraints.weighty = 1.0;
+        constraints.fill = GridBagConstraints.BOTH;
+        panel.add(codeTextArea2, constraints);
     }
 
     private void createHeader2(String featureLpq, String path) {
@@ -187,7 +151,7 @@ public class CodeEditorModal extends DialogWrapper {
         panel.add(header2, constraints);
     }
 
-
+    // add label at the top of the modal
     private void createNewTitle() {
         if (titleLabel != null) {
             panel.remove(titleLabel);
@@ -218,18 +182,18 @@ public class CodeEditorModal extends DialogWrapper {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         panel.add(titleLabel, constraints);
     }
+
+    // every time next button is clicked,
+    // go to next element on the file list,
+    // create new file editors and fill them with new data
     private void onNextButtonClicked() {
         if (currentIndex < this.files.size()-1) {
             currentIndex += 1;
             currentElement = this.files.get(currentIndex);
 
-            System.out.println(currentIndex);
-            System.out.println(currentElement);
-
             createNewTitle();
-
             setCodeTextArea();
-            if (currentIndex == this.files.size()-1)  {
+            if (currentIndex == this.files.size()-1)  { // if last disable next button
                 nextButton.setEnabled(false);
             }
         } else {
@@ -246,11 +210,11 @@ public class CodeEditorModal extends DialogWrapper {
     @Override
     protected void init() {
         super.init();
-        System.out.println("init ===== ");
         // Set the location of the dialog to be centered on the screen
         centerRelativeToParent();
     }
 
+    // update text in code text area and highlight our feature
     private void updateCodeTextArea(CustomEditorField codeTextArea, Document document, int start, int end) {
         codeTextArea.setText(document.getText());
         codeTextArea.setDocument(document);
@@ -261,8 +225,7 @@ public class CodeEditorModal extends DialogWrapper {
     }
 
     public void setCodeTextArea() {
-        System.out.println("setCodeTextArea ====");
-
+        // creates 1 window if both annotation types are code and file is the same
         if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) &&
             currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.code)) {
             createNewCodeTextArea1(true);
@@ -274,7 +237,7 @@ public class CodeEditorModal extends DialogWrapper {
             createHeader1(currentElement.getMainFeatureLPQ(), FileDocumentManager.getInstance().getFile(doc).getPath());
             if (header2 != null) {panel.remove(header2);};
             updateCodeTextArea(codeTextArea1, doc, doc.getLineStartOffset(currentElement.getStartLine()), doc.getLineEndOffset(currentElement.getEndLine()));
-
+        // otherwise creates 2 windows
         } else {
             createNewCodeTextArea1(false);
             createNewCodeTextArea2();
@@ -288,7 +251,7 @@ public class CodeEditorModal extends DialogWrapper {
 
                 createHeader1(currentElement.getMainFeatureLPQ(), FileDocumentManager.getInstance().getFile(currentElement.getDocument()).getPath());
 
-                ArrayList<Object> tangled = getFileFolder(currentElement.getTangledFeatureLPQ());
+                ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getTangledFeatureLPQ());
                 Document doc = (Document) tangled.get(0);
                 updateCodeTextArea(codeTextArea2, doc, (int) tangled.get(1), (int) tangled.get(2));
                 createHeader2(currentElement.getTangledFeatureLPQ(), FileDocumentManager.getInstance().getFile(doc).getPath());
@@ -296,7 +259,7 @@ public class CodeEditorModal extends DialogWrapper {
             } else if (currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.file) &&
                     currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) ) {
 
-                ArrayList<Object> tangled = getFileFolder(currentElement.getMainFeatureLPQ());
+                ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getMainFeatureLPQ());
                 Document doc = (Document) tangled.get(0);
                 updateCodeTextArea(codeTextArea1, doc, (int) tangled.get(1), (int) tangled.get(2));
 
@@ -310,12 +273,12 @@ public class CodeEditorModal extends DialogWrapper {
 
             } else if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.file) &&
                     currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.file)) {
-                ArrayList<Object> tangled = getFileFolder(currentElement.getMainFeatureLPQ());
+                ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getMainFeatureLPQ());
                 Document doc = (Document) tangled.get(0);
                 updateCodeTextArea(codeTextArea1, doc, (int) tangled.get(1), (int) tangled.get(2));
                 createHeader1(currentElement.getMainFeatureLPQ(), FileDocumentManager.getInstance().getFile(doc).getPath());
 
-                ArrayList<Object> tangled2 = getFileFolder(currentElement.getTangledFeatureLPQ());
+                ArrayList<Object> tangled2 = getFeatureToFileOrFolderDocument(currentElement.getTangledFeatureLPQ());
                 Document doc2 = (Document) tangled2.get(0);
                 updateCodeTextArea(codeTextArea2, doc2, (int) tangled2.get(1), (int) tangled2.get(2));
                 createHeader2(currentElement.getTangledFeatureLPQ(), FileDocumentManager.getInstance().getFile(doc2).getPath());
@@ -328,23 +291,20 @@ public class CodeEditorModal extends DialogWrapper {
     public void setFileList(Set<FeatureAnnotationToDelete> filesSet) {
         ArrayList<FeatureAnnotationToDelete> files = new ArrayList<>(filesSet);
 
-        System.out.println(Arrays.toString(files.toArray()));
         this.files = files;
         this.currentIndex = 0;
         currentElement = this.files.get(currentIndex);
 
-        System.out.println(currentIndex);
-        System.out.println(currentElement);
-//        Document currentElementDoc = currentElement.getDocument();
-
         createNewTitle();
-
         setCodeTextArea();
-//        setCodeTextArea(codeTextArea1, currentElementDoc, PsiDocumentManager.getInstance(project).getPsiFile(currentElementDoc).getFileType());
-//        setCodeTextArea(codeTextArea2, currentElementDoc, PsiDocumentManager.getInstance(project).getPsiFile(currentElementDoc).getFileType());
     }
 
-    private ArrayList<Object> getFileFolder(String featureLpq) {
+    // find feature-to-folder or feature-to-file file if our feature has annotation type FILE
+    // returns ArrayList
+    //      0: found document,
+    //      1: start offset of our feature to be highlighted,
+    //      2: end offset
+    private ArrayList<Object> getFeatureToFileOrFolderDocument(String featureLpq) {
         VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(currentElement.getDocument());
         VirtualFile parentFolder = virtualFile.getParent();
         ArrayList<Object> result = new ArrayList<>();
@@ -408,16 +368,13 @@ public class CodeEditorModal extends DialogWrapper {
                 }
             }
         }
-        System.out.println(result.get(0));
-        System.out.println(result.get(1));
-        System.out.println(result.get(2));
-        System.out.println(" size " + result.size());
 
         return result;
     }
-
 }
 
+// custom class for creating text area with contents of the file
+// allows to edit original file
 class CustomEditorField extends LanguageTextField  {
     EditorEx editor;
     Document document;
@@ -427,7 +384,6 @@ class CustomEditorField extends LanguageTextField  {
     public CustomEditorField(Language language, Project project) {
 
         super(language, project, "");
-        System.out.println("CustomEditorField() ====");
         this.project = project;
         this.setOneLineMode(false);
         this.setEnabled(true);
@@ -439,7 +395,6 @@ class CustomEditorField extends LanguageTextField  {
 
     @Override
     protected @NotNull EditorEx createEditor() {
-        System.out.println("createEditor() ===== ");
         editor = super.createEditor();
         EditorSettings settings = editor.getSettings();
         settings.setLineNumbersShown(true);
@@ -452,36 +407,17 @@ class CustomEditorField extends LanguageTextField  {
         editor.setHorizontalScrollbarVisible(true);
         editor.setCaretEnabled(true);
         editor.setCaretVisible(true);
-
-
-        EditorColorsScheme colorsScheme = EditorColorsManager.getInstance().getGlobalScheme();
-
-        editor.setColorsScheme(colorsScheme);
-
-//        editor.setHighlighter(EditorHighlighterFactory.getInstance().createEditorHighlighter(project, new LightVirtualFile(fileName)));
-//        editor.setHighlighter(EditorColorsManager.getInstance().getGlobalScheme().getAttributes(EditorColorsManager.DEFAULT_SCHEME_NAME).getExternalName());
         editor.setEmbeddedIntoDialogWrapper(true);
 
-//        editor.getDocument().addDocumentListener(new DocumentListener() {
-//            @Override
-//            public void documentChanged(@NotNull DocumentEvent event) {
-//                ApplicationManager.getApplication().invokeLater(() -> {
-//                    if (!editor.isDisposed()) {
-//                        CodeFoldingManager.getInstance(project).updateFoldRegions(editor);
-//                    }
-//                }, ModalityState.NON_MODAL);
-//            }
-//        });
+        EditorColorsScheme colorsScheme = EditorColorsManager.getInstance().getGlobalScheme();
+        editor.setColorsScheme(colorsScheme);
 
         return editor;
     }
 
     @Override
     public void setDocument(Document document) {
-        System.out.println("setDocument() =====");
-//        this.setText(document.getText());
         this.document = document;
-//        super.setText(document.getText());
         super.setDocument(document);
     }
 
@@ -492,29 +428,9 @@ class CustomEditorField extends LanguageTextField  {
     }
 
     public void selectText(int startOffset, int endOffset) {
-//        super.getEditor().getSelectionModel().setSelection(startOffset, endOffset);
-//        super.getEditor().getCaretModel().moveToOffset(startOffset);
-//        super.getEditor().getScrollingModel().scrollToCaret(ScrollType.CENTER);
-
         editor.getSelectionModel().setSelection(startOffset, endOffset);
         editor.getCaretModel().moveToOffset(startOffset);
-//        editor.getCaretModel().moveCaretRelatively(0, 15, false, false, true);
-//        int lineToMove = 15;
-//        editor.getCaretModel().moveToLogicalPosition(editor.offsetToLogicalPosition(document.getLineStartOffset(lineToMove)));
-
         editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
-
     }
-
-//    override fun createEditor(): EditorEx {
-//        val editor = super.createEditor()
-
-//        val settings = editor.settings
-//        settings.isAutoCodeFoldingEnabled = true
-//        settings.isFoldingOutlineShown = true
-//        settings.isAllowSingleLogicalLineFolding = true
-//        settings.isRightMarginShown=true
-//        return editor
-//    }
 }
 
