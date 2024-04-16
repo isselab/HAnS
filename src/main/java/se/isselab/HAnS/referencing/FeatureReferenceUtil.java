@@ -303,21 +303,6 @@ public class FeatureReferenceUtil {
                 document.setText(newText);
             };
             WriteCommandAction.runWriteCommandAction(project, r);
-
-            System.out.println(entry.getKey());
-            System.out.println(entry.getValue());
-
-//            Document document = entry.getKey();
-//            PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(document);
-//            for (int i = 0 ; i < document.getLineCount(); i++) {
-//                if (entry.getValue().contains(i)) {
-//                    int iFinal = i;
-//                    Runnable r = () -> {
-//                        document.deleteString(document.getLineStartOffset(iFinal), document.getLineEndOffset(iFinal)+1);
-//                    };
-//                    WriteCommandAction.runWriteCommandAction(project, r);
-//                }
-//            }
         }
 
     }

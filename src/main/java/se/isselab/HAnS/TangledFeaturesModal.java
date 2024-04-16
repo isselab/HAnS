@@ -167,7 +167,7 @@ public class TangledFeaturesModal extends DialogWrapper {
         String text = "<html><div style='margin: 10px 10px 0 10px; text-align:left;'>" +
                 num + ": Feature " + currentElement.getMainFeatureLPQ() + " was tangled with " +
                 currentElement.getTangledFeatureLPQ() + " in file " + result + ". <br/>"
-                + "Please untangle the features to proceed with deletion. </div></html>";
+                + "Please untangle the features to proceed with deletion. <br/>Caution: updating this file could impact the highlight of other tangled features within the same file.</div></html>";
         titleLabel = new JLabel(text);
 
         // Set the font and size of the label
