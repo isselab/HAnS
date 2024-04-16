@@ -25,14 +25,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
-public class CodeEditorModal extends DialogWrapper {
+public class TangledFeaturesModal extends DialogWrapper {
     Project project;
     // 1st file editor with header
     JLabel header1;
-    public CustomEditorField codeTextArea1;
+    public CustomFileTextEditorField codeTextArea1;
     // 2nd file editor with header
     JLabel header2;
-    public CustomEditorField codeTextArea2;
+    public CustomFileTextEditorField codeTextArea2;
     // top header
     JLabel titleLabel;
     // files of all tangled feature pairs
@@ -45,7 +45,7 @@ public class CodeEditorModal extends DialogWrapper {
     GridBagConstraints constraints;
     JButton nextButton;
 
-    public CodeEditorModal(Project project) {
+    public TangledFeaturesModal(Project project) {
         super(project);
         this.project = project;
         setTitle("Resolve tangling conflicts");
@@ -85,7 +85,7 @@ public class CodeEditorModal extends DialogWrapper {
             panel.remove(codeTextArea1);
         }
         Language javaLanguage = Language.findLanguageByID("JAVA");
-        codeTextArea1 = new CustomEditorField(javaLanguage, this.project);
+        codeTextArea1 = new CustomFileTextEditorField(javaLanguage, this.project);
 
         constraints.gridy = 2;
         if (one) {
@@ -123,7 +123,7 @@ public class CodeEditorModal extends DialogWrapper {
             panel.remove(codeTextArea2);
         }
         Language javaLanguage = Language.findLanguageByID("JAVA");
-        codeTextArea2 = new CustomEditorField(javaLanguage, this.project);
+        codeTextArea2 = new CustomFileTextEditorField(javaLanguage, this.project);
 
         constraints.gridy = 6;
         constraints.gridheight = 3;
@@ -215,7 +215,7 @@ public class CodeEditorModal extends DialogWrapper {
     }
 
     // update text in code text area and highlight our feature
-    private void updateCodeTextArea(CustomEditorField codeTextArea, Document document, int start, int end) {
+    private void updateCodeTextArea(CustomFileTextEditorField codeTextArea, Document document, int start, int end) {
         codeTextArea.setText(document.getText());
         codeTextArea.setDocument(document);
         codeTextArea.setFileType(PsiDocumentManager.getInstance(project).getPsiFile(document).getFileType());
@@ -375,13 +375,13 @@ public class CodeEditorModal extends DialogWrapper {
 
 // custom class for creating text area with contents of the file
 // allows to edit original file
-class CustomEditorField extends LanguageTextField  {
+class CustomFileTextEditorField extends LanguageTextField  {
     EditorEx editor;
     Document document;
     Project project;
 
 
-    public CustomEditorField(Language language, Project project) {
+    public CustomFileTextEditorField(Language language, Project project) {
 
         super(language, project, "");
         this.project = project;

@@ -26,7 +26,7 @@ import com.intellij.psi.*;
 import com.intellij.refactoring.rename.RenameDialog;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import se.isselab.HAnS.CodeEditorModal;
+import se.isselab.HAnS.TangledFeaturesModal;
 import se.isselab.HAnS.FeatureAnnotationToDelete;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.*;
@@ -436,9 +436,9 @@ public class FeatureModelPsiImplUtil {
         Project projectInstance = feature.getProject();
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
         if (document!= null) {
-            Set<FeatureAnnotationToDelete> annotations = FeatureReferenceUtil.setElementsToDropWhenDeletingMain((FeatureModelFeature) feature);
+            Set<FeatureAnnotationToDelete> annotations = FeatureReferenceUtil.setElementsToDropWhenDeleting((FeatureModelFeature) feature);
             if (!annotations.isEmpty()) {
-                CodeEditorModal modal = new CodeEditorModal(feature.getProject());
+                TangledFeaturesModal modal = new TangledFeaturesModal(feature.getProject());
                 modal.setFileList(annotations);
 
                 boolean exitCode = modal.showAndGet();

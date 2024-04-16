@@ -381,39 +381,39 @@ public class FeatureReferenceUtil {
         return result;
     }
 
-    public static Set<FeatureAnnotationToDelete> setElementsToDropWhenDeletingMain(FeatureModelFeature parentFeature) {
+    public static Set<FeatureAnnotationToDelete> setElementsToDropWhenDeleting(FeatureModelFeature parentFeature) {
         List<PsiElement> featureWithKids = new ArrayList<>();
         List<String> featureWithKidsLPQs = new ArrayList<>();
         traverseFeatureWithChildren(parentFeature, featureWithKids, featureWithKidsLPQs);
         Set<FeatureAnnotationToDelete> result = new HashSet<>();
         for (PsiElement feature : featureWithKids) {
-            Set<FeatureAnnotationToDelete> places = setElementsToDropWhenDeleting((FeatureModelFeature) feature, featureWithKidsLPQs);
+            Set<FeatureAnnotationToDelete> places = getElementsToDropWhenDeleting((FeatureModelFeature) feature, featureWithKidsLPQs);
             result.addAll(places);
         }
 
-        System.out.println("=============affectedPlaces");
-        for (FeatureAnnotationToDelete entry : result) {
-            System.out.println(entry.getMainFeatureLPQ() + " " + entry.getDocument() + " " + entry.getStartLine() + " " +entry.getEndLine() + " " + entry.getTangledFeatureLPQ() + " " + entry.getTangledAnnotationType()+ " " + entry.getMainAnnotationType() );
-        }
         return result;
     }
 
-    public static Set<FeatureAnnotationToDelete> setElementsToDropWhenDeleting(FeatureModelFeature feature, List<String> featureTreeLPQs) {
+    public static Set<FeatureAnnotationToDelete> getElementsToDropWhenDeleting(FeatureModelFeature feature, List<String> featureTreeLPQs) {
 
         Project projectInstance = feature.getProject();
 
         FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, feature); // Feature -> FeatureLocations, each FeatureLocation -> FeatureBlocks
-        ArrayList<FeatureAnnotationToDelete> baseFeatureLocations = getBaseFeatureLocations(fileToAnnotation, feature); // parentFeature, mapped File, start, end
+        ArrayList<FeatureAnnotationToDelete> baseFeatureLocations = getFeatureAnnotationLocations(fileToAnnotation, feature); // parentFeature, mapped File, start, end
 
         HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = FeatureTangling.getTanglingMap(projectInstance); // Feature -> Features (tangled)
         HashSet<FeatureModelFeature> tangledFeatures = getTangledFeatures(tanglingMap, feature); // tangled features of specific Feature N
 
         ArrayList<FeatureAnnotationToDelete> tangledLocations = getTangledLocations(projectInstance, feature, tangledFeatures, fileToAnnotation, featureTreeLPQs);
 
-        Set<FeatureAnnotationToDelete> affectedPlaces = processLocations(baseFeatureLocations, tangledLocations);
-        return affectedPlaces;
+        Set<FeatureAnnotationToDelete> tanglingResult = processLocations(baseFeatureLocations, tangledLocations);
+        return tanglingResult;
     }
 
+    // takes main feature locations and tangled feature locations
+    // if file paths of both annotations are the same, creates FeatureAnnotationToDelete instance
+    // that contains information about both main and tangled feature, such as
+    // mainLpq, tangledLpq, file, start/end line (if code annotation) and annotation type
     private static ArrayList<FeatureAnnotationToDelete> getTangledLocations(Project projectInstance, FeatureModelFeature feature, HashSet<FeatureModelFeature> tangledFeatures, FeatureFileMapping fileToAnnotation, List<String> featureTreeLPQs) {
         ArrayList<FeatureAnnotationToDelete> storeInterlockedLocations = new ArrayList<>();
 
@@ -427,13 +427,13 @@ public class FeatureReferenceUtil {
                             if (!featureTreeLPQs.contains(location.getMappedFeature().getLPQText())) {
                                 FeatureAnnotationToDelete element = new FeatureAnnotationToDelete();
 
-                                element.setTangledFeatureLPQ(location.getMappedFeature().getLPQText()); // 0: tangled feature
-                                element.setFilePath(location.getMappedPath()); // 1: path to file with tangled feature
+                                element.setTangledFeatureLPQ(location.getMappedFeature().getLPQText()); // tangled feature
+                                element.setFilePath(location.getMappedPath()); // path to file with tangled feature
 
-                                element.setStartLine(fl.getStartLine()); // 2: starting line of tangling
-                                element.setEndLine(fl.getEndLine()); // 3: end line of tangling
-                                element.setMainFeatureLPQ(feature.getLPQText()); // 4: feature it's tangled with
-                                element.setTangledAnnotationType(location.getAnnotationType()); // 5: annotation type of tangled annotation
+                                element.setStartLine(fl.getStartLine()); // starting line of tangling
+                                element.setEndLine(fl.getEndLine()); // end line of tangling
+                                element.setMainFeatureLPQ(feature.getLPQText()); // feature it's tangled with
+                                element.setTangledAnnotationType(location.getAnnotationType()); // annotation type of tangled annotation
 
                                 storeInterlockedLocations.add(element);
                             }
@@ -446,6 +446,7 @@ public class FeatureReferenceUtil {
         return storeInterlockedLocations;
     }
 
+    // returns set of all features tangled with FeatureModelFeature feature
     private static HashSet<FeatureModelFeature> getTangledFeatures(HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, FeatureModelFeature feature) {
         HashSet<FeatureModelFeature> tangledFeatures= new HashSet<>();
 
@@ -458,7 +459,9 @@ public class FeatureReferenceUtil {
         return tangledFeatures;
     }
 
-    public static ArrayList<FeatureAnnotationToDelete> getBaseFeatureLocations(FeatureFileMapping fileToAnnotation, FeatureModelFeature parentFeature) {
+    // get list of all code annotation blocks of certain feature
+    // stores FeatureLpq, FilePath, start line, end line and annotation type
+    private static ArrayList<FeatureAnnotationToDelete> getFeatureAnnotationLocations(FeatureFileMapping fileToAnnotation, FeatureModelFeature parentFeature) {
         ArrayList<FeatureAnnotationToDelete> annotations = new ArrayList<>();
 
         for (FeatureLocation fm : fileToAnnotation.getFeatureLocations()) {
@@ -475,11 +478,11 @@ public class FeatureReferenceUtil {
                 annotations.add(annotation);
             }
         }
-//        mapToDeleteWithCode.put(parentFeature, mapToDrop);
 
         return annotations;
     }
 
+    // takes two FeatureAnnotationToDelete instances and produces one FeatureAnnotationToDelete
     private static Set<FeatureAnnotationToDelete> processLocations(ArrayList<FeatureAnnotationToDelete> baseLocations, ArrayList<FeatureAnnotationToDelete> tangledLocations) {
         Set<FeatureAnnotationToDelete> result = new HashSet<>();
         baseLocations.forEach(baseLocation -> {
@@ -527,6 +530,8 @@ public class FeatureReferenceUtil {
         return result;
     }
 
+    // if two features are tangled using code annotation,
+    // finds line range that includes both FeatureA and FeatureB
     private static ArrayList<Integer> getRange(int startA, int endA, int startB, int endB) {
         ArrayList<Integer> result = new ArrayList();
         Range rangeA = Range.between(startA, endA);
