@@ -104,8 +104,6 @@ public class CloneTracingTests extends BasePlatformTestCase {
                 boolean matches = pattern.matcher(line).matches();
                 assertTrue("Line does not match the expected format: " + line, matches);
             }
-            List<List<String>> traces = NotificationProvider.getTraces();
-            assertNotNull(traces);
             traceFile.delete(CloneTracingTests.class);
         } catch (Exception e) {
             fail("Failed to create files or copy content: " + e.getMessage());

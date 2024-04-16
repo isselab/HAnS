@@ -3,16 +3,21 @@ package se.isselab.HAnS.cloneAssetsTests;
 import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.testFramework.VfsTestUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
+import com.intellij.ui.EditorNotificationPanel;
+import com.intellij.ui.EditorNotifications;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import se.isselab.HAnS.assetsManagement.CloneManagementSettingsState;
 import se.isselab.HAnS.assetsManagement.cloneManagement.NotificationProvider;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -132,6 +137,7 @@ public class NotificationProvideTests extends BasePlatformTestCase {
 
     }
 
+
     private VirtualFile addChild(VirtualFile dir, String name, boolean directory) throws IOException {
         return WriteAction.computeAndWait(() -> {
             if (directory) {
@@ -152,5 +158,4 @@ public class NotificationProvideTests extends BasePlatformTestCase {
             throw new IOException("Failed to create or find virtual directory.");
         }
     }
-
 }
