@@ -17,6 +17,7 @@ package se.isselab.HAnS.featureModel.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
@@ -450,16 +451,26 @@ public class FeatureModelPsiImplUtil {
                     return false;
                 }
             } else { // if no tangled features are present
-                FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
-                FeatureReferenceUtil.setMapToDeleteWithCode((FeatureModelFeature) feature);
+                Runnable r = () -> {
+                    ReadAction.run(() -> {
+                        FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
+                        FeatureReferenceUtil.setMapToDeleteWithCode((FeatureModelFeature) feature);
 
-                FeatureReferenceUtil.deleteWithCode();
-                deleteFromFeatureModel(feature);
+                        FeatureReferenceUtil.deleteWithCode();
+                        deleteFromFeatureModel(feature);
 
-                PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
+                        PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
 
-                FeatureReferenceUtil.rename();
-                FeatureReferenceUtil.reset();
+                        FeatureReferenceUtil.rename();
+                        FeatureReferenceUtil.deleteSpacesAfterDeleteWithCode(projectInstance);
+
+                        PsiDocumentManager.getInstance(projectInstance).commitAllDocuments();
+
+                        FeatureReferenceUtil.reset();
+                    });
+                };
+                WriteCommandAction.runWriteCommandAction(projectInstance, r);
+
                 return true;
             }
         }

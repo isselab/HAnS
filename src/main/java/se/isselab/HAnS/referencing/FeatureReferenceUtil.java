@@ -39,6 +39,7 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
 import se.isselab.HAnS.metrics.FeatureTangling;
 
+import javax.print.Doc;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -53,9 +54,8 @@ public class FeatureReferenceUtil {
     private static Map<FeatureModelFeature, List<PsiReference>> mapToRename = new HashMap<>();
     private static Map<FeatureModelFeature, List<PsiReference>> mapToRemove = new HashMap<>();
     private static Map<FeatureModelFeature, ArrayList<Object>> mapToDeleteWithCode = new HashMap<>();
-
     private static Map<String, List<PsiReference>> mapToRenameWhenAdding = new HashMap<>();
-
+    private static Map<Document, Set<Integer>> mapToDeleteAfterDeletingWithCode = new HashMap<>(); // stores document->empty lines to remove after renaming, because otherwise it would corrupt the document
 
     public static String getLPQ(FeatureModelFeature feature, String newName) {
         if (lpq == null) {
@@ -78,7 +78,14 @@ public class FeatureReferenceUtil {
         lpq = null;
         origin = null;
         addingOrDeleting = false;
+        mapToRename.clear();
+        mapToRemove.clear();
+        mapToDeleteWithCode.clear();
+        mapToRenameWhenAdding.clear();
+        mapToDeleteAfterDeletingWithCode.clear();
     }
+
+    public static Map<Document, Set<Integer>> getMapToDeleteAfterDeletingWithCode() { return mapToDeleteAfterDeletingWithCode; }
 
     public static Map<FeatureModelFeature, List<PsiReference>> getElementsToRename() {
         return mapToRename;
@@ -123,7 +130,10 @@ public class FeatureReferenceUtil {
 
         for (Map.Entry<FeatureModelFeature, List<PsiReference>> entry : toRename.entrySet()) {
             String newLPQ = entry.getKey().getLPQText();
+            System.out.println(newLPQ);
             for (PsiReference reference:entry.getValue()) {
+                System.out.println(reference.getElement().getText());
+                System.out.println(reference.getElement().getContainingFile());
                 reference.handleElementRename(newLPQ);
             }
         }
@@ -246,20 +256,6 @@ public class FeatureReferenceUtil {
     }
 
     private static void deleteFileFolderAnnotation(Project project, PsiReference reference) {
-//        if (reference.getElement().getNextSibling() != null && reference.getElement().getNextSibling().getText().equals(" ")) {
-//            reference.getElement().getNextSibling().delete(); // remove space after element
-//        }
-//
-//        if (reference.getElement().getPrevSibling() == null && reference.getElement().getNextSibling() == null) { // if it's last feature mapped to file
-//            if (reference.getElement().getParent().getPrevSibling() != null) { // if newline exists
-//                if (reference.getElement().getParent().getPrevSibling().getPrevSibling() != null &&
-//                        reference.getElement().getParent().getPrevSibling().getPrevSibling() instanceof FileAnnotationFileReferences) { // get file list
-//                    reference.getElement().getParent().getPrevSibling().getPrevSibling().delete(); // delete all files
-//                }
-//            }
-//        }
-//        reference.getElement().delete();
-
         if (reference.getElement().getNextSibling() != null &&
             reference.getElement().getNextSibling().getText().equals(" ")) {
             Runnable r = () -> {
@@ -286,37 +282,85 @@ public class FeatureReferenceUtil {
         WriteCommandAction.runWriteCommandAction(project, r);
     }
 
+    public static void deleteSpacesAfterDeleteWithCode(Project project) {
+        Map<Document, Set<Integer>> documentToLines = getMapToDeleteAfterDeletingWithCode();
+        for (Map.Entry<Document, Set<Integer>> entry : documentToLines.entrySet()) {
+            Document document = entry.getKey();
+            PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(document);
+            Set<Integer> linesToExclude = entry.getValue();
+            String newDocumentText = "";
+            String documentText = document.getText();
+            for (int i = 0 ; i < document.getLineCount(); i++) {
+                if (linesToExclude.contains(i)) {
+                    continue;
+                }
+                String line = documentText.substring(document.getLineStartOffset(i), document.getLineEndOffset(i)).concat("\n");
+                newDocumentText = newDocumentText.concat(line);
+            }
+            String newText = newDocumentText;
+            Runnable r = () -> {
+                document.setReadOnly(false);
+                document.setText(newText);
+            };
+            WriteCommandAction.runWriteCommandAction(project, r);
+
+            System.out.println(entry.getKey());
+            System.out.println(entry.getValue());
+
+//            Document document = entry.getKey();
+//            PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(document);
+//            for (int i = 0 ; i < document.getLineCount(); i++) {
+//                if (entry.getValue().contains(i)) {
+//                    int iFinal = i;
+//                    Runnable r = () -> {
+//                        document.deleteString(document.getLineStartOffset(iFinal), document.getLineEndOffset(iFinal)+1);
+//                    };
+//                    WriteCommandAction.runWriteCommandAction(project, r);
+//                }
+//            }
+        }
+
+    }
+
     public static void deleteWithCode() {
         Map<FeatureModelFeature, ArrayList<Object>> featureToAnnotations = getMapToDeleteWithCode();
         // feature -> list of either PsiReference or FeatureAnnotationToDelete
         for (Map.Entry<FeatureModelFeature, ArrayList<Object>> entry : featureToAnnotations.entrySet()) {
             FeatureModelFeature feature = entry.getKey();
             ArrayList<Object> annotations = entry.getValue();
+            Project projectInstance = feature.getProject();
             Map<Document, Set<Integer>> codeAnnotations = (Map<Document, Set<Integer>>) annotations.get(0);
             List<PsiReference> fileFolderAnnotation = (List<PsiReference>) annotations.get(1);
             codeAnnotations.entrySet().forEach(codeAnnotation -> {
                 Document document = codeAnnotation.getKey();
+
                 Set<Integer> linesToExclude = codeAnnotation.getValue();
-                String newDocumentText = "";
-                String documentText = document.getText();
+                mapToDeleteAfterDeletingWithCode.put(document, linesToExclude);
+//                String newDocumentText = "";
+//                String documentText = document.getText();
                 for (int i = 0 ; i < document.getLineCount(); i++) {
                     if (linesToExclude.contains(i)) {
-                        continue;
+//                        continue;
+                        int iFinal = i;
+                        Runnable r = () -> {
+                            document.deleteString(document.getLineStartOffset(iFinal), document.getLineEndOffset(iFinal));
+                        };
+                        WriteCommandAction.runWriteCommandAction(projectInstance, r);
                     }
-                    String line = documentText.substring(document.getLineStartOffset(i), document.getLineEndOffset(i)).concat("\n");
-                    newDocumentText = newDocumentText.concat(line);
+//                    String line = documentText.substring(document.getLineStartOffset(i), document.getLineEndOffset(i)).concat("\n");
+//                    newDocumentText = newDocumentText.concat(line);
                 }
-                String newText = newDocumentText;
-                Runnable r = () -> {
-                    document.setReadOnly(false);
-                    document.setText(newText);
-                };
-                WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
+//                String newText = newDocumentText;
+//                Runnable r = () -> {
+//                    document.setReadOnly(false);
+//                    document.setText(newText);
+//                };
+//                WriteCommandAction.runWriteCommandAction(projectInstance, r);
             });
 
             fileFolderAnnotation.forEach(annotation -> {
                 PsiReference reference = annotation;
-                deleteFileFolderAnnotation(feature.getProject(), reference);
+                deleteFileFolderAnnotation(projectInstance, reference);
             });
         }
     }
@@ -579,6 +623,8 @@ public class FeatureReferenceUtil {
     }
 
     public static void setElementsToRenameWhenDeleting(FeatureModelFeature element) {
+        addingOrDeleting = true;
+
         Map<FeatureModelFeature, List<PsiReference>> toRename = new HashMap<>();
 
         List[] result = getElementsToDelete(element);
