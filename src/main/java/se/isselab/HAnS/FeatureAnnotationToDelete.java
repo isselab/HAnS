@@ -30,10 +30,8 @@ public class FeatureAnnotationToDelete {
         this.mainAnnotationType = null;
     }
 
-
     @Override
     public int hashCode() {
-        System.out.println("HASHCODE reached");
         String mainFeature2 = null;
         if (this.mainFeature != null) {
             mainFeature2 = this.mainFeature.getLPQText();
@@ -44,7 +42,6 @@ public class FeatureAnnotationToDelete {
 
     @Override
     public boolean equals(Object o) {
-        System.out.println("EQUALS reached");
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         String mainFeatureLpq = null;
@@ -56,34 +53,6 @@ public class FeatureAnnotationToDelete {
         if (featureAnnotationToDelete.mainFeature != null) {
             otherFeatureLpq = featureAnnotationToDelete.mainFeature.getLPQText();
         }
-
-        boolean equals = Objects.equals(tangledFeatureLPQ, featureAnnotationToDelete.tangledFeatureLPQ);
-        System.out.println("tangledFeatureLPQ comparison: " + equals);
-
-        equals = Objects.equals(mainFeatureLPQ, featureAnnotationToDelete.mainFeatureLPQ);
-        System.out.println("mainFeatureLPQ comparison: " + equals);
-
-        equals = Objects.equals(mainFeatureLpq, otherFeatureLpq);
-        System.out.println("mainFeature LPQText comparison: " + equals);
-
-        equals = Objects.equals(filePath, featureAnnotationToDelete.filePath);
-        System.out.println("filePath comparison: " + equals);
-
-        equals = document == featureAnnotationToDelete.document;
-        System.out.println("document comparison: " + equals);
-
-        equals = startLine == featureAnnotationToDelete.startLine;
-        System.out.println("startLine comparison: " + equals);
-
-        equals = endLine == featureAnnotationToDelete.endLine;
-        System.out.println("endLine comparison: " + equals);
-
-        equals = tangledAnnotationType == featureAnnotationToDelete.tangledAnnotationType;
-        System.out.println("tangledAnnotationType comparison: " + equals);
-
-        equals = mainAnnotationType == featureAnnotationToDelete.mainAnnotationType;
-        System.out.println("mainAnnotationType comparison: " + equals);
-
 
         return Objects.equals(tangledFeatureLPQ, featureAnnotationToDelete.tangledFeatureLPQ) &&
                 Objects.equals(mainFeatureLPQ, featureAnnotationToDelete.mainFeatureLPQ) &&
