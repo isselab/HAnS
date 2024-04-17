@@ -95,43 +95,6 @@ public class FeatureAnnotationToDelete {
                 tangledAnnotationType == featureAnnotationToDelete.tangledAnnotationType &&
                 mainAnnotationType == featureAnnotationToDelete.mainAnnotationType;
     }
-
-    //    public FeatureAnnotationToDelete(String mainFeature,
-//                                     String tangledFeature,
-//                                     Document document,
-//                                     int startLine,
-//                                     int endLine,
-//                                     FeatureFileMapping.AnnotationType annotationType) {
-//        this.tangledFeatureLPQ = tangledFeature;
-//        this.mainFeatureLPQ = mainFeature;
-//        this.document = document;
-//        this.startLine = startLine;
-//        this.endLine = endLine;
-//        this.annotationType = annotationType;
-//    }
-//
-//    public FeatureAnnotationToDelete(String mainFeature,
-//                                     String filePath,
-//                                     int startLine,
-//                                     int endLine,
-//                                     FeatureFileMapping.AnnotationType annotationType) {
-//        this.mainFeatureLPQ = mainFeature;
-//        this.filePath = filePath;
-//        this.startLine = startLine;
-//        this.endLine = endLine;
-//        this.annotationType = annotationType;
-//    }
-//
-//    public FeatureAnnotationToDelete(FeatureModelFeature mainFeature,
-//                                     String filePath,
-//                                     int startLine,
-//                                     int endLine) {
-//        this.mainFeature = mainFeature;
-//        this.filePath = filePath;
-//        this.startLine = startLine;
-//        this.endLine = endLine;
-//    }
-
     public void setTangledAnnotationType(FeatureFileMapping.AnnotationType tangledAnnotationType) {
         this.tangledAnnotationType = tangledAnnotationType;
     }
