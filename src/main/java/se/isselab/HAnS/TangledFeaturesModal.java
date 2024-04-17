@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 
 public class TangledFeaturesModal extends DialogWrapper {
@@ -218,9 +219,12 @@ public class TangledFeaturesModal extends DialogWrapper {
     private void updateCodeTextArea(CustomFileTextEditorField codeTextArea, Document document, int start, int end) {
         codeTextArea.setText(document.getText());
         codeTextArea.setDocument(document);
-        codeTextArea.setFileType(PsiDocumentManager.getInstance(project).getPsiFile(document).getFileType());
-
-        codeTextArea.getEditor().getCaretModel().moveToOffset(0);
+        if (PsiDocumentManager.getInstance(project).getPsiFile(document).getFileType() != null) {
+            codeTextArea.setFileType(PsiDocumentManager.getInstance(project).getPsiFile(document).getFileType());
+        }
+        if (codeTextArea.getEditor().getCaretModel() != null) {
+            codeTextArea.getEditor().getCaretModel().moveToOffset(0);
+        }
         codeTextArea.selectText(start, end);
     }
 
@@ -234,7 +238,7 @@ public class TangledFeaturesModal extends DialogWrapper {
                 panel.remove(codeTextArea2);
             }
             Document doc = currentElement.getDocument();
-            createHeader1(currentElement.getMainFeatureLPQ(), FileDocumentManager.getInstance().getFile(doc).getPath());
+            createHeader1(currentElement.getMainFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc)).getPath());
             if (header2 != null) {panel.remove(header2);};
             updateCodeTextArea(codeTextArea1, doc, doc.getLineStartOffset(currentElement.getStartLine()), doc.getLineEndOffset(currentElement.getEndLine()));
         // otherwise creates 2 windows
@@ -249,12 +253,12 @@ public class TangledFeaturesModal extends DialogWrapper {
                         currentElement.getDocument().getLineStartOffset(currentElement.getStartLine()),
                         currentElement.getDocument().getLineEndOffset(currentElement.getEndLine()));
 
-                createHeader1(currentElement.getMainFeatureLPQ(), FileDocumentManager.getInstance().getFile(currentElement.getDocument()).getPath());
+                createHeader1(currentElement.getMainFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(currentElement.getDocument())).getPath());
 
                 ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getTangledFeatureLPQ());
                 Document doc = (Document) tangled.get(0);
                 updateCodeTextArea(codeTextArea2, doc, (int) tangled.get(1), (int) tangled.get(2));
-                createHeader2(currentElement.getTangledFeatureLPQ(), FileDocumentManager.getInstance().getFile(doc).getPath());
+                createHeader2(currentElement.getTangledFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc)).getPath());
 
             } else if (currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.file) &&
                     currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) ) {
@@ -263,25 +267,25 @@ public class TangledFeaturesModal extends DialogWrapper {
                 Document doc = (Document) tangled.get(0);
                 updateCodeTextArea(codeTextArea1, doc, (int) tangled.get(1), (int) tangled.get(2));
 
-                createHeader1(currentElement.getMainFeatureLPQ(), FileDocumentManager.getInstance().getFile(doc).getPath());
+                createHeader1(currentElement.getMainFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc)).getPath());
 
                 updateCodeTextArea(codeTextArea2, currentElement.getDocument(),
                         currentElement.getDocument().getLineStartOffset(currentElement.getStartLine()),
                         currentElement.getDocument().getLineEndOffset(currentElement.getEndLine()));
 
-                createHeader2(currentElement.getTangledFeatureLPQ(), FileDocumentManager.getInstance().getFile(currentElement.getDocument()).getPath());
+                createHeader2(currentElement.getTangledFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(currentElement.getDocument())).getPath());
 
             } else if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.file) &&
                     currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.file)) {
                 ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getMainFeatureLPQ());
                 Document doc = (Document) tangled.get(0);
                 updateCodeTextArea(codeTextArea1, doc, (int) tangled.get(1), (int) tangled.get(2));
-                createHeader1(currentElement.getMainFeatureLPQ(), FileDocumentManager.getInstance().getFile(doc).getPath());
+                createHeader1(currentElement.getMainFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc)).getPath());
 
                 ArrayList<Object> tangled2 = getFeatureToFileOrFolderDocument(currentElement.getTangledFeatureLPQ());
                 Document doc2 = (Document) tangled2.get(0);
                 updateCodeTextArea(codeTextArea2, doc2, (int) tangled2.get(1), (int) tangled2.get(2));
-                createHeader2(currentElement.getTangledFeatureLPQ(), FileDocumentManager.getInstance().getFile(doc2).getPath());
+                createHeader2(currentElement.getTangledFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc2)).getPath());
 
             }
         }
@@ -306,6 +310,8 @@ public class TangledFeaturesModal extends DialogWrapper {
     //      2: end offset
     private ArrayList<Object> getFeatureToFileOrFolderDocument(String featureLpq) {
         VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(currentElement.getDocument());
+        if (virtualFile == null) {return null;}
+
         VirtualFile parentFolder = virtualFile.getParent();
         ArrayList<Object> result = new ArrayList<>();
         if (parentFolder != null) {
