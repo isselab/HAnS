@@ -48,7 +48,7 @@ public class SectionBuilder {
         c1.gridx = 0;
         c1.gridy = 0;
         c1.anchor = GridBagConstraints.NORTHWEST;
-        c1.insets = new Insets(0, 0, 0, 5);
+        c1.insets = JBUI.insetsRight(5);
 
         GridBagConstraints c2 = new GridBagConstraints();
         c2.fill = GridBagConstraints.HORIZONTAL;

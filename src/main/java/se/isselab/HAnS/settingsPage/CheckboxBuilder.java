@@ -16,6 +16,7 @@
 package se.isselab.HAnS.settingsPage;
 
 import com.intellij.ui.*;
+import com.intellij.util.ui.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,14 +45,14 @@ public class CheckboxBuilder {
         gbc.anchor = GridBagConstraints.NORTHWEST;// Align to the left
         gbc.weighty = 1;
         gbc.weightx = 1;
-        gbc.insets = new Insets(5, DISTANCE+5, 5, DISTANCE); // Add some padding
+        gbc.insets = JBUI.insets(5, DISTANCE+5, 5, DISTANCE); // Add some padding
         panel.add(checkBox, gbc); // Add checkbox with constraints
 
         GridBagConstraints gbclabel = new GridBagConstraints();
         gbclabel.gridx = 0;
         gbclabel.gridy = 1;
         gbclabel.anchor = GridBagConstraints.NORTHWEST;
-        gbclabel.insets = new Insets(25, DISTANCE+28, 5, DISTANCE);
+        gbclabel.insets = JBUI.insets(25, DISTANCE+28, 5, DISTANCE);
 
 
         JLabel descriptionLabel = new JLabel(descriptionText);
@@ -80,7 +81,7 @@ public class CheckboxBuilder {
         gbc.anchor = GridBagConstraints.NORTHWEST;// Align to the left
         gbc.weighty = 1;
         gbc.weightx = 1;
-        gbc.insets = new Insets(5, DISTANCE+5, 5, DISTANCE); // Add some padding
+        gbc.insets = JBUI.insets(5, DISTANCE+5, 5, DISTANCE); // Add some padding
         panel.add(checkBox, gbc); // Add checkbox with constraints
 
 
