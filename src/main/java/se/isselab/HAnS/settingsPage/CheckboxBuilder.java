@@ -80,7 +80,7 @@ public class CheckboxBuilder {
         gbc.anchor = GridBagConstraints.NORTHWEST;// Align to the left
         gbc.weighty = 1;
         gbc.weightx = 1;
-        gbc.insets = new Insets(5, DISTANCE+8, 5, DISTANCE); // Add some padding
+        gbc.insets = new Insets(5, DISTANCE+5, 5, DISTANCE); // Add some padding
         panel.add(checkBox, gbc); // Add checkbox with constraints
 
 
