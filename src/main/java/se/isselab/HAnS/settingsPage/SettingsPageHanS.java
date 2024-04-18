@@ -50,6 +50,8 @@ public class SettingsPageHanS implements Configurable {
         generalSettingsPanel.setLayout(new BoxLayout(generalSettingsPanel, BoxLayout.Y_AXIS));
 
         tabbedPane.addTab("General Settings", generalSettingsPanel);
+
+
         // Section Hide Annotations
         SectionBuilder hideAnnotationsSection = new SectionBuilder("Hide Annotations"); // Builds the section Hide Annotations
         generalSettingsPanel.add(hideAnnotationsSection.getPanel());// Builds the section Hide Annotations into the generalSettings Panel
@@ -73,6 +75,7 @@ public class SettingsPageHanS implements Configurable {
 
         CheckboxBuilder enableLoggingCheckbox = new CheckboxBuilder("Enable Logging");
         generalSettingsPanel.add(enableLoggingCheckbox.getPanel());
+
 
         // Adding action listener to the checkbox
         enableLoggingCheckbox.getCheckbox().addActionListener(new ActionListener() {
