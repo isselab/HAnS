@@ -22,24 +22,25 @@ import java.awt.*;
 
 public class SectionBuilder {
 
-    private final JPanel settingsPanel;
+    private final JPanel panel;
 
 
 
     /** Section Builder builds the Default Sections for IntelliJ in the Form of a normal panel **/
     public SectionBuilder(String name) {
-        int WIDTH = 10000;
-        settingsPanel = new JPanel();
+        int width = 10000;
+        panel = new JPanel();
         GridBagLayout layout = new GridBagLayout();
-        settingsPanel.setLayout(layout);
-        settingsPanel.setOpaque(true);
+        panel.setLayout(layout);
+        panel.setOpaque(true);
+
 
         JLabel titleLabel = new JLabel(name);
         titleLabel.setOpaque(true);
 
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
 
-        settingsPanel.setMaximumSize(new Dimension(WIDTH, titleLabel.getPreferredSize().height + 5));
+        panel.setMaximumSize(new Dimension(width, titleLabel.getPreferredSize().height + 5));
 
         GridBagConstraints c1 = new GridBagConstraints();
         c1.fill = GridBagConstraints.HORIZONTAL;
@@ -59,11 +60,10 @@ public class SectionBuilder {
         c2.anchor = GridBagConstraints.NORTHWEST;
         c2.insets = JBUI.insets(7, 5, 0, 0);
 
-        settingsPanel.add(titleLabel, c1);
-        settingsPanel.add(separator, c2);
+        panel.add(titleLabel, c1);
+        panel.add(separator, c2);
     }
-
-    public JPanel getSettingsPanel() {
-        return settingsPanel;
+    public JPanel getPanel() {
+        return panel;
     }
 }

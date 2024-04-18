@@ -26,13 +26,15 @@ public class CheckboxBuilder {
         private final JPanel panel;
         private  final JCheckBox checkBox;
 
-        final int DISTANCE = 5;
+         private final int DISTANCE = 5;
     /** Checkbox Builder builds a panel in the form of the base IntelliJ Layout with a checkbox and an optional  **/
     public CheckboxBuilder(String checkboxText, String descriptionText) {
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Use GridBagLayout for more control
 
         panel.setMaximumSize(new Dimension(1000, 55));
+        panel.setOpaque(true);
+
 
 
 

@@ -52,7 +52,7 @@ public class SettingsPageHanS implements Configurable {
         tabbedPane.addTab("General Settings", generalSettingsPanel);
         // Section Hide Annotations
         SectionBuilder hideAnnotationsSection = new SectionBuilder("Hide Annotations"); // Builds the section Hide Annotations
-        generalSettingsPanel.add(hideAnnotationsSection.getSettingsPanel());// Builds the section Hide Annotations into the generalSettings Panel
+        generalSettingsPanel.add(hideAnnotationsSection.getPanel());// Builds the section Hide Annotations into the generalSettings Panel
 
 
         CheckboxBuilder enableHideAnnotationsCheckbox = new CheckboxBuilder("Enable Hide Annotations", "This Enables the Hide Annotation functionality ");// Builds the Checkbox
@@ -68,7 +68,7 @@ public class SettingsPageHanS implements Configurable {
 
         // Section Logging
         SectionBuilder loggingSection = new SectionBuilder("Logging");
-        generalSettingsPanel.add(loggingSection.getSettingsPanel());
+        generalSettingsPanel.add(loggingSection.getPanel());
 
 
         CheckboxBuilder enableLoggingCheckbox = new CheckboxBuilder("Enable Logging");
@@ -85,12 +85,15 @@ public class SettingsPageHanS implements Configurable {
 
         generalSettingsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
+
+
+
         // Clone Settings Tab
         JPanel cloneSettingsPanel = new JPanel();
         cloneSettingsPanel.setLayout(new BoxLayout(cloneSettingsPanel, BoxLayout.Y_AXIS));
         // Section Clone Settings
         SectionBuilder cloneSection = new SectionBuilder("Clone Settings");
-        cloneSettingsPanel.add(cloneSection.getSettingsPanel());
+        cloneSettingsPanel.add(cloneSection.getPanel());
 
         CheckboxBuilder enableCloningTraceCheckbox = new CheckboxBuilder("Enable Cloning Trace Tracking");
         cloneSettingsPanel.add(enableCloningTraceCheckbox.getPanel());
