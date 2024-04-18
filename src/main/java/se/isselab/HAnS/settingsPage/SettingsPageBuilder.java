@@ -25,7 +25,7 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class SettingsPageHanS implements Configurable {
+public class SettingsPageBuilder implements Configurable {
     @Override
     public @NlsContexts.ConfigurableName String getDisplayName() {
         return "HanS Plugin Settings";
@@ -75,6 +75,7 @@ public class SettingsPageHanS implements Configurable {
 
         CheckboxBuilder enableLoggingCheckbox = new CheckboxBuilder("Enable Logging");
         generalSettingsPanel.add(enableLoggingCheckbox.getPanel());
+
 
 
         // Adding action listener to the checkbox
