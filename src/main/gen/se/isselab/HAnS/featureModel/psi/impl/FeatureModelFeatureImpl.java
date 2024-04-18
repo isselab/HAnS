@@ -6,6 +6,7 @@ import java.util.List;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiDocumentManager;
 import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
@@ -99,6 +100,7 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
       }
       Runnable r = () -> {
         FeatureModelPsiImplUtil.setName(this, lpq.trim());
+        PsiDocumentManager.getInstance(this.getProject()).commitAllDocuments();
       };
       WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
       return 1;
