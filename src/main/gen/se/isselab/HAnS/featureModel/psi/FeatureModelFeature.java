@@ -22,7 +22,7 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   void addFeature();
 
-  boolean addToFeatureModel(String lpq);
+  int addToFeatureModel(String lpq);
 
   void addWithChildren(FeatureModelFeature childFeature);
 
@@ -33,7 +33,7 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
   FeatureModelFeature deleteFeatureWithAnnotations();
   boolean deleteFeatureWithCode();
 
-  boolean renameInFeatureModel(String newName);
+  int renameInFeatureModel(String newName);
 
   int deleteFeature();
 

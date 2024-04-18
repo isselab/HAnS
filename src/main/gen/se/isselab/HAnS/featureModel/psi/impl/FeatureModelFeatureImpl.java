@@ -62,29 +62,29 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   }
 
   @Override
-  public boolean addToFeatureModel(String lpq) {
+  public int addToFeatureModel(String lpq) {
     if (lpq == null || "".equals(lpq.trim()) || !Pattern.matches("[[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]*", lpq.trim())) {
-      return false;
+      return -1;
     }
     else {
       PsiElement[] l = ReadAction.compute(this::getChildren);
       for (PsiElement e : l) {
         if (Objects.requireNonNull(e.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getText().equals(lpq)) {
-          return false;
+          return -2;
         }
       }
       Runnable r = () -> {
         FeatureModelPsiImplUtil.addFeatureToFeatureModel(this, lpq.trim());
       };
       WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
-      return true;
+      return 1;
     }
   }
 
   @Override
-  public boolean renameInFeatureModel(String lpq) {
+  public int renameInFeatureModel(String lpq) {
     if (lpq == null || "".equals(lpq.trim()) || !Pattern.matches("[[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]*", lpq.trim())) {
-      return false;
+      return -1;
     }
     else {
       PsiElement parent = ReadAction.compute(this::getParent);
@@ -93,7 +93,7 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
         for (PsiElement e : parentNodeChildren) {
           // if child with same name already exists stop the execution
           if (Objects.requireNonNull(e.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getText().equals(lpq)) {
-            return false;
+            return -2;
           }
         }
       }
@@ -101,7 +101,7 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
         FeatureModelPsiImplUtil.setName(this, lpq.trim());
       };
       WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
-      return true;
+      return 1;
     }
   }
 
