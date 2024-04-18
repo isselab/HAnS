@@ -15,17 +15,20 @@
  **/
 package se.isselab.HAnS.settingsPage;
 
+import com.intellij.util.ui.*;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class SectionBuilder {
 
-    private JPanel settingsPanel;
+    private final JPanel settingsPanel;
 
-    private final int WIDTH = 10000;
+
 
     /** Section Builder builds the Default Sections for IntelliJ in the Form of a normal panel **/
     public SectionBuilder(String name) {
+        int WIDTH = 10000;
         settingsPanel = new JPanel();
         GridBagLayout layout = new GridBagLayout();
         settingsPanel.setLayout(layout);
@@ -54,7 +57,7 @@ public class SectionBuilder {
         c2.gridx = 1;
         c2.gridy = 0;
         c2.anchor = GridBagConstraints.NORTHWEST;
-        c2.insets = new Insets(7, 5, 0, 0);
+        c2.insets = JBUI.insets(7, 5, 0, 0);
 
         settingsPanel.add(titleLabel, c1);
         settingsPanel.add(separator, c2);
