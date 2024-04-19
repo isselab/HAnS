@@ -17,7 +17,6 @@ import se.isselab.HAnS.featureModel.psi.*;
 import com.intellij.navigation.ItemPresentation;
 import java.util.Deque;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl implements FeatureModelFeature {
@@ -75,7 +74,7 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
         }
       }
       Runnable r = () -> {
-        FeatureModelPsiImplUtil.addFeatureToFeatureModel(this, lpq.trim());
+        FeatureModelPsiImplUtil.addToFeatureModel(this, lpq.trim());
       };
       WriteCommandAction.runWriteCommandAction(ReadAction.compute(this::getProject), r);
       return 1;

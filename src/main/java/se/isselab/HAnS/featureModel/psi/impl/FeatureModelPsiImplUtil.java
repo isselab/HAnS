@@ -17,7 +17,6 @@ package se.isselab.HAnS.featureModel.psi.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.navigation.ItemPresentation;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
@@ -232,7 +231,13 @@ public class FeatureModelPsiImplUtil {
                     }
                 }
             }
-            addToFeatureModel(feature, newFeatureName);
+
+            String newFeatureNameFinal = newFeatureName;
+            Runnable r = () -> {
+                addToFeatureModel(feature, newFeatureNameFinal);
+            };
+            WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
+
             return;
         }
     }
@@ -349,8 +354,8 @@ public class FeatureModelPsiImplUtil {
     }
 
 
-    public static String addFeatureToFeatureModel(@NotNull FeatureModelFeature element, String newName) {
-        FeatureModelPsiImplUtil.addToFeatureModel(element, newName);
+    public static String addToFeatureModel(@NotNull FeatureModelFeature element, String newName) {
+        FeatureModelPsiImplUtil.addFeatureToFeatureModel(element, newName);
 
         FeatureReferenceUtil.getLPQ(element, newName);
         FeatureReferenceUtil.setElementsToRenameWhenAdding(element, newName);
@@ -364,7 +369,7 @@ public class FeatureModelPsiImplUtil {
         return newName;
     }
 
-    private static String addToFeatureModel(@NotNull FeatureModelFeature feature, String newFeatureName) {
+    private static String addFeatureToFeatureModel(@NotNull FeatureModelFeature feature, String newFeatureName) {
         Document document = PsiDocumentManager.getInstance(feature.getProject()).getDocument(feature.getContainingFile());
         int offset = feature.getTextOffset() + Objects.requireNonNull(feature.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getTextLength();
 
@@ -381,8 +386,6 @@ public class FeatureModelPsiImplUtil {
         else {
             indent = feature.getPrevSibling().getTextLength() + 4;
         }
-
-        //FeatureReferenceUtil.setElementsToRenameWhenAdding(feature, newFeatureName);
 
         if (document != null) {
             String documentText = document.getText();
