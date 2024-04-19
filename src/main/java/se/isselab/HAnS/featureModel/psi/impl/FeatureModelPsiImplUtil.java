@@ -485,20 +485,13 @@ public class FeatureModelPsiImplUtil {
                 Messages.getCancelButton(),
                 Messages.getWarningIcon());
         if (response == 0) {
-            deleteFromFeatureModelWithChildren(feature);
+            Project projectInstance = feature.getProject();
+            Runnable r = () -> {
+                ReadAction.run(() -> {deleteFeatureWithAnnotations(feature);});
+            };
+            WriteCommandAction.runWriteCommandAction(projectInstance, r);
+
         }
         return 1;
-    }
-
-    private static void deleteFromFeatureModelWithChildren(@NotNull PsiElement feature) {
-        Document document = PsiDocumentManager.getInstance(feature.getProject()).getDocument(feature.getContainingFile());
-        if (document != null) {
-            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(feature.getTextOffset()));
-            int lineEndOffset = document.getLineEndOffset(document.getLineNumber(feature.getTextOffset())) + 1;
-            Runnable r = () -> {
-                document.deleteString(lineStartOffset, lineEndOffset);
-            };
-            WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
-        }
     }
 }
