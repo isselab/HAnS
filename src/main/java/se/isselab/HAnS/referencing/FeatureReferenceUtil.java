@@ -256,10 +256,42 @@ public class FeatureReferenceUtil {
     }
 
     private static void deleteFileFolderAnnotation(Project project, PsiReference reference) {
-        if (reference.getElement().getNextSibling() != null &&
-            reference.getElement().getNextSibling().getText().equals(" ")) {
+        if (reference.getElement().getNextSibling() != null) {
+            PsiElement nextChar = reference.getElement().getNextSibling();
             Runnable r = () -> {
-                reference.getElement().getNextSibling().delete(); // remove space after element
+                if (nextChar.getText().equals(" ")) {
+                    nextChar.delete(); // remove space after element
+                }
+                if (nextChar.getText().equals(",")) {
+                    if (nextChar.getNextSibling() != null) {
+                        PsiElement nextNextChar = nextChar.getNextSibling();
+                        if (nextNextChar.getText().equals(" ")) {
+                            nextNextChar.delete();
+                        }
+                    }
+                    reference.getElement().getNextSibling().delete();
+                }
+            };
+            WriteCommandAction.runWriteCommandAction(project, r);
+        }
+
+        if (reference.getElement().getPrevSibling() != null && reference.getElement().getNextSibling() == null) {
+            Runnable r = () -> {
+                PsiElement prevChar = reference.getElement().getPrevSibling();
+                if (prevChar.getText().equals(",")) {
+                    prevChar.delete();
+                }
+                if (prevChar.getText().equals(" ")) {
+                    if (prevChar.getPrevSibling() != null) {
+                        PsiElement prevPrevChar = prevChar.getPrevSibling();
+                        if (prevPrevChar.getText().equals(",")) {
+                            prevChar.delete();
+                            prevPrevChar.delete();
+                        }
+                    } else {
+                        prevChar.delete();
+                    }
+                }
             };
             WriteCommandAction.runWriteCommandAction(project, r);
         }
