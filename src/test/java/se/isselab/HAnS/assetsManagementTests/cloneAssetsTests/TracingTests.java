@@ -23,7 +23,7 @@ public class TracingTests extends BasePlatformTestCase {
     }
     @Override
     protected String getTestDataPath() {
-        return "src/test/resources/cloneTestData";
+        return "src/test/resources/assetsManagementTestData/cloneAssetsTestData";
     }
 
     @Test
