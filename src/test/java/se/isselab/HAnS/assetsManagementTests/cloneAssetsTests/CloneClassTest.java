@@ -3,9 +3,9 @@ package se.isselab.HAnS.assetsManagementTests.cloneAssetsTests;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiMethod;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.LightPlatformCodeInsightTestCase;
 import com.intellij.testFramework.VfsTestUtil;
@@ -13,7 +13,7 @@ import se.isselab.HAnS.assetsManagement.CloneManagementSettingsState;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-public class CloneMethodTest extends LightPlatformCodeInsightTestCase {
+public class CloneClassTest extends LightPlatformCodeInsightTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -21,11 +21,11 @@ public class CloneMethodTest extends LightPlatformCodeInsightTestCase {
         settingsState.prefKey = "All";
         VfsTestUtil.createFile(getProject().getBaseDir(), ".feature-model");
     }
-    public void testCopyJavaMethod() throws IOException {
+    public void testCopyAndPasteJavaClass() throws IOException {
         String content = """
                 public class TestClass {
-                    public void exampleMethod() {
-                        int x = 10;<caret>
+                    <caret>public void exampleMethod() {
+                        int x = 10;
                         System.out.println(x);
                     }
                 }
@@ -33,9 +33,9 @@ public class CloneMethodTest extends LightPlatformCodeInsightTestCase {
         prepareJava(content, "TestClass.java");
         CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
         settingsState.prefKey = "All";
-        copyJavaMethodAtCaret();
-        pasteMethodAtEndOfFile();
-        verifyCopyResult();
+        copyJavaClassAtCaret();
+        pasteClassAtEndOfFile();
+        verifyCopyAndPasteResult();
         verifyTraceParsing();
     }
 
@@ -43,31 +43,30 @@ public class CloneMethodTest extends LightPlatformCodeInsightTestCase {
         configureFromFileText(fileName, text);
     }
 
-    private void copyJavaMethodAtCaret() {
+    private void copyJavaClassAtCaret() {
         Editor editor = getEditor();
         PsiFile file = getFile();
         int caretOffset = editor.getCaretModel().getOffset();
-
         PsiElement elementAtCaret = file.findElementAt(caretOffset);
-        PsiMethod methodAtCaret = PsiTreeUtil.getParentOfType(elementAtCaret, PsiMethod.class);
+        PsiClass classAtCaret = PsiTreeUtil.getParentOfType(elementAtCaret, PsiClass.class);
 
-        if (methodAtCaret != null) {
-            editor.getSelectionModel().setSelection(methodAtCaret.getTextRange().getStartOffset(),
-                    methodAtCaret.getTextRange().getEndOffset());
+        if (classAtCaret != null) {
+            editor.getSelectionModel().setSelection(classAtCaret.getTextRange().getStartOffset(),
+                    classAtCaret.getTextRange().getEndOffset());
             executeAction("EditorCopy");
         } else {
-            fail("No method found at the caret position");
+            fail("No class found at the caret position");
         }
     }
 
-    private void pasteMethodAtEndOfFile() {
+    private void pasteClassAtEndOfFile() {
         Editor editor = getEditor();
         PsiFile file = getFile();
         editor.getCaretModel().moveToOffset(file.getTextRange().getEndOffset());
         executeAction("EditorPaste");
     }
 
-    private void verifyCopyResult() throws IOException {
+    private void verifyCopyAndPasteResult() throws IOException {
         String file = getProject().getBasePath() + "/.trace-db.txt";
         VirtualFile traceFile = VfsTestUtil.findFileByCaseSensitivePath(file);
         String content = VfsUtilCore.loadText(traceFile);

@@ -5,6 +5,6 @@ public class ClonedFile {
     public void test(){
         System.out.println("test");
     }
-    // &end[]
+    // &end[Test]
 
 }
