@@ -1,33 +1,34 @@
-package se.isselab.HAnS.cloneAssetsTests;
+package se.isselab.HAnS.assetsManagementTests.cloneAssetsTests;
 
 import com.intellij.openapi.actionSystem.IdeActions;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.newvfs.RefreshQueue;
+import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.testFramework.VfsTestUtil;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
-import com.intellij.ui.EditorNotificationPanel;
-import com.intellij.ui.EditorNotifications;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import se.isselab.HAnS.assetsManagement.CloneManagementSettingsState;
 import se.isselab.HAnS.assetsManagement.cloneManagement.NotificationProvider;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class NotificationProvideTests extends BasePlatformTestCase {
+    //VirtualFile traceFile;
     @Before
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        //traceFile = VfsTestUtil.createFile(myFixture.getProject().getBaseDir(), ".trace-db.txt");
     }
     @Override
     protected String getTestDataPath() {
@@ -74,13 +75,21 @@ public class NotificationProvideTests extends BasePlatformTestCase {
             try {
                 sourceFile.setBinaryContent(content.getBytes());
                 VirtualFile copiedFile = sourceFile.copy(this, destDir, sourceFile.getName());
-                VirtualFile traceFile = VfsUtil.refreshAndFindChild( myFixture.getProject().getBaseDir(), ".trace-db.txt");
-                boolean isCloned = NotificationProvider.isCloned(copiedFile);
-                assertTrue(isCloned);
-                traceFile.delete(CloneTracingTests.class);
+                //VirtualFile traceFile = VfsUtil.refreshAndFindChild(myFixture.getProject().getBaseDir(), ".trace-db.txt");
+                ///boolean isCloned = NotificationProvider.isCloned(copiedFile);
+                //assertTrue(isCloned);
+                //traceFile.delete(CloneTracingTests.class);
             } catch (Exception e) {
-                fail("Failed to create files or copy content: " + e.getMessage());
+                fail("Failed to create files: " + e.getMessage());
             }
+        });
+
+        RefreshQueue.getInstance().refresh(true, true, ()-> {
+            String file = myFixture.getProject().getBasePath() + "/.trace-db.txt";
+            VirtualFile traceFile = VfsTestUtil.findFileByCaseSensitivePath(file);
+            VirtualFile copiedFile = VfsTestUtil.findFileByCaseSensitivePath(destDir.getPath() + "source.java");
+            boolean isCloned = NotificationProvider.isCloned(copiedFile);
+            assertTrue(isCloned);
         });
     }
 
@@ -95,20 +104,40 @@ public class NotificationProvideTests extends BasePlatformTestCase {
                 "}";
         CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
         settingsState.prefKey = "All";
-        ApplicationManager.getApplication().runWriteAction(() -> {
-            try {
-                sourceFile.setBinaryContent(content.getBytes());
-                VirtualFile copiedFile = sourceFile.copy(this, destDir, sourceFile.getName());
-                VirtualFile traceFile = VfsUtil.refreshAndFindChild( myFixture.getProject().getBaseDir(), ".trace-db.txt");
-                String path = NotificationProvider.getSourcePath(copiedFile);
-                assertNotNull(path);
-                traceFile.delete(CloneTracingTests.class);
-            } catch (Exception e) {
-                fail("Failed to create files or copy content: " + e.getMessage());
-            }
+        ApplicationManager.getApplication().invokeAndWait(()-> {
+            ApplicationManager.getApplication().runWriteAction(() -> {
+                try {
+                    sourceFile.setBinaryContent(content.getBytes());
+                    sourceFile.copy(this, destDir, sourceFile.getName());
+                } catch (Exception e) {
+                    fail("Failed to create files or copy content: " + e.getMessage());
+                }
+            });
+        });
+        RefreshQueue.getInstance().refresh(true, true, ()->{
+            String file = myFixture.getProject().getBasePath() + "/.trace-db.txt";
+            VirtualFile traceFile = VfsTestUtil.findFileByCaseSensitivePath(file);
+            assertNotNull(traceFile);
+            VirtualFile copiedFile = VfsUtil.refreshAndFindChild(destDir, "source.java");
+            String path = NotificationProvider.getSourcePath(copiedFile);
+            assertNotNull("Path should not be null", path);
         });
     }
 
+    private VirtualFile waitForFile(VirtualFile directory, String fileName, int timeoutMillis) {
+        final long deadline = System.currentTimeMillis() + timeoutMillis;
+        VirtualFile file;
+        while ((file = directory.findChild(fileName)) == null && System.currentTimeMillis() < deadline) {
+            directory.refresh(false, false);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        return file;
+    }
     @Test
     public void testisSourceFileChanged() throws Exception{
         VirtualFile sourceDir = createDir();

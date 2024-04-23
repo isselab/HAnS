@@ -1,4 +1,4 @@
-package se.isselab.HAnS.cloneAssetsTests;
+package se.isselab.HAnS.assetsManagementTests.cloneAssetsTests;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
