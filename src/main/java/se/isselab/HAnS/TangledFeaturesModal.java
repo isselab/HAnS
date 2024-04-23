@@ -30,10 +30,10 @@ public class TangledFeaturesModal extends DialogWrapper {
     Project project;
     // 1st file editor with header
     JLabel header1;
-    public CustomFileTextEditorField codeTextArea1;
+    private CustomFileTextEditorField codeTextArea1;
     // 2nd file editor with header
     JLabel header2;
-    public CustomFileTextEditorField codeTextArea2;
+    private CustomFileTextEditorField codeTextArea2;
     // top header
     JLabel titleLabel;
     // files of all tangled feature pairs
@@ -158,6 +158,7 @@ public class TangledFeaturesModal extends DialogWrapper {
             panel.remove(titleLabel);
         }
         VirtualFile psiFile = FileDocumentManager.getInstance().getFile(currentElement.getDocument());
+        if (psiFile == null) {return;}
         String documentUri = psiFile.getCanonicalPath();
         String[] parts = documentUri.split("/");
         String result = psiFile.getName();
@@ -219,10 +220,10 @@ public class TangledFeaturesModal extends DialogWrapper {
     private void updateCodeTextArea(CustomFileTextEditorField codeTextArea, Document document, int start, int end) {
         codeTextArea.setText(document.getText());
         codeTextArea.setDocument(document);
-        if (PsiDocumentManager.getInstance(project).getPsiFile(document).getFileType() != null) {
+        if (PsiDocumentManager.getInstance(project).getPsiFile(document) != null) {
             codeTextArea.setFileType(PsiDocumentManager.getInstance(project).getPsiFile(document).getFileType());
         }
-        if (codeTextArea.getEditor().getCaretModel() != null) {
+        if (codeTextArea.getEditor() != null) {
             codeTextArea.getEditor().getCaretModel().moveToOffset(0);
         }
         codeTextArea.selectText(start, end);
@@ -256,7 +257,9 @@ public class TangledFeaturesModal extends DialogWrapper {
                 createHeader1(currentElement.getMainFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(currentElement.getDocument())).getPath());
 
                 ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getTangledFeatureLPQ());
+                if (tangled == null) {return;}
                 Document doc = (Document) tangled.get(0);
+                if (doc == null) { return; }
                 updateCodeTextArea(codeTextArea2, doc, (int) tangled.get(1), (int) tangled.get(2));
                 createHeader2(currentElement.getTangledFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc)).getPath());
 
@@ -264,7 +267,9 @@ public class TangledFeaturesModal extends DialogWrapper {
                     currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) ) {
 
                 ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getMainFeatureLPQ());
+                if (tangled == null) {return;}
                 Document doc = (Document) tangled.get(0);
+                if (doc == null) { return; }
                 updateCodeTextArea(codeTextArea1, doc, (int) tangled.get(1), (int) tangled.get(2));
 
                 createHeader1(currentElement.getMainFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc)).getPath());
@@ -278,12 +283,16 @@ public class TangledFeaturesModal extends DialogWrapper {
             } else if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.file) &&
                     currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.file)) {
                 ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getMainFeatureLPQ());
+                if (tangled == null) {return;}
                 Document doc = (Document) tangled.get(0);
+                if (doc == null) { return; }
                 updateCodeTextArea(codeTextArea1, doc, (int) tangled.get(1), (int) tangled.get(2));
                 createHeader1(currentElement.getMainFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc)).getPath());
 
                 ArrayList<Object> tangled2 = getFeatureToFileOrFolderDocument(currentElement.getTangledFeatureLPQ());
+                if (tangled2 == null) {return;}
                 Document doc2 = (Document) tangled2.get(0);
+                if (doc2 == null) { return; }
                 updateCodeTextArea(codeTextArea2, doc2, (int) tangled2.get(1), (int) tangled2.get(2));
                 createHeader2(currentElement.getTangledFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc2)).getPath());
 
