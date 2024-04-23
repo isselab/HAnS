@@ -49,7 +49,7 @@ public class TangledFeaturesModal extends DialogWrapper {
     public TangledFeaturesModal(Project project) {
         super(project);
         this.project = project;
-        setTitle("Resolve tangling conflicts");
+        setTitle("Resolve Tangling Conflicts");
         setSize(700, 700);
         init();
     }
@@ -160,6 +160,7 @@ public class TangledFeaturesModal extends DialogWrapper {
         VirtualFile psiFile = FileDocumentManager.getInstance().getFile(currentElement.getDocument());
         if (psiFile == null) {return;}
         String documentUri = psiFile.getCanonicalPath();
+        if (documentUri == null) {return;}
         String[] parts = documentUri.split("/");
         String result = psiFile.getName();
         if (parts.length >= 2) {
@@ -220,9 +221,7 @@ public class TangledFeaturesModal extends DialogWrapper {
     private void updateCodeTextArea(CustomFileTextEditorField codeTextArea, Document document, int start, int end) {
         codeTextArea.setText(document.getText());
         codeTextArea.setDocument(document);
-        if (PsiDocumentManager.getInstance(project).getPsiFile(document) != null) {
-            codeTextArea.setFileType(PsiDocumentManager.getInstance(project).getPsiFile(document).getFileType());
-        }
+        codeTextArea.setFileType(Objects.requireNonNull(PsiDocumentManager.getInstance(project).getPsiFile(document)).getFileType());
         if (codeTextArea.getEditor() != null) {
             codeTextArea.getEditor().getCaretModel().moveToOffset(0);
         }
