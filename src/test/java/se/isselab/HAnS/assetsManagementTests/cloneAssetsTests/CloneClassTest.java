@@ -21,7 +21,7 @@ public class CloneClassTest extends LightPlatformCodeInsightTestCase {
         settingsState.prefKey = "All";
         VfsTestUtil.createFile(getProject().getBaseDir(), ".feature-model");
     }
-    public void testCopyAndPasteJavaClass() throws IOException {
+    public void testCloneClass() throws IOException {
         String content = """
                 public class TestClass {
                     <caret>public void exampleMethod() {
@@ -30,20 +30,20 @@ public class CloneClassTest extends LightPlatformCodeInsightTestCase {
                     }
                 }
                 """;
-        prepareJava(content, "TestClass.java");
+        prepareFile(content, "TestClass.java");
         CloneManagementSettingsState settingsState = CloneManagementSettingsState.getInstance();
         settingsState.prefKey = "All";
-        copyJavaClassAtCaret();
+        copyClassAtCaret();
         pasteClassAtEndOfFile();
-        verifyCopyAndPasteResult();
+        verifyCloneResult();
         verifyTraceParsing();
     }
 
-    private void prepareJava(String text, String fileName) {
+    private void prepareFile(String text, String fileName) {
         configureFromFileText(fileName, text);
     }
 
-    private void copyJavaClassAtCaret() {
+    private void copyClassAtCaret() {
         Editor editor = getEditor();
         PsiFile file = getFile();
         int caretOffset = editor.getCaretModel().getOffset();
@@ -66,7 +66,7 @@ public class CloneClassTest extends LightPlatformCodeInsightTestCase {
         executeAction("EditorPaste");
     }
 
-    private void verifyCopyAndPasteResult() throws IOException {
+    private void verifyCloneResult() throws IOException {
         String file = getProject().getBasePath() + "/.trace-db.txt";
         VirtualFile traceFile = VfsTestUtil.findFileByCaseSensitivePath(file);
         String content = VfsUtilCore.loadText(traceFile);

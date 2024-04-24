@@ -31,7 +31,7 @@ public class CloneVfsTest extends LightPlatformCodeInsightTestCase {
     }
 
     @Test
-    public void testCopyJavaVirtualFile() throws IOException {
+    public void testCloneFile() throws IOException {
         VirtualFile sourceDir = createDir();
         VirtualFile destDir = createDir();
         VirtualFile sourceFile = addChild(sourceDir, "source.java", false);
