@@ -1,10 +1,8 @@
 package se.isselab.HAnS.actions;
 
-import com.intellij.lang.ASTNode;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
@@ -19,9 +17,7 @@ import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocation;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
-
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -57,7 +53,9 @@ public class RemoveFeatureAction extends AnAction {
                 public void visitComment(@NotNull PsiComment comment) {
                     if (e.getData(LangDataKeys.PSI_ELEMENT) instanceof FeatureModelFeature) {
                         FeatureModelFeature feature = (FeatureModelFeature) e.getData(LangDataKeys.PSI_ELEMENT);
+                        if (feature != null) {
                         String featureName = feature.getText();
+                        }
                         String[] featureNames = featureName.split("\\R");
 
                         // Obtain the FeatureFileMapping instance associated with the feature
@@ -128,7 +126,7 @@ public class RemoveFeatureAction extends AnAction {
                                                 });
                                             });
 
-                                            // Delete from feature model with children optionally
+                                            // Delete from feature model with children
                                             feature.deleteFeature();
                                         }
 
