@@ -48,73 +48,73 @@ public class RemoveFeatureAction extends AnAction {
                 // Reference to keep track of the state of the comment
                 final AtomicReference<PsiComment> beginReference = new AtomicReference<>();
 
-
-                @Override
+  @Override
                 public void visitComment(@NotNull PsiComment comment) {
                     if (e.getData(LangDataKeys.PSI_ELEMENT) instanceof FeatureModelFeature) {
                         FeatureModelFeature feature = (FeatureModelFeature) e.getData(LangDataKeys.PSI_ELEMENT);
                         if (feature != null) {
-                        String featureName = feature.getText();
-                        }
-                        String[] featureNames = featureName.split("\\R");
+                            String featureName = feature.getText();
+                            String[] featureNames = featureName.split("\\R");
 
-                        // Obtain the FeatureFileMapping instance associated with the feature
-                        FeatureFileMapping featureMapping = new FeatureFileMapping(feature);
+                            // Ensure feature is not null before proceeding
+                            if (feature != null) {
+                                // Obtain the FeatureFileMapping instance associated with the feature
+                                FeatureFileMapping featureMapping = new FeatureFileMapping(feature);
 
-                        // Get the set of file paths associated with the feature
-                        Set<String> filePaths = featureMapping.getMappedFilePaths();
+                                // Get the set of file paths associated with the feature
+                                Set<String> filePaths = featureMapping.getMappedFilePaths();
 
-                        // Iterate over each file path
-                        for (String filePath : filePaths) {
-                            // Retrieve the FeatureLocation instance for the current file path
-                            FeatureLocation featureLocation = featureMapping.getFeatureLocationsForFile(filePath);
-                            if (featureLocation == null) continue;
+                                // Iterate over each file path
+                                for (String filePath : filePaths) {
+                                    // Retrieve the FeatureLocation instance for the current file path
+                                    FeatureLocation featureLocation = featureMapping.getFeatureLocationsForFile(filePath);
+                                    if (featureLocation == null) continue;
 
-                            // Iterate over each block in the FeatureLocation
-                            for (FeatureLocationBlock block : featureLocation.getFeatureLocations()) {
-                                // Check if the block has both begin and end annotations
-                                if (block.getStartLine() != -1 && block.getEndLine() != -1) {
-                                    // Remove the block of code between the begin and end annotations
-                                    deleteCodeBlock(project, document, block.getStartLine(), block.getEndLine());
+                                    // Iterate over each block in the FeatureLocation
+                                    for (FeatureLocationBlock block : featureLocation.getFeatureLocations()) {
+                                        // Check if the block has both begin and end annotations
+                                        if (block.getStartLine() != -1 && block.getEndLine() != -1) {
+                                            // Remove the block of code between the begin and end annotations
+                                            deleteCodeBlock(project, document, block.getStartLine(), block.getEndLine());
 
-                                    feature.deleteFeature();
-                                }
-                            }
-                        }
-
-                        for (String name : featureNames) {
-                            String featureWithoutSpaces = name.replaceAll("\\s+", "");
-                            if (featureWithoutSpaces.isEmpty()) continue;
-
-                            String commentText = comment.getText();
-
-                            if (commentText.contains(featureWithoutSpaces)) {
-                                int lineNumber = document.getLineNumber(comment.getTextRange().getStartOffset() + 1);
-                                System.out.println("Asset in " + openedFile.getName() + "  at line number " + (lineNumber + 1));
-
-                                /*
-                                // Search for begin and end annotations
-                                if (commentText.contains("&begin")) {
-                                    beginReference.set(comment);
-                                    System.out.println("Deleting //&begin comment: " + commentText);
-                                     // Print debug information
-                                    if (commentText.contains("&end")) {
-                                        // Print debug information
-                                        System.out.println("Deleting //&end comment: " + commentText);
-                                        PsiComment beginComment = beginReference.get();
-                                        if (beginComment != null) {
-                                            // Get the line numbers for the begin and end comments
-                                            int lineStartOffset = document.getLineStartOffset(document.getLineNumber(comment.getTextOffset()));
-                                            int lineEndOffset = document.getLineEndOffset(document.getLineNumber(comment.getTextOffset() + comment.getTextLength())-1);
-                                            ApplicationManager.getApplication().invokeLater(() -> {
-                                                WriteCommandAction.runWriteCommandAction(project, () -> {
-                                                    document.deleteString(lineStartOffset, lineEndOffset);
-                                                });
-                                            });
+                                            feature.deleteFeature();
                                         }
                                     }
-                                } */
-                                    //else{
+                                }
+
+                                for (String name : featureNames) {
+                                    String featureWithoutSpaces = name.replaceAll("\\s+", "");
+                                    if (featureWithoutSpaces.isEmpty()) continue;
+
+                                    String commentText = comment.getText();
+
+                                    if (commentText.contains(featureWithoutSpaces)) {
+                                        int lineNumber = document.getLineNumber(comment.getTextRange().getStartOffset() + 1);
+                                        System.out.println("Asset in " + openedFile.getName() + "  at line number " + (lineNumber + 1));
+
+                                        /*
+                                        // Search for begin and end annotations
+                                        if (commentText.contains("&begin")) {
+                                            beginReference.set(comment);
+                                            System.out.println("Deleting //&begin comment: " + commentText);
+                                             // Print debug information
+                                            if (commentText.contains("&end")) {
+                                                // Print debug information
+                                                System.out.println("Deleting //&end comment: " + commentText);
+                                                PsiComment beginComment = beginReference.get();
+                                                if (beginComment != null) {
+                                                    // Get the line numbers for the begin and end comments
+                                                    int lineStartOffset = document.getLineStartOffset(document.getLineNumber(comment.getTextOffset()));
+                                                    int lineEndOffset = document.getLineEndOffset(document.getLineNumber(comment.getTextOffset() + comment.getTextLength())-1);
+                                                    ApplicationManager.getApplication().invokeLater(() -> {
+                                                        WriteCommandAction.runWriteCommandAction(project, () -> {
+                                                            document.deleteString(lineStartOffset, lineEndOffset);
+                                                        });
+                                                    });
+                                                }
+                                            }
+                                        } */
+                                        //else{
                                         // Search for line annotation
                                         if (comment.getText().contains("&line")) {
                                             // Delete the line from the document
@@ -126,11 +126,13 @@ public class RemoveFeatureAction extends AnAction {
                                                 });
                                             });
 
-                                            // Delete from feature model with children
+                                            // Delete from feature model with children optionally
                                             feature.deleteFeature();
                                         }
 
-                                 //   }
+                                        //   }
+                                    }
+                                }
                             }
                         }
                     }
