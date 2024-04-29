@@ -160,6 +160,12 @@ limitations under the License.
                 icon="AllIcons.General.Remove">
             <add-to-group group-id="StructureViewPopupMenu" anchor="after" relative-to-action="AddFeature"/>
         </action>
+        <action id="RemoveFeature"
+                class="se.isselab.HAnS.actions.RemoveFeatureAction"
+                text="Remove..."
+                description="Remove feature">
+            <add-to-group group-id="StructureViewPopupMenu" anchor="after" relative-to-action="DeleteFeature"/>
+        </action>
         <!-- &begin[NewFile] -->
         <action id="CreateNewFileAction"
                 class="se.isselab.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"
