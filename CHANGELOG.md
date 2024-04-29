@@ -8,6 +8,7 @@
 
 ### Added
 - Added a View of the metrics to the project
+- Added the HanS Settings Page without given functionality
 
 ## [0.0.4] - 2024-03-06
 
@@ -75,6 +76,7 @@ First Release to marketplace
 - Live templates
 - Code annotation quickfix
 - Syntax highlighter settings
+
 
 ### Changed
 
