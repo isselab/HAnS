@@ -1,2 +1,2 @@
-AddAction.java DeleteAction.java RenameAction.java
+AddAction.java DeleteAction.java RenameAction.java RemoveFeatureAction.java
 FeatureView
