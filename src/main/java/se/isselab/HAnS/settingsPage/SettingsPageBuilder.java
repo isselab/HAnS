@@ -46,21 +46,18 @@ public class SettingsPageBuilder implements Configurable {
         JBTabbedPane tabbedPane = new JBTabbedPane();
 
         // General Settings Tab
-        JPanel generalSettingsPanel = new JPanel();
-        generalSettingsPanel.setLayout(new BoxLayout(generalSettingsPanel, BoxLayout.Y_AXIS));
+        JPanel generalTab = new JPanel();
+        generalTab.setLayout(new BoxLayout(generalTab, BoxLayout.Y_AXIS));
 
-        tabbedPane.addTab("General Settings", generalSettingsPanel);
+        tabbedPane.addTab("General", generalTab);
 
 
         // Section Hide Annotations
         SectionBuilder hideAnnotationsSection = new SectionBuilder("Hide Annotations"); // Builds the section Hide Annotations
-        generalSettingsPanel.add(hideAnnotationsSection.getPanel());// Builds the section Hide Annotations into the generalSettings Panel
-
-
+        generalTab.add(hideAnnotationsSection.getPanel());// Builds the section Hide Annotations into the generalSettings Panel
         CheckboxBuilder enableHideAnnotationsCheckbox = new CheckboxBuilder("Enable Hide Annotations", "This Enables the Hide Annotation functionality ");// Builds the Checkbox
-        generalSettingsPanel.add(enableHideAnnotationsCheckbox.getPanel()); // add the Checkbox in typical IntelliJ Style to the Panel
+        generalTab.add(enableHideAnnotationsCheckbox.getPanel()); // add the Checkbox in typical IntelliJ Style to the Panel
 
-        // Adding action listener to the checkbox
         enableHideAnnotationsCheckbox.getCheckbox().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -70,15 +67,10 @@ public class SettingsPageBuilder implements Configurable {
 
         // Section Logging
         SectionBuilder loggingSection = new SectionBuilder("Logging");
-        generalSettingsPanel.add(loggingSection.getPanel());
-
-
+        generalTab.add(loggingSection.getPanel());
         CheckboxBuilder enableLoggingCheckbox = new CheckboxBuilder("Enable Logging");
-        generalSettingsPanel.add(enableLoggingCheckbox.getPanel());
+        generalTab.add(enableLoggingCheckbox.getPanel());
 
-
-
-        // Adding action listener to the checkbox
         enableLoggingCheckbox.getCheckbox().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -87,16 +79,14 @@ public class SettingsPageBuilder implements Configurable {
             }
         });
 
-        generalSettingsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-
-
+        generalTab.add(Box.createRigidArea(new Dimension(0, 10)));
 
         // Clone Settings Tab
         JPanel cloneSettingsPanel = new JPanel();
         cloneSettingsPanel.setLayout(new BoxLayout(cloneSettingsPanel, BoxLayout.Y_AXIS));
+
         // Section Clone Settings
-        SectionBuilder cloneSection = new SectionBuilder("Clone Settings");
+        SectionBuilder cloneSection = new SectionBuilder("Asset Management");
         cloneSettingsPanel.add(cloneSection.getPanel());
 
         CheckboxBuilder enableCloningTraceCheckbox = new CheckboxBuilder("Enable Cloning Trace Tracking");
@@ -132,7 +122,7 @@ public class SettingsPageBuilder implements Configurable {
         });
 
         cloneSettingsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        tabbedPane.addTab("Clone Settings", cloneSettingsPanel);
+        tabbedPane.addTab("Asset Management", cloneSettingsPanel);
 
         panel.add(tabbedPane);
 
