@@ -230,7 +230,7 @@ public class FeatureModelHandler {
     }
     public static List<String> getFeaturesAnnotationsFromText(String copiedText){
         List<String> features = new ArrayList<>();
-        String regex = "// &(?:line|begin)\\[([^\\]]+)\\]";
+        String regex = "// &(line|begin|end)\\[(\\w+(?:::\\w+)?(?:,\\s*\\w+(?:::\\w+)?)*)\\]";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(copiedText);
         while (matcher.find()) {

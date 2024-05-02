@@ -86,16 +86,19 @@ public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
                     currentClassName = currentClass.getName();
                 }
             }
-            var featuresAnnotated = FeatureModelHandler.getFeaturesAnnotationsFromText(s);
-            if(featuresAnnotated != null )
-                FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);
             if (AssetsAndFeatureTraces.clonedClass != null) {
+                var featuresAnnotated = FeatureModelHandler.getFeaturesAnnotationsFromText(s);
+                if(featuresAnnotated != null )
+                    FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);
                 VirtualFile virtualFile = psiFile.getVirtualFile();
                 if (virtualFile != null) {
                     String targetPath = virtualFile.getPath();
                     CloneManager.CloneClassAssets(project, AssetsAndFeatureTraces.sourceProjectName, AssetsAndFeatureTraces.sourcePath, targetPath, AssetsAndFeatureTraces.clonedClass, currentClassName);
                 }
             } else if(AssetsAndFeatureTraces.clonedMethod != null){
+                var featuresAnnotated = FeaturesAnnotationsExtractor.extractFeatureNames(AssetsAndFeatureTraces.clonedMethod);
+                if(featuresAnnotated != null )
+                    FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);
                 VirtualFile virtualFile = psiFile.getVirtualFile();
                 if (virtualFile != null) {
                     String targetPath = virtualFile.getPath();
