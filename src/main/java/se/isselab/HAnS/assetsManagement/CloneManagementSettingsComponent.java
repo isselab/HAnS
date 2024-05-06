@@ -20,7 +20,7 @@ public class CloneManagementSettingsComponent {
 
     public JComponent getPanel() {
         myMainPanel = new JPanel(new GridLayout(0, 1));
-        cloningOption = new JCheckBox("Enable Cloning Trace Tracking");
+        cloningOption = new JCheckBox("Enable Cloning Tracing");
         showCloneOption = new JCheckBox("Show Clone Information");
         propagatingOption = new JCheckBox("Notify on Sources Segment Changes");
         myMainPanel.add(cloningOption);

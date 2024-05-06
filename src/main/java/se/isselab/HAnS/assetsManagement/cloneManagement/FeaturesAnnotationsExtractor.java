@@ -23,6 +23,8 @@ import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationFeatureImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FeaturesAnnotationsExtractor {
 
@@ -55,9 +57,25 @@ public class FeaturesAnnotationsExtractor {
                 }
             }
         });
+        return featureNames.isEmpty() ? null : featureNames;
+    }
 
-        if(!featureNames.isEmpty())
-            return featureNames;
-        return null;
+    public static List<String> getFeaturesAnnotationsFromText(String copiedText){
+        List<String> features = new ArrayList<>();
+        String regex = "// &(line|begin|end)\\[([^\\]]*)\\]";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(copiedText);
+        while (matcher.find()) {
+            String[] featureParts = matcher.group(2).split(",\\s*");
+            for (String part : featureParts) {
+                String[] words = part.split("::");
+                for (String word : words) {
+                    if (!word.isEmpty() && !features.contains(word.trim())) {
+                        features.add(word.trim());
+                    }
+                }
+            }
+        }
+        return features.isEmpty() ? null : features;
     }
 }

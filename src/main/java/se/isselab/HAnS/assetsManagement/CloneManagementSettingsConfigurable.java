@@ -11,7 +11,7 @@ public class CloneManagementSettingsConfigurable implements Configurable {
     private CloneManagementSettingsComponent cloneManagementSettingsComponent;
     @Override
     public @NlsContexts.ConfigurableName String getDisplayName() {
-        return "Clone Management Page";
+        return "Clone Management";
     }
 
     @Override

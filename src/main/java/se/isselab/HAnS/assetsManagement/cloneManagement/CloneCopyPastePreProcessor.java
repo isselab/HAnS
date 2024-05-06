@@ -87,7 +87,7 @@ public class CloneCopyPastePreProcessor implements CopyPastePreProcessor {
                 }
             }
             if (AssetsAndFeatureTraces.clonedClass != null) {
-                var featuresAnnotated = FeatureModelHandler.getFeaturesAnnotationsFromText(s);
+                var featuresAnnotated = FeaturesAnnotationsExtractor.getFeaturesAnnotationsFromText(s);
                 if(featuresAnnotated != null )
                     FeaturesCodeAnnotations.getInstance().setFeatureNames(featuresAnnotated);
                 VirtualFile virtualFile = psiFile.getVirtualFile();
