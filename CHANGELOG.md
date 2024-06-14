@@ -8,6 +8,7 @@
 
 ### Added
 - Added a View of the metrics to the project
+- Added a clone management tool with a preference page
 
 ## [0.0.4] - 2024-03-06
 
