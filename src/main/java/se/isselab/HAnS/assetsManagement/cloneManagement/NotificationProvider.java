@@ -51,8 +51,8 @@ public class NotificationProvider extends EditorNotifications.Provider<EditorNot
             if (cloned && !isSourceFileChanged) {
                 String sourceFilePath = getSourcePath(file);
                 EditorNotificationPanel panel = new EditorNotificationPanel();
-                panel.setText("This file has been cloned. To show the source file click on Show Source File");
-                panel.createActionLabel("Show Source File", () -> {
+                panel.setText("This file has been cloned. To show the source file click on Show Source Clone");
+                panel.createActionLabel("Show Source Clone", () -> {
                     VirtualFile sourceFile = LocalFileSystem.getInstance().findFileByPath(sourceFilePath);
                     if (sourceFile != null && project != null) {
                         FileEditorManager.getInstance(project).openFile(sourceFile, true);
