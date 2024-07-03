@@ -1,5 +1,5 @@
 /*
-Copyright 2024 Luca Kramer
+Copyright 2024 Luca Kramer & Johan Martinson
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@ limitations under the License.
 
 package se.isselab.HAnS.metricsView;
 
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -29,87 +29,76 @@ import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 
 import se.isselab.HAnS.AnnotationIcons;
-import se.isselab.HAnS.featureExtension.FeatureService;
-import se.isselab.HAnS.featureLocation.FeatureFileMapping;
-import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
+import se.isselab.HAnS.featureExtension.FeatureServiceInterface;
+import se.isselab.HAnS.metrics.FeatureMetrics;
 import se.isselab.HAnS.metrics.FeatureScattering;
-import se.isselab.HAnS.metrics.FeatureTangling;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Comparator;
 import java.util.List;
 
 public class MetricsViewFactory implements ToolWindowFactory {
 
-    private JButton triggerButton;
-    private JPanel contentPanel;
+    JPanel contentPanel;
+    public MetricsViewFactory() {
+        contentPanel = new JPanel();
+    }
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-        toolWindow.setIcon(AnnotationIcons.PluginIcon);
-        createButton(project, toolWindow);
-        addContent(toolWindow);
-    }
+        toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
+        FeatureServiceInterface service = project.getService(FeatureServiceInterface.class);
 
-    private void createButton(Project project, ToolWindow toolWindow) {
-        triggerButton = new JButton("Refresh Metrics");
-        triggerButton.addActionListener(new ActionListener() {
+        toolWindow.setTitleActions(List.of(new AnAction("Refresh Metrics", "Refresh metrics", AllIcons.Actions.Refresh) {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                // Run the task in the background
-                ProgressManager.getInstance().run(new Task.Backgroundable(project, "Refreshing metrics") {
-                    @Override
-                    public void run(@NotNull ProgressIndicator indicator) {
-                        refreshTableContent(project, toolWindow);
-                    }
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                contentPanel.removeAll();
+                service.getFeatureMetricsBackground(metrics -> {
+                    addContent(toolWindow, contentPanel);
+
+                    refreshTableContent(contentPanel, metrics, service);
                 });
             }
+
+        }));
+
+        service.getFeatureMetricsBackground(metrics -> {
+            addContent(toolWindow, contentPanel);
+
+            refreshTableContent(contentPanel, metrics, service);
         });
     }
 
-    private void addContent(ToolWindow toolWindow) {
-        contentPanel = new JPanel();
-        contentPanel.setLayout(new BorderLayout());
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(triggerButton);
-        contentPanel.add(buttonPanel, BorderLayout.NORTH);
+    private void addContent(ToolWindow toolWindow, JPanel contentPanel) {
+        contentPanel.setLayout(new BorderLayout());
 
         ContentFactory contentFactory = ContentFactory.getInstance();
         Content content = contentFactory.createContent(contentPanel, "", false);
         toolWindow.getContentManager().addContent(content);
     }
 
-    private void refreshTableContent(Project project, ToolWindow toolWindow) {
+    private void refreshTableContent(JPanel contentPanel, FeatureMetrics metrics, FeatureServiceInterface service) {
         DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"Feature", "Scattering Degree", "Tangling Degree", "Line Count"}, 0) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 // Set appropriate classes for sorting
-                switch (columnIndex) {
-                    case 1: // Scattering Degree column
-                    case 2: // Tangling Degree column
-                    case 3: // Line Count column
-                        return Integer.class; // Use Integer class for numerical sorting
-                    default:
-                        return Object.class; // Default class
-                }
+                return switch (columnIndex) {
+                    case 1, 2, 3 ->
+                            Integer.class; // Use Integer class for numerical sorting
+                    default -> Object.class; // Default class
+                };
             }
         };
         JBTable table = new JBTable(tableModel);
 
         table.setRowSorter(createSorters(tableModel));
 
-        FeatureService featureService = project.getService(FeatureService.class);
-        List<FeatureModelFeature> features = featureService.getFeatures();
-        List<FeatureModelFeature> root = featureService.getRootFeatures();
-
-        populateTable(project, table, features, root, featureService);
+        populateTable(table, metrics, service);
 
         table.setDefaultRenderer(Object.class, new IntegerTableCellRenderer());
         table.setAutoCreateRowSorter(true);
@@ -130,18 +119,17 @@ public class MetricsViewFactory implements ToolWindowFactory {
         return sorter;
     }
 
-    private void populateTable(Project project, JBTable table, List<FeatureModelFeature> features, List<FeatureModelFeature> root, FeatureService featureService) {
-        for (FeatureModelFeature feature : features) {
-            String featureName = feature.getFeatureName();
-            FeatureFileMapping featureFileMapping = featureService.getFeatureFileMapping(feature);
+    private void populateTable(JBTable table, FeatureMetrics metrics, FeatureServiceInterface service) {
+        for (var featureFileMapping: metrics.getFeatureFileMappings().values()){
+            var feature = featureFileMapping.getFeature();
+            if (service.isRootFeature(feature)) continue;
+            var featureName = feature.getLPQText();
 
-            if(!root.contains(feature)){
-                int featureScatteringDegree = FeatureScattering.getScatteringDegree(project, feature);
-                int featureTanglingDegree = FeatureTangling.getFeatureTanglingDegree(project, feature);
-                int featureLineCount = featureService.getTotalFeatureLineCount(featureFileMapping);
+            int featureScatteringDegree = FeatureScattering.getScatteringDegree(featureFileMapping);
+            int featureTanglingDegree = metrics.getTanglingMap().containsKey(feature)? metrics.getTanglingMap().get(feature).size() : 0;
+            int featureLineCount = featureFileMapping.getTotalFeatureLineCount();
 
-                ((DefaultTableModel) table.getModel()).addRow(new Object[]{featureName, featureScatteringDegree, featureTanglingDegree, featureLineCount});
-            }
+            ((DefaultTableModel) table.getModel()).addRow(new Object[]{featureName, featureScatteringDegree, featureTanglingDegree, featureLineCount});
         }
     }
 

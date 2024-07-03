@@ -86,6 +86,8 @@ public interface FeatureServiceInterface {
 
     FeatureModelFeature getParentFeature(FeatureModelFeature feature);
 
+    boolean isRootFeature(FeatureModelFeature feature);
+
     FeatureModelFeature getRootFeature(FeatureModelFeature feature);
 
     List<FeatureModelFeature> getRootFeatures();
