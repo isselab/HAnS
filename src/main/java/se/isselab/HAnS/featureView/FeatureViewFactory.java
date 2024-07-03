@@ -70,8 +70,6 @@ public class FeatureViewFactory implements ToolWindowFactory {
         if (contentManager != null) {
             contentManager.addContent(content);
         }
-
-
     }
 
     @NotNull
