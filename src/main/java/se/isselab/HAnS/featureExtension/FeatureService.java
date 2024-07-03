@@ -312,6 +312,20 @@ public final class FeatureService implements FeatureServiceInterface {
     }
 
     /**
+     * Checks if the given Feature is a top-level Feature of the .feature-model
+     * @param feature {@link FeatureModelFeature}
+     * @return whether the given Feature is a top-level Feature of the .feature-model
+     */
+    @Override
+    public boolean isRootFeature(FeatureModelFeature feature) {
+        FeatureModelFeature temp = feature;
+        if (temp.getParent() instanceof FeatureModelFile) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Returns the top-level Feature of the given Feature from the .feature-model
      * @param feature {@link FeatureModelFeature}
      * @return Top-level Feature of the given Feature from the .feature-model
