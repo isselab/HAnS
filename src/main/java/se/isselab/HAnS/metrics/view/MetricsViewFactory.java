@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package se.isselab.HAnS.metricsView;
+package se.isselab.HAnS.metrics.view;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -30,8 +30,8 @@ import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 
 import se.isselab.HAnS.AnnotationIcons;
-import se.isselab.HAnS.featureExtension.v2.MetricsService;
-import se.isselab.HAnS.metrics.v2.ProjectMetrics;
+import se.isselab.HAnS.pluginExtensions.MetricsService;
+import se.isselab.HAnS.metrics.ProjectMetrics;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;

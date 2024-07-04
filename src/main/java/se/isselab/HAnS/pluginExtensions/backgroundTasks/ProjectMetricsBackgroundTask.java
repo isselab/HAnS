@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package se.isselab.HAnS.featureExtension.v2.backgroundTasks;
+package se.isselab.HAnS.pluginExtensions.backgroundTasks;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -21,12 +21,11 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import se.isselab.HAnS.featureExtension.v2.MetricsCallback;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
-import se.isselab.HAnS.metrics.FeatureScattering;
-import se.isselab.HAnS.metrics.FeatureTangling;
-import se.isselab.HAnS.metrics.v2.NestingDepths;
-import se.isselab.HAnS.metrics.v2.ProjectMetrics;
+import se.isselab.HAnS.metrics.calculators.FeatureScattering;
+import se.isselab.HAnS.metrics.calculators.FeatureTangling;
+import se.isselab.HAnS.metrics.calculators.NestingDepths;
+import se.isselab.HAnS.metrics.ProjectMetrics;
 
 public class ProjectMetricsBackgroundTask extends Task.Backgroundable {
 

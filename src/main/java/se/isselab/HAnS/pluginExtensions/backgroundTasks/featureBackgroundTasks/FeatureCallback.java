@@ -13,14 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
-package se.isselab.HAnS.featureExtension.v2;
+package se.isselab.HAnS.pluginExtensions.backgroundTasks.featureBackgroundTasks;
 
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
-public interface MetricsService {
-
-    void getProjectMetricsBackground(MetricsCallback callback);
-
-    boolean isRootFeature(FeatureModelFeature featureName);
+public interface FeatureCallback {
+    void onComplete(FeatureModelFeature feature);
 }

@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package se.isselab.HAnS.featureExtension.v2;
+package se.isselab.HAnS.pluginExtensions.backgroundTasks;
 
-import se.isselab.HAnS.metrics.v2.ProjectMetrics;
+import se.isselab.HAnS.metrics.ProjectMetrics;
 
 public interface MetricsCallback {
     void onComplete(ProjectMetrics metrics);

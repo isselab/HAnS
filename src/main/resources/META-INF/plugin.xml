@@ -124,12 +124,12 @@ limitations under the License.
 
         <!-- &begin[MetricsView]-->
         <toolWindow id="Metrics View" anchor="bottom"
-                    factoryClass="se.isselab.HAnS.metricsView.MetricsViewFactory"
+                    factoryClass="se.isselab.HAnS.metrics.view.MetricsViewFactory"
         />
         <!-- &end[MetricsView]-->
 
-        <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService" serviceInterface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
-        <projectService serviceImplementation="se.isselab.HAnS.featureExtension.v2.ProjectMetricsService" serviceInterface="se.isselab.HAnS.featureExtension.v2.MetricsService"/>
+        <projectService serviceImplementation="se.isselab.HAnS.pluginExtensions.ProjectMetricsService" serviceInterface="se.isselab.HAnS.pluginExtensions.MetricsService"/>
+        <projectService serviceImplementation="se.isselab.HAnS.pluginExtensions.FeatureHighlighterService" serviceInterface="se.isselab.HAnS.pluginExtensions.HighlighterService"/>
     </extensions>
 
 
@@ -137,19 +137,19 @@ limitations under the License.
     <extensionPoints>
         <!-- &begin[Service]-->
         <extensionPoint
-                name="featureService"
-                interface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
-        <extensionPoint
                 name="metricsService"
-                interface="se.isselab.HAnS.featureExtension.v2.MetricsService"/>
+                interface="se.isselab.HAnS.pluginExtensions.MetricsService"/>
+        <extensionPoint
+                name="highlighterService"
+                interface="se.isselab.HAnS.pluginExtensions.HighlighterService"/>
         <!-- &end[Service]-->
         <!-- &begin[Callback]-->
         <extensionPoint
-                name="hansCallback"
-                interface="se.isselab.HAnS.featureExtension.HAnSCallback"/>
-        <extensionPoint
                 name="metricsCallback"
-                interface="se.isselab.HAnS.featureExtension.v2.MetricsCallback"/>
+                interface="se.isselab.HAnS.pluginExtensions.backgroundTasks.MetricsCallback"/>
+        <extensionPoint
+            name="featureCallback"
+            interface="se.isselab.HAnS.pluginExtensions.backgroundTasks.featureBackgroundTasks.FeatureCallback"/>
         <!-- &end[Callback]-->
 
     </extensionPoints>

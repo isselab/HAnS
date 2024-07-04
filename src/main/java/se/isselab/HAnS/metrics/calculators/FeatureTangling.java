@@ -14,11 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package se.isselab.HAnS.metrics;
+package se.isselab.HAnS.metrics.calculators;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
-import se.isselab.HAnS.featureExtension.backgroundTask.BackgroundTask;
+import se.isselab.HAnS.pluginExtensions.backgroundTask.BackgroundTask;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;

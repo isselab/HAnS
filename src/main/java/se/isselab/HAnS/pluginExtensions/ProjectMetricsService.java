@@ -1,5 +1,5 @@
 /*
-Copyright 2024 David Stechow & Philipp Kusmierz
+Copyright 2024 Johan Martinson
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,48 +14,116 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package se.isselab.HAnS.featureExtension;
+package se.isselab.HAnS.pluginExtensions;
 
 import com.intellij.openapi.components.Service;
+
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 
-import se.isselab.HAnS.fileHighlighter.FileHighlighter;
-import se.isselab.HAnS.featureExtension.backgroundTask.*;
+import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocation;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
-import se.isselab.HAnS.featureLocation.FeatureFileMapping;
+import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
+import se.isselab.HAnS.metrics.calculators.FeatureScattering;
+import se.isselab.HAnS.metrics.calculators.FeatureTangling;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.MetricsCallback;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.ProjectMetricsBackgroundTask;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
-import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
-import se.isselab.HAnS.metrics.FeatureMetrics;
-import se.isselab.HAnS.metrics.FeatureScattering;
-import se.isselab.HAnS.metrics.FeatureTangling;
 
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 @Service(Service.Level.PROJECT)
-public final class FeatureService implements FeatureServiceInterface {
+public final class ProjectMetricsService implements MetricsService {
+
     private final Project project;
 
-    public FeatureService(Project project){
+    public ProjectMetricsService(Project project){
         this.project = project;
     }
 
-    /**
-     * Get Feature List from HAnS in Service
-     * @return Feature List of all registered features
-     */
+    @Override
+    public void getProjectMetricsBackground(MetricsCallback callback) {
+        ProjectMetricsBackgroundTask task = new ProjectMetricsBackgroundTask(project, "Refreshing metrics...", callback, null);
+        task.queue();
+    }
+
+    //region Convenience Methods
+
     @Override
     public List<FeatureModelFeature> getFeatures() {
         return FeatureModelUtil.findFeatures(project);
     }
 
-    // &begin[FeatureFileMapping]
+    @Override
+    public List<FeatureModelFeature> getChildFeatures(FeatureModelFeature feature) {
+        List<FeatureModelFeature> childs = new ArrayList<>();
+        for(var child : feature.getChildren()) {
+            childs.add((FeatureModelFeatureImpl)child);
+        }
+        return childs;
+    }
+
+    @Override
+    public FeatureModelFeature getParentFeature(FeatureModelFeature feature) {
+        if (feature.getParent() instanceof FeatureModelFile) {
+            return (FeatureModelFeature) feature.getParent();
+        }
+        return (FeatureModelFeatureImpl) feature.getParent();
+    }
+
+    @Override
+    public boolean isRootFeature(FeatureModelFeature feature) {
+        return feature.getParent() instanceof FeatureModelFile;
+    }
+
+    @Override
+    public FeatureModelFeature getRootFeature(FeatureModelFeature feature) {
+        FeatureModelFeature temp = feature;
+        while(!(temp.getParent() instanceof FeatureModelFile)){
+            temp = (FeatureModelFeature) temp.getParent();
+        }
+        return temp;
+    }
+
+    @Override
+    public List<FeatureModelFeature> getRootFeatures(){
+        var featureList = FeatureModelUtil.findFeatures(project);
+        ArrayList<FeatureModelFeature> rootFeatures = new ArrayList<>();
+
+        if(featureList.isEmpty())
+            return rootFeatures;
+
+        FeatureModelFeature entryFeature = featureList.get(0);
+        rootFeatures.add(entryFeature);
+
+        //traverse left siblings
+        FeatureModelFeature siblingFeature = entryFeature;
+        while(siblingFeature.getPrevSibling() instanceof FeatureModelFeature){
+            siblingFeature = (FeatureModelFeature) siblingFeature.getPrevSibling();
+            rootFeatures.add(siblingFeature);
+        }
+
+        //traverse right siblings
+        siblingFeature = entryFeature;
+        while(siblingFeature.getNextSibling() instanceof FeatureModelFeature){
+            siblingFeature = (FeatureModelFeature) siblingFeature.getNextSibling();
+            rootFeatures.add(siblingFeature);
+        }
+
+        return rootFeatures;
+    }
+
+    //endregion
+
+// &begin[FeatureFileMapping]
     /**
      * Returns the locations of a Feature as a {@link FeatureFileMapping}.
      * @param feature Feature whose file mapping is to be calculated
@@ -283,142 +351,4 @@ public final class FeatureService implements FeatureServiceInterface {
         return featureLocation.getFeatureLocations();
     }
     // &end[FeatureLocation]
-
-    /**
-     * Returns a list of all child features of the given feature from the .feature-model
-     * @param feature {@link FeatureModelFeature}
-     * @return List of all child features of the given feature from the .feature-model
-     */
-    @Override
-    public List<FeatureModelFeature> getChildFeatures(FeatureModelFeature feature) {
-        List<FeatureModelFeature> childs = new ArrayList<>();
-        for(var child : feature.getChildren()) {
-            childs.add((FeatureModelFeatureImpl)child);
-        }
-        return childs;
-    }
-
-    /**
-     * Returns the parent feature of the given Feature from the .feature-model
-     * @param feature {@link FeatureModelFeature}
-     * @return Parent feature of the given Feature from the .feature-model
-     */
-    @Override
-    public FeatureModelFeature getParentFeature(FeatureModelFeature feature) {
-        if (feature.getParent() instanceof FeatureModelFile) {
-            return (FeatureModelFeature) feature.getParent();
-        }
-        return (FeatureModelFeatureImpl) feature.getParent();
-    }
-
-    /**
-     * Checks if the given Feature is a top-level Feature of the .feature-model
-     * @param feature {@link FeatureModelFeature}
-     * @return whether the given Feature is a top-level Feature of the .feature-model
-     */
-    @Override
-    public boolean isRootFeature(FeatureModelFeature feature) {
-        FeatureModelFeature temp = feature;
-        if (temp.getParent() instanceof FeatureModelFile) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the top-level Feature of the given Feature from the .feature-model
-     * @param feature {@link FeatureModelFeature}
-     * @return Top-level Feature of the given Feature from the .feature-model
-     */
-    @Override
-    public FeatureModelFeature getRootFeature(FeatureModelFeature feature) {
-        FeatureModelFeature temp = feature;
-        while(!(temp.getParent() instanceof FeatureModelFile)){
-            temp = (FeatureModelFeature) temp.getParent();
-        }
-        return temp;
-    }
-
-    /**
-     * Returns a list of all top-level features declared in the .feature-model
-     * @return List of all top-level features declared in the .feature-model
-     */
-    @Override
-    public List<FeatureModelFeature> getRootFeatures(){
-        var featureList = FeatureModelUtil.findFeatures(project);
-        ArrayList<FeatureModelFeature> rootFeatures = new ArrayList<>();
-
-        if(featureList.isEmpty())
-            return rootFeatures;
-
-        FeatureModelFeature entryFeature = featureList.get(0);
-        rootFeatures.add(entryFeature);
-
-        //traverse left siblings
-        FeatureModelFeature siblingFeature = entryFeature;
-        while(siblingFeature.getPrevSibling() instanceof FeatureModelFeature){
-            siblingFeature = (FeatureModelFeature) siblingFeature.getPrevSibling();
-            rootFeatures.add(siblingFeature);
-        }
-
-        //traverse right siblings
-        siblingFeature = entryFeature;
-        while(siblingFeature.getNextSibling() instanceof FeatureModelFeature){
-            siblingFeature = (FeatureModelFeature) siblingFeature.getNextSibling();
-            rootFeatures.add(siblingFeature);
-        }
-
-        return rootFeatures;
-    }
-
-    // &begin[FileHighlighter]
-    /**
-     * Highlights a feature in the feature model
-     * @param featureLpq LPQ name of the feature
-     * @see FileHighlighter#highlightFeatureInFeatureModel(Project, String)
-     */
-    @Override
-    public void highlightFeatureInFeatureModel(String featureLpq) {
-
-        FileHighlighter.highlightFeatureInFeatureModel(project, featureLpq);
-    }
-    /**
-     * Highlights a feature in the feature model
-     * @param feature {@link FeatureModelFeature}
-     * @see FileHighlighter#highlightFeatureInFeatureModel(FeatureModelFeature)
-     */
-    @Override
-    public void highlighFeatureInFeatureModel(FeatureModelFeature feature){
-        FileHighlighter.highlightFeatureInFeatureModel(feature);
-    }
-
-    /**
-     * Opens a file of the project in the editor
-     * @param path String: absolute path of the file
-     */
-    @Override
-    public void openFileInProject(String path){
-        FileHighlighter.openFileInProject(project, path);
-    }
-    /**
-     * Opens a file of the project in the editor and highlights code block
-     * @param path String: Absolute path of the file
-     * @param startline of the codeblock
-     * @param endline of the codeblock
-     */
-    @Override
-    public void openFileInProject(String path, int startline, int endline){
-        FileHighlighter.openFileInProject(project, path, startline, endline);
-    }
-    // &end[FileHighlighter]
-
-     /** Generate all {@link FeatureFileMapping} of the project and tanglingMap for the whole project in the background and returns it to {@link HAnSCallback} Implementation.
-     * @param callback {@link HAnSCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
-     */
-    @Override
-    public void getFeatureMetricsBackground(HAnSCallback callback) {
-        BackgroundTask task = new FeatureMetricsBackground(project, "Scanning features", callback, null);
-        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
-    }
-
 }

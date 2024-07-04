@@ -13,14 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package se.isselab.HAnS.metrics.v2;
+package se.isselab.HAnS.metrics.calculators;
 
 import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocation;
+import se.isselab.HAnS.featureLocation.FeatureLocationManager;
+import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.*;
+
+import static se.isselab.HAnS.featureLocation.FeatureLocationManager.getAllFeatureFileMappings;
 
 /**
  * The metric Nesting Depths of annotations has three dimensions: Maximum (MaxND), Minimum (MinND), and Average (AvgND) nesting depth.
@@ -32,6 +37,11 @@ import java.util.*;
  */
 public class NestingDepths {
 
+    public static List<Pair<String, Integer>> getFeatureNestingDepths(Project project, FeatureModelFeature feature) {
+        var nestingDepthMap = getNestingDepthMap(FeatureLocationManager.getAllFeatureFileMappings(project));
+        var featureLPQ = ReadAction.compute(feature::getLPQText);
+        return nestingDepthMap.containsKey(featureLPQ)? nestingDepthMap.get(featureLPQ).stream().toList(): null;
+    }
 
     public static Map<String, List<Pair<String, Integer>>> getNestingDepthMap(HashMap<String, FeatureFileMapping> fileMappings) {
         // Key = FeatureLPQ -> Value = List of Pair<FilePath, NestingDepth>

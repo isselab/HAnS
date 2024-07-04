@@ -38,7 +38,7 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
-import se.isselab.HAnS.metrics.FeatureTangling;
+import se.isselab.HAnS.metrics.calculators.FeatureTangling;
 
 import java.util.*;
 import java.util.List;
