@@ -74,15 +74,9 @@ public class MetricsViewFactory implements ToolWindowFactory {
         MetricsService service = project.getService(MetricsService.class);
 
         if (!DumbService.isDumb(project)) {
-            service.getProjectMetricsBackground(metrics -> {
-                refreshTableContent(contentPanel, metrics, service);
-            });
+            service.getProjectMetricsBackground(metrics -> refreshTableContent(contentPanel, metrics, service));
         } else {
-            DumbService.getInstance(project).runWhenSmart(() -> {
-                service.getProjectMetricsBackground(metrics -> {
-                    refreshTableContent(contentPanel, metrics, service);
-                });
-            });
+            DumbService.getInstance(project).runWhenSmart(() -> service.getProjectMetricsBackground(metrics -> refreshTableContent(contentPanel, metrics, service)));
         }
     }
 

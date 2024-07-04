@@ -1,5 +1,5 @@
 /*
-Copyright 2024 David Stechow & Philipp Kusmierz
+Copyright 2024 David Stechow, Philipp Kusmierz & Johan Martinson
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@ limitations under the License.
 */
 
 package se.isselab.HAnS.featureLocation;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
 
 /**
  * Structure which represents a block of lines from start to end
@@ -71,6 +75,20 @@ public class FeatureLocationBlock {
                 return true;
         }
         return false;
+    }
+
+
+    public int countTimesInsideOfBlocks(@NotNull Collection<FeatureLocationBlock> blocks) {
+        int count = 0;
+        for (var block : blocks) {
+            if (this.isInsideOfBlock(block))
+                count++;
+        }
+        return count;
+    }
+
+    public boolean isInsideOfBlock(@NotNull FeatureLocationBlock block) {
+        return block.getStartLine() <= start && block.getEndLine() >= end;
     }
 
     /**
