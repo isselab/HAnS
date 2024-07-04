@@ -136,11 +136,11 @@ public final class FeatureService implements FeatureServiceInterface {
      * @param featureFileMapping {@link FeatureFileMapping}
      * @param featureLocation {@link FeatureLocation}
      * @return total line-count of a feature in a file
-     * @see FeatureFileMapping#getFeatureLineCountInFile(String)
+     * @see FeatureFileMapping#getFeatureLineCountInFile(com.intellij.openapi.util.Pair)
      */
     @Override
     public int getFeatureLineCountInFile(FeatureFileMapping featureFileMapping, FeatureLocation featureLocation){
-        return featureFileMapping.getFeatureLineCountInFile(featureLocation.getMappedPath());
+        return featureFileMapping.getFeatureLineCountInFile(featureLocation.getMappedPathPairMappedBy());
     }
     // &end[LineCount]
 

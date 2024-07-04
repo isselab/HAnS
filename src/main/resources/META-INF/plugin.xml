@@ -123,11 +123,13 @@ limitations under the License.
         <!-- &end[LiveTemplate] -->
 
         <!-- &begin[MetricsView]-->
-        <toolWindow id="MetricsView" anchor="bottom"
-                    factoryClass="se.isselab.HAnS.metricsView.MetricsViewFactory" />
+        <toolWindow id="Metrics View" anchor="bottom"
+                    factoryClass="se.isselab.HAnS.metricsView.MetricsViewFactory"
+        />
         <!-- &end[MetricsView]-->
 
         <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService" serviceInterface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
+        <projectService serviceImplementation="se.isselab.HAnS.featureExtension.v2.ProjectMetricsService" serviceInterface="se.isselab.HAnS.featureExtension.v2.MetricsService"/>
     </extensions>
 
 
@@ -137,11 +139,17 @@ limitations under the License.
         <extensionPoint
                 name="featureService"
                 interface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
+        <extensionPoint
+                name="metricsService"
+                interface="se.isselab.HAnS.featureExtension.v2.MetricsService"/>
         <!-- &end[Service]-->
         <!-- &begin[Callback]-->
         <extensionPoint
                 name="hansCallback"
                 interface="se.isselab.HAnS.featureExtension.HAnSCallback"/>
+        <extensionPoint
+                name="metricsCallback"
+                interface="se.isselab.HAnS.featureExtension.v2.MetricsCallback"/>
         <!-- &end[Callback]-->
 
     </extensionPoints>

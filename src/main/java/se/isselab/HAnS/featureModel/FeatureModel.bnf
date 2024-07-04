@@ -15,6 +15,7 @@ limitations under the License.
 */
 {
   parserClass="se.isselab.HAnS.featureModel.parser.FeatureModelParser"
+  parserUtilClass="se.isselab.HAnS.featureModel.parser.FeatureModelParserUtil"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -36,5 +37,9 @@ featureModelFile ::= (feature (feature)?)?
 feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?) {
 mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
 implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"
-methods=[getLPQText getLPQStack renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName getPresentation]}
+methods=[getLPQText getLPQStack renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName getPresentation
+addToFeatureModel deleteFromFeatureModel moveFeatureWithChildren deleteFeatureWithAnnotations
+getTanglingDegree setTanglingDegree getScatteringDegree setScatteringDegree getLineCount setLineCount
+getMaxNestingDepth setMaxNestingDepth getMinNestingDepth setMinNestingDepth getAvgNestingDepth setAvgNestingDepth
+getNumberOfAnnotatedFiles setNumberOfAnnotatedFiles getNumberOfFileAnnotations setNumberOfFileAnnotations getNumberOfFolderAnnotations setNumberOfFolderAnnotations]}
 // &end[Referencing]

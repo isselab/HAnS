@@ -230,8 +230,8 @@ public class TangledFeaturesModal extends DialogWrapper {
 
     public void setCodeTextArea() {
         // creates 1 window if both annotation types are code and file is the same
-        if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) &&
-            currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.code)) {
+        if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE) &&
+            currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE)) {
             createNewCodeTextArea1(true);
 
             if (codeTextArea2 != null) {
@@ -246,8 +246,8 @@ public class TangledFeaturesModal extends DialogWrapper {
             createNewCodeTextArea1(false);
             createNewCodeTextArea2();
 
-            if (currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.code) &&
-                    currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.file)) {
+            if (currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE) &&
+                    currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.FILE)) {
 
                 updateCodeTextArea(codeTextArea1, currentElement.getDocument(),
                         currentElement.getDocument().getLineStartOffset(currentElement.getStartLine()),
@@ -262,8 +262,8 @@ public class TangledFeaturesModal extends DialogWrapper {
                 updateCodeTextArea(codeTextArea2, doc, (int) tangled.get(1), (int) tangled.get(2));
                 createHeader2(currentElement.getTangledFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc)).getPath());
 
-            } else if (currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.file) &&
-                    currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) ) {
+            } else if (currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.FILE) &&
+                    currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE) ) {
 
                 ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getMainFeatureLPQ());
                 if (tangled == null) {return;}
@@ -279,8 +279,8 @@ public class TangledFeaturesModal extends DialogWrapper {
 
                 createHeader2(currentElement.getTangledFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(currentElement.getDocument())).getPath());
 
-            } else if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.file) &&
-                    currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.file)) {
+            } else if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.FILE) &&
+                    currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.FILE)) {
                 ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getMainFeatureLPQ());
                 if (tangled == null) {return;}
                 Document doc = (Document) tangled.get(0);

@@ -16,6 +16,7 @@ limitations under the License.
 
 package se.isselab.HAnS.featureLocation;
 
+import com.intellij.openapi.util.Pair;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.List;
  */
 public class FeatureLocation {
     private final String mappedPath;
+    private final String mappedBy;
     private final FeatureModelFeature mappedFeature;
 
     private final FeatureFileMapping.AnnotationType annotationType;
@@ -39,8 +41,9 @@ public class FeatureLocation {
      * @param annotationType   AnnotationType of the FeatureLocations
      * @param featureLocations List of FeatureLocationBlocks
      */
-    public FeatureLocation(String mappedPath, FeatureModelFeature mappedFeature, FeatureFileMapping.AnnotationType annotationType, List<FeatureLocationBlock> featureLocations) {
+    public FeatureLocation(String mappedPath, String mappedBy, FeatureModelFeature mappedFeature, FeatureFileMapping.AnnotationType annotationType, List<FeatureLocationBlock> featureLocations) {
         this.mappedPath = mappedPath;
+        this.mappedBy = mappedBy;
         this.mappedFeature = mappedFeature;
         this.annotationType = annotationType;
         this.featureLocations = featureLocations;
@@ -80,5 +83,17 @@ public class FeatureLocation {
      */
     public List<FeatureLocationBlock> getFeatureLocations() {
         return featureLocations;
+    }
+
+    /**
+     * Method to get the path to the file which maps this location
+     * @return Path to the file that maps this location
+     */
+    public String getMappedBy() {
+        return mappedBy;
+    }
+
+    public Pair<String, String> getMappedPathPairMappedBy(){
+        return new Pair<>(mappedPath, mappedBy);
     }
 }

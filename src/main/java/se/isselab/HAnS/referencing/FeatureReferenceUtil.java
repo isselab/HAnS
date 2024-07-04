@@ -21,6 +21,7 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
@@ -39,7 +40,6 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
 import se.isselab.HAnS.metrics.FeatureTangling;
 
-import javax.print.Doc;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -408,11 +408,11 @@ public class FeatureReferenceUtil {
     }
 
     private static Map<Document, Set<Integer>> getCodeAnnotations(FeatureFileMapping fileToAnnotation, FeatureModelFeature feature) {
-        Map<String, Set<Integer>> mapToDrop = new HashMap<>(); // documentName -> ranges of annotation blocks
+        Map<Pair<String, String>, Set<Integer>> mapToDrop = new HashMap<>(); // documentName -> ranges of annotation blocks
 
         for (FeatureLocation fm : fileToAnnotation.getFeatureLocations()) {
             fm.getFeatureLocations().stream().forEach(block -> {
-                if (fm.getAnnotationType().equals(FeatureFileMapping.AnnotationType.code)) {
+                if (fm.getAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE)) {
 
                     Set<Integer> entry = mapToDrop.get(fm.getMappedPath());
 
@@ -421,7 +421,7 @@ public class FeatureReferenceUtil {
                         for (int i = block.getStartLine(); i < block.getEndLine()+1; i++) {
                             entry.add(i);
                         }
-                        mapToDrop.put(fm.getMappedPath(), entry);
+                        mapToDrop.put(fm.getMappedPathPairMappedBy(), entry);
                     } else {
                         for (int i = block.getStartLine(); i < block.getEndLine()+1; i++) {
                             entry.add(i);
@@ -434,7 +434,7 @@ public class FeatureReferenceUtil {
         // substitute string to document
         Map<Document, Set<Integer>> result = mapToDrop.entrySet().stream()
                 .collect(Collectors.toMap(entry -> {
-                    VirtualFile file = LocalFileSystem.getInstance().findFileByPath(entry.getKey());
+                    VirtualFile file = LocalFileSystem.getInstance().findFileByPath(entry.getKey().first);
                     return FileDocumentManager.getInstance().getDocument(file);
                 }, entry -> {
                     return entry.getValue().stream().sorted().collect(Collectors.toSet());
@@ -560,21 +560,21 @@ public class FeatureReferenceUtil {
                     newElement.setTangledAnnotationType(tangledLocation.getTangledAnnotationType()); // 5: tangled feature annotation type
                     newElement.setMainAnnotationType(baseLocation.getMainAnnotationType()); // 6: main annotation type
 
-                    if (tangledLocation.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) &&
-                        baseLocation.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.code)) {
+                    if (tangledLocation.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE) &&
+                        baseLocation.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE)) {
                         ArrayList<Integer> rangeResult = getRange(baseLocation.getStartLine(), baseLocation.getEndLine(), tangledLocation.getStartLine(), tangledLocation.getEndLine());
                         if (rangeResult != null) {
                             newElement.setStartLine(rangeResult.get(0)); // 2: start line
                             newElement.setEndLine(rangeResult.get(1)); // 3: end line
                             result.add(newElement);
                         }
-                    } else if (tangledLocation.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) &&
-                            !baseLocation.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.code)) {
+                    } else if (tangledLocation.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE) &&
+                            !baseLocation.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE)) {
                         newElement.setStartLine(tangledLocation.getStartLine()); // 2: start line
                         newElement.setEndLine(tangledLocation.getEndLine()); // 3: end line
                         result.add(newElement);
-                    } else if (!tangledLocation.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) &&
-                            baseLocation.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.code)) {
+                    } else if (!tangledLocation.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE) &&
+                            baseLocation.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE)) {
                         newElement.setStartLine(baseLocation.getStartLine()); // 2: start line
                         newElement.setEndLine(baseLocation.getEndLine()); // 3: end line
                         result.add(newElement);
