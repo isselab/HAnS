@@ -15,16 +15,15 @@ limitations under the License.
 */
 package se.isselab.HAnS.assetsManagement.cloneManagement;
 
+import com.intellij.dvcs.repo.Repository;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import org.ini4j.Config;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -42,7 +41,8 @@ public class TracingHandler {
         String currentDateAndTime = getCurrentDateAndTime();
         String textFilePath = getTraceFilePath(project);
         try {
-            String updatedContent = sourceFileRelativePath + ";" +  targetFileRelativePath + ";" + currentDateAndTime;
+            String userName = getGitUserName();
+            String updatedContent = sourceFileRelativePath + ";" +  targetFileRelativePath + ";" + currentDateAndTime + userName;
             FileWriter fileWriter = new FileWriter(textFilePath, true);
             BufferedWriter bufferFileWriter = new BufferedWriter(fileWriter);
             bufferFileWriter.newLine();
@@ -67,6 +67,23 @@ public class TracingHandler {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static String getGitUserName() throws IOException {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command("git", "config", "user.name");
+        Process process = processBuilder.start();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        StringBuilder output = new StringBuilder();
+        while ((line = reader.readLine()) != null) {
+            output.append(line);
+        }
+        if (output.toString().isEmpty()) {
+            return ";#unknown";
+        } else {
+            return ";#" + output.toString();
         }
     }
 
