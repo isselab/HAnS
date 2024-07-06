@@ -25,7 +25,7 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof FeatureModelVisitor) accept((FeatureModelVisitor)visitor);
+    if (visitor instanceof FeatureModelVisitor featureModelVisitor) accept(featureModelVisitor);
     else super.accept(visitor);
   }
 

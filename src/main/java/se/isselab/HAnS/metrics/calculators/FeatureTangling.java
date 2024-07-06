@@ -53,11 +53,7 @@ public class FeatureTangling {
      */
     public static int getFeatureTanglingDegree(Project project, HashMap<String, FeatureFileMapping> fileMappings, FeatureModelFeature feature) {
         var tanglingMap = getTanglingMap(project, fileMappings);
-
-        if (tanglingMap.containsKey(feature))
-            return tanglingMap.get(feature).size();
-
-        return 0;
+        return tanglingMap.getOrDefault(feature, new HashSet<>()).size();
     }
 
     /**
@@ -128,22 +124,14 @@ public class FeatureTangling {
                     var featureB = existingFeatureLocations.getKey();
 
                     //add featureB to featureA
-                    if (tanglingMap.containsKey(feature)) {
-                        tanglingMap.get(feature).add(featureB);
-                    } else {
-                        HashSet<FeatureModelFeature> featureSet = new HashSet<>();
-                        featureSet.add(featureB);
-                        tanglingMap.put(feature, featureSet);
-                    }
+                    tanglingMap
+                            .computeIfAbsent(feature, k -> new HashSet<>())
+                            .add(featureB);
 
                     //add featureA to featureB
-                    if (tanglingMap.containsKey(featureB)) {
-                        tanglingMap.get(featureB).add(feature);
-                    } else {
-                        HashSet<FeatureModelFeature> featureSet = new HashSet<>();
-                        featureSet.add(feature);
-                        tanglingMap.put(featureB, featureSet);
-                    }
+                    tanglingMap
+                            .computeIfAbsent(featureB, k -> new HashSet<>())
+                            .add(feature);
                 }
             }
         }

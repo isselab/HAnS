@@ -76,12 +76,14 @@ public class FeatureFileMapping {
         if (cache == null || cache.isEmpty())
             return;
 
-        for (Pair<String, String> key : cache.keySet()) {        //building featureLocationBlocks from cache entries
-            Stack<Integer> stack = new Stack<>();
+        for (var entry : cache.entrySet()) {        //building featureLocationBlocks from cache entries
+            Deque<Integer> stack = new ArrayDeque<>();
+            var key = entry.getKey();
+            var annotationTypeToLocationBlockPair = entry.getValue();
+
             //sort in ascending order
             cache.get(key).second.sort(Comparator.comparing(p -> p.second));
 
-            var annotationTypeToLocationBlockPair = cache.get(key);
             //create a featureLocationBlock for each (begin,end) or line
             for (var markerToLinePair : annotationTypeToLocationBlockPair.second) {
 
@@ -146,11 +148,10 @@ public class FeatureFileMapping {
         //check if file is already mapped to given feature
 
         //add block to already existing arraylist
-        if (map.containsKey(pathPairOriginatingPath)) {
-
-            map.get(pathPairOriginatingPath).second.add(block);
-            return;
-        }
+        map.computeIfPresent(pathPairOriginatingPath, (k,v) -> {
+            v.second.add(block);
+            return v;
+        });
 
         //add file and location to map
         ArrayList<FeatureLocationBlock> list = new ArrayList<>();
@@ -166,9 +167,8 @@ public class FeatureFileMapping {
      */
     public ArrayList<FeatureLocation> getFeatureLocations() {
         ArrayList<FeatureLocation> result = new ArrayList<>();
-        for (var filePaths : map.keySet()) {
-            var entry = map.get(filePaths);
-            FeatureLocation location = new FeatureLocation(filePaths.first, filePaths.second, mappedFeature, entry.first, entry.second);
+        for (var entry : map.entrySet()) {
+            FeatureLocation location = new FeatureLocation(entry.getKey().first, entry.getKey().second, mappedFeature, entry.getValue().first, entry.getValue().second);
             result.add(location);
         }
         return result;
