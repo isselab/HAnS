@@ -18,8 +18,6 @@ package se.isselab.HAnS.pluginExtensions;
 
 import com.intellij.openapi.components.Service;
 
-import com.intellij.openapi.progress.EmptyProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
@@ -31,9 +29,16 @@ import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 import se.isselab.HAnS.metrics.calculators.FeatureScattering;
 import se.isselab.HAnS.metrics.calculators.FeatureTangling;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.MetricsCallback;
-import se.isselab.HAnS.pluginExtensions.backgroundTasks.ProjectMetricsBackgroundTask;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.GetProjectMetrics;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.FeatureFileMappingCallback;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.GetFeatureFileMappingForFeature;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.GetFeatureFileMappings;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureTasks.*;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.tanglingMapTasks.GetTangledFeaturesForFeature;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.tanglingMapTasks.GetTanglingMap;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.tanglingMapTasks.TanglingMapCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,18 +50,32 @@ public final class ProjectMetricsService implements MetricsService {
 
     private final Project project;
 
-    public ProjectMetricsService(Project project){
+    public ProjectMetricsService(Project project) {
         this.project = project;
     }
 
+    /**
+     * Calculates the metrics of the project in the background and returns the result to {@link MetricsCallback} Implementation
+     *
+     * @param callback {@link MetricsCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
+     */
     @Override
     public void getProjectMetricsBackground(MetricsCallback callback) {
-        ProjectMetricsBackgroundTask task = new ProjectMetricsBackgroundTask(project, "Refreshing metrics...", callback, null);
-        task.queue();
+        new GetProjectMetrics(project, "Refreshing metrics...", callback, null).queue();
+    }
+
+    /**
+     * Calculates the metrics of a feature in the background and returns the result to {@link FeatureCallback} Implementation
+     * @param callback {@link FeatureCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
+     * @param feature {@link FeatureModelFeature} for which the metrics are to be calculated
+     */
+    @Override
+    public void getFeatureMetricsBackground(FeatureCallback callback, FeatureModelFeature feature) {
+        var title = String.format("Calculating Metrics for %s", feature.getLPQText());
+        new GetFeatureMetricsForFeature(project, title, callback, feature).queue();
     }
 
     //region Convenience Methods
-
     @Override
     public List<FeatureModelFeature> getFeatures() {
         return FeatureModelUtil.findFeatures(project);
@@ -65,8 +84,8 @@ public final class ProjectMetricsService implements MetricsService {
     @Override
     public List<FeatureModelFeature> getChildFeatures(FeatureModelFeature feature) {
         List<FeatureModelFeature> childs = new ArrayList<>();
-        for(var child : feature.getChildren()) {
-            childs.add((FeatureModelFeatureImpl)child);
+        for (var child : feature.getChildren()) {
+            childs.add((FeatureModelFeatureImpl) child);
         }
         return childs;
     }
@@ -87,18 +106,18 @@ public final class ProjectMetricsService implements MetricsService {
     @Override
     public FeatureModelFeature getRootFeature(FeatureModelFeature feature) {
         FeatureModelFeature temp = feature;
-        while(!(temp.getParent() instanceof FeatureModelFile)){
+        while (!(temp.getParent() instanceof FeatureModelFile)) {
             temp = (FeatureModelFeature) temp.getParent();
         }
         return temp;
     }
 
     @Override
-    public List<FeatureModelFeature> getRootFeatures(){
+    public List<FeatureModelFeature> getRootFeatures() {
         var featureList = FeatureModelUtil.findFeatures(project);
         ArrayList<FeatureModelFeature> rootFeatures = new ArrayList<>();
 
-        if(featureList.isEmpty())
+        if (featureList.isEmpty())
             return rootFeatures;
 
         FeatureModelFeature entryFeature = featureList.get(0);
@@ -106,122 +125,171 @@ public final class ProjectMetricsService implements MetricsService {
 
         //traverse left siblings
         FeatureModelFeature siblingFeature = entryFeature;
-        while(siblingFeature.getPrevSibling() instanceof FeatureModelFeature){
+        while (siblingFeature.getPrevSibling() instanceof FeatureModelFeature) {
             siblingFeature = (FeatureModelFeature) siblingFeature.getPrevSibling();
             rootFeatures.add(siblingFeature);
         }
 
         //traverse right siblings
         siblingFeature = entryFeature;
-        while(siblingFeature.getNextSibling() instanceof FeatureModelFeature){
+        while (siblingFeature.getNextSibling() instanceof FeatureModelFeature) {
             siblingFeature = (FeatureModelFeature) siblingFeature.getNextSibling();
             rootFeatures.add(siblingFeature);
         }
 
         return rootFeatures;
     }
-
     //endregion
 
-// &begin[FeatureFileMapping]
+    // &begin[FeatureFileMapping]
+    //region Convenience Methods
+
+    /**
+     * @param featureFileMappings All {@link FeatureFileMapping} from project as a HashMap
+     * @param feature             Feature whose file mapping is to be calculated
+     * @return {@link FeatureFileMapping} of Feature
+     */
+    @Override
+    public FeatureFileMapping getFeatureFileMappingOfFeature(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature) {
+        return featureFileMappings.get(feature.getLPQText());
+    }
+
+    /**
+     * Checks if feature is in projects feature model, mapped as HashMap of all {@link FeatureFileMapping} of the project.
+     *
+     * @param featureFileMappings featureFileMappings All {@link FeatureFileMapping} from project as a HashMap
+     * @param feature             feature that needs to be checked on
+     * @return true if featureFileMappings contains the feature
+     */
+    @Override
+    public boolean isFeatureInFeatureModel(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature) {
+        return featureFileMappings.containsKey(feature.getLPQText());
+    }
+    //endregion
+
+    //region Synchronous Methods
+
     /**
      * Returns the locations of a Feature as a {@link FeatureFileMapping}.
+     *
      * @param feature Feature whose file mapping is to be calculated
      * @return Locations of a Feature as a {@link FeatureFileMapping}
      * @see FeatureLocationManager#getFeatureFileMapping(Project, FeatureModelFeature)
+     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
+     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
+     * and {@link #getFeatureFileMappingOfFeature(HashMap, FeatureModelFeature)} instead.
+     * <p> OR use {@link #getFeatureFileMappingBackground(FeatureModelFeature, FeatureFileMappingCallback)}.
      */
+    @Deprecated(since = "0.0.5", forRemoval = true)
     @Override
     public FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature) {
         return FeatureLocationManager.getFeatureFileMapping(project, feature);
     }
 
     /**
-     * @param featureFileMappings All {@link FeatureFileMapping} from project as a HashMap
-     * @param feature Feature whose file mapping is to be calculated
-     * @return {@link FeatureFileMapping} of Feature
-     */
-    @Override
-    public FeatureFileMapping getFeatureFileMappingOfFeature(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature){
-        return featureFileMappings.get(feature.getLPQText());
-    }
-
-    /**
-     * Calculates the {@link FeatureFileMapping} of a feature in the background and returns it to {@link HAnSCallback} Implementation.
-     * @param feature Feature whose file mapping is to be calculated
-     * @param callback  {@link HAnSCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
-     * @see FileMappingBackground
-     */
-    @Override
-    public void getFeatureFileMappingBackground(FeatureModelFeature feature, HAnSCallback callback) {
-        BackgroundTask task = new FileMappingBackground(project, "Scanning features", callback, new FeatureMetrics(feature));
-        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
-    }
-
-    /**
      * Calculates all {@link FeatureFileMapping} of the project
+     *
      * @return HashMap of all {@link FeatureFileMapping} of the project
      * @see FeatureLocationManager#getAllFeatureFileMappings(Project)
+     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
+     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
+     * <p> OR use {@link #getAllFeatureFileMappingsBackground(FeatureFileMappingCallback)}.
      */
+    @Deprecated(since = "0.0.5", forRemoval = true)
     @Override
-    public HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(){
+    public HashMap<String, FeatureFileMapping> getAllFeatureFileMappings() {
         return FeatureLocationManager.getAllFeatureFileMappings(project);
     }
+    //endregion
+
+    //region Asynchronous Methods
 
     /**
-     * Calculates all {@link FeatureFileMapping} of the project in the background and returns it as a HashMap
-     * to {@link HAnSCallback} Implementation.
-     * @param callback {@link HAnSCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
+     * Retrieves the {@link FeatureFileMapping} of a feature in the background and returns it to {@link FeatureFileMappingCallback} implementation.
+     *
+     * @param feature  Feature whose file mapping is to be calculated
+     * @param callback {@link FeatureFileMappingCallback} implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
+     * @see GetFeatureFileMappingForFeature
+     * @see com.intellij.openapi.progress.Task.Backgroundable
      */
     @Override
-    public void getAllFeatureFileMappingsBackground(HAnSCallback callback){
-        BackgroundTask task = new FeatureFileMappingsBackground(project, "Scanning features", callback, null);
-        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
+    public void getFeatureFileMappingBackground(FeatureModelFeature feature, FeatureFileMappingCallback callback) {
+        new GetFeatureFileMappingForFeature(project, "Scanning features", callback, feature).queue();
     }
 
     /**
-     * Checks if feature is in projects feature model, mapped as HashMap of all {@link FeatureFileMapping} of the project.
-     * @param featureFileMappings featureFileMappings All {@link FeatureFileMapping} from project as a HashMap
-     * @param feature feature that needs to be checked on
-     * @return true if featureFileMappings contains the feature
+     * Retrieves all {@link FeatureFileMapping} of the project in the background and returns it as a HashMap
+     * to {@link FeatureFileMappingCallback} implementation.
+     *
+     * @param callback {@link FeatureFileMappingCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
      */
     @Override
-    public boolean isFeatureInFeatureFileMappings(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature){
-        return featureFileMappings.containsKey(feature.getLPQText());
+    public void getAllFeatureFileMappingsBackground(FeatureFileMappingCallback callback) {
+        new GetFeatureFileMappings(project, "Scanning features", callback).queue();
     }
+
+    //endregion
     // &end[FeatureFileMapping]
 
     // &begin[LineCount]
+    //region Convenience Methods
+
     /**
      * Method to get the total line-count of a feature for all files
+     *
      * @param featureFileMapping {@link FeatureFileMapping} of the feature
      * @return line-count of a feature
      */
     @Override
-    public int getTotalFeatureLineCount(FeatureFileMapping featureFileMapping){
+    public int getTotalFeatureLineCount(FeatureFileMapping featureFileMapping) {
         return featureFileMapping.getTotalFeatureLineCount();
     }
+
     /**
      * @param featureFileMapping {@link FeatureFileMapping}
-     * @param featureLocation {@link FeatureLocation}
+     * @param featureLocation    {@link FeatureLocation}
      * @return total line-count of a feature in a file
      * @see FeatureFileMapping#getFeatureLineCountInFile(com.intellij.openapi.util.Pair)
      */
     @Override
-    public int getFeatureLineCountInFile(FeatureFileMapping featureFileMapping, FeatureLocation featureLocation){
+    public int getFeatureLineCountInFile(FeatureFileMapping featureFileMapping, FeatureLocation featureLocation) {
         return featureFileMapping.getFeatureLineCountInFile(featureLocation.getMappedPathPairMappedBy());
     }
+    //endregion
     // &end[LineCount]
 
     // &begin[Tangling]
+    //region Convenience Methods
+
+    /**
+     * Convenient Method for getting the tangling Map of one Feature as a HashSet.
+     *
+     * @param tanglingMap All tangling maps of the project as a HashMap
+     * @param feature     {@link FeatureModelFeature}
+     * @return Tangling map of a feature as a HashSet
+     */
+    @Override
+    public HashSet<FeatureModelFeature> getTanglingMapOfFeature(HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, FeatureModelFeature feature) {
+        return tanglingMap.get(feature);
+    }
+    //endregion
+
+    //region Synchronous Methods
+
     /**
      * Returns the tangling degree of the given feature.
      * Use this method only if you want to calculate it for one feature.
      * Otherwise, use {@link #getFeatureTangling(HashMap, FeatureModelFeature)} so that the featureFileMappings is only calculated once
+     *
      * @param feature FeatureModelFeature
      * @return TanglingDegree of the given feature
      * @see FeatureFileMapping
      * @see #getFeatureTangling(HashMap, FeatureModelFeature)
+     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
+     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
+     * <p> OR use {@link #getFeatureTanglingDegreeBackground(FeatureModelFeature, FeatureCallback)}.
      */
+    @Deprecated(since = "0.0.5", forRemoval = true)
     @Override
     public int getFeatureTangling(FeatureModelFeature feature) {
         var resultMap = getTanglingMap().get(feature);
@@ -230,12 +298,17 @@ public final class ProjectMetricsService implements MetricsService {
 
     /**
      * Returns the tangling degree of the given feature. Uses pre-calculated HashMap of feature file mappings
+     *
      * @param featureFileMappings All {@link FeatureFileMapping} of the project as HashMap
-     * @param feature FeatureModelFeature
+     * @param feature             FeatureModelFeature
      * @return TanglingDegree of the given feature
      * @see FeatureFileMapping
      * @see #getFeatureTangling(HashMap, FeatureModelFeature)
+     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
+     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
+     * <p> OR use {@link #getFeatureTanglingDegreeBackground(FeatureModelFeature, FeatureCallback)}.
      */
+    @Deprecated(since = "0.0.5", forRemoval = true)
     @Override
     public int getFeatureTangling(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature) {
         var resultMap = getTanglingMap(featureFileMappings).get(feature);
@@ -243,112 +316,177 @@ public final class ProjectMetricsService implements MetricsService {
     }
 
     /**
-     * Convenient Method for getting the tangling Map of one Feature as a HashSet.
-     * @param tanglingMap All tangling maps of the project as a HashMap
-     * @param feature {@link FeatureModelFeature}
-     * @return Tangling map of a feature as a HashSet
-     */
-    @Override
-    public HashSet<FeatureModelFeature> getTanglingMapOfFeature(HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, FeatureModelFeature feature){
-        return tanglingMap.get(feature);
-    }
-    /**
-     * Calculates tangling Degree of a feature in a background task. Result is then returned to {@link HAnSCallback} Implementation
-     * @param feature {@link FeatureModelFeature}
-     * @param callback {@link HAnSCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
-     */
-    @Override
-    public void getFeatureTanglingBackground(FeatureModelFeature feature, HAnSCallback callback) {
-        BackgroundTask task = new TanglingDegreeBackground(project, "Scanning features", callback, new FeatureMetrics(feature));
-        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
-    }
-
-
-    /**
      * Uses expensive method ReferencesSearch.search(), which can cause UI freezes. Maybe use a BackgroundTask instead.
-     * @see FeatureTangling#getTanglingMap(Project)
-     * @see #getTanglingMapBackground(HAnSCallback)
+     *
      * @return the tanglingMap of all features
+     * @see FeatureTangling#getTanglingMap(Project)
+     * @see #getTanglingMapBackground(TanglingMapCallback)
+     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
+     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
+     * <p> OR use {@link #getTanglingMapBackground(TanglingMapCallback)}.
      */
+    @Deprecated(since = "0.0.5", forRemoval = true)
     @Override
-    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(){
+    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap() {
         return FeatureTangling.getTanglingMap(project);
     }
 
     /**
-     *  Calculates all Tangling Maps of features in the background and returns the result to {@link HAnSCallback} Implementation.
-     * @param callback {@link HAnSCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
-     */
-    @Override
-    public void getTanglingMapBackground(HAnSCallback callback){
-        BackgroundTask task = new TanglingMapBackground(project, "Scanning features", callback, null);
-        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
-    }
-    /**
-     * @see FeatureTangling#getTanglingMap(Project, HashMap)
      * @param featureFileMappings All {@link FeatureFileMapping} of the project
      * @return the tanglingMap of the features represented by the fileMapping
+     * @see FeatureTangling#getTanglingMap(Project, HashMap)
+     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
+     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
      */
+    @Deprecated(since = "0.0.5", forRemoval = true)
     @Override
-    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> featureFileMappings){
+    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> featureFileMappings) {
         return FeatureTangling.getTanglingMap(project, featureFileMappings);
     }
+    //endregion
+
+    //region Asynchronous Methods
+
+    /**
+     * Retrieves the tangled features of a feature in the background and returns the result to {@link TanglingMapCallback} Implementation
+     *
+     * @param feature  {@link FeatureModelFeature}
+     * @param callback {@link TanglingMapCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
+     */
+    public void getFeatureTanglings(FeatureModelFeature feature, TanglingMapCallback callback) {
+        var title = String.format("Retrieve tangled features of %s", feature.getLPQText());
+        new GetTangledFeaturesForFeature(project, title, callback, feature).queue();
+    }
+
+    /**
+     * Calculates tangling Degree of a feature in a background task. Result is then returned to {@link FeatureCallback} Implementation
+     *
+     * @param feature  {@link FeatureModelFeature}
+     * @param callback {@link FeatureCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
+     */
+    @Override
+    public void getFeatureTanglingDegreeBackground(FeatureModelFeature feature, FeatureCallback callback) {
+        var title = String.format("Calculating Tangling Degree for %s", feature.getLPQText());
+        new GetTanglingDegreeForFeature(project, title, callback, feature).queue();
+    }
+
+    /**
+     * Retrieves all Tangling Maps of features in the background and returns the result to {@link TanglingMapCallback} Implementation.
+     *
+     * @param callback {@link TanglingMapCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
+     */
+    @Override
+    public void getTanglingMapBackground(TanglingMapCallback callback) {
+        new GetTanglingMap(project, "Retrieving Tangled Features", callback).queue();
+    }
+    //endregion
     // &end[Tangling]
 
     // &begin[Scattering]
-
-    /**
-     * @see FeatureScattering#getScatteringDegree(Project, FeatureModelFeature)
-     * @param feature {@link FeatureModelFeature}
-     * @return scattering degree of the feature
-     */
-    @Override
-    public int getFeatureScattering(FeatureModelFeature feature) {
-        return FeatureScattering.getScatteringDegree(project, feature);
-    }
+    //region Convenience Methods
 
     /**
      * Calculates the scattering degree of a feature based on the {@link FeatureFileMapping} of the feature
-     * @see FeatureScattering#getScatteringDegree(FeatureFileMapping)
+     *
      * @param featureFileMapping {@link FeatureFileMapping} of the feature
      * @return scattering degree of the feature represented by the file mapping
+     * @see FeatureScattering#getScatteringDegree(FeatureFileMapping)
      */
     @Override
     public int getFeatureScattering(FeatureFileMapping featureFileMapping) {
         return FeatureScattering.getScatteringDegree(featureFileMapping);
     }
+    //endregion
+
+    //region Synchronous Methods
 
     /**
-     * Calculates the scattering degree of a feature without precalculated {@link FeatureFileMapping} in the Background and returns the result to {@link HAnSCallback} Implementation
      * @param feature {@link FeatureModelFeature}
-     * @param callback {@link HAnSCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
+     * @return scattering degree of the feature
+     * @see FeatureScattering#getScatteringDegree(Project, FeatureModelFeature)
+     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
+     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
+     * <p> OR use {@link #getFeatureScatteringBackground(FeatureModelFeature, FeatureCallback)}.
+     */
+    @Deprecated(since = "0.0.5", forRemoval = true)
+    @Override
+    public int getFeatureScattering(FeatureModelFeature feature) {
+        return FeatureScattering.getScatteringDegree(project, feature);
+    }
+    //endregion
+
+    //region Asynchronous Methods
+    /**
+     * Calculates the scattering degree of a feature without precalculated {@link FeatureFileMapping} in the Background and returns the result to {@link FeatureCallback} Implementation
+     *
+     * @param feature  {@link FeatureModelFeature}
+     * @param callback {@link FeatureCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
      */
     @Override
-    public void getFeatureScatteringBackground(FeatureModelFeature feature, HAnSCallback callback) {
-        BackgroundTask task = new ScatteringDegreeBackground(project, "Scanning features", callback, new FeatureMetrics(feature));
-        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new EmptyProgressIndicator());
+    public void getFeatureScatteringBackground(FeatureModelFeature feature, FeatureCallback callback) {
+        var title = String.format("Calculating Scattering Degree for %s", feature.getLPQText());
+        new GetScatteringDegreeForFeature(project, title, callback, feature).queue();
     }
-
+    //endregion
     // &end[Scattering]
 
+    //&begin[NestingDepths]
+    //region Asynchronous Methods
+    /**
+     * Calculates the Nesting depths of a feature in the background and returns the result to {@link FeatureCallback} Implementation
+     *
+     * @param feature  {@link FeatureModelFeature}
+     * @param callback {@link FeatureCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
+     */
+    @Override
+    public void getNestingDepthsBackGround(FeatureModelFeature feature, FeatureCallback callback) {
+        var title = String.format("Calculating Nesting depths for %s", feature.getLPQText());
+        new GetNestingDepthsForFeature(project, title, callback, feature).queue();
+    }
+    //endRegion
+    //&end[NestingDepths]
+
+    // &begin[NumberOfAnnotatedFiles]
+    //region Asynchronous Methods
+
+    /**
+     * Retrieves the number of annotated files of a feature in the background and returns the result to {@link FeatureCallback} Implementation
+     *
+     * @param feature  {@link FeatureModelFeature}
+     * @param callback {@link FeatureCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
+     */
+    @Override
+    public void getNumberOfAnnotatedFilesBackground(FeatureModelFeature feature, FeatureCallback callback) {
+        var title = String.format("Calculating Number of Annotated Files for %s", feature.getLPQText());
+        new GetNumberOfAnnotationsForFeature(project, title, callback, feature).queue();
+    }
+    //endRegion
+    // &end[NumberOfAnnotatedFiles]
+
     // &begin[FeatureLocation]
+    //region Convenience Methods
+
     /**
      * Finds {@link FeatureLocation} of the feature
+     *
      * @param featureFileMapping {@link FeatureFileMapping} of the feature
      * @return ArrayList of {@link FeatureLocation} of the Feature
      */
     @Override
-    public ArrayList<FeatureLocation> getFeatureLocations(FeatureFileMapping featureFileMapping){
+    public ArrayList<FeatureLocation> getFeatureLocations(FeatureFileMapping featureFileMapping) {
         return featureFileMapping.getFeatureLocations();
     }
+
     /**
      * Gets {@link FeatureLocationBlock} of a {@link FeatureLocation}
+     *
      * @param featureLocation {@link FeatureFileMapping} of the feature
      * @return List of {@link FeatureLocationBlock} of the {@link FeatureLocation}
      */
     @Override
-    public List<FeatureLocationBlock> getListOfFeatureLocationBlock(FeatureLocation featureLocation){
+    public List<FeatureLocationBlock> getListOfFeatureLocationBlock(FeatureLocation featureLocation) {
         return featureLocation.getFeatureLocations();
     }
+    //endregion
     // &end[FeatureLocation]
 }

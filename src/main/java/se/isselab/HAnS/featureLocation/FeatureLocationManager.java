@@ -27,7 +27,6 @@ import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.FeatureAnnotationSearchScope;
 import se.isselab.HAnS.codeAnnotation.psi.*;
-import se.isselab.HAnS.pluginExtensions.backgroundTask.BackgroundTask;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
@@ -76,7 +75,7 @@ public class FeatureLocationManager {
      *
      * @param feature Corresponding feature for which the FileMapping should be calculated
      * @return FeatureFileMapping for the given feature
-     * @see BackgroundTask
+     * @see com.intellij.openapi.progress.Task.Backgroundable
      */
     public static FeatureFileMapping getFeatureFileMapping(Project project, FeatureModelFeature feature) {
         FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);

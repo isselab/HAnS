@@ -13,23 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package se.isselab.HAnS.pluginExtensions.backgroundTasks.featureBackgroundTasks;
+package se.isselab.HAnS.pluginExtensions.backgroundTasks.featureTasks;
 
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.NlsContexts;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
+import se.isselab.HAnS.metrics.calculators.FeatureScattering;
 
-public class GetNumberOfAnnotationsBackgroundTask extends Task.Backgroundable {
+public class GetScatteringDegreeForFeature extends Task.Backgroundable{
+
     private final FeatureModelFeature feature;
     private final FeatureCallback callback;
 
-    public GetNumberOfAnnotationsBackgroundTask(@Nullable Project project, @NlsContexts.ProgressTitle @NotNull String title,
-                                                FeatureCallback callback, FeatureModelFeature feature) {
+    public GetScatteringDegreeForFeature(@Nullable Project project, @NotNull String title,
+                                         FeatureCallback callback, FeatureModelFeature feature) {
         super(project, title);
         this.callback = callback;
         this.feature = feature;
@@ -38,11 +38,7 @@ public class GetNumberOfAnnotationsBackgroundTask extends Task.Backgroundable {
 
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
-        var featureFileMapping = FeatureLocationManager.getFeatureFileMapping(super.getProject(), feature);
-
-        feature.setNumberOfAnnotatedFiles(featureFileMapping.getMappedFilePaths().size());
-        feature.setNumberOfFolderAnnotations(featureFileMapping.getFolderAnnotations().size());
-        feature.setNumberOfFileAnnotations(featureFileMapping.getFileAnnotations().size());
+         feature.setScatteringDegree(FeatureScattering.getScatteringDegree(super.getProject(), feature));
     }
 
     @Override
@@ -50,4 +46,3 @@ public class GetNumberOfAnnotationsBackgroundTask extends Task.Backgroundable {
         callback.onComplete(feature);
     }
 }
-

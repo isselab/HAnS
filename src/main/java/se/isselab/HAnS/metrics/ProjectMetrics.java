@@ -19,9 +19,11 @@ import com.intellij.openapi.util.Pair;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ProjectMetrics {
 
@@ -80,6 +82,10 @@ public class ProjectMetrics {
      */
     public Map<String, FeatureFileMapping> getFeatureFileMappings() {
         return featureFileMappings;
+    }
+
+    public Collection<FeatureModelFeature> getFeaturesInProject(){
+        return  featureFileMappings.values().stream().map(FeatureFileMapping::getFeature).collect(Collectors.toSet());
     }
 
     public Map<String, List<Pair<String, Integer>>> getNestingDepthMap() {

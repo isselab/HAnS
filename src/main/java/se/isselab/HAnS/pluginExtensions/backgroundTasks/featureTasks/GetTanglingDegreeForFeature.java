@@ -13,24 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package se.isselab.HAnS.pluginExtensions.backgroundTasks.featureBackgroundTasks;
+package se.isselab.HAnS.pluginExtensions.backgroundTasks.featureTasks;
 
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.NlsContexts;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
-import se.isselab.HAnS.metrics.calculators.FeatureScattering;
+import se.isselab.HAnS.metrics.calculators.FeatureTangling;
 
-public class GetScatteringDegreeBackgroundTask extends Task.Backgroundable{
+public class GetTanglingDegreeForFeature extends Task.Backgroundable {
 
     private final FeatureModelFeature feature;
     private final FeatureCallback callback;
 
-    public GetScatteringDegreeBackgroundTask(@Nullable Project project, @NlsContexts.ProgressTitle @NotNull String title,
-                                             FeatureCallback callback, FeatureModelFeature feature) {
+    public GetTanglingDegreeForFeature(@Nullable Project project, @NotNull String title,
+                                       FeatureCallback callback, FeatureModelFeature feature) {
         super(project, title);
         this.callback = callback;
         this.feature = feature;
@@ -39,7 +38,7 @@ public class GetScatteringDegreeBackgroundTask extends Task.Backgroundable{
 
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
-         feature.setScatteringDegree(FeatureScattering.getScatteringDegree(super.getProject(), feature));
+        feature.setTanglingDegree(FeatureTangling.getFeatureTanglingDegree(super.getProject(), feature));
     }
 
     @Override

@@ -27,7 +27,7 @@ import se.isselab.HAnS.metrics.calculators.FeatureTangling;
 import se.isselab.HAnS.metrics.calculators.NestingDepths;
 import se.isselab.HAnS.metrics.ProjectMetrics;
 
-public class ProjectMetricsBackgroundTask extends Task.Backgroundable {
+public class GetProjectMetrics extends Task.Backgroundable {
 
     private ProjectMetrics metrics;
     private final MetricsCallback callback;
@@ -41,7 +41,7 @@ public class ProjectMetricsBackgroundTask extends Task.Backgroundable {
      * @param callback {@link MetricsCallback} Implementation
      * @param metrics  {@link ProjectMetrics} Implementation
      */
-    public ProjectMetricsBackgroundTask(@Nullable Project project, @NotNull String title, MetricsCallback callback, ProjectMetrics metrics) {
+    public GetProjectMetrics(@Nullable Project project, @NotNull String title, MetricsCallback callback, ProjectMetrics metrics) {
         super(project, title);
         this.metrics = metrics;
         this.callback = callback;

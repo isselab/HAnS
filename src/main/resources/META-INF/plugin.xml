@@ -149,7 +149,13 @@ limitations under the License.
                 interface="se.isselab.HAnS.pluginExtensions.backgroundTasks.MetricsCallback"/>
         <extensionPoint
             name="featureCallback"
-            interface="se.isselab.HAnS.pluginExtensions.backgroundTasks.featureBackgroundTasks.FeatureCallback"/>
+            interface="se.isselab.HAnS.pluginExtensions.backgroundTasks.featureTasks.FeatureCallback"/>
+        <extensionPoint
+            name="featureFileMappingCallback"
+            interface="se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.FeatureFileMappingCallback"/>
+        <extensionPoint
+            name="tanglingMapCallback"
+            interface="se.isselab.HAnS.pluginExtensions.backgroundTasks.tanglingMapTasks.TanglingMapCallback"/>
         <!-- &end[Callback]-->
 
     </extensionPoints>

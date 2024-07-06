@@ -18,7 +18,6 @@ package se.isselab.HAnS.metrics.calculators;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
-import se.isselab.HAnS.pluginExtensions.backgroundTask.BackgroundTask;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
@@ -38,7 +37,7 @@ public class FeatureTangling {
      *
      * @param feature the feature which should be checked
      * @return tangling degree of the given feature
-     * @see BackgroundTask
+     * @see com.intellij.openapi.progress.Task.Backgroundable
      */
     public static int getFeatureTanglingDegree(Project project, FeatureModelFeature feature) {
         return getFeatureTanglingDegree(project, FeatureLocationManager.getAllFeatureFileMappings(project), feature);
