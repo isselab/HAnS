@@ -123,7 +123,7 @@ limitations under the License.
         <!-- &end[LiveTemplate] -->
 
         <!-- &begin[MetricsView]-->
-        <toolWindow id="Metrics View" anchor="bottom"
+        <toolWindow id="Feature Metrics View" anchor="bottom"
                     factoryClass="se.isselab.HAnS.metrics.view.MetricsViewFactory"
         />
         <!-- &end[MetricsView]-->

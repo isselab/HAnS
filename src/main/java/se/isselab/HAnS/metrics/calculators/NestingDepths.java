@@ -56,15 +56,15 @@ public class NestingDepths {
                 var filePath = featureLocation.getMappedPath();
                 var nestingDepth = 1;
 
-                var featureLocations = fileMappings.values().stream().map(FeatureFileMapping::getFeatureLocations)
+                var projectFeatureLocations = fileMappings.values().stream().map(FeatureFileMapping::getFeatureLocations)
                         .flatMap(List::stream).toList().stream().filter(f -> f.getMappedPath().equals(filePath)).toList();
 
-                var allFeatureLocationsInFile =
-                        featureLocations.stream().map(FeatureLocation::getFeatureLocations).flatMap(List::stream).toList();
+                var fileFeatureLocations =
+                        projectFeatureLocations.stream().map(FeatureLocation::getFeatureLocations).flatMap(List::stream).toList();
 
                 for (var block : featureLocation.getFeatureLocations()) {
-                    var allFeatureLocationsInFileExceptThisBlock = allFeatureLocationsInFile.stream().filter(f -> f != block).toList();
-                    nestingDepth += block.countTimesInsideOfBlocks(allFeatureLocationsInFileExceptThisBlock);
+                    var fileFeatureLocationsExceptThisBlock = fileFeatureLocations.stream().filter(f -> f != block).toList();
+                    nestingDepth += block.countTimesInsideOfBlocks(fileFeatureLocationsExceptThisBlock);
                 }
 
                 if(nestingDepthMap.containsKey(featureLPQ)){

@@ -15,7 +15,6 @@ limitations under the License.
 */
 {
   parserClass="se.isselab.HAnS.featureModel.parser.FeatureModelParser"
-  parserUtilClass="se.isselab.HAnS.featureModel.parser.FeatureModelParserUtil"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 

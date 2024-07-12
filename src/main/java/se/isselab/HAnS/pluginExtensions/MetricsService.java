@@ -1,5 +1,5 @@
 /*
-Copyright 2024 Johan Martinson
+Copyright 2024 Johan Martinson, David Stechow & Philipp Kusmierz
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -38,7 +38,8 @@ import java.util.List;
 public interface MetricsService {
 
     /**
-     * Calculates the metrics of the project in the background and returns the result to {@link MetricsCallback} Implementation
+     * Calculates the metrics of the project in the background and returns the result to {@link MetricsCallback} implementation.
+     * <p> By calling this method all metrics for each feature in the project are calculated as well.
      *
      * @param callback {@link MetricsCallback} Implementation, on which is called <code>onComplete()</code> after finishing the BackgroundTask
      */

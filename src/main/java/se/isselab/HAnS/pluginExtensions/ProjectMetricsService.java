@@ -1,5 +1,5 @@
 /*
-Copyright 2024 Johan Martinson
+Copyright 2024 Johan Martinson, David Stechow & Philipp Kusmierz
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -214,7 +214,8 @@ public final class ProjectMetricsService implements MetricsService {
      */
     @Override
     public void getFeatureFileMappingBackground(FeatureModelFeature feature, FeatureFileMappingCallback callback) {
-        new GetFeatureFileMappingForFeature(project, "Scanning features", callback, feature).queue();
+        var title = String.format("Calculating the Feature locations for %s", feature.getLPQText());
+        new GetFeatureFileMappingForFeature(project, title, callback, feature).queue();
     }
 
     /**
@@ -225,7 +226,7 @@ public final class ProjectMetricsService implements MetricsService {
      */
     @Override
     public void getAllFeatureFileMappingsBackground(FeatureFileMappingCallback callback) {
-        new GetFeatureFileMappings(project, "Scanning features", callback).queue();
+        new GetFeatureFileMappings(project, "Retrieving Feature locations", callback).queue();
     }
 
     //endregion
