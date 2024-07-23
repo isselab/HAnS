@@ -16,7 +16,6 @@
 package se.isselab.HAnS.settingsPage;
 
 import com.intellij.openapi.options.*;
-import com.intellij.openapi.util.*;
 import com.intellij.ui.components.*;
 import org.jetbrains.annotations.*;
 
