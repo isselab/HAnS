@@ -44,9 +44,7 @@ import java.util.HashMap;
 
 public class FeatureLocationManager {
 
-    private FeatureLocationManager() {
-
-    }
+    private FeatureLocationManager() { }
 
     /**
      * Method to get all {@link FeatureFileMapping} for a given project.

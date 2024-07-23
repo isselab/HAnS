@@ -104,8 +104,7 @@ public class UnassignedFeatureQuickFix extends BaseIntentionAction {
                 if (lastChildNode != null) { // && !lastChildNode.getElementType().equals(SimpleTypes.CRLF)
                     featureModelFileFile.getNode().addChild(UnassignedFeatureFactory.createCRLF(project).getNode());
                 }
-                FeatureModelFeature unassigned = UnassignedFeatureFactory.createFeature(project, "UNASSIGNED".replaceAll(" ",
-                        "\\\\ "));
+                FeatureModelFeature unassigned = UnassignedFeatureFactory.createFeature(project, "UNASSIGNED");
                 unassignedNode = unassigned.getNode();
                 featureModelFileFile.getNode().addChild(unassignedNode);
                 unassignedNode.addChild(UnassignedFeatureFactory.createCRLF(project).getNode());

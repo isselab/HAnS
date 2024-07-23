@@ -257,22 +257,7 @@ public class FeatureReferenceUtil {
 
     private static void deleteFileFolderAnnotation(Project project, PsiReference reference) {
         if (reference.getElement().getNextSibling() != null) {
-            PsiElement nextChar = reference.getElement().getNextSibling();
-            Runnable r = () -> {
-                if (nextChar.getText().equals(" ")) {
-                    nextChar.delete(); // remove space after element
-                }
-                if (nextChar.getText().equals(",")) {
-                    if (nextChar.getNextSibling() != null) {
-                        PsiElement nextNextChar = nextChar.getNextSibling();
-                        if (nextNextChar.getText().equals(" ")) {
-                            nextNextChar.delete();
-                        }
-                    }
-                    reference.getElement().getNextSibling().delete();
-                }
-            };
-            WriteCommandAction.runWriteCommandAction(project, r);
+            WriteCommandAction.runWriteCommandAction(project, getRunnableForNextSibling(reference));
         }
 
         if (reference.getElement().getPrevSibling() != null && reference.getElement().getNextSibling() == null) {
@@ -314,29 +299,51 @@ public class FeatureReferenceUtil {
         WriteCommandAction.runWriteCommandAction(project, r);
     }
 
+    private static Runnable getRunnableForNextSibling(PsiReference reference) {
+        PsiElement nextChar = reference.getElement().getNextSibling();
+        Runnable r = () -> {
+            if (nextChar.getText().equals(" ")) {
+                nextChar.delete(); // remove space after element
+            }
+            if (nextChar.getText().equals(",")) {
+                if (nextChar.getNextSibling() != null) {
+                    PsiElement nextNextChar = nextChar.getNextSibling();
+                    if (nextNextChar.getText().equals(" ")) {
+                        nextNextChar.delete();
+                    }
+                }
+                reference.getElement().getNextSibling().delete();
+            }
+        };
+        return r;
+    }
+
     public static void deleteSpacesAfterDeleteWithCode(Project project) {
         Map<Document, Set<Integer>> documentToLines = getMapToDeleteAfterDeletingWithCode();
         for (Map.Entry<Document, Set<Integer>> entry : documentToLines.entrySet()) {
             Document document = entry.getKey();
             PsiDocumentManager.getInstance(project).doPostponedOperationsAndUnblockDocument(document);
-            Set<Integer> linesToExclude = entry.getValue();
-            String newDocumentText = "";
-            String documentText = document.getText();
-            for (int i = 0 ; i < document.getLineCount(); i++) {
-                if (linesToExclude.contains(i)) {
-                    continue;
-                }
-                String line = documentText.substring(document.getLineStartOffset(i), document.getLineEndOffset(i)).concat("\n");
-                newDocumentText = newDocumentText.concat(line);
-            }
-            String newText = newDocumentText;
             Runnable r = () -> {
                 document.setReadOnly(false);
-                document.setText(newText);
+                document.setText(getNewDocumentText(entry, document));
             };
             WriteCommandAction.runWriteCommandAction(project, r);
         }
 
+    }
+
+    private static @NotNull String getNewDocumentText(Map.Entry<Document, Set<Integer>> entry, Document document) {
+        Set<Integer> linesToExclude = entry.getValue();
+        String newDocumentText = "";
+        String documentText = document.getText();
+        for (int i = 0; i < document.getLineCount(); i++) {
+            if (linesToExclude.contains(i)) {
+                continue;
+            }
+            String line = documentText.substring(document.getLineStartOffset(i), document.getLineEndOffset(i)).concat("\n");
+            newDocumentText = newDocumentText.concat(line);
+        }
+        return newDocumentText;
     }
 
     public static void deleteWithCode() {
@@ -353,26 +360,16 @@ public class FeatureReferenceUtil {
 
                 Set<Integer> linesToExclude = codeAnnotation.getValue();
                 mapToDeleteAfterDeletingWithCode.put(document, linesToExclude);
-//                String newDocumentText = "";
-//                String documentText = document.getText();
+
                 for (int i = 0 ; i < document.getLineCount(); i++) {
                     if (linesToExclude.contains(i)) {
-//                        continue;
                         int iFinal = i;
                         Runnable r = () -> {
                             document.deleteString(document.getLineStartOffset(iFinal), document.getLineEndOffset(iFinal));
                         };
                         WriteCommandAction.runWriteCommandAction(projectInstance, r);
                     }
-//                    String line = documentText.substring(document.getLineStartOffset(i), document.getLineEndOffset(i)).concat("\n");
-//                    newDocumentText = newDocumentText.concat(line);
                 }
-//                String newText = newDocumentText;
-//                Runnable r = () -> {
-//                    document.setReadOnly(false);
-//                    document.setText(newText);
-//                };
-//                WriteCommandAction.runWriteCommandAction(projectInstance, r);
             });
 
             fileFolderAnnotation.forEach(annotation -> {
@@ -385,7 +382,7 @@ public class FeatureReferenceUtil {
     public static void setMapToDeleteWithCode(FeatureModelFeature feature) {
         List<PsiElement> elementsToDelete = getElementsToDelete(feature)[0];
         Project projectInstance = feature.getProject();
-        elementsToDelete.stream().forEach(child -> {
+        elementsToDelete.forEach(child -> {
             FeatureModelFeature childFeature = (FeatureModelFeature) child;
 
             FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, childFeature);
@@ -411,7 +408,7 @@ public class FeatureReferenceUtil {
         Map<Pair<String, String>, Set<Integer>> mapToDrop = new HashMap<>(); // documentName -> ranges of annotation blocks
 
         for (FeatureLocation fm : fileToAnnotation.getFeatureLocations()) {
-            fm.getFeatureLocations().stream().forEach(block -> {
+            fm.getFeatureLocations().forEach(block -> {
                 if (fm.getAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE)) {
 
                     Set<Integer> entry = mapToDrop.get(fm.getMappedPath());
@@ -436,9 +433,7 @@ public class FeatureReferenceUtil {
                 .collect(Collectors.toMap(entry -> {
                     VirtualFile file = LocalFileSystem.getInstance().findFileByPath(entry.getKey().first);
                     return FileDocumentManager.getInstance().getDocument(file);
-                }, entry -> {
-                    return entry.getValue().stream().sorted().collect(Collectors.toSet());
-                }));
+                }, entry -> entry.getValue().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new))));
         return result;
     }
 
@@ -486,16 +481,7 @@ public class FeatureReferenceUtil {
                         for (FeatureLocationBlock fl : location.getFeatureLocations()) {
                             // if it's tangled with its own parent (or other feature in the parent tree, e.g. sibling) ignore
                             if (!featureTreeLPQs.contains(location.getMappedFeature().getLPQText())) {
-                                FeatureAnnotationToDelete element = new FeatureAnnotationToDelete();
-
-                                element.setTangledFeatureLPQ(location.getMappedFeature().getLPQText()); // tangled feature
-                                element.setFilePath(location.getMappedPath()); // path to file with tangled feature
-
-                                element.setStartLine(fl.getStartLine()); // starting line of tangling
-                                element.setEndLine(fl.getEndLine()); // end line of tangling
-                                element.setMainFeatureLPQ(feature.getLPQText()); // feature it's tangled with
-                                element.setTangledAnnotationType(location.getAnnotationType()); // annotation type of tangled annotation
-
+                                FeatureAnnotationToDelete element = getFeatureAnnotationToDelete(feature, location, fl);
                                 storeInterlockedLocations.add(element);
                             }
                         }
@@ -505,6 +491,19 @@ public class FeatureReferenceUtil {
             }
         }
         return storeInterlockedLocations;
+    }
+
+    private static @NotNull FeatureAnnotationToDelete getFeatureAnnotationToDelete(FeatureModelFeature feature, FeatureLocation location, FeatureLocationBlock fl) {
+        FeatureAnnotationToDelete element = new FeatureAnnotationToDelete();
+
+        element.setTangledFeatureLPQ(location.getMappedFeature().getLPQText()); // tangled feature
+        element.setFilePath(location.getMappedPath()); // path to file with tangled feature
+
+        element.setStartLine(fl.getStartLine()); // starting line of tangling
+        element.setEndLine(fl.getEndLine()); // end line of tangling
+        element.setMainFeatureLPQ(feature.getLPQText()); // feature it's tangled with
+        element.setTangledAnnotationType(location.getAnnotationType()); // annotation type of tangled annotation
+        return element;
     }
 
     // returns set of all features tangled with FeatureModelFeature feature

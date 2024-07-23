@@ -316,22 +316,9 @@ public class FeatureModelPsiImplUtil {
 
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(parentFeature.getContainingFile());
         if (document != null) {
-            PsiElement prevSibling = parentFeature.getPrevSibling();
-            int indent;
-            // if root feature -> 4
-            // otherwise indent of parentFeature + 4
-            if (prevSibling instanceof PsiFile) {
-                indent = 4;
-            } else {
-                int parentOffset = parentFeature.getTextOffset();
-                int parentLineOffset = document.getLineStartOffset(document.getLineNumber(parentOffset));
-                indent = (parentOffset - parentLineOffset) + 4;
-            }
-            int level = indent / 4;
-
             // create string representation of child feature with its children and
             // append it to .feature-model file right after parent feature
-            String result = generateTreeString(childFeature, level);
+            String result = generateTreeString(childFeature, getIndentationLevel(parentFeature, document));
 
             int lineStartOffset = document.getLineStartOffset(document.getLineNumber(parentFeature.getTextOffset()) + 1);
             String beforeLine = document.getText().substring(0, lineStartOffset);
@@ -351,6 +338,22 @@ public class FeatureModelPsiImplUtil {
             FeatureReferenceUtil.rename();
             FeatureReferenceUtil.reset();
         }
+    }
+
+    private static int getIndentationLevel(@NotNull FeatureModelFeature parentFeature, Document document) {
+        PsiElement prevSibling = parentFeature.getPrevSibling();
+        int indent;
+        // if root feature -> 4
+        // otherwise indent of parentFeature + 4
+        if (prevSibling instanceof PsiFile) {
+            indent = 4;
+        } else {
+            int parentOffset = parentFeature.getTextOffset();
+            int parentLineOffset = document.getLineStartOffset(document.getLineNumber(parentOffset));
+            indent = (parentOffset - parentLineOffset) + 4;
+        }
+        int level = indent / 4;
+        return level;
     }
 
 

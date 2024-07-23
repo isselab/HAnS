@@ -88,9 +88,7 @@ public class FeatureFileMapping {
             for (var markerToLinePair : annotationTypeToLocationBlockPair.second) {
 
                 switch (markerToLinePair.first) {
-                    case BEGIN -> {
-                        stack.push(markerToLinePair.second);
-                    }
+                    case BEGIN -> stack.push(markerToLinePair.second);
                     case END -> {
                         if (stack.isEmpty()) {
                             // found end marker without begin marker
@@ -100,14 +98,9 @@ public class FeatureFileMapping {
                         int beginLine = stack.pop();
                         add(key, new FeatureLocationBlock(beginLine, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                     }
-                    case LINE -> {
-                        add(key, new FeatureLocationBlock(markerToLinePair.second, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
-                    }
-                    case NONE -> {
-                        // should only happen if file is a feature-to-file or feature-to-folder
-                        add(key, new FeatureLocationBlock(0, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
-                        //System.out.println("[HAnS-Vis][ERROR] found marker of Type::None");
-                    }
+                    case LINE -> add(key, new FeatureLocationBlock(markerToLinePair.second, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
+                    case NONE -> // should only happen if file is a feature-to-file or feature-to-folder
+                            add(key, new FeatureLocationBlock(0, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                     default -> {
                         // should not happen but cover case if no label was found
                     }
