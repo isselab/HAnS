@@ -137,9 +137,8 @@ public class TangledFeaturesModal extends DialogWrapper {
     }
 
     private void createHeader2(String featureLpq, String path) {
-        if (header2 != null) {
-            panel.remove(header2);
-        }
+        if (header2 != null) panel.remove(header2);
+
         constraints.gridy = 5;
         constraints.gridheight = 1;
         constraints.gridx = 0;
@@ -161,17 +160,7 @@ public class TangledFeaturesModal extends DialogWrapper {
         if (psiFile == null) {return;}
         String documentUri = psiFile.getCanonicalPath();
         if (documentUri == null) {return;}
-        String[] parts = documentUri.split("/");
-        String result = psiFile.getName();
-        if (parts.length >= 2) {
-            result = "/" + parts[parts.length - 2] + "/" + parts[parts.length - 1];
-        }
-        String num = currentIndex+1 + "/" + this.files.size();
-        String text = "<html><div style='margin: 10px 10px 0 10px; text-align:left;'>" +
-                num + ": Feature " + currentElement.getMainFeatureLPQ() + " was tangled with " +
-                currentElement.getTangledFeatureLPQ() + " in file " + result + ". <br/>"
-                + "Please untangle the features to proceed with deletion. <br/>Caution: updating this file could impact the highlight of other tangled features within the same file.</div></html>";
-        titleLabel = new JLabel(text);
+        titleLabel = new JLabel(getTitleLabel(documentUri, psiFile));
 
         // Set the font and size of the label
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -184,6 +173,19 @@ public class TangledFeaturesModal extends DialogWrapper {
         constraints.weighty = 0.0;
         constraints.fill = GridBagConstraints.HORIZONTAL;
         panel.add(titleLabel, constraints);
+    }
+
+    private @NotNull String getTitleLabel(String documentUri, VirtualFile psiFile) {
+        String[] parts = documentUri.split("/");
+        String result = psiFile.getName();
+        if (parts.length >= 2) {
+            result = "/" + parts[parts.length - 2] + "/" + parts[parts.length - 1];
+        }
+        String num = currentIndex+1 + "/" + this.files.size();
+        return "<html><div style='margin: 10px 10px 0 10px; text-align:left;'>" +
+                num + ": Feature " + currentElement.getMainFeatureLPQ() + " was tangled with " +
+                currentElement.getTangledFeatureLPQ() + " in file " + result + ". <br/>"
+                + "Please untangle the features to proceed with deletion. <br/>Caution: updating this file could impact the highlight of other tangled features within the same file.</div></html>";
     }
 
     // every time next button is clicked,
@@ -230,8 +232,8 @@ public class TangledFeaturesModal extends DialogWrapper {
 
     public void setCodeTextArea() {
         // creates 1 window if both annotation types are code and file is the same
-        if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) &&
-            currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.code)) {
+        if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE) &&
+            currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE)) {
             createNewCodeTextArea1(true);
 
             if (codeTextArea2 != null) {
@@ -239,15 +241,15 @@ public class TangledFeaturesModal extends DialogWrapper {
             }
             Document doc = currentElement.getDocument();
             createHeader1(currentElement.getMainFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc)).getPath());
-            if (header2 != null) {panel.remove(header2);};
+            if (header2 != null) panel.remove(header2);
             updateCodeTextArea(codeTextArea1, doc, doc.getLineStartOffset(currentElement.getStartLine()), doc.getLineEndOffset(currentElement.getEndLine()));
         // otherwise creates 2 windows
         } else {
             createNewCodeTextArea1(false);
             createNewCodeTextArea2();
 
-            if (currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.code) &&
-                    currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.file)) {
+            if (currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE) &&
+                    currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.FILE)) {
 
                 updateCodeTextArea(codeTextArea1, currentElement.getDocument(),
                         currentElement.getDocument().getLineStartOffset(currentElement.getStartLine()),
@@ -262,8 +264,8 @@ public class TangledFeaturesModal extends DialogWrapper {
                 updateCodeTextArea(codeTextArea2, doc, (int) tangled.get(1), (int) tangled.get(2));
                 createHeader2(currentElement.getTangledFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(doc)).getPath());
 
-            } else if (currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.file) &&
-                    currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.code) ) {
+            } else if (currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.FILE) &&
+                    currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE) ) {
 
                 ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getMainFeatureLPQ());
                 if (tangled == null) {return;}
@@ -279,8 +281,8 @@ public class TangledFeaturesModal extends DialogWrapper {
 
                 createHeader2(currentElement.getTangledFeatureLPQ(), Objects.requireNonNull(FileDocumentManager.getInstance().getFile(currentElement.getDocument())).getPath());
 
-            } else if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.file) &&
-                    currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.file)) {
+            } else if (currentElement.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.FILE) &&
+                    currentElement.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.FILE)) {
                 ArrayList<Object> tangled = getFeatureToFileOrFolderDocument(currentElement.getMainFeatureLPQ());
                 if (tangled == null) {return;}
                 Document doc = (Document) tangled.get(0);
@@ -301,9 +303,7 @@ public class TangledFeaturesModal extends DialogWrapper {
     }
 
     public void setFileList(Set<FeatureAnnotationToDelete> filesSet) {
-        ArrayList<FeatureAnnotationToDelete> files = new ArrayList<>(filesSet);
-
-        this.files = files;
+        this.files = new ArrayList<>(filesSet);
         this.currentIndex = 0;
         currentElement = this.files.get(currentIndex);
 

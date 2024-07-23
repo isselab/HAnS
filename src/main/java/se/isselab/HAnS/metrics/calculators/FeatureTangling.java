@@ -1,5 +1,5 @@
 /*
-Copyright 2024 David Stechow & Philipp Kusmierz
+Copyright 2024 David Stechow, Philipp Kusmierz & Johan Martinson
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,11 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package se.isselab.HAnS.metrics;
+package se.isselab.HAnS.metrics.calculators;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
-import se.isselab.HAnS.featureExtension.backgroundTask.BackgroundTask;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
@@ -38,7 +37,7 @@ public class FeatureTangling {
      *
      * @param feature the feature which should be checked
      * @return tangling degree of the given feature
-     * @see BackgroundTask
+     * @see com.intellij.openapi.progress.Task.Backgroundable
      */
     public static int getFeatureTanglingDegree(Project project, FeatureModelFeature feature) {
         return getFeatureTanglingDegree(project, FeatureLocationManager.getAllFeatureFileMappings(project), feature);
@@ -54,11 +53,7 @@ public class FeatureTangling {
      */
     public static int getFeatureTanglingDegree(Project project, HashMap<String, FeatureFileMapping> fileMappings, FeatureModelFeature feature) {
         var tanglingMap = getTanglingMap(project, fileMappings);
-
-        if (tanglingMap.containsKey(feature))
-            return tanglingMap.get(feature).size();
-
-        return 0;
+        return tanglingMap.getOrDefault(feature, new HashSet<>()).size();
     }
 
     /**
@@ -129,22 +124,14 @@ public class FeatureTangling {
                     var featureB = existingFeatureLocations.getKey();
 
                     //add featureB to featureA
-                    if (tanglingMap.containsKey(feature)) {
-                        tanglingMap.get(feature).add(featureB);
-                    } else {
-                        HashSet<FeatureModelFeature> featureSet = new HashSet<>();
-                        featureSet.add(featureB);
-                        tanglingMap.put(feature, featureSet);
-                    }
+                    tanglingMap
+                            .computeIfAbsent(feature, k -> new HashSet<>())
+                            .add(featureB);
 
                     //add featureA to featureB
-                    if (tanglingMap.containsKey(featureB)) {
-                        tanglingMap.get(featureB).add(feature);
-                    } else {
-                        HashSet<FeatureModelFeature> featureSet = new HashSet<>();
-                        featureSet.add(feature);
-                        tanglingMap.put(featureB, featureSet);
-                    }
+                    tanglingMap
+                            .computeIfAbsent(featureB, k -> new HashSet<>())
+                            .add(feature);
                 }
             }
         }

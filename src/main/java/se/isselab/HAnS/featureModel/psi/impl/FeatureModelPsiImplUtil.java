@@ -211,12 +211,12 @@ public class FeatureModelPsiImplUtil {
             if (newFeatureName == null) {
                 return;
             }
-            if ("".equals(newFeatureName.trim())) {
+            if (newFeatureName.trim().isEmpty()) {
                 Messages.showMessageDialog("Feature name cannot be empty.",
                         "Error", Messages.getErrorIcon());
                 continue;
             }
-            if (!Pattern.matches("[[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]*", newFeatureName)) {
+            if (!Pattern.matches("^[A-Za-z0-9_']+$", newFeatureName)) {
                 Messages.showMessageDialog("Feature name incorrect",
                         "Error", Messages.getErrorIcon());
                 continue;
@@ -245,8 +245,12 @@ public class FeatureModelPsiImplUtil {
     private static FeatureModelFeature getFeatureFromLPQ(Project project, String lpq) {
         List<FeatureModelFeature> listOfFeatures = ReadAction.compute(() -> FeatureModelUtil.findLPQ(project, lpq));
         if (listOfFeatures.isEmpty()) { return null; }
-        FeatureModelFeature feature = listOfFeatures.get(0);
-        return feature;
+        if (listOfFeatures.size() > 1) {
+            Messages.showMessageDialog("Multiple features with the same LPQ found.",
+                    "Error", Messages.getErrorIcon());
+            return null;
+        }
+        return listOfFeatures.get(0);
     }
 
     // generates String with feature tree
@@ -316,22 +320,9 @@ public class FeatureModelPsiImplUtil {
 
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(parentFeature.getContainingFile());
         if (document != null) {
-            PsiElement prevSibling = parentFeature.getPrevSibling();
-            int indent;
-            // if root feature -> 4
-            // otherwise indent of parentFeature + 4
-            if (prevSibling instanceof PsiFile) {
-                indent = 4;
-            } else {
-                int parentOffset = parentFeature.getTextOffset();
-                int parentLineOffset = document.getLineStartOffset(document.getLineNumber(parentOffset));
-                indent = (parentOffset - parentLineOffset) + 4;
-            }
-            int level = indent / 4;
-
             // create string representation of child feature with its children and
             // append it to .feature-model file right after parent feature
-            String result = generateTreeString(childFeature, level);
+            String result = generateTreeString(childFeature, getIndentationLevel(parentFeature, document));
 
             int lineStartOffset = document.getLineStartOffset(document.getLineNumber(parentFeature.getTextOffset()) + 1);
             String beforeLine = document.getText().substring(0, lineStartOffset);
@@ -351,6 +342,21 @@ public class FeatureModelPsiImplUtil {
             FeatureReferenceUtil.rename();
             FeatureReferenceUtil.reset();
         }
+    }
+
+    private static int getIndentationLevel(@NotNull FeatureModelFeature parentFeature, Document document) {
+        PsiElement prevSibling = parentFeature.getPrevSibling();
+        int indent;
+        // if root feature -> 4
+        // otherwise indent of parentFeature + 4
+        if (prevSibling instanceof PsiFile) {
+            indent = 4;
+        } else {
+            int parentOffset = parentFeature.getTextOffset();
+            int parentLineOffset = document.getLineStartOffset(document.getLineNumber(parentOffset));
+            indent = (parentOffset - parentLineOffset) + 4;
+        }
+        return indent / 4;
     }
 
 

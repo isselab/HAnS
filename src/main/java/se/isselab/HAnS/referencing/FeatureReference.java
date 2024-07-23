@@ -90,7 +90,7 @@ public class FeatureReference extends PsiReferenceBase<PsiElement> {
         List<FeatureModelFeature> features = FeatureModelUtil.findFeatures(project);
         List<LookupElement> variants = new ArrayList<>();
         for (final FeatureModelFeature feature : features) {
-            if (feature.getText() != null && feature.getText().length() > 0) {
+            if (feature.getText() != null && !feature.getText().isEmpty()) {
                 variants.add(LookupElementBuilder
                         .create(feature.getLPQText()).withIcon(AnnotationIcons.FileType)
                         .withTypeText(feature.getContainingFile().getName())

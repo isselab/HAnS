@@ -14,11 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package se.isselab.HAnS.metricsView;
+package se.isselab.HAnS.metrics.view;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -29,21 +30,21 @@ import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 
 import se.isselab.HAnS.AnnotationIcons;
-import se.isselab.HAnS.featureExtension.FeatureServiceInterface;
-import se.isselab.HAnS.metrics.FeatureMetrics;
-import se.isselab.HAnS.metrics.FeatureScattering;
+import se.isselab.HAnS.pluginExtensions.MetricsService;
+import se.isselab.HAnS.metrics.ProjectMetrics;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
 
 public class MetricsViewFactory implements ToolWindowFactory {
 
     JPanel contentPanel;
+
     public MetricsViewFactory() {
         contentPanel = new JPanel();
     }
@@ -51,60 +52,61 @@ public class MetricsViewFactory implements ToolWindowFactory {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
-        FeatureServiceInterface service = project.getService(FeatureServiceInterface.class);
 
-        toolWindow.setTitleActions(List.of(new AnAction("Refresh Metrics", "Refresh metrics", AllIcons.Actions.Refresh) {
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                contentPanel.removeAll();
-                service.getFeatureMetricsBackground(metrics -> {
-                    addContent(toolWindow, contentPanel);
-
-                    refreshTableContent(contentPanel, metrics, service);
-                });
-            }
-
-        }));
-
-        service.getFeatureMetricsBackground(metrics -> {
-            addContent(toolWindow, contentPanel);
-
-            refreshTableContent(contentPanel, metrics, service);
-        });
-    }
-
-
-    private void addContent(ToolWindow toolWindow, JPanel contentPanel) {
         contentPanel.setLayout(new BorderLayout());
 
         ContentFactory contentFactory = ContentFactory.getInstance();
         Content content = contentFactory.createContent(contentPanel, "", false);
         toolWindow.getContentManager().addContent(content);
+
+        toolWindow.setTitleActions(List.of(new AnAction("Refresh Metrics", "Refresh metrics", AllIcons.Actions.Refresh) {
+                                               @Override
+                                               public void actionPerformed(@NotNull AnActionEvent e) {
+                                                   TriggerService(project);
+                                               }
+                                           }
+        ));
+
+        TriggerService(project);
     }
 
-    private void refreshTableContent(JPanel contentPanel, FeatureMetrics metrics, FeatureServiceInterface service) {
-        DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"Feature", "Scattering Degree", "Tangling Degree", "Line Count"}, 0) {
+    private void TriggerService(Project project) {
+        MetricsService service = project.getService(MetricsService.class);
+
+        if (!DumbService.isDumb(project)) {
+            service.getProjectMetricsBackground(metrics -> refreshTableContent(contentPanel, metrics, service));
+        } else {
+            DumbService.getInstance(project).runWhenSmart(() -> service.getProjectMetricsBackground(metrics -> refreshTableContent(contentPanel, metrics, service)));
+        }
+    }
+
+
+    private void refreshTableContent(JPanel contentPanel, ProjectMetrics metrics, MetricsService service) {
+        DefaultTableModel tableModel = new DefaultTableModel(
+                new Object[]{"Feature", "Scattering Degree", "Tangling Degree", "Lines of Feature-code",
+                        "Avg Nesting Depth", "Max Nesting Depth", "Min Nesting Depth",
+                "Annotated Files", "Folder Annotations", "File Annotations"}, 0) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 // Set appropriate classes for sorting
                 return switch (columnIndex) {
-                    case 1, 2, 3 ->
-                            Integer.class; // Use Integer class for numerical sorting
+                    case 1, 2, 3, 5, 6, 7, 8, 9 -> Integer.class; // Use Integer class for numerical sorting
+                    case 4 -> Double.class;
                     default -> Object.class; // Default class
                 };
             }
         };
+        contentPanel.removeAll();
         JBTable table = new JBTable(tableModel);
+        JBScrollPane scrollPanel = new JBScrollPane(table);
+        contentPanel.add(scrollPanel, BorderLayout.CENTER);
 
         table.setRowSorter(createSorters(tableModel));
-
         populateTable(table, metrics, service);
 
         table.setDefaultRenderer(Object.class, new IntegerTableCellRenderer());
         table.setAutoCreateRowSorter(true);
-        JBScrollPane scrollPanel = new JBScrollPane(table);
 
-        contentPanel.add(scrollPanel, BorderLayout.CENTER);
         contentPanel.revalidate();
         contentPanel.repaint();
     }
@@ -115,21 +117,24 @@ public class MetricsViewFactory implements ToolWindowFactory {
         sorter.setComparator(1, integerComparator); // Scattering Degree column
         sorter.setComparator(2, integerComparator); // Tangling Degree column
         sorter.setComparator(3, integerComparator); // Line Count column
+        sorter.setComparator(4, Comparator.comparingDouble(Double::doubleValue)); // AvgND
+        sorter.setComparator(5, integerComparator); // MaxND
+        sorter.setComparator(6, integerComparator); // MinND
+        sorter.setComparator(7, integerComparator); // NumberOfAnnotatedFiles
+        sorter.setComparator(8, integerComparator); // NumberOfFolderAnnotations
+        sorter.setComparator(9, integerComparator); // NumberOfFileAnnotations
 
         return sorter;
     }
 
-    private void populateTable(JBTable table, FeatureMetrics metrics, FeatureServiceInterface service) {
-        for (var featureFileMapping: metrics.getFeatureFileMappings().values()){
+    private void populateTable(JBTable table, ProjectMetrics metrics, MetricsService service) {
+        for (var featureFileMapping : metrics.getFeatureFileMappings().values()) {
             var feature = featureFileMapping.getFeature();
             if (service.isRootFeature(feature)) continue;
-            var featureName = feature.getLPQText();
 
-            int featureScatteringDegree = FeatureScattering.getScatteringDegree(featureFileMapping);
-            int featureTanglingDegree = metrics.getTanglingMap().containsKey(feature)? metrics.getTanglingMap().get(feature).size() : 0;
-            int featureLineCount = featureFileMapping.getTotalFeatureLineCount();
-
-            ((DefaultTableModel) table.getModel()).addRow(new Object[]{featureName, featureScatteringDegree, featureTanglingDegree, featureLineCount});
+            ((DefaultTableModel) table.getModel()).addRow(new Object[]{feature.getLPQText(), feature.getScatteringDegree(),
+                    feature.getTanglingDegree(), feature.getLineCount(), feature.getAvgNestingDepth(), feature.getMaxNestingDepth(),
+                    feature.getMinNestingDepth(), feature.getNumberOfAnnotatedFiles(), feature.getNumberOfFolderAnnotations(), feature.getNumberOfFileAnnotations()});
         }
     }
 

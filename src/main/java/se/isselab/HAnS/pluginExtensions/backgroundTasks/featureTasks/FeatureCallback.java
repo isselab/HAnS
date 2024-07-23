@@ -1,5 +1,5 @@
 /*
-Copyright 2024 David Stechow & Philipp Kusmierz
+Copyright 2024 Johan Martinson
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,11 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+package se.isselab.HAnS.pluginExtensions.backgroundTasks.featureTasks;
 
-package se.isselab.HAnS.featureExtension;
+import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
-import se.isselab.HAnS.metrics.FeatureMetrics;
-
-public interface HAnSCallback {
-    void onComplete(FeatureMetrics metrics);
+public interface FeatureCallback {
+    void onComplete(FeatureModelFeature feature);
 }

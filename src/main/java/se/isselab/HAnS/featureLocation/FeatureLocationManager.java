@@ -27,7 +27,6 @@ import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.FeatureAnnotationSearchScope;
 import se.isselab.HAnS.codeAnnotation.psi.*;
-import se.isselab.HAnS.featureExtension.backgroundTask.BackgroundTask;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
@@ -45,9 +44,7 @@ import java.util.HashMap;
 
 public class FeatureLocationManager {
 
-    private FeatureLocationManager() {
-
-    }
+    private FeatureLocationManager() { }
 
     /**
      * Method to get all {@link FeatureFileMapping} for a given project.
@@ -76,7 +73,7 @@ public class FeatureLocationManager {
      *
      * @param feature Corresponding feature for which the FileMapping should be calculated
      * @return FeatureFileMapping for the given feature
-     * @see BackgroundTask
+     * @see com.intellij.openapi.progress.Task.Backgroundable
      */
     public static FeatureFileMapping getFeatureFileMapping(Project project, FeatureModelFeature feature) {
         FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);
@@ -85,28 +82,26 @@ public class FeatureLocationManager {
             //get comment sibling of the feature comment
 
             PsiElement element = reference.getElement();
-
+            var originatingFilePath = ReadAction.compute(()->element.getContainingFile().getVirtualFile().getPath());
             //determine file type and process content
             var fileType = ReadAction.compute(element::getContainingFile);
             if (fileType instanceof CodeAnnotationFile) {
-                processCodeFile(project, featureFileMapping, element);
+                processCodeFile(project, featureFileMapping, element, originatingFilePath);
             } else if (fileType instanceof FileAnnotationFile) {
-                processFeatureToFile(project, featureFileMapping, element);
+                processFeatureToFile(project, featureFileMapping, element, originatingFilePath);
             } else if (fileType instanceof FolderAnnotationFile) {
                 PsiDirectory dir = ReadAction.compute(fileType::getContainingDirectory);
                 if (dir == null)
                     continue;
-                processFeatureToFolder(project, featureFileMapping, dir);
-
+                processFeatureToFolder(project, featureFileMapping, dir, originatingFilePath);
             }
-
         }
         featureFileMapping.buildFromQueue();
         return featureFileMapping;
     }
     // &end[FeatureFileMapping]
 
-    private static void processCodeFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element) {
+    private static void processCodeFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element, String originatingFilePath) {
         var commentElement = ReadAction.compute(() -> PsiTreeUtil.getContextOfType(element, PsiComment.class));
 
         if (commentElement == null) {
@@ -119,7 +114,8 @@ public class FeatureLocationManager {
         var file = ReadAction.compute(() -> commentElement.getContainingFile().getVirtualFile());
         if (file == null)
             return;
-        featureFileMapping.enqueue(ReadAction.compute(file::getPath), ReadAction.compute(() -> getLine(project, commentElement)), type, FeatureFileMapping.AnnotationType.code);
+        featureFileMapping.enqueue(ReadAction.compute(file::getPath), ReadAction.compute(() -> getLine(project, commentElement)),
+                type, FeatureFileMapping.AnnotationType.CODE, originatingFilePath);
     }
 
     /**
@@ -133,17 +129,17 @@ public class FeatureLocationManager {
 
         //get feature type
         if (featureMarker instanceof CodeAnnotationBeginmarker)
-            type = FeatureFileMapping.MarkerType.begin;
+            type = FeatureFileMapping.MarkerType.BEGIN;
         else if (featureMarker instanceof CodeAnnotationEndmarker)
-            type = FeatureFileMapping.MarkerType.end;
+            type = FeatureFileMapping.MarkerType.END;
         else if (featureMarker instanceof CodeAnnotationLinemarker)
-            type = FeatureFileMapping.MarkerType.line;
+            type = FeatureFileMapping.MarkerType.LINE;
         else
-            type = FeatureFileMapping.MarkerType.none;
+            type = FeatureFileMapping.MarkerType.NONE;
         return type;
     }
 
-    private static void processFeatureToFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element) {
+    private static void processFeatureToFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element, String originatingFilePath) {
 
         var parent = ReadAction.compute(() -> PsiTreeUtil.getParentOfType(element, FileAnnotationFileAnnotation.class));
         if (parent == null)
@@ -153,10 +149,10 @@ public class FeatureLocationManager {
         if (fileReferences == null)
             return;
 
-        enqueueFileReferences(project, featureFileMapping, fileReferences);
+        enqueueFileReferences(project, featureFileMapping, fileReferences, originatingFilePath);
     }
 
-    private static void enqueueFileReferences(Project project, FeatureFileMapping featureFileMapping, FileAnnotationFileReferences[] fileReferences) {
+    private static void enqueueFileReferences(Project project, FeatureFileMapping featureFileMapping, FileAnnotationFileReferences[] fileReferences, String originatingFilePath) {
         for (var ref : fileReferences) {
             //get name of file
             for (var file : ref.getFileReferenceList()) {
@@ -172,12 +168,12 @@ public class FeatureLocationManager {
                 if (document == null)
                     return;
 
-                featureFileMapping.enqueue(psiFile.getVirtualFile().getPath(), document.getLineCount() > 0 ? document.getLineCount() - 1 : 0, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
+                featureFileMapping.enqueue(psiFile.getVirtualFile().getPath(), document.getLineCount() > 0 ? document.getLineCount() - 1 : 0, FeatureFileMapping.MarkerType.NONE, FeatureFileMapping.AnnotationType.FILE, originatingFilePath);
             }
         }
     }
 
-    private static void processFeatureToFolder(Project project, FeatureFileMapping featureFileMapping, PsiDirectory directory) {
+    private static void processFeatureToFolder(Project project, FeatureFileMapping featureFileMapping, PsiDirectory directory, String originatingFilePath) {
 
         for (var file : ReadAction.compute(directory::getFiles)) {
             //skip .feature-to-folder and .feature-to-file files
@@ -189,12 +185,12 @@ public class FeatureLocationManager {
             if (document == null)
                 return;
 
-            featureFileMapping.enqueue(file.getVirtualFile().getPath(), document.getLineCount() > 0 ? document.getLineCount() - 1 : 0, FeatureFileMapping.MarkerType.none, FeatureFileMapping.AnnotationType.file);
+            featureFileMapping.enqueue(file.getVirtualFile().getPath(), document.getLineCount() > 0 ? document.getLineCount() - 1 : 0, FeatureFileMapping.MarkerType.NONE, FeatureFileMapping.AnnotationType.FOLDER, originatingFilePath);
         }
         for (var dir : ReadAction.compute(directory::getSubdirectories)) {
             //recursively add subdirectories to the feature
             processFeatureToFolder(project,
-                    featureFileMapping, dir);
+                    featureFileMapping, dir, originatingFilePath);
         }
     }
 

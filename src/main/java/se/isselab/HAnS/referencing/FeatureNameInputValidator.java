@@ -33,7 +33,7 @@ public class FeatureNameInputValidator implements RenameInputValidator {
 
     @Override
     public boolean isInputValid(@NotNull String newName, @NotNull PsiElement element, @NotNull ProcessingContext context) {
-        return Pattern.matches("[[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]+", newName) && checkNonConflictingName(newName, element);
+        return Pattern.matches("^[A-Za-z0-9_']+$", newName) && checkNonConflictingName(newName, element);
     }
 
     private boolean checkNonConflictingName(String newElementName, PsiElement element) {

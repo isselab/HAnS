@@ -1,5 +1,5 @@
 /*
-Copyright 2024 David Stechow & Philipp Kusmierz
+Copyright 2024 David Stechow, Philipp Kusmierz & Johan Martinson
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package se.isselab.HAnS.metrics;
+package se.isselab.HAnS.metrics.calculators;
 
 import com.intellij.openapi.project.Project;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
@@ -36,8 +36,8 @@ public class FeatureScattering {
     public static int getScatteringDegree(FeatureFileMapping featureFileMapping) {
         int scatteringDegree = 0;
 
-        for (var file : featureFileMapping.getMappedFilePaths()) {
-            var locations = featureFileMapping.getFeatureLocationsForFile(file);
+        for (var pathPair : featureFileMapping.getMappedPathPair()) {
+            var locations = featureFileMapping.getFeatureLocationsForFile(pathPair);
             //use sorted set to provide O(logN) complexity  -  used for sorting and traversing
             SortedSet<Integer> lines = new TreeSet<>();
             //get all blocks of code annotated with the feature for the given file
@@ -59,7 +59,7 @@ public class FeatureScattering {
                 continue;
 
             //count segments annotated by the feature within a file and increase scattering degree for each
-            scatteringDegree = countSegments(lines);
+            scatteringDegree += countSegments(lines);
 
         }
 
