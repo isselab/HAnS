@@ -95,6 +95,11 @@ public class MetricsViewFactory implements ToolWindowFactory {
                     default -> Object.class; // Default class
                 };
             }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
         };
         contentPanel.removeAll();
         JBTable table = new JBTable(tableModel);

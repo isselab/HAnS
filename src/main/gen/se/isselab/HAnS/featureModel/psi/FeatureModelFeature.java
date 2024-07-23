@@ -41,6 +41,8 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   FeatureModelFeature deleteFeatureWithAnnotations();
 
+  boolean deleteFeatureWithCode();
+
   int getTanglingDegree();
 
   void setTanglingDegree(int tanglingDegree);

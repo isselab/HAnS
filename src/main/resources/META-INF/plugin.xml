@@ -32,8 +32,8 @@ limitations under the License.
                                implementationClass="se.isselab.HAnS.featureModel.FeatureModelParserDefinition"/>
         <!-- &end[HAnS::FeatureModel] -->
         <!-- &begin[SettingsPage] -->
-        <applicationConfigurable instance="se.isselab.HAnS.settingsPage.SettingsPageBuilder"/>
-        <!-- &end[SettingsPage] -->
+        <!-- <applicationConfigurable instance="se.isselab.HAnS.settingsPage.SettingsPageBuilder"/> TODO: Comment out until functionality is implemented-->
+       <!-- &end[SettingsPage] -->
 
         <!-- &begin[HAnS::FileAnnotation] -->
         <fileType name="File Annotation File" implementationClass="se.isselab.HAnS.fileAnnotation.FileAnnotationFileType"

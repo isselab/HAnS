@@ -8,7 +8,10 @@
 
 ### Added
 - Added a View of the metrics to the project
-- Added the HanS Settings Page without given functionality
+
+### Fixed
+- Fixed issue [#46](https://github.com/isselab/HAnS/issues/46) where deleting a feature from the feature model view would not correctly delete the feature from the .feature-model file.
+- Fixed so that default name for HAnS files is _
 
 ## [0.0.4] - 2024-03-06
 

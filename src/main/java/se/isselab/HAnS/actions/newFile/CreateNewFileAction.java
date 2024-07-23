@@ -16,6 +16,7 @@ public class CreateNewFileAction extends CreateFileFromTemplateAction implements
     @Override
     protected void buildDialog(@NotNull Project project, @NotNull PsiDirectory directory, CreateFileFromTemplateDialog.@NotNull Builder builder) {
         builder.setTitle("New Embedded Feature Annotation File")
+                .setDefaultText("_")
                 .addKind("Folder mapping", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_TO_FOLDER_FILE)
                 .addKind("File mapping", AnnotationIcons.FileType, EFAFileTemplateManager.FEATURE_TO_FILE_FILE)
                 .addKind("Model", AnnotationIcons.FeatureModelIcon, EFAFileTemplateManager.FEATURE_MODEL_FILE);

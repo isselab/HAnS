@@ -105,4 +105,9 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
     return FeatureModelPsiImplUtil.deleteFeatureWithAnnotations(this);
   }
 
+  @Override
+  public boolean deleteFeatureWithCode() {
+    return FeatureModelPsiImplUtil.deleteFeatureWithCode(this);
+  }
+
 }
