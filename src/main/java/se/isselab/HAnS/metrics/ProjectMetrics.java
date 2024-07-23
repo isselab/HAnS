@@ -44,30 +44,36 @@ public class ProjectMetrics {
      * @param nestingDepthMap    Nesting Depth Map of all {@link FeatureModelFeature} represented as HashMap
      */
     public ProjectMetrics(Map<String, FeatureFileMapping> featureFileMappings, Map<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, Map<String, List<Pair<String, Integer>>> nestingDepthMap) {
-        this.tanglingMap = tanglingMap;
-        this.featureFileMappings = featureFileMappings;
-        this.nestingDepthMap = nestingDepthMap;
+        this.tanglingMap = tanglingMap; // &line[Tangling]
+        this.featureFileMappings = featureFileMappings; // &line[FeatureFileMapping]
+        this.nestingDepthMap = nestingDepthMap; // &line[NestingDepths]
 
-        this.NumberOfFeatures = featureFileMappings.size();
+        this.NumberOfFeatures = featureFileMappings.size(); // &line[NumberOfFeatures]
 
         var featLocations = new HashSet<String>();
         featureFileMappings.values().stream().map(FeatureFileMapping::getMappedFilePaths)
                 .forEach(featLocations::addAll);
-        this.NumberOfAnnotatedFiles = featLocations.size();
+        this.NumberOfAnnotatedFiles = featLocations.size(); // &line[NumberOfAnnotatedFiles]
 
+        // &begin[Scattering]
         AvgScatteringDegree = featureFileMappings.values().stream()
                 .map(FeatureFileMapping::getFeature)
                 .mapToInt(FeatureModelFeature::getScatteringDegree)
                 .average().orElse(0);
+        // &end[Scattering]
 
+        // &begin[LineCount]
         AvgLinesOfFeatureCode = featureFileMappings.values().stream()
                 .map(FeatureFileMapping::getFeature)
                 .mapToInt(FeatureModelFeature::getLineCount)
                 .average().orElse(0);
+        // &end[LineCount]
 
+        // &begin[NestingDepths]
         var allNestingDepths = this.nestingDepthMap.values().stream().flatMap(List::stream).toList()
-                .stream().map(x->x.getSecond()).toList().stream();
+                .stream().map(x -> x.getSecond()).toList().stream();
         AvgNestingDepth = allNestingDepths.mapToInt(Integer::intValue).average().orElse(0);
+        // &end[NestingDepths]
     }
 
     /**

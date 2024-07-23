@@ -19,5 +19,5 @@
 | Kevin Hermann        | [![Kevin github](https://img.shields.io/badge/GitHub-Kevin3112-181717.svg?style=flat&logo=github)](https://www.github.com/Kevin3112)                         |
 
 ### Thanks
-We thank students of the bachelor thesis project Chalmers '2021 working on hans-vis, the four project course students RUB 2021, and the participants of the IntelliJ IDE plugin course of 2023 at RUB.
+We thank students of the bachelor thesis project Chalmers 2021 working on hans-vis, the four project course students RUB 2021, and the participants of the IntelliJ IDE plugin course of 2023 at RUB.
    

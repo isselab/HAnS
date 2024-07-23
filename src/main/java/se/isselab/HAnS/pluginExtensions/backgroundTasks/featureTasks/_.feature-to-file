@@ -1,0 +1,14 @@
+GetNestingDepthsForFeature.java
+NestingDepths
+
+GetNumberOfAnnotationsForFeature.java
+NumberOfAnnotatedFiles NumberOfFeatures
+
+GetScatteringDegreeForFeature.java
+Scattering
+
+GetTanglingDegreeForFeature.java
+Tangling
+
+FeatureCallback.java
+Callback
