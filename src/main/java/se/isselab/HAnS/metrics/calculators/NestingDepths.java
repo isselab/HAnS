@@ -25,8 +25,6 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.*;
 
-import static se.isselab.HAnS.featureLocation.FeatureLocationManager.getAllFeatureFileMappings;
-
 /**
  * The metric Nesting Depths of annotations has three dimensions: Maximum (MaxND), Minimum (MinND), and Average (AvgND) nesting depth.
  * Nesting depth expresses the fact, how deep a specific feature annotation is nested - completely

@@ -52,13 +52,13 @@ public class UnassignedFeatureQuickFix extends BaseIntentionAction {
     @NotNull
     @Override
     public String getText() {
-        return "Add New Feature '" + key + "' in Feature Model";
+        return "Add new feature: '" + key + "' in the Feature Model";
     }
 
     @NotNull
     @Override
     public String getFamilyName() {
-        return "Add New Feature in FeatureModel";
+        return "Add new feature in the Feature Model";
     }
 
     @Override
@@ -90,6 +90,7 @@ public class UnassignedFeatureQuickFix extends BaseIntentionAction {
     private void createFeatureInFeatureModel(final Project project, final VirtualFile file) {
         WriteCommandAction.writeCommandAction(project).run(() -> {
             FeatureModelFile featureModelFileFile = (FeatureModelFile) PsiManager.getInstance(project).findFile(file);
+            if (featureModelFileFile == null) throw new IllegalStateException("Feature Model is empty or does not exist");
             ASTNode[] children = featureModelFileFile.getNode().getChildren(null);
             ASTNode unassignedNode = null;
             boolean exist = false;
@@ -116,7 +117,9 @@ public class UnassignedFeatureQuickFix extends BaseIntentionAction {
             property.getNode().addChild(UnassignedFeatureFactory.createCRLF(project).getNode());
             unassignedNode.addChild(UnassignedFeatureFactory.createPlace(project).getNode(), property.getNode());
             ((Navigatable) property.getLastChild().getNavigationElement()).navigate(true);
-            FileEditorManager.getInstance(project).getSelectedTextEditor().getCaretModel().moveCaretRelatively(2,
+            var textEditor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+            if (textEditor == null) throw new IllegalStateException("No editor found");
+            textEditor.getCaretModel().moveCaretRelatively(2,
                     0, false, false, false);
         });
     }

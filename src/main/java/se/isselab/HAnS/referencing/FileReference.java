@@ -58,7 +58,7 @@ public class FileReference extends PsiReferenceBase<PsiElement> implements PsiPo
         List<PsiFile> files = FileReferenceUtil.findFiles(myElement);
         List<LookupElement> variants = new ArrayList<>();
         for (final PsiFile file : files) {
-            if (file.getName().length() > 0) {
+            if (!file.getName().isEmpty()) {
                 variants.add(LookupElementBuilder
                         .create(file.getName())
                 );

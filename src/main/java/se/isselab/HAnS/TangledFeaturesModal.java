@@ -182,11 +182,10 @@ public class TangledFeaturesModal extends DialogWrapper {
             result = "/" + parts[parts.length - 2] + "/" + parts[parts.length - 1];
         }
         String num = currentIndex+1 + "/" + this.files.size();
-        String text = "<html><div style='margin: 10px 10px 0 10px; text-align:left;'>" +
+        return "<html><div style='margin: 10px 10px 0 10px; text-align:left;'>" +
                 num + ": Feature " + currentElement.getMainFeatureLPQ() + " was tangled with " +
                 currentElement.getTangledFeatureLPQ() + " in file " + result + ". <br/>"
                 + "Please untangle the features to proceed with deletion. <br/>Caution: updating this file could impact the highlight of other tangled features within the same file.</div></html>";
-        return text;
     }
 
     // every time next button is clicked,

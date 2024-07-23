@@ -211,7 +211,7 @@ public class FeatureModelPsiImplUtil {
             if (newFeatureName == null) {
                 return;
             }
-            if ("".equals(newFeatureName.trim())) {
+            if (newFeatureName.trim().isEmpty()) {
                 Messages.showMessageDialog("Feature name cannot be empty.",
                         "Error", Messages.getErrorIcon());
                 continue;
@@ -245,8 +245,12 @@ public class FeatureModelPsiImplUtil {
     private static FeatureModelFeature getFeatureFromLPQ(Project project, String lpq) {
         List<FeatureModelFeature> listOfFeatures = ReadAction.compute(() -> FeatureModelUtil.findLPQ(project, lpq));
         if (listOfFeatures.isEmpty()) { return null; }
-        FeatureModelFeature feature = listOfFeatures.get(0);
-        return feature;
+        if (listOfFeatures.size() > 1) {
+            Messages.showMessageDialog("Multiple features with the same LPQ found.",
+                    "Error", Messages.getErrorIcon());
+            return null;
+        }
+        return listOfFeatures.get(0);
     }
 
     // generates String with feature tree
@@ -352,8 +356,7 @@ public class FeatureModelPsiImplUtil {
             int parentLineOffset = document.getLineStartOffset(document.getLineNumber(parentOffset));
             indent = (parentOffset - parentLineOffset) + 4;
         }
-        int level = indent / 4;
-        return level;
+        return indent / 4;
     }
 
 

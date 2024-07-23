@@ -27,8 +27,8 @@ import java.awt.event.*;
 
 public class SettingsPageBuilder implements Configurable {
     @Override
-    public @NlsContexts.ConfigurableName String getDisplayName() {
-        return "HanS Plugin Settings";
+    public String getDisplayName() {
+        return "HAnS Plugin Settings";
     }
 
     @Override
