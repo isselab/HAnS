@@ -216,7 +216,7 @@ public class FeatureModelPsiImplUtil {
                         "Error", Messages.getErrorIcon());
                 continue;
             }
-            if (!Pattern.matches("[[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]*", newFeatureName)) {
+            if (!Pattern.matches("^[A-Za-z0-9_']+$", newFeatureName)) {
                 Messages.showMessageDialog("Feature name incorrect",
                         "Error", Messages.getErrorIcon());
                 continue;
