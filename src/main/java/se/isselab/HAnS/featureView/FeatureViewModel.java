@@ -32,7 +32,7 @@ public class FeatureViewModel extends StructureViewModelBase implements
 
 
     @NotNull
-    public Sorter @NotNull [] getSorters() {
+    public Sorter[] getSorters() {
         return new Sorter[]{Sorter.ALPHA_SORTER};
     }
 

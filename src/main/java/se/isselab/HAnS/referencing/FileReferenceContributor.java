@@ -29,7 +29,7 @@ public class FileReferenceContributor extends PsiReferenceContributor {
                 new PsiReferenceProvider() {
                     @NotNull
                     @Override
-                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
+                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
                                                                            @NotNull ProcessingContext context) {
                         return new PsiReference[]{new FileReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
                     }

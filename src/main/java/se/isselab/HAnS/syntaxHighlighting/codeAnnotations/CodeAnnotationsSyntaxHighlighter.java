@@ -55,8 +55,9 @@ public class CodeAnnotationsSyntaxHighlighter extends SyntaxHighlighterBase {
         return new CodeAnnotationLexerAdapter();
     }
 
+    @NotNull
     @Override
-    public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
+    public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
         if (tokenType.equals(CodeAnnotationTypes.BEGIN) ||
                 tokenType.equals(CodeAnnotationTypes.END) ||
                 tokenType.equals(CodeAnnotationTypes.LINE))  {
