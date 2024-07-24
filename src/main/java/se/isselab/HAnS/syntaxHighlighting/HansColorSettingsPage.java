@@ -76,12 +76,14 @@ public class HansColorSettingsPage implements ColorSettingsPage {
         map.put("EA_key", CodeAnnotationsSyntaxHighlighter.KEYWORD);
         return map;
     }
+    @NotNull
     @Override
-    public AttributesDescriptor @NotNull [] getAttributeDescriptors() {
+    public AttributesDescriptor[] getAttributeDescriptors() {
         return DESCRIPTORS;
     }
+    @NotNull
     @Override
-    public ColorDescriptor @NotNull [] getColorDescriptors() {
+    public ColorDescriptor[] getColorDescriptors() {
         return ColorDescriptor.EMPTY_ARRAY;
     }
     @NotNull

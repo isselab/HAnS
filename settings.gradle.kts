@@ -1,5 +1,2 @@
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-}
-
-rootProject.name = "HAnS"
+fun properties(key: String) = providers.gradleProperty(key)
+rootProject.name = properties("pluginName").get()

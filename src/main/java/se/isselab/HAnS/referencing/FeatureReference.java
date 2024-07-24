@@ -85,7 +85,7 @@ public class FeatureReference extends PsiReferenceBase<PsiElement> {
 
     @NotNull
     @Override
-    public Object @NotNull [] getVariants() {
+    public Object[] getVariants() {
         Project project = myElement.getProject();
         List<FeatureModelFeature> features = FeatureModelUtil.findFeatures(project);
         List<LookupElement> variants = new ArrayList<>();

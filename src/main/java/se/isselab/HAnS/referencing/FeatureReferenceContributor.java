@@ -31,7 +31,7 @@ public class FeatureReferenceContributor extends PsiReferenceContributor {
                 new PsiReferenceProvider() {
                     @NotNull
                     @Override
-                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
+                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
                                                                            @NotNull ProcessingContext context) {
                         return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
                     }
@@ -40,7 +40,7 @@ public class FeatureReferenceContributor extends PsiReferenceContributor {
                 new PsiReferenceProvider() {
                     @NotNull
                     @Override
-                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
+                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
                                                                            @NotNull ProcessingContext context) {
                         return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
                     }
@@ -49,7 +49,7 @@ public class FeatureReferenceContributor extends PsiReferenceContributor {
                 new PsiReferenceProvider() {
                     @NotNull
                     @Override
-                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
+                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
                                                                            @NotNull ProcessingContext context) {
                         return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
                     }
