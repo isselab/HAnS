@@ -22,6 +22,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
@@ -79,7 +80,8 @@ public class FeatureLocationManager {
      */
     public static FeatureFileMapping getFeatureFileMapping(Project project, FeatureModelFeature feature) {
         FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);
-        Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(project), true);
+        var stubFeature = feature.getOriginalElement();
+        Query<PsiReference> featureReference = ReferencesSearch.search(stubFeature, GlobalSearchScope.everythingScope(project), true);
         for (PsiReference reference : ReadAction.compute(() -> featureReference)) {
             //get comment sibling of the feature comment
 

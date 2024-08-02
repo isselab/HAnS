@@ -160,6 +160,9 @@ limitations under the License.
 
     </extensionPoints>
     <actions>
+        <action id="MyPluginAction" class="se.isselab.HAnS.TestClass" text="My Action" description="This is my custom action.">
+            <add-to-group group-id="StructureViewPopupMenu"/>
+        </action>
         <action id="RenameFeature"
                 class="se.isselab.HAnS.actions.RenameAction"
                 text="Rename..."
@@ -183,7 +186,7 @@ limitations under the License.
         <action id="CreateNewFileAction"
                 class="se.isselab.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"
                 description="Create new feature mappings">
-            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
+            <add-to-group group-id="ToolsMenu" anchor="last" />
         </action>
         <!-- &end[NewFile] -->
 
