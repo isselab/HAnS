@@ -1,0 +1,13 @@
+.gradle/
+gradlew
+gradlew.bat
+gradle/wrapper
+build/
+local.properties
+.classpath
+.project
+.settings/
+.idea/
+*.iml
+bin/
+gen/

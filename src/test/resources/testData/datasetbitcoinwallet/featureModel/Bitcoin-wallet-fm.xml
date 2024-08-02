@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<featureModel>
+    <properties/>
+    <struct>
+        <and abstract="true" mandatory="true" name="BitcoinWallet">
+            <and abstract="true" mandatory="true" name="BitCoins">
+                <alt mandatory="true" name="Denomination">
+                    <feature name="BTC8dp"/>
+                    <feature name="BTC6dp"/>
+                    <feature name="BTC4dp"/>
+                    <feature name="mBTC"/>
+                    <feature name="uBTC"/>
+                </alt>
+                <and abstract="true" mandatory="true" name="Currency">
+                    <feature mandatory="true" name="Calculator"/>
+                    <and name="ExchangeRate">
+                        <feature mandatory="true" name="Search"/>
+                        <feature mandatory="true" name="Rate"/>
+                        <feature mandatory="true" name="SetDefault"/>
+                    </and>
+                </and>
+                <and abstract="true" mandatory="true" name="TradeCoins">
+                    <alt abstract="true" mandatory="true" name="TradeMethod">
+                        <feature name="NFC"/>
+                        <feature name="QRCode"/>
+                        <feature name="URL"/>
+                        <feature name="Email"/>
+                        <feature name="CloudStorage"/>
+                        <feature name="WebpageFileDownload"/>
+                    </alt>
+                    <and mandatory="true" name="SendCoins">
+                        <feature name="AutoCloseSendDialog"/>
+                        <feature mandatory="true" name="EmptyWallet"/>
+                        <alt mandatory="true" name="Fee">
+                            <feature name="Economic"/>
+                            <feature name="Normal"/>
+                            <feature name="Priority"/>
+                        </alt>
+                    </and>
+                    <feature mandatory="true" name="SweepPaperWallet"/>
+                    <and mandatory="true" name="RequestCoins">
+                        <feature mandatory="true" name="ShareRequest"/>
+                        <feature mandatory="true" name="FromLocalApp"/>
+                        <feature mandatory="true" name="CopyRequest"/>
+                        <feature name="NotifyOnReceive"/>
+                    </and>
+                    <feature mandatory="true" name="DonateCoins"/>
+                    <or mandatory="true" name="Codecs">
+                        <feature name="base58"/>
+                        <feature name="BIP21"/>
+                        <feature name="BIP70"/>
+                        <feature name="BIP72"/>
+                        <feature name="TBIP75"/>
+                    </or>
+                </and>
+                <feature mandatory="true" name="BitcoinBalance"/>
+                <feature name="BalanceReminder"/>
+            </and>
+            <and abstract="true" mandatory="true" name="Wallet">
+                <and abstract="true" mandatory="true" name="Diagnostics">
+                    <feature mandatory="true" name="ShowXPub"/>
+                    <feature mandatory="true" name="ResetBlockChain"/>
+                    <and mandatory="true" name="IssueReporter">
+                        <feature name="DeviceInfo"/>
+                        <feature name="AppLog"/>
+                        <feature name="WalletDump"/>
+                        <feature name="InstalledPackages"/>
+                    </and>
+                </and>
+                <and abstract="true" mandatory="true" name="Peers">
+                    <and mandatory="true" name="AddressBook">
+                        <feature mandatory="true" name="OwnAddress"/>
+                        <feature mandatory="true" name="SenderAddresses"/>
+                    </and>
+                    <feature mandatory="true" name="OwnName"/>
+                    <feature mandatory="true" name="TrustedPeer"/>
+                    <feature name="SkipPeerDiscovery"/>
+                    <alt mandatory="true" name="BlockExplorer">
+                        <feature name="Blochchain"/>
+                        <feature name="Blocktrail"/>
+                        <feature name="Blockcypher"/>
+                    </alt>
+                    <feature mandatory="true" name="NetworkMonitor"/>
+                </and>
+                <and abstract="true" mandatory="true" name="Connectvity">
+                    <feature name="ConnectvityIndicator"/>
+                    <feature mandatory="true" name="DataUsage"/>
+                    <feature name="Bluetooth"/>
+                </and>
+                <and abstract="true" mandatory="true" name="Security">
+                    <feature mandatory="true" name="Backup"/>
+                    <feature mandatory="true" name="Restore"/>
+                    <feature mandatory="true" name="SpendingPIN"/>
+                    <feature name="ShowDisclaimer"/>
+                    <feature mandatory="true" name="BackupReminder"/>
+                    <feature mandatory="true" name="DustSpamProtection"/>
+                </and>
+            </and>
+            <feature mandatory="true" name="BlockchainSync"/>
+            <alt mandatory="true" name="ViewTransactions">
+                <feature name="ViewAll"/>
+                <feature name="ViewSent"/>
+                <feature name="ViewReceived"/>
+            </alt>
+            <feature mandatory="true" name="Localisation"/>
+        </and>
+    </struct>
+    <constraints/>
+    <calculations Auto="true" Constraints="true" Features="true" Redundant="true" Tautology="true"/>
+    <comments/>
+    <featureOrder userDefined="false"/>
+</featureModel>
