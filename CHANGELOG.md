@@ -2,13 +2,22 @@
 
 ## [Unreleased]
 
+## [0.0.5] - 2024-07-23
+
 ### Changed
+
 - Feature to folder can be mapped with file extension .feature-folder and .feature-to-folder
 - Feature to file can be mapped with file extension .feature-file and .feature-to-file
 
 ### Added
+
 - Added a View of the metrics to the project
 - Added a clone management tool with a preference page
+
+### Fixed
+
+- Fixed issue [#46](https://github.com/isselab/HAnS/issues/46) where deleting a feature from the feature model view would not correctly delete the feature from the .feature-model file.
+- Fixed so that default name for HAnS files is _
 
 ## [0.0.4] - 2024-03-06
 
@@ -81,7 +90,8 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.4...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.5...HEAD
+[0.0.5]: https://github.com/isselab/HAnS/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/isselab/HAnS/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/isselab/HAnS/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/isselab/HAnS/compare/v0.0.1...v0.0.2

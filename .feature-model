@@ -32,7 +32,7 @@ HAnS
         NestingDepths
         NumberOfAnnotatedFiles
         NumberOfFeatures
-    MetricsView
+        MetricsView
     ExtensionPoint
         Callback
         Service
@@ -41,4 +41,5 @@ HAnS
     FileTemplate
         NewFile
     Quickfix
+    SettingsPage
     CloneManagement

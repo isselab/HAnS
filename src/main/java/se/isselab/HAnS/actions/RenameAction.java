@@ -25,11 +25,8 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 public class RenameAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        var data = e.getData(LangDataKeys.PSI_ELEMENT);
-        var project = e.getProject();
-        if (data instanceof FeatureModelFeature && project != null) {
-            var dialog = new RenameDialog(project, data, null, null);
-            dialog.show();
+        if (e.getData(LangDataKeys.PSI_ELEMENT) instanceof FeatureModelFeature feature && e.getProject() != null) {
+            new RenameDialog(e.getProject(), feature, null, null).show();
         }
     }
 

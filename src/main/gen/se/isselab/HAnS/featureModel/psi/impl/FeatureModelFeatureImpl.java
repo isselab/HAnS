@@ -7,6 +7,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
+import static se.isselab.HAnS.featureModel.psi.FeatureModelTypes.*;
 import se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl;
 import se.isselab.HAnS.featureModel.psi.*;
 import com.intellij.navigation.ItemPresentation;
@@ -82,6 +83,31 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   @Override
   public ItemPresentation getPresentation() {
     return FeatureModelPsiImplUtil.getPresentation(this);
+  }
+
+  @Override
+  public String addToFeatureModel(String newName) {
+    return FeatureModelPsiImplUtil.addToFeatureModel(this, newName);
+  }
+
+  @Override
+  public FeatureModelFeature deleteFromFeatureModel() {
+    return FeatureModelPsiImplUtil.deleteFromFeatureModel(this);
+  }
+
+  @Override
+  public void moveFeatureWithChildren(@NotNull FeatureModelFeature childFeature) {
+    FeatureModelPsiImplUtil.moveFeatureWithChildren(this, childFeature);
+  }
+
+  @Override
+  public FeatureModelFeature deleteFeatureWithAnnotations() {
+    return FeatureModelPsiImplUtil.deleteFeatureWithAnnotations(this);
+  }
+
+  @Override
+  public boolean deleteFeatureWithCode() {
+    return FeatureModelPsiImplUtil.deleteFeatureWithCode(this);
   }
 
 }

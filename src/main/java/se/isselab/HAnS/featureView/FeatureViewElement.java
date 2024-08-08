@@ -71,8 +71,9 @@ public class FeatureViewElement implements StructureViewTreeElement, SortableTre
         return presentation != null ? presentation : new PresentationData();
     }
 
+    @NotNull
     @Override
-    public TreeElement @NotNull [] getChildren() {
+    public TreeElement[] getChildren() {
         List<FeatureModelFeature> properties = PsiTreeUtil.getChildrenOfTypeAsList(myElement, FeatureModelFeature.class);
         if (!properties.isEmpty()) {
             List<TreeElement> treeElements = new ArrayList<>();

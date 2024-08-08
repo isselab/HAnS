@@ -24,11 +24,8 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 public class DeleteAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        if (e.getData(LangDataKeys.PSI_ELEMENT) instanceof FeatureModelFeature) {
-            FeatureModelFeature feature = (FeatureModelFeature) e.getData(LangDataKeys.PSI_ELEMENT);
-            if (feature != null) {
-                feature.deleteFeature();
-            }
+        if (e.getData(LangDataKeys.PSI_ELEMENT) instanceof FeatureModelFeature feature) {
+            feature.deleteFeature();
         }
     }
 

@@ -31,6 +31,9 @@ limitations under the License.
         <lang.parserDefinition language="FeatureModel"
                                implementationClass="se.isselab.HAnS.featureModel.FeatureModelParserDefinition"/>
         <!-- &end[HAnS::FeatureModel] -->
+        <!-- &begin[SettingsPage] -->
+        <!-- <applicationConfigurable instance="se.isselab.HAnS.settingsPage.SettingsPageBuilder"/> TODO: Comment out until functionality is implemented-->
+       <!-- &end[SettingsPage] -->
 
         <!-- &begin[HAnS::FileAnnotation] -->
         <fileType name="File Annotation File" implementationClass="se.isselab.HAnS.fileAnnotation.FileAnnotationFileType"
@@ -128,23 +131,39 @@ limitations under the License.
         <!-- &end[CloneManagement]-->
 
         <!-- &begin[MetricsView]-->
-        <toolWindow id="MetricsView" anchor="bottom"
-                    factoryClass="se.isselab.HAnS.metricsView.MetricsViewFactory" />
+        <toolWindow id="Feature Metrics View" anchor="bottom"
+                    factoryClass="se.isselab.HAnS.metrics.view.MetricsViewFactory"
+        />
         <!-- &end[MetricsView]-->
 
-        <projectService serviceImplementation="se.isselab.HAnS.featureExtension.FeatureService" serviceInterface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
+        <projectService serviceImplementation="se.isselab.HAnS.pluginExtensions.ProjectMetricsService" serviceInterface="se.isselab.HAnS.pluginExtensions.MetricsService"/>
+        <projectService serviceImplementation="se.isselab.HAnS.pluginExtensions.FeatureHighlighterService" serviceInterface="se.isselab.HAnS.pluginExtensions.HighlighterService"/>
     </extensions>
+
+
 
     <extensionPoints>
         <!-- &begin[Service]-->
         <extensionPoint
-                name="featureService"
-                interface="se.isselab.HAnS.featureExtension.FeatureServiceInterface"/>
+                name="metricsService"
+                interface="se.isselab.HAnS.pluginExtensions.MetricsService"/>
+        <extensionPoint
+                name="highlighterService"
+                interface="se.isselab.HAnS.pluginExtensions.HighlighterService"/>
         <!-- &end[Service]-->
         <!-- &begin[Callback]-->
         <extensionPoint
-                name="hansCallback"
-                interface="se.isselab.HAnS.featureExtension.HAnSCallback"/>
+                name="metricsCallback"
+                interface="se.isselab.HAnS.pluginExtensions.backgroundTasks.MetricsCallback"/>
+        <extensionPoint
+            name="featureCallback"
+            interface="se.isselab.HAnS.pluginExtensions.backgroundTasks.featureTasks.FeatureCallback"/>
+        <extensionPoint
+            name="featureFileMappingCallback"
+            interface="se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.FeatureFileMappingCallback"/>
+        <extensionPoint
+            name="tanglingMapCallback"
+            interface="se.isselab.HAnS.pluginExtensions.backgroundTasks.tanglingMapTasks.TanglingMapCallback"/>
         <!-- &end[Callback]-->
 
     </extensionPoints>

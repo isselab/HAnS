@@ -22,18 +22,20 @@ import com.intellij.openapi.util.Pair;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
  * Structure which holds information of all locations inside the project for a given Feature.
  */
 public class FeatureFileMapping {
-    public enum MarkerType {begin, end, line, none}
 
-    public enum AnnotationType {folder, file, code}
+    public enum MarkerType {BEGIN, END, LINE, NONE}
 
-    private final HashMap<String, Pair<AnnotationType, ArrayList<FeatureLocationBlock>>> map = new HashMap<>();
-    private HashMap<String, Pair<AnnotationType, ArrayList<Pair<MarkerType, Integer>>>> cache = new HashMap<>();
+    public enum AnnotationType {FOLDER, FILE, CODE}
+
+    private final HashMap<Pair<String,String>, Pair<AnnotationType, ArrayList<FeatureLocationBlock>>> map = new HashMap<>();
+    private HashMap<Pair<String, String>, Pair<AnnotationType, ArrayList<Pair<MarkerType, Integer>>>> cache = new HashMap<>();
     private final FeatureModelFeature mappedFeature;
 
     public FeatureFileMapping(FeatureModelFeature feature) {
@@ -50,59 +52,55 @@ public class FeatureFileMapping {
      * @param annotationType the annotation type - {file, folder, code}
      * @see #buildFromQueue()
      */
-    public void enqueue(String path, int lineNumber, MarkerType type, AnnotationType annotationType) {
-        if (cache.get(path) != null) {
-            if (cache.get(path).first != annotationType)
+    public void enqueue(String path, int lineNumber, MarkerType type, AnnotationType annotationType, String originatingFilePath) {
+        var key = new Pair<>(path, originatingFilePath);
+        if (cache.get(key) != null) {
+            if (cache.get(key).first != annotationType)
                 // handle case when feature is annotated multiple times to same asset
                 System.err.println("Feature is linked to file via different annotation types. This can result in inaccurate metrics. " + "[Feature: " + ReadAction.compute(mappedFeature::getLPQText) + "][File: " + path + "]");
-            cache.get(path).second.add(new Pair<>(type, lineNumber));
+            cache.get(key).second.add(new Pair<>(type, lineNumber));
         } else {
 
             ArrayList<Pair<MarkerType, Integer>> arr = new ArrayList<>();
             arr.add(new Pair<>(type, lineNumber));
-            cache.put(path, new Pair<>(annotationType, arr));
+            cache.put(key, new Pair<>(annotationType, arr));
         }
     }
 
     /**
      * Builds the cached data provided by <code>enqueue()</code> into corresponding featureLocationBlock-structures
      *
-     * @see #enqueue(String, int, MarkerType, AnnotationType)
+     * @see #enqueue(String, int, MarkerType, AnnotationType, String)
      */
     public void buildFromQueue() {
         if (cache == null || cache.isEmpty())
             return;
 
-        for (String path : cache.keySet()) {        //building featureLocationBlocks from cache entries
-            Stack<Integer> stack = new Stack<>();
-            //sort in ascending order
-            cache.get(path).second.sort(Comparator.comparing(p -> p.second));
+        for (var entry : cache.entrySet()) {        //building featureLocationBlocks from cache entries
+            Deque<Integer> stack = new ArrayDeque<>();
+            var key = entry.getKey();
+            var annotationTypeToLocationBlockPair = entry.getValue();
 
-            var annotationTypeToLocationBlockPair = cache.get(path);
+            //sort in ascending order
+            cache.get(key).second.sort(Comparator.comparing(p -> p.second));
+
             //create a featureLocationBlock for each (begin,end) or line
             for (var markerToLinePair : annotationTypeToLocationBlockPair.second) {
 
                 switch (markerToLinePair.first) {
-                    case begin -> {
-                        stack.push(markerToLinePair.second);
-                    }
-                    case end -> {
+                    case BEGIN -> stack.push(markerToLinePair.second);
+                    case END -> {
                         if (stack.isEmpty()) {
                             // found end marker without begin marker
-                            System.err.printf("Found &end marker without matching &begin marker in [%s] at line [%d]. This will result in inaccurate metrics", path, markerToLinePair.second + 1);
+                            System.err.printf("Found &end marker without matching &begin marker in [%s] at line [%d]. This will result in inaccurate metrics", key.first, markerToLinePair.second + 1);
                             continue;
                         }
                         int beginLine = stack.pop();
-                        add(path, new FeatureLocationBlock(beginLine, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
+                        add(key, new FeatureLocationBlock(beginLine, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                     }
-                    case line -> {
-                        add(path, new FeatureLocationBlock(markerToLinePair.second, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
-                    }
-                    case none -> {
-                        // should only happen if file is a feature-to-file or feature-to-folder
-                        add(path, new FeatureLocationBlock(0, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
-                        //System.out.println("[HAnS-Vis][ERROR] found marker of Type::None");
-                    }
+                    case LINE -> add(key, new FeatureLocationBlock(markerToLinePair.second, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
+                    case NONE -> // should only happen if file is a feature-to-file or feature-to-folder
+                            add(key, new FeatureLocationBlock(0, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                     default -> {
                         // should not happen but cover case if no label was found
                     }
@@ -112,7 +110,8 @@ public class FeatureFileMapping {
                 // there was a begin without an endmarker
                 for (var line : stack) {
                     // handle case when there was a begin marker without an end marker
-                    System.err.printf("Missing closing &end marker for &begin in [%s] at line [%d].  This will result in inaccurate metrics", path, line + 1);
+                    String errorMessage = String.format("Missing closing &end marker for &begin in [%s] at line [%d].  This will result in inaccurate metrics", key.first, line + 1);
+                    System.err.printf(errorMessage);
                 }
             }
         }
@@ -134,24 +133,23 @@ public class FeatureFileMapping {
     /**
      * Maps the given file to a FeatureLocationBlock.
      *
-     * @param path           the file path which is mapped to a given block
+     * @param pathPairOriginatingPath           the file pathPairOriginatingPath which is mapped to a given block
      * @param block          the location of the feature block inside the given file
      * @param annotationType the annotation type for the corresponding filepath
      */
-    private void add(String path, FeatureLocationBlock block, AnnotationType annotationType) {
+    private void add(Pair<String,String> pathPairOriginatingPath, FeatureLocationBlock block, AnnotationType annotationType) {
         //check if file is already mapped to given feature
 
         //add block to already existing arraylist
-        if (map.containsKey(path)) {
-
-            map.get(path).second.add(block);
-            return;
-        }
+        map.computeIfPresent(pathPairOriginatingPath, (k,v) -> {
+            v.second.add(block);
+            return v;
+        });
 
         //add file and location to map
         ArrayList<FeatureLocationBlock> list = new ArrayList<>();
         list.add(block);
-        map.put(path, new Pair<>(annotationType, list));
+        map.put(pathPairOriginatingPath, new Pair<>(annotationType, list));
     }
     // &begin[FeatureLocation]
 
@@ -162,9 +160,8 @@ public class FeatureFileMapping {
      */
     public ArrayList<FeatureLocation> getFeatureLocations() {
         ArrayList<FeatureLocation> result = new ArrayList<>();
-        for (var filePath : map.keySet()) {
-            var entry = map.get(filePath);
-            FeatureLocation location = new FeatureLocation(filePath, mappedFeature, entry.first, entry.second);
+        for (var entry : map.entrySet()) {
+            FeatureLocation location = new FeatureLocation(entry.getKey().first, entry.getKey().second, mappedFeature, entry.getValue().first, entry.getValue().second);
             result.add(location);
         }
         return result;
@@ -176,15 +173,15 @@ public class FeatureFileMapping {
     /**
      * Method to get the FeatureLocations of a file for the corresponding feature
      *
-     * @param filePath The File path to retrieve the feature locations from
+     * @param filePathPair The File path paired with the origin of the annotation to retrieve the feature locations from
      * @return FeatureLocation structure which holds information on feature locations inside given path
      */
-    public FeatureLocation getFeatureLocationsForFile(String filePath) {
-        if (!map.containsKey(filePath))
+    public FeatureLocation getFeatureLocationsForFile(Pair<String, String> filePathPair) {
+        if (!map.containsKey(filePathPair))
             return null;
 
-        var entry = map.get(filePath);
-        return new FeatureLocation(filePath, mappedFeature, entry.first, entry.second);
+        var entry = map.get(filePathPair);
+        return new FeatureLocation(filePathPair.first, filePathPair.second, mappedFeature, entry.first, entry.second);
     }
     // &end[FeatureLocation]
 
@@ -194,6 +191,15 @@ public class FeatureFileMapping {
      * @return Set<String></String> of all related Paths
      */
     public Set<String> getMappedFilePaths() {
+        var keys = map.keySet();
+        Set<String> result = new HashSet<>();
+        for (var key : keys) {
+            result.add(key.first);
+        }
+        return result;
+    }
+
+    public Set<Pair<String, String>> getMappedPathPair() {
         return map.keySet();
     }
 
@@ -202,11 +208,11 @@ public class FeatureFileMapping {
     /**
      * Method to get the total line-count of a feature in a file specified by path
      *
-     * @param path path of the file which should be checked
+     * @param pathPairOrigin path of the file which should be checked
      * @return line-count of a feature in the given file
      */
-    public int getFeatureLineCountInFile(String path) {
-        var annotationTypeToBlocksPair = map.get(path);
+    public int getFeatureLineCountInFile(Pair<String, String> pathPairOrigin) {
+        var annotationTypeToBlocksPair = map.get(pathPairOrigin);
         if (annotationTypeToBlocksPair == null)
             return 0;
 
@@ -231,13 +237,23 @@ public class FeatureFileMapping {
     public int getTotalFeatureLineCount() {
         int total = 0;
 
-        for (var path : map.keySet()) {
-            total += getFeatureLineCountInFile(path);
+        for (var key : map.keySet()) {
+            total += getFeatureLineCountInFile(key);
         }
 
         return total;
     }
     // &end[LineCount]
 
+    public Map<String, List<FeatureLocation>> getFolderAnnotations() {
+        var featureLocations = getFeatureLocations();
+        return featureLocations.stream().filter(fl -> fl.getAnnotationType() == AnnotationType.FOLDER)
+                .collect(Collectors.groupingBy(FeatureLocation::getMappedBy));
+    }
 
+    public Map<String, List<FeatureLocation>> getFileAnnotations() {
+        var featureLocations = getFeatureLocations();
+        return featureLocations.stream().filter(fl -> fl.getAnnotationType() == AnnotationType.FILE)
+                .collect(Collectors.groupingBy(FeatureLocation::getMappedBy));
+    }
 }

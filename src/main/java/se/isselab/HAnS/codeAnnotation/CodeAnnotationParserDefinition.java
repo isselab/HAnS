@@ -41,12 +41,12 @@ public class CodeAnnotationParserDefinition implements ParserDefinition {
     }
 
     @Override
-    public PsiParser createParser(Project project) {
+    public @NotNull PsiParser createParser(Project project) {
         return new CodeAnnotationParser();
     }
 
     @Override
-    public IFileElementType getFileNodeType() {
+    public @NotNull IFileElementType getFileNodeType() {
         return FILE;
     }
 
@@ -71,12 +71,12 @@ public class CodeAnnotationParserDefinition implements ParserDefinition {
     }
 
     @Override
-    public PsiFile createFile(FileViewProvider viewProvider) {
+    public @NotNull PsiFile createFile(@NotNull FileViewProvider viewProvider) {
         return new CodeAnnotationFile(viewProvider);
     }
 
     @Override
-    public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
+    public @NotNull SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
         return SpaceRequirements.MAY;
     }
 }

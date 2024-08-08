@@ -18,7 +18,6 @@ package se.isselab.HAnS.referencing;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.fileAnnotation.FileAnnotationFileType;
 import se.isselab.HAnS.folderAnnotation.FolderAnnotationFileType;
 
@@ -44,7 +43,7 @@ public class FileReferenceUtil {
     public static List<PsiFile> findFiles(PsiElement element) {
         List<PsiFile> result = new ArrayList<>();
         PsiDirectory d = element.getContainingFile().getContainingDirectory();
-        PsiFile @NotNull [] l = d.getFiles();
+        PsiFile[] l = d.getFiles();
         for (PsiFile f : l) {
             if (!f.isDirectory()
                     && f.getFileType() != FileAnnotationFileType.INSTANCE

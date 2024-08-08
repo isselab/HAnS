@@ -17,9 +17,9 @@ package se.isselab.HAnS.featureView;
 
 import com.intellij.ide.structureView.newStructureView.StructureViewComponent;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -47,6 +47,9 @@ import static com.intellij.psi.search.GlobalSearchScope.projectScope;
 public class FeatureViewFactory implements ToolWindowFactory {
 
     private static PsiFile featureModel;
+    private static final Logger LOG = Logger.getInstance(FeatureViewFactory.class);
+
+
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
@@ -70,8 +73,6 @@ public class FeatureViewFactory implements ToolWindowFactory {
         if (contentManager != null) {
             contentManager.addContent(content);
         }
-
-
     }
 
     @NotNull
@@ -121,7 +122,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
                         createToolWindowContent(project, toolWindow);
 
                     } catch (IOException ex) {
-                        ex.printStackTrace();
+                        LOG.error("Error creating feature model file", ex);
                     }
                 }
             });
@@ -131,7 +132,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
     private PsiFile findFeatureModel(@NotNull Project project) {
         var allFilenames = getVirtualFilesByName(".feature-model", projectScope(project));
         PsiFile psiFile = null;
-        if (allFilenames.size() > 0) {
+        if (!allFilenames.isEmpty()) {
             psiFile = getInstance(project).findFile(allFilenames.iterator().next());
         } else {
             Collection<VirtualFile> virtualFileCollection = getAllFilesByExt(project, "feature-model");

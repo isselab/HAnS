@@ -45,17 +45,17 @@ class CodeAnnotationInjector implements MultiHostInjector {
                 if (commenter == null)
                     commenter = new Commenter() {
                         @Override
-                        public @Nullable String getLineCommentPrefix() {
+                        public String getLineCommentPrefix() {
                             return "//";
                         }
 
                         @Override
-                        public @Nullable String getBlockCommentPrefix() {
+                        public String getBlockCommentPrefix() {
                             return "/*";
                         }
 
                         @Override
-                        public @Nullable String getBlockCommentSuffix() {
+                        public String getBlockCommentSuffix() {
                             return "*/";
                         }
 

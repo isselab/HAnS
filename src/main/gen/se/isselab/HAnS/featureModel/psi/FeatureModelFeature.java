@@ -33,4 +33,50 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   ItemPresentation getPresentation();
 
+  String addToFeatureModel(String newName);
+
+  FeatureModelFeature deleteFromFeatureModel();
+
+  void moveFeatureWithChildren(@NotNull FeatureModelFeature childFeature);
+
+  FeatureModelFeature deleteFeatureWithAnnotations();
+
+  boolean deleteFeatureWithCode();
+
+  int getTanglingDegree();
+
+  void setTanglingDegree(int tanglingDegree);
+
+  int getScatteringDegree();
+
+  void setScatteringDegree(int scatteringDegree);
+
+  int getLineCount();
+
+  void setLineCount(int lineCount);
+
+  int getMaxNestingDepth();
+
+  void setMaxNestingDepth(int maxNestingDepth);
+
+  int getMinNestingDepth();
+
+  void setMinNestingDepth(int minNestingDepth);
+
+  double getAvgNestingDepth();
+
+  void setAvgNestingDepth(double avgNestingDepth);
+
+  int getNumberOfAnnotatedFiles();
+
+  void setNumberOfAnnotatedFiles(int numberOfAnnotatedFiles);
+
+  int getNumberOfFileAnnotations();
+
+  void setNumberOfFileAnnotations(int numberOfFileAnnotations);
+
+  int getNumberOfFolderAnnotations();
+
+  void setNumberOfFolderAnnotations(int numberOfFolderAnnotations);
+
 }

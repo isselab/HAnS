@@ -29,7 +29,7 @@ class CodeAnnotationLexer implements FlexLexer {
    * ZZ_LEXSTATE[l] is the state in the DFA for the lexical state l
    * ZZ_LEXSTATE[l+1] is the state in the DFA for the lexical state l
    *                  at the beginning of a line
-   * l is of the form l = 2*k, k a non negative integer
+   * l is of the form l = 2*k, k a non-negative integer
    */
   private static final int ZZ_LEXSTATE[] = { 
      0,  0,  1, 1
@@ -401,7 +401,7 @@ class CodeAnnotationLexer implements FlexLexer {
 
   /**
    * Resumes scanning until the next regular expression is matched,
-   * the end of input is encountered or an I/O-Error occurs.
+   * the end of input is encountered or an IO-Error occurs.
    *
    * @return      the next token
    * @exception   java.io.IOException  if any I/O-Error occurs
