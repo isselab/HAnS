@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+## [0.0.6] - 2024-08-14
+### Housekeeping 🧹
 
 ## [0.0.5] - 2024-07-23
 
@@ -89,7 +91,8 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.5...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.6...HEAD
+[0.0.6]: https://github.com/isselab/HAnS/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/isselab/HAnS/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/isselab/HAnS/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/isselab/HAnS/compare/v0.0.2...v0.0.3
