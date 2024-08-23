@@ -1,12 +1,19 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.0.7] - 2024-08-23
+
 ### Housekeeping 🧹
+
 - Removed deprecated usage of ```org.apache.commons.lang3.Range.Between```
 - Made sure ```@NotNull``` annotations where correctly placed
 
+### What's Changed
+
+- Bump org.jetbrains.kotlin.jvm from 2.0.10 to 2.0.20 by @dependabot in https://github.com/isselab/HAnS/pull/91
+
 ## [0.0.6] - 2024-08-14
-### Housekeeping 🧹
 
 ## [0.0.5] - 2024-07-23
 
@@ -95,7 +102,8 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.6...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/isselab/HAnS/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/isselab/HAnS/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/isselab/HAnS/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/isselab/HAnS/compare/v0.0.3...v0.0.4
