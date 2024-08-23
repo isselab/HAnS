@@ -27,7 +27,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
-import org.apache.commons.lang3.Range;
+import com.intellij.util.Range;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.FeatureAnnotationToDelete;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
@@ -587,25 +587,25 @@ public class FeatureReferenceUtil {
     // finds line range that includes both FeatureA and FeatureB
     private static ArrayList<Integer> getRange(int startA, int endA, int startB, int endB) {
         ArrayList<Integer> result = new ArrayList<>();
-        Range<Integer> rangeA = Range.between(startA, endA);
-        Range<Integer> rangeB = Range.between(startB, endB);
+        Range<Integer> rangeA = new Range<>(startA, endA);
+        Range<Integer> rangeB = new Range<>(startB, endB);
 
-        if (rangeB.contains(startA) && rangeB.contains(endA)) {
+        if (rangeB.isWithin(startA, true) && rangeB.isWithin(endA, true)) {
             result.add(startB);
             result.add(endB);
             return result;
         }
-        if (rangeA.contains(startB) && rangeA.contains(endB)) {
+        if (rangeA.isWithin(startB, true) && rangeA.isWithin(endB, true)) {
             result.add(startA);
             result.add(endA);
             return result;
         }
-        if (rangeA.contains(startB)) {
+        if (rangeA.isWithin(startB, true)) {
             result.add(startA);
             result.add(endB);
             return result;
         }
-        if (rangeB.contains(startA)) {
+        if (rangeB.isWithin(startA, true)){
             result.add(startB);
             result.add(endA);
             return result;

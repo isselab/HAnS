@@ -34,9 +34,8 @@ public class FileReference extends PsiReferenceBase<PsiElement> implements PsiPo
         file = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
     }
 
-    @NotNull
     @Override
-    public ResolveResult[] multiResolve(boolean incompleteCode) {
+    public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
         final List<PsiFile> files = FileReferenceUtil.findFile(myElement, file);
         List<ResolveResult> results = new ArrayList<>();
         for (PsiFile file : files) {
@@ -52,9 +51,8 @@ public class FileReference extends PsiReferenceBase<PsiElement> implements PsiPo
         return resolveResults.length == 1 ? resolveResults[0].getElement() : null;
     }
 
-    @NotNull
     @Override
-    public Object[] getVariants() {
+    public Object @NotNull [] getVariants() {
         List<PsiFile> files = FileReferenceUtil.findFiles(myElement);
         List<LookupElement> variants = new ArrayList<>();
         for (final PsiFile file : files) {

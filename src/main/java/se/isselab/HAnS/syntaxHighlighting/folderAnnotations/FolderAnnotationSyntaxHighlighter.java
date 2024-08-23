@@ -48,9 +48,8 @@ public class FolderAnnotationSyntaxHighlighter extends SyntaxHighlighterBase {
         return new FolderAnnotationLexerAdapter();
     }
 
-    @NotNull
     @Override
-    public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
+    public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
         if (tokenType.equals(FolderAnnotationTypes.SEPARATOR)) {
             return FEATURE_FOLDER_SEPARATOR_KEYS;
         }else if (tokenType.equals(FolderAnnotationTypes.CS)) {

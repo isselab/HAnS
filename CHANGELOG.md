@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased]
+### Housekeeping 🧹
+- Removed deprecated usage of ```org.apache.commons.lang3.Range.Between```
+- Made sure ```@NotNull``` annotations where correctly placed
+
 ## [0.0.6] - 2024-08-14
 ### Housekeeping 🧹
 

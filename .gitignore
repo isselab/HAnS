@@ -48,4 +48,5 @@ Thumbs.db
 
 .gradle/
 build/
+.intellijPlatform
 

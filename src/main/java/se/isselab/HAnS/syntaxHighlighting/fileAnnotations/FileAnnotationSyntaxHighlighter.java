@@ -50,9 +50,8 @@ public class FileAnnotationSyntaxHighlighter extends SyntaxHighlighterBase {
         return new FileAnnotationLexerAdapter();
     }
 
-    @NotNull
     @Override
-    public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
+    public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
         if (tokenType.equals(FileAnnotationTypes.SEPARATOR)) {
             return FEATURE_FILE_SEPARATOR_KEYS;
         }  else if (tokenType.equals(FileAnnotationTypes.CS) ||

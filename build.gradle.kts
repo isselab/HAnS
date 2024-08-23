@@ -116,7 +116,7 @@ intellijPlatform {
         password = environment("PRIVATE_KEY_PASSWORD")
     }
 
-    verifyPlugin {
+    pluginVerification {
         ides {
             recommended()
         }

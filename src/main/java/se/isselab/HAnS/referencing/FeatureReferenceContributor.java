@@ -29,28 +29,25 @@ public class FeatureReferenceContributor extends PsiReferenceContributor {
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(FolderAnnotationLpq.class),
                 new PsiReferenceProvider() {
-                    @NotNull
                     @Override
-                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
+                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
                                                                            @NotNull ProcessingContext context) {
                         return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
                     }
                 });
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(FileAnnotationLpq.class),
                 new PsiReferenceProvider() {
-                    @NotNull
                     @Override
-                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
-                                                                           @NotNull ProcessingContext context) {
+                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
+                                                                                    @NotNull ProcessingContext context) {
                         return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
                     }
                 });
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(CodeAnnotationLpq.class),
                 new PsiReferenceProvider() {
-                    @NotNull
                     @Override
-                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
-                                                                           @NotNull ProcessingContext context) {
+                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
+                                                                                    @NotNull ProcessingContext context) {
                         return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
                     }
                 });

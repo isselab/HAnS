@@ -83,9 +83,8 @@ public class FeatureReference extends PsiReferenceBase<PsiElement> {
         return results.size() == 1 ? results.get(0).getElement() : null;
     }
 
-    @NotNull
     @Override
-    public Object[] getVariants() {
+    public Object @NotNull [] getVariants() {
         Project project = myElement.getProject();
         List<FeatureModelFeature> features = FeatureModelUtil.findFeatures(project);
         List<LookupElement> variants = new ArrayList<>();

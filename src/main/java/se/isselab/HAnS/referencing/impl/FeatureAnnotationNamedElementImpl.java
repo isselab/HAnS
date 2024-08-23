@@ -37,9 +37,8 @@ public abstract class FeatureAnnotationNamedElementImpl extends ASTWrapperPsiEle
         super(node);
     }
 
-    @NotNull
     @Override
-    public PsiReference[] getReferences() {
+    public PsiReference @NotNull [] getReferences() {
         return ReferenceProvidersRegistry.getReferencesFromProviders(this);
     }
 

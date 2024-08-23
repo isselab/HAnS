@@ -46,9 +46,8 @@ public class FeatureModelSyntaxHighlighter extends SyntaxHighlighterBase {
         return new FeatureModelHighlightingLexerAdapter();
     }
 
-    @NotNull
     @Override
-    public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
+    public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
         if (tokenType.equals(FeatureModelTypes.FEATURENAME)){
             return FEATURE_KEYS;
         } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {

@@ -27,9 +27,8 @@ public class FileReferenceContributor extends PsiReferenceContributor {
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(FileAnnotationFileReference.class),
                 new PsiReferenceProvider() {
-                    @NotNull
                     @Override
-                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
+                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
                                                                            @NotNull ProcessingContext context) {
                         return new PsiReference[]{new FileReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
                     }
