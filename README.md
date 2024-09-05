@@ -74,7 +74,7 @@ If you have experience with plugin development or want to help out by becoming a
 #### Papers published:
 ##### 2024
  - An IDE Plugin for Clone Management by Ahmad Al Shihabi, Jan Sollmann, Johan Martinson, Wardah Mahmood, Thorsten Berger T.
-[![](https://zenodo.org/badge/DOI/10.1145/3646548.3678298.svg)](https://doi.org/10.1145/3646548.3678298)
+   [![](https://zenodo.org/badge/DOI/10.1145/3646548.3678298.svg)](https://doi.org/10.1145/3646548.3678298)
 ##### 2021
 - Master Thesis by Johan Martinson & Herman Jansson  
   [![Johan & Herman](https://zenodo.org/badge/DOI/20.500.12380/302926.svg)](https://doi.org/20.500.12380/302926)
