@@ -22,7 +22,7 @@ limitations under the License.
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
-    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[HAnS::FeatureModel] -->
@@ -121,6 +121,14 @@ limitations under the License.
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.AnyContext" contextId="ANY"/>
         <liveTemplateContext implementation="se.isselab.HAnS.codeCompletion.CommentContext" contextId="COMMENT"/>
         <!-- &end[LiveTemplate] -->
+        <!-- &begin[CloneManagement]-->
+        <postStartupActivity implementation="se.isselab.HAnS.assetsManagement.cloneManagement.VirtualFileListener"/>
+        <copyPastePreProcessor implementation="se.isselab.HAnS.assetsManagement.cloneManagement.CloneCopyPastePreProcessor"/>
+        <editorNotificationProvider implementation="se.isselab.HAnS.assetsManagement.cloneManagement.NotificationProvider"/>
+        <applicationConfigurable instance="se.isselab.HAnS.assetsManagement.CloneManagementSettingsConfigurable"/>
+        <applicationService serviceImplementation="se.isselab.HAnS.assetsManagement.cloneManagement.PathsMapping"/>
+        <applicationService serviceImplementation="se.isselab.HAnS.assetsManagement.CloneManagementSettingsState"/>
+        <!-- &end[CloneManagement]-->
 
         <!-- &begin[MetricsView]-->
         <toolWindow id="Feature Metrics View" anchor="bottom"
@@ -187,7 +195,7 @@ limitations under the License.
         </action>
         <!-- &end[NewFile] -->
 
-        <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
+        <action id="SurroundFeature" text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
