@@ -23,6 +23,8 @@ limitations under the License.
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.vcs</depends>
+    <depends>Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[HAnS::FeatureModel] -->
@@ -179,6 +181,7 @@ limitations under the License.
                 icon="AllIcons.General.Remove">
             <add-to-group group-id="StructureViewPopupMenu" anchor="after" relative-to-action="AddFeature"/>
         </action>
+
         <!-- &begin[NewFile] -->
         <action id="CreateNewFileAction"
                 class="se.isselab.HAnS.actions.newFile.CreateNewFileAction" text="New EFA File"

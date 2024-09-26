@@ -47,6 +47,11 @@ dependencies {
         pluginVerifier()
         zipSigner()
         testFramework(TestFrameworkType.Platform)
+
+        // Add Git4Idea as a bundled plugin
+        bundledPlugins("Git4Idea")
+        // JFreeChart dependency
+        implementation("org.jfree:jfreechart:1.5.3")
     }
 }
 
