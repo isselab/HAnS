@@ -12,11 +12,8 @@ import java.util.*;
 public class CommitExtractionTask extends Task.Backgroundable {
     private final Project project;
     private final CommitExtractionCallback callback;
-    private List<GitCommit> commits;  // To hold the extracted commits
+    private List<GitCommit> commits;
     private final Map<String, Set<GitCommit>> featureExistenceMap = new HashMap<>();
-
-
-
 
 
     public CommitExtractionTask(Project project, CommitExtractionCallback callback) {

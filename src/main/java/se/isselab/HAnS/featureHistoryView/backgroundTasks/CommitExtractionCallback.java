@@ -9,5 +9,5 @@ import java.util.Set;
 
 public interface CommitExtractionCallback {
 
-        void onCommitsExtracted(List<GitCommit> commits, Map<String, Set<GitCommit>> featureExistenceMap);
-    }
+    void onCommitsExtracted(List<GitCommit> commits, Map<String, Set<GitCommit>> featureExistenceMap);
+}

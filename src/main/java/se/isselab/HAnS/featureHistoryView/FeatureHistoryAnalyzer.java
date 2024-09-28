@@ -1,6 +1,8 @@
 package se.isselab.HAnS.featureHistoryView;
+import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcs.log.Hash;
@@ -12,6 +14,8 @@ import git4idea.commands.GitLineHandler;
 import git4idea.history.GitHistoryUtils;
 import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
+
+
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -135,6 +139,7 @@ public class FeatureHistoryAnalyzer {
 
         return features;
     }
+
     public Date getCommitterDate(GitCommit commit) {
         return new Date(commit.getCommitTime());
     }

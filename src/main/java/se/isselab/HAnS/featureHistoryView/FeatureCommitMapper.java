@@ -14,7 +14,7 @@ public class FeatureCommitMapper {
     private final List<String> featureNames;
     private final List<String> commitTimes;
     private final List<String> commitHashes; // For mapping
-    private final List<int[]> seriesData; // [x (featureIndex), y (commitTime)]
+    private final List<Map<String, Object>> seriesData; // List of maps to hold data points
     private final List<String> deletedFeatureNames;
     private final Map<String, String> deletedFeatureCommits; // Map of deleted features and their last commit times
     private final Map<String, String> deletedFeatureCommitHashes; // Map of deleted features to their last commit hash
@@ -45,8 +45,6 @@ public class FeatureCommitMapper {
                     String formattedTime = dateFormatter.format(new Date(commit.getCommitTime()));
                     commitTimes.add(formattedTime);
                 }
-                //System.out.println("Commit times extracted (timestamps): " + commitTimes);  // Print the extracted commit times
-                //System.out.println("Number of commit times extracted: " + commitTimes.size());
 
                 identifyDeletedFeatures(featureExistenceMap);
                 createSeriesData(featureExistenceMap);
@@ -56,8 +54,6 @@ public class FeatureCommitMapper {
                     onComplete.run();
                 }
 
-                // Print series data in human-readable format
-                //System.out.println("Series data created: " + getSeriesDataAsString());  // Print the series data
             });
 
             commitTask.queue(); // Queue the commit extraction task
@@ -103,22 +99,18 @@ public class FeatureCommitMapper {
                 Integer commitIndex = commitHashToIndex.get(commitHash);
 
                 if (commitIndex != null) {
-                    // Add [featureIndex, commitIndex] to seriesData
-                    seriesData.add(new int[]{featureIndex, commitIndex});
+                    // Create a map to represent a data point
+                    Map<String, Object> dataPoint = new HashMap<>();
+                    dataPoint.put("featureIndex", featureIndex);
+                    dataPoint.put("commitIndex", commitIndex);
+                    dataPoint.put("commitHash", commitHash);
+
+                    seriesData.add(dataPoint);
                 }
             }
         }
     }
 
-
-    // Helper method to print seriesData in a readable format
-    private String getSeriesDataAsString() {
-        StringBuilder sb = new StringBuilder();
-        for (int[] dataPoint : seriesData) {
-            sb.append(Arrays.toString(dataPoint)).append(", ");
-        }
-        return sb.toString();
-    }
 
     // Getters for the chart data
     public List<String> getFeatureNames() {
@@ -131,8 +123,7 @@ public class FeatureCommitMapper {
         return commitTimes;
     }
 
-    public List<int[]> getSeriesData() {
-      //  System.out.println("Returning series data: " + seriesData);
+    public List<Map<String, Object>> getSeriesData() {
         return seriesData;
     }
 
@@ -155,5 +146,3 @@ public class FeatureCommitMapper {
         return deletedFeatureCommitHashes;
     }
 }
-
-
