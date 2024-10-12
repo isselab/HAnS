@@ -5,7 +5,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +23,7 @@ public class FeatureExtractionTask extends Task.Backgroundable {
     public void run(ProgressIndicator indicator) {
         features = ReadAction.compute(() -> FeatureModelUtil.findFeatures(project)
                 .stream()
-                .map(feature -> feature.getLPQText())
+                .map(feature -> feature.getFeatureName())
                 .collect(Collectors.toList()));
     }
 
@@ -33,3 +32,4 @@ public class FeatureExtractionTask extends Task.Backgroundable {
         callback.onFeaturesExtracted(features);
     }
 }
+

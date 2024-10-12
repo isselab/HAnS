@@ -1,19 +1,20 @@
 package se.isselab.HAnS.featureHistoryView.backgroundTasks;
-
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import git4idea.GitCommit;
 import se.isselab.HAnS.featureHistoryView.FeatureHistoryAnalyzer;
-import com.intellij.openapi.diagnostic.Logger;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CommitExtractionTask extends Task.Backgroundable {
     private final Project project;
     private final CommitExtractionCallback callback;
     private List<GitCommit> commits;
     private final Map<String, Set<GitCommit>> featureExistenceMap = new HashMap<>();
+    private  Map<String, Set<FeatureHistoryAnalyzer.FeatureData>> featureFileMap = new HashMap<>();
+    private  Map<String, Set<FeatureHistoryAnalyzer.FeatureData>> featureFolderMap = new HashMap<>();
 
 
     public CommitExtractionTask(Project project, CommitExtractionCallback callback) {
@@ -26,22 +27,31 @@ public class CommitExtractionTask extends Task.Backgroundable {
     public void run(ProgressIndicator indicator) {
         FeatureHistoryAnalyzer analyzer = new FeatureHistoryAnalyzer(project);
         commits = analyzer.extractAllCommits();
-//        System.out.println("Number of commits extracted: " + commits.size());
 
-        for (GitCommit commit : commits) {
-            List<String> featuresInCommit = analyzer.extractFeaturesFromCommit(commit);
+        // Process commits in parallel
+        commits.forEach(commit -> {
+            // Handle annotations in commits; the method now doesn't require feature maps as parameters
+            List<String> featuresInCommit = analyzer.handleAnnotationsInCommits(commit);
 
-            //map each feature to a set of GitCommit objects where it appears
-            for (String feature : featuresInCommit) {
-                featureExistenceMap.computeIfAbsent(feature, k -> new HashSet<>()).add(commit);
-            }
-        }
-        System.out.println("Feature existence map: " + featureExistenceMap);
+            // Populate featureExistenceMap (for code annotations)
+            featuresInCommit.forEach(feature -> featureExistenceMap
+                    .computeIfAbsent(feature,  k -> new HashSet<>())
+                    .add(commit));
+        });
 
+        // Retrieve the feature maps from the analyzer
+        featureFileMap = analyzer.getFeatureFileMap();
+        featureFolderMap = analyzer.getFeatureFolderMap();
+
+
+        // Log the feature maps for debugging
+        //System.out.println("Feature existence map: " + featureExistenceMap);
+        //System.out.println("Feature-to-File map: " + featureFileMap);
+        //System.out.println("Feature-to-Folder map: " + featureFolderMap);
     }
 
     @Override
     public void onSuccess() {
-        callback.onCommitsExtracted(commits, featureExistenceMap);
+        callback.onCommitsExtracted(commits, featureExistenceMap, featureFileMap, featureFolderMap);
     }
 }
