@@ -130,6 +130,7 @@ limitations under the License.
 
         <projectService serviceImplementation="se.isselab.HAnS.pluginExtensions.ProjectMetricsService" serviceInterface="se.isselab.HAnS.pluginExtensions.MetricsService"/>
         <projectService serviceImplementation="se.isselab.HAnS.pluginExtensions.FeatureHighlighterService" serviceInterface="se.isselab.HAnS.pluginExtensions.HighlighterService"/>
+        <projectService serviceImplementation="se.isselab.HAnS.states.ToggleStateService" serviceInterface="se.isselab.HAnS.states.ToggleStateService"/>
     </extensions>
 
 
@@ -185,6 +186,12 @@ limitations under the License.
                 description="Create new feature mappings">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
+            <action id="ToggleFeature"
+                    class="se.isselab.HAnS.actions.ToggleAction"
+                    text="Toggle Annotations"
+                    description="Toggle the Annotations on or off">
+                <add-to-group group-id="MainMenu" anchor="last"/>
+            </action>
         <!-- &end[NewFile] -->
 
         <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
