@@ -188,13 +188,12 @@ limitations under the License.
         </action>
         <!-- &end[NewFile] -->
 
-        <action id="ToggleFeature"
-                class="se.isselab.HAnS.actions.ToggleAction"
-                text="Toggle Annotations"
-                description="Toggle the Annotations on or off">
+        <group id="HAnSMenuGroup" text="HAnS" popup="false"> <!-- TODO: Why is this not visible in the menu? -->
+            <action id="ToggleFeature" class="se.isselab.HAnS.actions.ToggleAction"
+                    text="Toggle Annotations" description="Toggle Annotations">
+            </action>
             <add-to-group group-id="MainMenu" anchor="last"/>
-            <keyboard-shortcut first-keystroke="ctrl alt shift U"/>
-        </action>
+        </group>
         <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />

@@ -4,8 +4,10 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.states.ToggleStateService;
+import com.intellij.openapi.diagnostic.Logger;
 
 public class ToggleAction extends com.intellij.openapi.actionSystem.ToggleAction {
+    private static final Logger LOG = Logger.getInstance(ToggleAction.class);
 
     @Override
     public boolean isSelected(@NotNull AnActionEvent e) {
@@ -26,6 +28,7 @@ public class ToggleAction extends com.intellij.openapi.actionSystem.ToggleAction
         }
 
         ToggleStateService service = project.getService(ToggleStateService.class);
+        LOG.info("ToggleAction executed. Annotations " + (b ? "enabled" : "disabled"));
         service.getState().isEnabled = b;
     }
 
