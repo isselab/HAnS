@@ -186,14 +186,15 @@ limitations under the License.
                 description="Create new feature mappings">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
-            <action id="ToggleFeature"
-                    class="se.isselab.HAnS.actions.ToggleAction"
-                    text="Toggle Annotations"
-                    description="Toggle the Annotations on or off">
-                <add-to-group group-id="MainMenu" anchor="last"/>
-            </action>
         <!-- &end[NewFile] -->
 
+        <action id="ToggleFeature"
+                class="se.isselab.HAnS.actions.ToggleAction"
+                text="Toggle Annotations"
+                description="Toggle the Annotations on or off">
+            <add-to-group group-id="MainMenu" anchor="last"/>
+            <keyboard-shortcut first-keystroke="ctrl alt shift U"/>
+        </action>
         <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
