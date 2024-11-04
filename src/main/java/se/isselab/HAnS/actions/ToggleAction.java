@@ -35,6 +35,7 @@ public class ToggleAction extends com.intellij.openapi.actionSystem.ToggleAction
 
     @Override
     public void update(@NotNull AnActionEvent e) {
+        e.getPresentation().setEnabledAndVisible(true);
         e.getPresentation().setText(isSelected(e) ? "Disable Annotations" : "Enable Annotations");
     }
 }
