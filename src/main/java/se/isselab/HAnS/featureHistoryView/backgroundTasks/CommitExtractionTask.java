@@ -45,7 +45,7 @@ public class CommitExtractionTask extends Task.Backgroundable {
 
 
         // Log the feature maps for debugging
-        //System.out.println("Feature existence map: " + featureExistenceMap);
+        System.out.println("Feature existence map: " + featureExistenceMap);
         //System.out.println("Feature-to-File map: " + featureFileMap);
         //System.out.println("Feature-to-Folder map: " + featureFolderMap);
     }

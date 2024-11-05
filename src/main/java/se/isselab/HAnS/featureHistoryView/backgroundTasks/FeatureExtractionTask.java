@@ -23,7 +23,7 @@ public class FeatureExtractionTask extends Task.Backgroundable {
     public void run(ProgressIndicator indicator) {
         features = ReadAction.compute(() -> FeatureModelUtil.findFeatures(project)
                 .stream()
-                .map(feature -> feature.getFeatureName())
+                .map(feature -> feature.getLPQText())
                 .collect(Collectors.toList()));
     }
 
