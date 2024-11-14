@@ -19,7 +19,6 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.codeAnnotation.psi.CodeAnnotationFeature;
@@ -29,17 +28,9 @@ import se.isselab.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlig
 import se.isselab.HAnS.unassignedFeature.UnassignedFeatureQuickFix;
 
 import java.util.List;
-import se.isselab.HAnS.states.ToggleStateService;
-
 public class CodeAnnotationAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        Project project = element.getProject();
-
-        ToggleStateService toggleStateService = project.getService(ToggleStateService.class);
-        if (!toggleStateService.getState().isEnabled) { //TODO: Fix since this does not do what it is supposed to do
-            return;
-        }
         if (!(element instanceof CodeAnnotationLpq)){
             return;
         }
