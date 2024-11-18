@@ -30,6 +30,6 @@ public class CodeAnnotationsSyntaxHighlighterFactory extends SyntaxHighlighterFa
         if (toggleStateService != null && !toggleStateService.isEnabled()) {
             return new CodeAnnotationsSyntaxHighlighter(); //Return regular syntaxHighlighter
         }
-        return null; //TODO: implement that it does return a syntaxHighlighter that does not highlight annotations
+        return new NoOpSyntaxHighlighter(); //Return syntaxHighlighter that does nothing
     }
 }

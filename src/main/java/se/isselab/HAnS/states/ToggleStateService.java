@@ -3,6 +3,8 @@ package se.isselab.HAnS.states;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,8 +22,12 @@ public class ToggleStateService implements PersistentStateComponent<ToggleState>
         return state.isEnabled();
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(boolean enabled, @NotNull Project project) {
         state.setEnabled(enabled);
+
+        // Force Refresh all open editors
+        FileEditorManager.getInstance(project).getOpenFiles();
+        EditorFactory.getInstance().refreshAllEditors();
     }
 
     @Nullable

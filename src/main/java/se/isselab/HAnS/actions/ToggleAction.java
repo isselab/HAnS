@@ -34,7 +34,7 @@ public class ToggleAction extends com.intellij.openapi.actionSystem.ToggleAction
         ToggleStateService service = ToggleStateService.getInstance(project);
         LOG.info("ToggleStateService state: " + (service != null ? service.isEnabled() : "Service is null"));
         if (service != null) {
-            service.setEnabled(b); // Use the new `setEnabled()` method
+            service.setEnabled(b, project); // Use the new `setEnabled()` method
             LOG.info("ToggleAction executed. Annotations " + (b ? "enabled" : "disabled"));
         } else {
             LOG.warn("Failed to retrieve ToggleStateService.");
