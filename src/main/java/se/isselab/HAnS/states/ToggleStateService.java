@@ -25,7 +25,7 @@ public class ToggleStateService implements PersistentStateComponent<ToggleState>
     public void setEnabled(boolean enabled, @NotNull Project project) {
         state.setEnabled(enabled);
 
-        // Force Refresh all open editors
+        //TODO: Force Refresh all open editors (seems to currently not work)
         FileEditorManager.getInstance(project).getOpenFiles();
         EditorFactory.getInstance().refreshAllEditors();
     }
