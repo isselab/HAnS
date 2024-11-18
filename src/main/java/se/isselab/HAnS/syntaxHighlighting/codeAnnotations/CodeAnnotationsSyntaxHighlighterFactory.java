@@ -24,12 +24,12 @@ import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.states.ToggleStateService;
 
 public class CodeAnnotationsSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
-    ToggleStateService toggleStateService = ToggleStateService.getInstance();
     @Override
     public @NotNull SyntaxHighlighter getSyntaxHighlighter(@Nullable Project project, @Nullable VirtualFile virtualFile) {
-        if (toggleStateService.getState().isEnabled()) {
-            return new CodeAnnotationsSyntaxHighlighter();
+        ToggleStateService toggleStateService = ToggleStateService.getInstance(project);
+        if (toggleStateService != null && !toggleStateService.isEnabled()) {
+            return new CodeAnnotationsSyntaxHighlighter(); //Return regular syntaxHighlighter
         }
-        return null;
+        return null; //TODO: implement that it does return a syntaxHighlighter that does not highlight annotations
     }
 }

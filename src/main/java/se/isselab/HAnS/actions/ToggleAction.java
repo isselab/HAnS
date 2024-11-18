@@ -13,30 +13,38 @@ public class ToggleAction extends com.intellij.openapi.actionSystem.ToggleAction
     public boolean isSelected(@NotNull AnActionEvent e) {
         Project project = e.getProject();
         if (project == null) {
-            return false; // Handle the case where the project is null.
+            return false; // Safeguard against null projects
         }
 
-        ToggleStateService service = project.getService(ToggleStateService.class);
-        return service.getState().isEnabled();
+        ToggleStateService service = ToggleStateService.getInstance(project);
+        if (service == null) {
+            return false; // Handle service retrieval failure
+        }
+
+        return service.isEnabled(); // Use the new `isEnabled()` method
     }
 
     @Override
     public void setSelected(@NotNull AnActionEvent e, boolean b) {
         Project project = e.getProject();
         if (project == null) {
-            return; // Handle the case where the project is null.
+            return; // Safeguard against null projects
         }
 
-        ToggleStateService service = project.getService(ToggleStateService.class);
-        Logger.getInstance(ToggleAction.class).info("Service in action: " + service);
-        LOG.info("ToggleAction executed. Annotations " + (b ? "enabled" : "disabled"));
-        service.getState().setEnabled(b);
+        ToggleStateService service = ToggleStateService.getInstance(project);
+        LOG.info("ToggleStateService state: " + (service != null ? service.isEnabled() : "Service is null"));
+        if (service != null) {
+            service.setEnabled(b); // Use the new `setEnabled()` method
+            LOG.info("ToggleAction executed. Annotations " + (b ? "enabled" : "disabled"));
+        } else {
+            LOG.warn("Failed to retrieve ToggleStateService.");
+        }
     }
-
 
     @Override
     public void update(@NotNull AnActionEvent e) {
         e.getPresentation().setEnabledAndVisible(true);
         e.getPresentation().setText(isSelected(e) ? "Disable Annotations" : "Enable Annotations");
     }
+
 }
