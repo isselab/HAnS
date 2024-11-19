@@ -45,7 +45,7 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
-
+trace-db.txt
 .gradle/
 build/
 .intellijPlatform

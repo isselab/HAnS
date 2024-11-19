@@ -1,6 +1,7 @@
-import org.jetbrains.changelog.Changelog // Gradle Changelog Plugin
-import org.jetbrains.changelog.markdownToHTML // Gradle Changelog Plugin
-import org.jetbrains.intellij.platform.gradle.TestFrameworkType // Gradle IntelliJ Plugin
+import org.jetbrains.changelog.Changelog
+import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.intellij.platform.gradle.Constants.Constraints
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
@@ -163,6 +164,6 @@ val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
     }
 
     plugins {
-        robotServerPlugin()
+        robotServerPlugin(Constraints.LATEST_VERSION)
     }
 }

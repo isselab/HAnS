@@ -25,6 +25,7 @@
 ### Added
 
 - Added a View of the metrics to the project
+- Added a clone management tool with a preference page
 
 ### Fixed
 
