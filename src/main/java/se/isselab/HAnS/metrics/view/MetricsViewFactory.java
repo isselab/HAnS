@@ -62,15 +62,15 @@ public class MetricsViewFactory implements ToolWindowFactory {
         toolWindow.setTitleActions(List.of(new AnAction("Refresh Metrics", "Refresh metrics", AllIcons.Actions.Refresh) {
                                                @Override
                                                public void actionPerformed(@NotNull AnActionEvent e) {
-                                                   triggerService(project);
+                                                   TriggerService(project);
                                                }
                                            }
         ));
 
-        triggerService(project);
+        TriggerService(project);
     }
 
-    private void triggerService(Project project) {
+    private void TriggerService(Project project) {
         MetricsService service = project.getService(MetricsService.class);
 
         if (!DumbService.isDumb(project)) {
