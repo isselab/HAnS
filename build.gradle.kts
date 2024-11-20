@@ -20,7 +20,7 @@ version = properties("pluginVersion").get()
 
 // Set the JVM language level used to build the project.
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 // Configure project's dependencies
@@ -34,6 +34,7 @@ repositories {
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
     testImplementation(libs.junit)
+    testImplementation("org.opentest4j:opentest4j:1.3.0")
     intellijPlatform {
         create(properties("platformType"), properties("platformVersion"))
 
@@ -153,19 +154,23 @@ tasks {
     }
 }
 
-val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
-    task {
-        jvmArgumentProviders += CommandLineArgumentProvider {
-            listOf(
-                "-Drobot-server.port=8082",
-                "-Dide.mac.message.dialogs.as.sheets=false",
-                "-Djb.privacy.policy.text=<!--999.999-->",
-                "-Djb.consents.confirmation.enabled=false",
-            )
-        }
-    }
+intellijPlatformTesting {
+    runIde {
+        register("runIdeForUiTests") {
+            task {
+                jvmArgumentProviders += CommandLineArgumentProvider {
+                    listOf(
+                        "-Drobot-server.port=8082",
+                        "-Dide.mac.message.dialogs.as.sheets=false",
+                        "-Djb.privacy.policy.text=<!--999.999-->",
+                        "-Djb.consents.confirmation.enabled=false",
+                    )
+                }
+            }
 
-    plugins {
-        robotServerPlugin()
+            plugins {
+                robotServerPlugin()
+            }
+        }
     }
 }
