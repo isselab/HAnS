@@ -263,15 +263,6 @@ public class FeatureHistoryAnalyzer {
         return features;
     }
 
-    public VirtualFile getRepositoryRootForCommit(GitCommit commit) {
-        GitRepositoryManager repositoryManager = GitRepositoryManager.getInstance(project);
-        for (GitRepository repository : repositoryManager.getRepositories()) {
-            if (repository.getRoot() != null && commit.getRoot().equals(repository.getRoot())) {
-                return repository.getRoot();
-            }
-        }
-        return null; // If no matching repository root is found
-    }
     public Date getCommitterDate(GitCommit commit) {
         return new Date(commit.getCommitTime());
     }
