@@ -18,6 +18,11 @@ package se.isselab.HAnS.featureView;
 import com.intellij.ide.structureView.newStructureView.StructureViewComponent;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.ReadAction;
+import com.intellij.psi.PsiManager;
+import com.intellij.util.Consumer;
+import com.intellij.util.concurrency.AppExecutorUtil;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -39,14 +44,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Objects;
 
-import static com.intellij.psi.PsiManager.getInstance;
+
 import static com.intellij.psi.search.FilenameIndex.getAllFilesByExt;
 import static com.intellij.psi.search.FilenameIndex.getVirtualFilesByName;
 import static com.intellij.psi.search.GlobalSearchScope.projectScope;
 
 public class FeatureViewFactory implements ToolWindowFactory {
 
-    private static PsiFile featureModel;
+
     private static final Logger LOG = Logger.getInstance(FeatureViewFactory.class);
 
 
@@ -55,24 +60,23 @@ public class FeatureViewFactory implements ToolWindowFactory {
         toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
         var fileEditorManager = FileEditorManager.getInstance(project);
         var fileEditor = fileEditorManager.getSelectedEditor();
-        var psiFile = findFeatureModel(project);
         // for testing
-        featureModel = psiFile;
+        findFeatureModelAsync(project, psiFile -> {
+            JComponent component;
+            if (psiFile != null)
+                component = new StructureViewComponent(fileEditor, new FeatureViewModel(psiFile), project, false);
+            else {
+                component = getNoFeatureModelFoundPanel(project);
+            }
 
-        JComponent component;
-        if (psiFile != null)
-            component = new StructureViewComponent(fileEditor, new FeatureViewModel(psiFile), project, false);
-        else {
-            component = getNoFeatureModelFoundPanel(project);
-        }
 
-
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        Content content = contentFactory.createContent(component, "", false);
-        var contentManager = toolWindow.getContentManagerIfCreated();
-        if (contentManager != null) {
-            contentManager.addContent(content);
-        }
+            ContentFactory contentFactory = ContentFactory.getInstance();
+            Content content = contentFactory.createContent(component, "", false);
+            var contentManager = toolWindow.getContentManagerIfCreated();
+            if (contentManager != null) {
+                contentManager.addContent(content);
+            }
+        });
     }
 
     @NotNull
@@ -129,22 +133,25 @@ public class FeatureViewFactory implements ToolWindowFactory {
         }
     }
 
+    private void findFeatureModelAsync(@NotNull Project project, @NotNull Consumer<PsiFile> callback) {
+        ReadAction.nonBlocking(() -> findFeatureModel(project))
+                .inSmartMode(project)
+                .finishOnUiThread(ModalityState.defaultModalityState(), callback)
+                .submit(AppExecutorUtil.getAppExecutorService());
+    }
     private PsiFile findFeatureModel(@NotNull Project project) {
         var allFilenames = getVirtualFilesByName(".feature-model", projectScope(project));
         PsiFile psiFile = null;
         if (!allFilenames.isEmpty()) {
-            psiFile = getInstance(project).findFile(allFilenames.iterator().next());
+            psiFile = PsiManager.getInstance(project).findFile(allFilenames.iterator().next());
         } else {
             Collection<VirtualFile> virtualFileCollection = getAllFilesByExt(project, "feature-model");
             if (!virtualFileCollection.isEmpty()) {
-                psiFile = getInstance(project).findFile(virtualFileCollection.iterator().next());
+                psiFile = PsiManager.getInstance(project).findFile(virtualFileCollection.iterator().next());
             }
         }
 
         return psiFile;
     }
 
-    public static PsiFile getFeatureModel() {
-        return featureModel;
-    }
 }
