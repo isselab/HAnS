@@ -10,6 +10,7 @@ public class ToggleAction extends com.intellij.openapi.actionSystem.ToggleAction
     private static final Logger LOG = Logger.getInstance(ToggleAction.class);
 
     @Override
+    // determines whether the toggle is currently enabled or not
     public boolean isSelected(@NotNull AnActionEvent e) {
         Project project = e.getProject();
         if (project == null) {
@@ -25,6 +26,7 @@ public class ToggleAction extends com.intellij.openapi.actionSystem.ToggleAction
     }
 
     @Override
+    // toggles the state
     public void setSelected(@NotNull AnActionEvent e, boolean b) {
         Project project = e.getProject();
         if (project == null) {
@@ -32,7 +34,7 @@ public class ToggleAction extends com.intellij.openapi.actionSystem.ToggleAction
         }
 
         ToggleStateService service = ToggleStateService.getInstance(project);
-        LOG.info("ToggleStateService state: " + (service != null ? service.isEnabled() : "Service is null"));
+        LOG.info("ToggleStateService state: " + (service != null ? service.isEnabled() : "Service is null")); // retrieves toggle state and logs its current state or logs if service is unavailable
         if (service != null) {
             service.setEnabled(b, project); // Use the new `setEnabled()` method
             LOG.info("ToggleAction executed. Annotations " + (b ? "enabled" : "disabled"));
