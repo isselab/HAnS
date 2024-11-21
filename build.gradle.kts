@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
+
 }
 
 group = properties("pluginGroup").get()
@@ -22,6 +23,7 @@ version = properties("pluginVersion").get()
 kotlin {
     jvmToolchain(21)
 }
+
 
 // Configure project's dependencies
 repositories {
@@ -48,6 +50,9 @@ dependencies {
         pluginVerifier()
         zipSigner()
         testFramework(TestFrameworkType.Platform)
+
+        // Add Git4Idea as a bundled plugin
+        bundledPlugins("Git4Idea")
     }
 }
 
@@ -164,7 +169,6 @@ intellijPlatformTesting {
                     )
                 }
             }
-
             plugins {
                 robotServerPlugin()
             }
