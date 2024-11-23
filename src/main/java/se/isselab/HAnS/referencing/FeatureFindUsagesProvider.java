@@ -23,8 +23,11 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
 import se.isselab.HAnS.syntaxHighlighting.featureModel.FeatureModelHighlightingLexerAdapter;
+
+import java.util.List;
 
 public class FeatureFindUsagesProvider implements FindUsagesProvider {
 
@@ -65,5 +68,6 @@ public class FeatureFindUsagesProvider implements FindUsagesProvider {
     public String getNodeText(@NotNull PsiElement element, boolean useFullName) {
         return element.getText();
     }
+
 
 }
