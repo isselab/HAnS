@@ -1,14 +1,5 @@
 package se.isselab.HAnS.actions;
 
-import com.google.api.Usage;
-import com.intellij.find.FindManager;
-import com.intellij.find.FindModel;
-import com.intellij.find.findUsages.FindUsagesHandler;
-import com.intellij.find.FindManager;
-import com.intellij.find.FindModel;
-import com.intellij.find.findUsages.FindUsagesHandler;
-import com.intellij.find.findUsages.FindUsagesManager;
-import com.intellij.find.findUsages.FindUsagesOptions;
 import com.intellij.lang.findUsages.FindUsagesProvider;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -21,22 +12,16 @@ import com.intellij.usages.UsageInfo2UsageAdapter;
 import com.intellij.usages.UsageTarget;
 import com.intellij.usages.UsageViewManager;
 import com.intellij.psi.PsiReference;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
-import com.intellij.usageView.UsageInfo;
 import com.intellij.usages.*;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
-import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 import se.isselab.HAnS.referencing.FeatureFindUsagesProvider;
 
 import java.util.ArrayList;
 import java.util.List;
-import se.isselab.HAnS.referencing.FeatureFindUsagesProvider;
 
 import java.util.*;
-
-import static org.mozilla.javascript.ScriptRuntime.typeof;
 
 
 public class FindChildrenAction extends AnAction {
@@ -65,18 +50,17 @@ public class FindChildrenAction extends AnAction {
         PsiElement langElement = anActionEvent.getData(LangDataKeys.PSI_ELEMENT);
         if (langElement == null) {
             System.out.println("LangDataKeys.PSI_ELEMENT is null.");
-        } else if (langElement instanceof FeatureModelFeature) {
+        }
             FeatureModelFeature feature = (FeatureModelFeature) langElement; // cast to FeatureModelFeature to use getFeatureName()
             String featureName = feature.getFeatureName();
             printAllChildren(feature,featureName);
-            }
+
             List<FeatureModelFeature> children = feature.getFeatureList(); // get the children
 
             int size = children.size();
             List<PsiElement> child = buildFeatureHierarchy(anActionEvent);
             findUsagesProvider.getWordsScanner();
-            PsiElement [] children = feature.getChildren(); // get the children
-            int size = children.length;
+            // PsiElement [] children = feature.getChildren(); // get the children
             int i= 0;
             if (size == 0)
                 System.out.println("The Feature "+ featureName + " has no children.");
@@ -142,7 +126,7 @@ public class FindChildrenAction extends AnAction {
         Project project = element.getProject(); // Find usages
         Collection<PsiReference> references = ReferencesSearch.search(element, GlobalSearchScope.projectScope(project)).findAll();
         // Convert PsiReference to Usage
-        List<Usage> usageList = new ArrayList<>();
+        List<UsageInfo2UsageAdapter> usageList = new ArrayList<>();
         for (PsiReference reference : references) {
             PsiElement usageElement = reference.getElement();
             if (usageElement != null) {
