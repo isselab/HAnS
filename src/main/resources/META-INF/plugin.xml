@@ -32,7 +32,7 @@ limitations under the License.
                                implementationClass="se.isselab.HAnS.featureModel.FeatureModelParserDefinition"/>
         <!-- &end[HAnS::FeatureModel] -->
         <!-- &begin[SettingsPage] -->
-        <!-- <applicationConfigurable instance="se.isselab.HAnS.settingsPage.SettingsPageBuilder"/> TODO: Comment out until functionality is implemented-->
+        <!-- <applicationConfigurable instance="se.isselab.HAnS.settingsPage.SettingsPageBuilder"/> TODO: Add toggling to this and remove section that was created in mainbar-->
        <!-- &end[SettingsPage] -->
 
         <!-- &begin[HAnS::FileAnnotation] -->

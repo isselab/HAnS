@@ -55,24 +55,30 @@ public class CodeAnnotationsSyntaxHighlighter extends SyntaxHighlighterBase {
         return new CodeAnnotationLexerAdapter();
     }
 
+    //Added logging to see if this Highlighter is being used
     @Override
     public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
         if (tokenType.equals(CodeAnnotationTypes.BEGIN) ||
                 tokenType.equals(CodeAnnotationTypes.END) ||
                 tokenType.equals(CodeAnnotationTypes.LINE))  {
+            System.out.println("CodeAnnotationsSyntaxHighlighter: Matched KEYWORD token - " + tokenType);
             return KEYWORD_KEYS;
         } else if (tokenType.equals(CodeAnnotationTypes.SEPARATOR)) {
+            System.out.println("CodeAnnotationsSyntaxHighlighter: Matched SEPARATOR token - " + tokenType);
             return SEPARATOR_KEYS;
         } else if (tokenType.equals(CodeAnnotationTypes.CS) ||
                 tokenType.equals(CodeAnnotationTypes.OBRACKET) ||
                 tokenType.equals(CodeAnnotationTypes.CBRACKET)) {
+            System.out.println("CodeAnnotationsSyntaxHighlighter: Matched CS token - " + tokenType);
             return CS_KEYS;
         } else if (tokenType.equals(CodeAnnotationTypes.COMMENTMARKER)) {
+            System.out.println("CodeAnnotationsSyntaxHighlighter: Matched COMMENTMARKER token - " + tokenType);
             return COMMENTMARKER_KEYS;
-        }
-        else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
+        } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
+            System.out.println("CodeAnnotationsSyntaxHighlighter: Matched BAD_CHARACTER token - " + tokenType);
             return BAD_CHAR_KEYS;
         } else {
+            System.out.println("CodeAnnotationsSyntaxHighlighter: No match for token - " + tokenType);
             return EMPTY_KEYS;
         }
     }
