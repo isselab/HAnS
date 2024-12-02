@@ -27,10 +27,10 @@ public class FeatureHistoryAnalyzer {
     private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM dd HH:mm:ss yyyy");
     private final Map<String, Set<FeatureData>> featureFileMap = new HashMap<>();
     private final Map<String, Set<FeatureData>> featureFolderMap = new HashMap<>();
-    public class FeatureData {
-        private String entityName;  // File or folder name
-        private String commitHash;
-        private String commitTime;
+    public static class FeatureData {
+        private final String entityName;  // File or folder name
+        private final String commitHash;
+        private final String commitTime;
         public FeatureData(String entityName, String commitHash, String commitTime) {
             this.entityName = entityName;
             this.commitHash = commitHash;
