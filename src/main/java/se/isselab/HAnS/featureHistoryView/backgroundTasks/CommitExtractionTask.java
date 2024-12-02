@@ -3,6 +3,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import git4idea.GitCommit;
+import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureHistoryView.FeatureHistoryAnalyzer;
 import java.util.*;
 
@@ -16,13 +17,13 @@ public class CommitExtractionTask extends Task.Backgroundable {
 
 
     public CommitExtractionTask(Project project, CommitExtractionCallback callback) {
-        super(project, "Extracting Commits for Feature Timeline");
+        super(project, "Extracting commits for feature timeline");
         this.project = project;
         this.callback = callback;
     }
 
     @Override
-    public void run(ProgressIndicator indicator) {
+    public void run(@NotNull ProgressIndicator indicator) {
         FeatureHistoryAnalyzer analyzer = new FeatureHistoryAnalyzer(project);
         commits = analyzer.extractAllCommits();
 
