@@ -2,6 +2,7 @@ package se.isselab.HAnS.featureHistoryView.backgroundTasks;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
 import git4idea.GitCommit;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureHistoryView.FeatureHistoryAnalyzer;

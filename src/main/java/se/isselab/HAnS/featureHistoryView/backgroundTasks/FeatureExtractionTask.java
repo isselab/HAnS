@@ -3,6 +3,7 @@ package se.isselab.HAnS.featureHistoryView.backgroundTasks;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
