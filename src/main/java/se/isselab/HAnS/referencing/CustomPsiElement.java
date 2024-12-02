@@ -169,128 +169,126 @@ public class CustomPsiElement implements PsiElement { // Ersetzen Sie MyPsiEleme
 
     @Override
     public PsiElement addAfter(@NotNull PsiElement psiElement, @Nullable PsiElement psiElement1) throws IncorrectOperationException {
-        return null;
+        return element.addAfter(psiElement, psiElement1);
     }
 
     @Override
     public void checkAdd(@NotNull PsiElement psiElement) throws IncorrectOperationException {
-
+        element.checkAdd(psiElement);
     }
 
     @Override
     public PsiElement addRange(PsiElement psiElement, PsiElement psiElement1) throws IncorrectOperationException {
-        return null;
+        return element.addRange(psiElement, psiElement1);
     }
 
     @Override
     public PsiElement addRangeBefore(@NotNull PsiElement psiElement, @NotNull PsiElement psiElement1, PsiElement psiElement2) throws IncorrectOperationException {
-        return null;
+        return element.addRangeBefore(psiElement, psiElement1, psiElement2);
     }
 
     @Override
     public PsiElement addRangeAfter(PsiElement psiElement, PsiElement psiElement1, PsiElement psiElement2) throws IncorrectOperationException {
-        return null;
+        return element.addRangeAfter(psiElement, psiElement1, psiElement2);
     }
 
     @Override
     public void delete() throws IncorrectOperationException {
-
+        element.delete();
     }
 
     @Override
     public void checkDelete() throws IncorrectOperationException {
-
+        element.checkDelete();
     }
 
     @Override
     public void deleteChildRange(PsiElement psiElement, PsiElement psiElement1) throws IncorrectOperationException {
-
+        element.deleteChildRange(psiElement, psiElement1);
     }
 
     @Override
     public PsiElement replace(@NotNull PsiElement psiElement) throws IncorrectOperationException {
-        return null;
+        return element.replace(psiElement);
     }
 
     @Override
     public boolean isValid() {
-        return false;
+        return element.isValid();
     }
 
     @Override
     public boolean isWritable() {
-        return false;
+        return element.isWritable();
     }
 
     @Override
     public @Nullable PsiReference getReference() {
-        return null;
+        return element.getReference();
     }
 
     @Override
     public @NotNull PsiReference[] getReferences() {
-        return new PsiReference[]{
-                new CustomPsiReference(this, customName)
-        };
+        return element.getReferences();
     }
 
     @Override
     public <T> @Nullable T getCopyableUserData(@NotNull Key<T> key) {
-        return null;
+        return element.getCopyableUserData(key);
     }
 
     @Override
     public <T> void putCopyableUserData(@NotNull Key<T> key, @Nullable T t) {
-
+        element.putCopyableUserData(key, t);
     }
 
     @Override
     public boolean processDeclarations(@NotNull PsiScopeProcessor psiScopeProcessor, @NotNull ResolveState resolveState, @Nullable PsiElement psiElement, @NotNull PsiElement psiElement1) {
-        return false;
+        return element.processDeclarations(psiScopeProcessor, resolveState, psiElement, psiElement1);
     }
 
     @Override
     public @Nullable PsiElement getContext() {
-        return null;
+        return element.getContext();
     }
 
     @Override
     public boolean isPhysical() {
-        return false;
+        return element.isPhysical();
     }
 
     @Override
     public @NotNull GlobalSearchScope getResolveScope() {
-        return null;
+        return element.getResolveScope();
     }
 
     @Override
     public @NotNull SearchScope getUseScope() {
-        return null;
+        return element.getUseScope();
     }
 
     @Override
     public ASTNode getNode() {
-        return null;
+        return element.getNode();
     }
 
     @Override
     public boolean isEquivalentTo(PsiElement psiElement) {
-        return false;
+        return element.isEquivalentTo(psiElement);
     }
 
     @Override
     public Icon getIcon(int i) {
-        return null;
+        return element.getIcon(i);
     }
 
     @Override
     public <T> @Nullable T getUserData(@NotNull Key<T> key) {
-        return null;
+        return element.getUserData(key);
     }
 
     @Override
     public <T> void putUserData(@NotNull Key<T> key, @Nullable T t) {
-
+        element.putUserData(key, t);
     }
 }
