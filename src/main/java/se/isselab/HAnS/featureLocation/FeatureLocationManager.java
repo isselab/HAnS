@@ -35,7 +35,6 @@ import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileAnnotation;
 import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
 import se.isselab.HAnS.referencing.FileReferenceUtil;
-
 import java.util.HashMap;
 
 
