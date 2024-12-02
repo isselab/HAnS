@@ -17,12 +17,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("ALL")
 public class FeatureHistoryAnalyzer {
     private final Project project;
     public FeatureHistoryAnalyzer(Project project) {
         this.project = project;
     }
-    private static final Pattern FEATURE_PATTERN = Pattern.compile("&(?:begin|end|line)\\[([^\\]]+)\\]");
+    private static final Pattern FEATURE_PATTERN = Pattern.compile("&(?:begin|end|line)\\[([^]]+)]");
     private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM dd HH:mm:ss yyyy");
     private final Map<String, Set<FeatureData>> featureFileMap = new HashMap<>();
     private final Map<String, Set<FeatureData>> featureFolderMap = new HashMap<>();
@@ -192,17 +193,15 @@ public class FeatureHistoryAnalyzer {
 
             if (fileLine.isEmpty() || featuresLine.isEmpty()) continue;
 
-            List<String> files = Arrays.asList(fileLine.split("\\s+"));
-            List<String> features = Arrays.asList(featuresLine.split("\\s+"));
+            String[] files = fileLine.split("\\s+");
+            String[] features = featuresLine.split("\\s+");
 
             for (String feature : features) {
                 featureFileMap.computeIfAbsent(feature, k -> new HashSet<>());
                 Set<FeatureData> dataSet = featureFileMap.get(feature);
                 for (String file : files) {
                     FeatureData newData = new FeatureData(file, commitHash, commitTime);
-                    if (!dataSet.contains(newData)) {
-                        dataSet.add(newData); // Set will automatically prevent duplicates
-                    }
+                    dataSet.add(newData); // Set will automatically prevent duplicates
                 }
             }
         }
@@ -210,7 +209,7 @@ public class FeatureHistoryAnalyzer {
 
     // Parse feature-to-folder content and update featureFolderMap
     private void parseFeatureToFolderContent(String content, String filePath, String commitHash, String commitTime) {
-        List<String> features = Arrays.asList(content.trim().split("\\s+"));
+        String[] features = content.trim().split("\\s+");
 
         // Extract folder name from file path
         String folderPath = filePath.substring(0, filePath.lastIndexOf('/'));
@@ -220,9 +219,7 @@ public class FeatureHistoryAnalyzer {
             featureFolderMap.computeIfAbsent(feature, k -> new HashSet<>());
             Set<FeatureData> dataSet = featureFolderMap.get(feature);
             FeatureData newData = new FeatureData(folderName, commitHash, commitTime);
-            if (!dataSet.contains(newData)) {
-                dataSet.add(newData); // Set will automatically prevent duplicates
-            }
+            dataSet.add(newData); // Set will automatically prevent duplicates
         }
     }
 
@@ -260,10 +257,6 @@ public class FeatureHistoryAnalyzer {
                     .forEach(features::add);
         }
         return features;
-    }
-
-    public Date getCommitterDate(GitCommit commit) {
-        return new Date(commit.getCommitTime());
     }
     public Map<String, Set<FeatureData>> getFeatureFileMap() {
         return featureFileMap;
