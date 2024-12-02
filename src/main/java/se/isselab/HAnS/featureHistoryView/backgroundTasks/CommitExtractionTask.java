@@ -16,13 +16,13 @@ public class CommitExtractionTask extends Task.Backgroundable {
 
 
     public CommitExtractionTask(Project project, CommitExtractionCallback callback) {
-        super(project, "Extracting Commits for Feature Timeline");
+        super(project, "Extracting commits for feature timeline");
         this.project = project;
         this.callback = callback;
     }
 
     @Override
-    public void run(ProgressIndicator indicator) {
+    public void run(@NotNull ProgressIndicator indicator) {
         FeatureHistoryAnalyzer analyzer = new FeatureHistoryAnalyzer(project);
         commits = analyzer.extractAllCommits();
 
