@@ -20,14 +20,14 @@ public class NoOpSyntaxHighlighter extends SyntaxHighlighterBase {
     @Override
     public @NotNull Lexer getHighlightingLexer() {
         // Return an empty lexer that processes the text but produces no tokens.
-        System.out.println("NoOpSyntaxHighlighter: Using EmptyLexer.");
+        //System.out.println("NoOpSyntaxHighlighter: Using EmptyLexer.");
         return new EmptyLexer();
     }
 
     @Override
     public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
         // Return an empty array for all token types, ensuring no highlighting.
-        System.out.println("NoOpSyntaxHighlighter: No highlights for token - " + tokenType);
+        //System.out.println("NoOpSyntaxHighlighter: No highlights for token - " + tokenType);
         return EMPTY_KEYS;
     }
 
@@ -44,7 +44,7 @@ public class NoOpSyntaxHighlighter extends SyntaxHighlighterBase {
 
         @Override
         public void start(@NotNull CharSequence buffer, int startOffset, int endOffset, int initialState) {
-            System.out.println("EmptyLexer: Starting with buffer of length " + buffer.length() + " from " + startOffset + " to " + endOffset);
+            //System.out.println("EmptyLexer: Starting with buffer of length " + buffer.length() + " from " + startOffset + " to " + endOffset);
             this.buffer = buffer;
             this.startOffset = startOffset;
             this.endOffset = endOffset;
@@ -62,7 +62,7 @@ public class NoOpSyntaxHighlighter extends SyntaxHighlighterBase {
 
         @Override
         public IElementType getTokenType() {
-            System.out.println("EmptyLexer: No tokens produced.");
+            //System.out.println("EmptyLexer: No tokens produced.");
             if (currentOffset < endOffset) {
                 return EMPTY_TOKEN; // Return the empty token if not at the end
             } else {
@@ -82,7 +82,7 @@ public class NoOpSyntaxHighlighter extends SyntaxHighlighterBase {
 
         @Override
         public void advance() {
-            System.out.println("EmptyLexer: Advancing...");
+            //System.out.println("EmptyLexer: Advancing...");
             if (currentOffset < endOffset) {
                 currentOffset++;
             }

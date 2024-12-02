@@ -28,10 +28,10 @@ public class CodeAnnotationsSyntaxHighlighterFactory extends SyntaxHighlighterFa
     public @NotNull SyntaxHighlighter getSyntaxHighlighter(@Nullable Project project, @Nullable VirtualFile virtualFile) {
         ToggleStateService toggleStateService = ToggleStateService.getInstance(project);
         if (toggleStateService.isEnabled()) {
-            System.out.println("CodeAnnotationsSyntaxHighlighterFactory: ToggleStateService is disabled. Supposed to use CodeAnnotationsSyntaxHighlighter.");
+            //System.out.println("CodeAnnotationsSyntaxHighlighterFactory: ToggleStateService is disabled. Supposed to use CodeAnnotationsSyntaxHighlighter.");
             return new CodeAnnotationsSyntaxHighlighter(); //Return regular syntaxHighlighter
         }
-        System.out.println("CodeAnnotationsSyntaxHighlighterFactory: ToggleStateService is enabled or unavailable. Supposed to use NoOpSyntaxHighlighter.");
+        //System.out.println("CodeAnnotationsSyntaxHighlighterFactory: ToggleStateService is enabled or unavailable. Supposed to use NoOpSyntaxHighlighter.");
         return new NoOpSyntaxHighlighter(); //Return syntaxHighlighter that does nothing
     }
 }
