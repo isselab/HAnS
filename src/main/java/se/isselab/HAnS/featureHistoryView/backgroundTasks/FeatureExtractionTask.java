@@ -14,13 +14,13 @@ public class FeatureExtractionTask extends Task.Backgroundable {
     List<String> features;
 
     public FeatureExtractionTask(Project project, FeatureExtractionCallback callback) {
-        super(project, "Extracting Features for Feature Timeline");
+        super(project, "Extracting features for feature timeline");
         this.project = project;
         this.callback = callback;
     }
 
     @Override
-    public void run(ProgressIndicator indicator) {
+    public void run(@NotNull ProgressIndicator indicator) {
         features = ReadAction.compute(() -> FeatureModelUtil.findFeatures(project)
                 .stream()
                 .map(feature -> feature.getLPQText())
