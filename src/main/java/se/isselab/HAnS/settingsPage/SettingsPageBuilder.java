@@ -16,8 +16,14 @@
 package se.isselab.HAnS.settingsPage;
 
 import com.intellij.openapi.options.*;
-import com.intellij.ui.components.*;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
+import com.intellij.ui.components.JBTabbedPane;
 import org.jetbrains.annotations.*;
+import se.isselab.HAnS.states.ToggleStateService;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -25,6 +31,17 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class SettingsPageBuilder implements Configurable {
+
+    private JCheckBox enableHideAnnotationsCheckbox;
+    private JCheckBox enableLoggingCheckbox;
+    private boolean initialHideAnnotationsState; // To store the initial state of the checkbox
+    private boolean initialLoggingState; // To store the initial state of the logging checkbox
+    private Project project; // Reference to the current project
+
+    public SettingsPageBuilder(Project project) {
+        this.project = project;
+    }
+
     @Override
     public String getDisplayName() {
         return "HAnS Plugin Settings";
@@ -32,12 +49,11 @@ public class SettingsPageBuilder implements Configurable {
 
     @Override
     public @Nullable JComponent createComponent() {
-
         // Creating Base Panel
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JLabel pluginDescriptionLabel = new JLabel("Settings for the HanS Plugin");
+        JLabel pluginDescriptionLabel = new JLabel("Settings for the HAnS Plugin");
         pluginDescriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(pluginDescriptionLabel);
 
@@ -47,100 +63,76 @@ public class SettingsPageBuilder implements Configurable {
         // General Settings Tab
         JPanel generalTab = new JPanel();
         generalTab.setLayout(new BoxLayout(generalTab, BoxLayout.Y_AXIS));
-
         tabbedPane.addTab("General", generalTab);
 
+        // Section: Hide Annotations
+        SectionBuilder hideAnnotationsSection = new SectionBuilder("Hide Annotations");
+        generalTab.add(hideAnnotationsSection.getPanel());
 
-        // Section Hide Annotations
-        SectionBuilder hideAnnotationsSection = new SectionBuilder("Hide Annotations"); // Builds the section Hide Annotations
-        generalTab.add(hideAnnotationsSection.getPanel());// Builds the section Hide Annotations into the generalSettings Panel
-        CheckboxBuilder enableHideAnnotationsCheckbox = new CheckboxBuilder("Enable Hide Annotations", "This Enables the Hide Annotation functionality ");// Builds the Checkbox
-        generalTab.add(enableHideAnnotationsCheckbox.getPanel()); // add the Checkbox in typical IntelliJ Style to the Panel
+        ToggleStateService toggleService = ToggleStateService.getInstance(project);
+        enableHideAnnotationsCheckbox = new JCheckBox("Enable Hide Annotations", toggleService.isEnabled());
+        generalTab.add(enableHideAnnotationsCheckbox);
 
-        enableHideAnnotationsCheckbox.getCheckbox().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-             // TODO Add Hide Annotations functionality
-            }
+        // Store the initial state of the checkbox
+        initialHideAnnotationsState = toggleService.isEnabled();
+
+        enableHideAnnotationsCheckbox.addActionListener(e -> {
+            // Mark the setting as modified when checkbox state changes
+            // This will trigger the "Apply" button to be enabled
         });
 
-        // Section Logging
+        // Section: Logging
         SectionBuilder loggingSection = new SectionBuilder("Logging");
         generalTab.add(loggingSection.getPanel());
-        CheckboxBuilder enableLoggingCheckbox = new CheckboxBuilder("Enable Logging");
-        generalTab.add(enableLoggingCheckbox.getPanel());
 
-        enableLoggingCheckbox.getCheckbox().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //TODO Add logging functionality
+        enableLoggingCheckbox = new JCheckBox("Enable Logging", false); // Default state is false
+        generalTab.add(enableLoggingCheckbox);
 
-            }
+        // Store the initial state of the logging checkbox
+        initialLoggingState = enableLoggingCheckbox.isSelected();
+
+        enableLoggingCheckbox.addActionListener(e -> {
+            // Mark the setting as modified when checkbox state changes
+            // This will trigger the "Apply" button to be enabled
         });
 
-        generalTab.add(Box.createRigidArea(new Dimension(0, 10)));
-
-        // Clone Settings Tab
-        JPanel cloneSettingsPanel = new JPanel();
-        cloneSettingsPanel.setLayout(new BoxLayout(cloneSettingsPanel, BoxLayout.Y_AXIS));
-
-        // Section Clone Settings
-        SectionBuilder cloneSection = new SectionBuilder("Asset Management");
-        cloneSettingsPanel.add(cloneSection.getPanel());
-
-        CheckboxBuilder enableCloningTraceCheckbox = new CheckboxBuilder("Enable Cloning Trace Tracking");
-        cloneSettingsPanel.add(enableCloningTraceCheckbox.getPanel());
-
-        enableCloningTraceCheckbox.getCheckbox().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //TODO Clone Trace Tracking Functionality should be implemented here
-            }
-        });
-
-        CheckboxBuilder showCloneInfoCheckbox = new CheckboxBuilder("Show Clone Information");
-        cloneSettingsPanel.add(showCloneInfoCheckbox.getPanel());
-
-        showCloneInfoCheckbox.getCheckbox().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //TODO Show Clone Information should be added here
-
-            }
-        });
-
-        CheckboxBuilder sourcesSegmentChangesCheckbox = new CheckboxBuilder("Notify on Sources Segment Changes", "Here is the description text");
-        cloneSettingsPanel.add(sourcesSegmentChangesCheckbox.getPanel());
-
-        sourcesSegmentChangesCheckbox.getCheckbox().addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //TODO add the sources Segment Change functionality
-
-            }
-        });
-
-        cloneSettingsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        tabbedPane.addTab("Asset Management", cloneSettingsPanel);
-
+        // Add the tabbed pane
         panel.add(tabbedPane);
 
-        TitledBorder titledBorder = BorderFactory.createTitledBorder("HanS Feature Settings");
+        TitledBorder titledBorder = BorderFactory.createTitledBorder("HAnS Feature Settings");
         panel.setBorder(titledBorder);
 
         return panel;
     }
 
-
     @Override
     public boolean isModified() {
-
-        return true;
+        // Compare current checkbox states with their initial states
+        return enableHideAnnotationsCheckbox.isSelected() != initialHideAnnotationsState
+                || enableLoggingCheckbox.isSelected() != initialLoggingState;
     }
 
     @Override
     public void apply() throws ConfigurationException {
+        // Apply the changes only when "Apply" is clicked
+        ToggleStateService toggleService = ToggleStateService.getInstance(project);
+        boolean isSelected = enableHideAnnotationsCheckbox.isSelected();
+        toggleService.setEnabled(isSelected, project);
 
+        // Show the restart notification
+        showRestartNotification();
+        Messages.showInfoMessage("Changes have been applied. Please restart the IDE for the actions to take effect.",
+                "Restart Required");
+    }
+
+    // Method to show the restart notification
+    private void showRestartNotification() {
+        Notification notification = new Notification(
+                "HAnS Settings",
+                "Restart Required",
+                "Changes will take effect after restarting the IDE.",
+                NotificationType.INFORMATION
+        );
+        Notifications.Bus.notify(notification);
     }
 }
-
