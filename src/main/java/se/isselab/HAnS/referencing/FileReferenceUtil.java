@@ -15,6 +15,7 @@ limitations under the License.
 */
 package se.isselab.HAnS.referencing;
 
+
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -54,5 +55,6 @@ public class FileReferenceUtil {
 
         return result;
     }
+
 
 }

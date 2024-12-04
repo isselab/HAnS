@@ -53,36 +53,66 @@ public class FindChildrenAction extends AnAction {
         }
             FeatureModelFeature feature = (FeatureModelFeature) langElement; // cast to FeatureModelFeature to use getFeatureName()
             String featureName = feature.getFeatureName();
-            printAllChildren(feature,featureName);
 
-            List<FeatureModelFeature> children = feature.getFeatureList(); // get the children
+            //printAllChildren(feature,featureName);
 
-            int size = children.size();
             List<PsiElement> child = buildFeatureHierarchy(anActionEvent);
-            findUsagesProvider.getWordsScanner();
-            // PsiElement [] children = feature.getChildren(); // get the children
+            int size = child.size();
+            Project project = anActionEvent.getProject();
+            if (project == null) {
+                System.out.println("Project is null.");
+                return;
+            }
+            List<Usage> usages = new ArrayList<>();
+
+            for (PsiElement element : child) {
+                Usage[] elementUsages = findUsagesInProject(element);
+                usages.addAll(Arrays.asList(elementUsages));
+
+            }
+
+            /*if (usages.isEmpty()) {
+                System.out.println("No usages found for feature: " + featureName);
+            } else {
+                //showFindUsages(project, usages.toArray(new Usage[0]));
+            }*/
+            //findUsagesProvider.getWordsScanner();
             int i= 0;
             if (size == 0)
                 System.out.println("The Feature "+ featureName + " has no children.");
             else {
                 System.out.println("Children of Feature " + featureName + " are: ");
                 while (i < size) {
-
-                    // TODO: not showing Find Usages results correctly - need to fix
-
-                    // TODO: understand the code with findUsages
-
-                    Project project = child.get(i).getProject();
-                    Usage[] usages = findUsagesInProject(child.get(i)); // print the feature children
-                    showFindUsages(project, usages);
+                    Project project1 = child.get(i).getProject();
+                    Usage[] usages1 = findUsagesInProject(child.get(i)); // print the feature children
+                    showFindUsages(project1, usages1);
                     i++;
                 }
             }
 
     }
 
-
     public List<PsiElement> buildFeatureHierarchy(@NotNull AnActionEvent event) {
+        PsiElement parentFeature = event.getData(LangDataKeys.PSI_ELEMENT);
+        if (parentFeature == null) return Collections.emptyList();
+
+        // Start with the parent and collect its hierarchy recursively
+        List<PsiElement> hierarchy = new ArrayList<>();
+        collectHierarchy(parentFeature, hierarchy);
+        return hierarchy;
+    }
+
+    private void collectHierarchy(PsiElement element, List<PsiElement> hierarchy) {
+        if (element == null) return;
+
+        hierarchy.add(element); // Add the current element
+
+        PsiElement[] children = element.getChildren(); // Get direct children
+        for (PsiElement child : children) {
+            collectHierarchy(child, hierarchy); // Recursive call for each child
+        }
+    }
+    /*public List<PsiElement> buildFeatureHierarchy(@NotNull AnActionEvent event) {
         PsiElement parentFeature = event.getData(LangDataKeys.PSI_ELEMENT);
         if (parentFeature == null) return Collections.emptyList();
 
@@ -92,7 +122,7 @@ public class FindChildrenAction extends AnAction {
         hierarchy.addAll(Arrays.asList(parentFeature.getChildren())); // Add children
 
         return hierarchy;
-    }
+    }*/
 
     /*
     private void findUsagesForElement(PsiElement element, AnActionEvent event) {
