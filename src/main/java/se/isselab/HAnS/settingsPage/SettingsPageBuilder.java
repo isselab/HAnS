@@ -66,11 +66,11 @@ public class SettingsPageBuilder implements Configurable {
         tabbedPane.addTab("General", generalTab);
 
         // Section: Hide Annotations
-        SectionBuilder hideAnnotationsSection = new SectionBuilder("Hide Annotations");
+        SectionBuilder hideAnnotationsSection = new SectionBuilder("Annotations");
         generalTab.add(hideAnnotationsSection.getPanel());
 
         ToggleStateService toggleService = ToggleStateService.getInstance(project);
-        enableHideAnnotationsCheckbox = new JCheckBox("Enable Hide Annotations", toggleService.isEnabled());
+        enableHideAnnotationsCheckbox = new JCheckBox("Enable Annotations", toggleService.isEnabled());
         generalTab.add(enableHideAnnotationsCheckbox);
 
         // Store the initial state of the checkbox
