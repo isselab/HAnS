@@ -48,21 +48,26 @@ public class FindChildrenAction extends AnAction {
         FindUsagesProvider findUsagesProvider = new FeatureFindUsagesProvider();
         // try using LangDataKeys.PSI_ELEMENT to get the feature name
         PsiElement langElement = anActionEvent.getData(LangDataKeys.PSI_ELEMENT);
+
         if (langElement == null) {
             System.out.println("LangDataKeys.PSI_ELEMENT is null.");
         }
             FeatureModelFeature feature = (FeatureModelFeature) langElement; // cast to FeatureModelFeature to use getFeatureName()
+
             String featureName = feature.getFeatureName();
 
+            
             //printAllChildren(feature,featureName);
 
             List<PsiElement> child = buildFeatureHierarchy(anActionEvent);
+
             int size = child.size();
             Project project = anActionEvent.getProject();
             if (project == null) {
                 System.out.println("Project is null.");
                 return;
             }
+
             List<Usage> usages = new ArrayList<>();
 
             for (PsiElement element : child) {
@@ -71,12 +76,6 @@ public class FindChildrenAction extends AnAction {
 
             }
 
-            /*if (usages.isEmpty()) {
-                System.out.println("No usages found for feature: " + featureName);
-            } else {
-                //showFindUsages(project, usages.toArray(new Usage[0]));
-            }*/
-            //findUsagesProvider.getWordsScanner();
             int i= 0;
             if (size == 0)
                 System.out.println("The Feature "+ featureName + " has no children.");
@@ -112,45 +111,7 @@ public class FindChildrenAction extends AnAction {
             collectHierarchy(child, hierarchy); // Recursive call for each child
         }
     }
-    /*public List<PsiElement> buildFeatureHierarchy(@NotNull AnActionEvent event) {
-        PsiElement parentFeature = event.getData(LangDataKeys.PSI_ELEMENT);
-        if (parentFeature == null) return Collections.emptyList();
 
-        // Collect parent and children
-        List<PsiElement> hierarchy = new ArrayList<>();
-        hierarchy.add(parentFeature); // Add parent
-        hierarchy.addAll(Arrays.asList(parentFeature.getChildren())); // Add children
-
-        return hierarchy;
-    }*/
-
-    /*
-    private void findUsagesForElement(PsiElement element, AnActionEvent event) {
-        // not saving the previous entries
-
-        // Create a UsageViewPresentation for displaying results
-        UsageViewPresentation presentation = new UsageViewPresentation();
-        presentation.setCodeUsages(true);
-        presentation.setTabName("Find Usages for " + element.getText());
-        presentation.setTabText("Find Usages");
-
-        // Use UsageViewManager to handle displaying usages
-        UsageViewManager usageViewManager = UsageViewManager.getInstance(event.getProject());
-        if (usageViewManager == null) {
-            System.out.println("UsageViewManager is unavailable.");
-            return;
-        }
-
-        // Collect usages for the element
-        Usage[] usages = findUsagesInProject(element);
-
-        // Provide an empty UsageTarget array since we don't have specific targets
-        UsageTarget[] usageTargets = UsageTarget.EMPTY_ARRAY;
-
-        // Display usages in a usage view
-        usageViewManager.showUsages(usageTargets, usages, presentation);
-    }
-     */
 
     private Usage[] findUsagesInProject(PsiElement element) {
         Project project = element.getProject(); // Find usages
@@ -171,64 +132,10 @@ public class FindChildrenAction extends AnAction {
         presentation.setScopeText("Project Scope");
         UsageViewManager usageViewManager = UsageViewManager.getInstance(project);
         UsageView usageView = usageViewManager.showUsages(new UsageTarget[]{}, usages, presentation);
-        // Optionally, you can add more configurations to the presentation
         presentation.setCodeUsages(true);
         presentation.setOpenInNewTab(true);
     }
 
-    /*
-    private Usage[] findUsagesInProject(PsiElement element) {
-        Project project = element.getProject();
-
-        FindUsagesManager findUsagesManager = FindUsagesManager.getInstance(project);
-        FindUsagesHandler handler = findUsagesManager.getFindUsagesHandler(element, true);
-        if (handler == null) {
-            return new Usage[0];
-        }
-
-        FindUsagesOptions options = handler.getFindUsagesOptions();
-        options.isSearchForTextOccurrences = true;
-
-        List<Usage> usageList = new ArrayList<>();
-        handler.processElementUsages(element, info -> {
-            PsiElement usageElement = info.getElement();
-            if (usageElement != null) {
-                usageList.add(new UsageInfo2UsageAdapter(info));
-            }
-            return true;
-        }, options);
-
-        return usageList.toArray(new Usage[0]);
-    }
-
-
-
-    private Usage[] findUsagesInProject(PsiElement element) {
-        Project project = element.getProject();
-
-        FindModel findModel = new FindModel();
-        findModel.setCaseSensitive(true);
-        findModel.setStringToFind(element.getText());
-
-        FindManager findManager = FindManager.getInstance(project); // Set the search scope using FindManager
-        GlobalSearchScope searchScope = GlobalSearchScope.projectScope(project);
-        FindUsagesOptions findUsagesOptions = new FindUsagesOptions(searchScope);
-
-        // Find usages
-        UsageInfo[] usageInfos = findManager.findUsages(element, findModel, findUsagesOptions);
-
-        // Convert UsageInfo[] to Usage[]
-        List<Usage> usageList = new ArrayList<>();
-        for (UsageInfo usageInfo : usageInfos) {
-            PsiElement usageElement = usageInfo.getElement();
-            if (usageElement != null) {
-                usageList.add(new UsageInfo2UsageAdapter(usageInfo));
-            }
-        }
-
-        return usageList.toArray(new Usage[0]);
-    }
-    */
 }
 
 
