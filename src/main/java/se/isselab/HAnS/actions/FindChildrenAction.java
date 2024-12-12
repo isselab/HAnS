@@ -61,11 +61,11 @@ public class FindChildrenAction extends AnAction {
         List<PsiElement> child = buildFeatureHierarchy(anActionEvent);
 
         int size = child.size();
-        Project project = anActionEvent.getProject();
+        /*Project project = anActionEvent.getProject();
         if (project == null) {
             System.out.println("Project is null.");
             return;
-        }
+        }*/
         /*
         int i= 0;
         if (size == 0)
@@ -80,13 +80,13 @@ public class FindChildrenAction extends AnAction {
             }
         }
 */
-
-        Project project2 = anActionEvent.getProject();
+        // get the project
+        Project project = anActionEvent.getProject();
         if (project == null) {
             System.out.println("Project is null.");
             return;
         }
-
+        // create a list to save the usages
         List<Usage> allUsages = new ArrayList<>();
         for (PsiElement element : child) {
             Usage[] elementUsages = findUsagesInProject(element);
@@ -97,11 +97,11 @@ public class FindChildrenAction extends AnAction {
         if (allUsages.isEmpty()) {
             System.out.println("No usages found for Feature " + featureName + " and its children.");
         } else {
-            showFindUsages(project2, allUsages.toArray(new Usage[0]));
+            showFindUsages(project, allUsages.toArray(new Usage[0]));
         }
 
     }
-
+    // create hierarchy list of the given feature and all its children, acts as a public interface
     public List<PsiElement> buildFeatureHierarchy(@NotNull AnActionEvent event) {
         PsiElement parentFeature = event.getData(LangDataKeys.PSI_ELEMENT);
         if (parentFeature == null) return Collections.emptyList();
@@ -111,7 +111,7 @@ public class FindChildrenAction extends AnAction {
         collectHierarchy(parentFeature, hierarchy);
         return hierarchy;
     }
-
+    // recursive method that does the actual work of traversing and collecting elements
     private void collectHierarchy(PsiElement element, List<PsiElement> hierarchy) {
         if (element == null) return;
 
