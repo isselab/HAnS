@@ -1,23 +1,34 @@
 package se.isselab.HAnS.trafficLight;
 
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.ActionButtonLook;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.ColorKey;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.ui.JBInsets;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
+import kotlinx.html.P;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.AnnotationIcons;
-import com.intellij.openapi.actionSystem.ActionButtonComponent;
+import se.isselab.HAnS.featureLocation.FeatureFileMapping;
+import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.FeatureFileMappingCallback;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.GetFeatureFileMappings;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.FontUIResource;
@@ -25,7 +36,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class HansTrafficLightWidget extends JPanel {
     private AnAction action;
@@ -36,9 +51,14 @@ public class HansTrafficLightWidget extends JPanel {
     private JLabel hansIcon;
     private Editor editor;
     private String place;
+    private String filePath;
 
     HansTrafficLightWidget(AnAction action, Presentation presentation,
                            String place, Editor editor){
+        this.action = action;
+        this.presentation = presentation;
+        this.place = place;
+        this.editor = editor;
         setOpaque(false);
 
         hansIcon = new JLabel();
@@ -58,9 +78,9 @@ public class HansTrafficLightWidget extends JPanel {
 
         hansIcon.setVisible(false);
 
+        searchFeatures();
+
         add(hansIcon);
-
-
 
         mouseListener = new MouseAdapter() {
             @Override
@@ -118,6 +138,29 @@ public class HansTrafficLightWidget extends JPanel {
 
     }
 
+    private void searchFeatures() {
+        new GetFeatureFileMappings(this.editor.getProject(), "Find Feature File Mappings", new FeatureFileMappingCallback() {
+            @Override
+            public void onComplete(Map<String, FeatureFileMapping> featureFileMappings) {
+                Set<Set<String>> vals = new HashSet<>();
+                featureFileMappings.forEach((key, value) -> {
+                    var res = value.getFileMappings();
+                    if (!res.isEmpty()) {
+                        vals.add(res);
+                    }
+                });
+                for (Set<String> val : vals) {
+                    for (String key : val) {
+                        if (key.contains(editor.getVirtualFile().getPath())){
+                            filePath = key.substring(key.indexOf(":")+1);
+                            hansIcon.setVisible(true);
+                        }
+                    }
+                }
+            }
+        }).queue();
+    }
+
     @Override
     public void removeNotify() {
         removeMouseListener(mouseListener);
@@ -129,15 +172,33 @@ public class HansTrafficLightWidget extends JPanel {
         addMouseListener(mouseListener);
     }
 
+    public String getFilePath() {
+        return filePath;
+    }
+
     private void showPopupWithMappingName() {
+        Notification notification = new Notification(
+                "notification",           // Notification Group ID (can be created as needed)
+                "Mapped feature file",            // Title
+                filePath,                         // Content
+                NotificationType.INFORMATION      // Type: INFORMATION, WARNING, or ERROR
+        );
+        Notifications.Bus.notify(notification);
     }
 
     private void openMappingsFile() {
-
+        VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(filePath));
+        if (virtualFile != null && this.editor.getProject() != null) {
+            // Open the file in the editor
+            FileEditorManager.getInstance(this.editor.getProject()).openFile(virtualFile, true);
+        } else {
+            JOptionPane.showMessageDialog(null, "File not found: " + filePath);
+        }
     }
 
     @Override
     protected void paintComponent(Graphics graphics) {
+        if (filePath == null) return;
         int state = mousePressed ? ActionButtonComponent.PUSHED
                 : mouseHover ? ActionButtonComponent.POPPED
                 : ActionButtonComponent.NORMAL;
