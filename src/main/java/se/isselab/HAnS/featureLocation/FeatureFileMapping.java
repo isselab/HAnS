@@ -203,6 +203,19 @@ public class FeatureFileMapping {
         return map.keySet();
     }
 
+    public Set<String> getFileMappings() {
+
+        var keys = map.keySet();
+        Set<String> result = new HashSet<>();
+
+        for (var key: keys) {
+            var val = map.get(key);
+            if (val.first.name().equals("FILE") || val.first.name().equals("FOLDER")) {
+                result.add(key.first + ":" + key.second);
+            }
+        }
+        return result;
+    }
     // &begin[LineCount]
 
     /**
