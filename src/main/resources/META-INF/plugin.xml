@@ -24,6 +24,7 @@ limitations under the License.
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
 
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[HAnS::FeatureModel] -->
         <fileType name="Feature Model File" implementationClass="se.isselab.HAnS.featureModel.FeatureModelFileType"
@@ -60,6 +61,13 @@ limitations under the License.
         <completion.contributor language="any"
                                 implementationClass="se.isselab.HAnS.codeCompletion.FileCompletionContributor"/>
         <!-- &end[CodeCompletion] -->
+        <notificationGroup id="Custom Code Folding" displayType="BALLOON" />
+
+        <!-- &begin[CodeFolding] -->
+        <lang.foldingBuilder
+                language="FileAnnotation"
+                implementationClass="se.isselab.HAnS.featureModel.SimpleCodeFoldingBuilder"/>
+        <!-- &end[CodeFolding] -->
 
         <!-- &begin[SyntaxHighlighting] -->
         <!-- &begin[SyntaxHighlighting::FeatureModel] -->
@@ -190,6 +198,10 @@ limitations under the License.
         <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
+        </action>
+        <action id="se.isselab.HAnS.actions.FoldAction" class="se.isselab.HAnS.actions.FoldAction" text="fold action"
+                description="fold action">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
     </actions>
 </idea-plugin>
