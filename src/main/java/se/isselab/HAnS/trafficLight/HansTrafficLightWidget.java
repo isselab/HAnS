@@ -86,7 +86,9 @@ public class HansTrafficLightWidget extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 mousePressed = true;
-                repaint();
+                if (hansIcon.isVisible()) {
+                    repaint();
+                }
 
             }
 
@@ -96,21 +98,28 @@ public class HansTrafficLightWidget extends JPanel {
                 var event = AnActionEvent.createFromInputEvent(e, place, presentation, context, false, true);
                 ActionUtil.performActionDumbAwareWithCallbacks(action, event);
                 mousePressed = false;
-                repaint();
-                openMappingsFile();
+                if (hansIcon.isVisible()) {
+                    repaint();
+                    openMappingsFile();
+                }
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
                 mouseHover = true;
-                repaint();
-                showPopupWithMappingName();
+                if (hansIcon.isVisible()){
+                    repaint();
+                    showPopupWithMappingName();
+                }
+
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 mouseHover = false;
-                repaint();
+                if (hansIcon.isVisible()){
+                    repaint();
+                }
             }
         };
 
@@ -172,16 +181,12 @@ public class HansTrafficLightWidget extends JPanel {
         addMouseListener(mouseListener);
     }
 
-    public String getFilePath() {
-        return filePath;
-    }
-
     private void showPopupWithMappingName() {
         Notification notification = new Notification(
-                "notification",           // Notification Group ID (can be created as needed)
-                "Mapped feature file",            // Title
-                filePath,                         // Content
-                NotificationType.INFORMATION      // Type: INFORMATION, WARNING, or ERROR
+                "notification",
+                "Mapped feature file",
+                filePath,
+                NotificationType.INFORMATION
         );
         Notifications.Bus.notify(notification);
     }
@@ -189,7 +194,6 @@ public class HansTrafficLightWidget extends JPanel {
     private void openMappingsFile() {
         VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(filePath));
         if (virtualFile != null && this.editor.getProject() != null) {
-            // Open the file in the editor
             FileEditorManager.getInstance(this.editor.getProject()).openFile(virtualFile, true);
         } else {
             JOptionPane.showMessageDialog(null, "File not found: " + filePath);
