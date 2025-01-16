@@ -17,6 +17,7 @@ package se.isselab.HAnS.referencing;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
@@ -107,32 +108,31 @@ public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
         List<ResolveResult> results = new ArrayList<>();
 
         if(element instanceof FileAnnotationLpq) {
-            if(element.getParent() != null) {
-                String[] lines = element.getParent().getContainingFile().getText().split("\n");
-                String fileName = lines[0];
+            ApplicationManager.getApplication().runReadAction(new Runnable() {
+                @Override
+                public void run() {
+                    if (element.getParent() != null) {
+                        PsiFile cFile = ReadAction.compute(() -> element.getParent().getContainingFile());
+                        String[] lines = cFile.getText().split("\n");
 
-                VirtualFile currentFile = element.getParent().getContainingFile().getVirtualFile();
-                VirtualFile parentFolder = currentFile != null ? currentFile.getParent() : null;
+                        ArrayList<String> fileNames = getAllFileNamesForFeature(lines, ((FileAnnotationLpq) element).getName());
 
-                VirtualFile targetFile = null;
+                        VirtualFile currentFile = cFile.getVirtualFile();
+                        VirtualFile parentFolder = currentFile != null ? currentFile.getParent() : null;
 
-                if (parentFolder != null) {
-                    for (VirtualFile file : parentFolder.getChildren()) {
-                        if (!file.isDirectory() && file.getName().equals(fileName)) {
-                            targetFile = file;
-                            break;
+                        for (String fileName : fileNames) {
+                            for (VirtualFile file : parentFolder.getChildren()) {
+                                if (!file.isDirectory() && file.getName().equals(fileName)) {
+                                    System.out.print("asdasd");
+                                    PsiFile fileAsPsi = ReadAction.compute(() -> PsiManager.getInstance(project).findFile(file));
+
+                                    results.add(new PsiElementResolveResult(fileAsPsi));
+                                }
+                            }
                         }
                     }
                 }
-
-                if(targetFile == null) return new ResolveResult[0];
-
-                PsiFile fileAsPsi = PsiManager.getInstance(project).findFile(targetFile);
-
-                if(fileAsPsi == null) return new ResolveResult[0];
-
-                results.add(new PsiElementResolveResult(fileAsPsi));
-            }
+            });
         } else if(element instanceof CodeAnnotationLpq) {
             if (isEndTag(element)) return ResolveResult.EMPTY_ARRAY;
             final List<FeatureModelFeature> features = FeatureModelUtil.findLPQ(project, lpq);
@@ -162,6 +162,24 @@ public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
         }
         return results.toArray(new ResolveResult[0]);
     }
+    public ArrayList<String> getAllFileNamesForFeature(String[] lines, String featureName) {
+        String[] nonEmptyLines = Arrays.stream(lines).filter((String line) -> !line.trim().isBlank()).toArray(String[]::new);
+        ArrayList<String> fileNames = new ArrayList<>();
+        for (int i = 0; i + 1 < nonEmptyLines.length; i+=2) {
+            String[] features = nonEmptyLines[i + 1].split(",");
+            boolean featureNameFound = false;
+            for (String feature : features) {
+                if (feature.trim().equals(featureName)){
+                    featureNameFound = true;
+                    break;
+                }
+            }
+            if (!featureNameFound) continue;
+            fileNames.addAll(Arrays.stream(nonEmptyLines[i].split(",")).map(String::trim).toList());
+        }
+
+        return fileNames;
+    }
 
     private int getLine(Project project, PsiElement elem) {
 
@@ -178,3 +196,4 @@ public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
         return document.getLineNumber(elem.getTextRange().getStartOffset());
     }
 }
+
