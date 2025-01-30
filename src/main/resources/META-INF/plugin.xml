@@ -65,8 +65,8 @@ limitations under the License.
 
         <!-- &begin[CodeFolding] -->
         <lang.foldingBuilder
-                language="FileAnnotation"
-                implementationClass="se.isselab.HAnS.featureModel.SimpleCodeFoldingBuilder"/>
+                language="FeatureModel"
+                implementationClass="se.isselab.HAnS.featureModel.FeatureAnnotationFoldingBuilder"/>
         <!-- &end[CodeFolding] -->
 
         <!-- &begin[SyntaxHighlighting] -->
@@ -199,9 +199,11 @@ limitations under the License.
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
-        <action id="se.isselab.HAnS.actions.FoldAction" class="se.isselab.HAnS.actions.FoldAction" text="fold action"
-                description="fold action">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
+
+        <action id="se.isselab.HAnS.actions.FoldAction" class="se.isselab.HAnS.actions.FoldAction"
+                text="Fold Feature Annotations">
+            <keyboard-shortcut first-keystroke="ctrl shift L" keymap="Default for XWin" />
+            <add-to-group group-id="FoldingGroup" anchor="first"/>
         </action>
     </actions>
 </idea-plugin>
