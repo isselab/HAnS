@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Housekeeping 🧹
+
+- Updated Gradle distribution to 8.11
+- Updated project JDK to 21
+- Updated IntelliJ Platform version to 2.2.1
+- Updated Dependencies
+
 ## [0.0.7] - 2024-08-23
 
 ### Housekeeping 🧹
