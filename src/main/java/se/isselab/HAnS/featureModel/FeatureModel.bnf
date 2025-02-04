@@ -30,7 +30,7 @@ limitations under the License.
   psiImplUtilClass="se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil"
 }
 
-featureModelFile ::= (feature (feature)?)?
+featureModelFile ::= (feature (feature)?)? (QUESTIONMARK)
 
 // &begin[Referencing]
 feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?) {

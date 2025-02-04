@@ -35,6 +35,9 @@ import java.util.Deque;
 
 CRLF=[\n|\r\n]
 SPACE= [' ']
+QUESTIONMARK = ['?']
+OR = ['or']
+XOR = ['xor']
 
 INDENT=[\t]
 
@@ -60,8 +63,11 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 <YYINITIAL>.         { yypushback(1); indent_levels.push(0); yybegin(feature); }
 
 <indent>{SPACE}      { current_line_indent++; }
+
 <indent>{INDENT}     { current_line_indent = (current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1); }
 <indent>{CRLF}+      { current_line_indent = 0; return FeatureModelTypes.CRLF; }
+
+<indent>{QUESTIONMARK} { System.out.println("Found questionmark\nreturning Question token"); current_line_indent++; return FeatureModelTypes.QUESTIONMARK; }
 
 <dedent>. {
     indent_levels.pop();
