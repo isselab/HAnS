@@ -28,7 +28,6 @@ import se.isselab.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlig
 import se.isselab.HAnS.unassignedFeature.UnassignedFeatureQuickFix;
 
 import java.util.List;
-
 public class CodeAnnotationAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
