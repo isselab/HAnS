@@ -12,6 +12,10 @@ public class FeatureModelVisitor extends PsiElementVisitor {
     visitFeatureAnnotationNamedElement(o);
   }
 
+  public void visitOrGroup(@NotNull FeatureModelOrGroup o) {
+    visitPsiElement(o);
+  }
+
   public void visitFeatureAnnotationNamedElement(@NotNull FeatureAnnotationNamedElement o) {
     visitElement(o);
   }

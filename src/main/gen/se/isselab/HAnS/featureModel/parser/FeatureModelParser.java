@@ -36,16 +36,34 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?
+  // (FEATURENAME (OPTIONAL)?) (CRLF+ ((INDENT) feature* DEDENT)?)?
   public static boolean feature(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature")) return false;
     if (!nextTokenIs(b, FEATURENAME)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, FEATURENAME);
+    r = feature_0(b, l + 1);
     r = r && feature_1(b, l + 1);
     exit_section_(b, m, FEATURE, r);
     return r;
+  }
+
+  // FEATURENAME (OPTIONAL)?
+  private static boolean feature_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, FEATURENAME);
+    r = r && feature_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (OPTIONAL)?
+  private static boolean feature_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_0_1")) return false;
+    consumeToken(b, OPTIONAL);
+    return true;
   }
 
   // (CRLF+ ((INDENT) feature* DEDENT)?)?
@@ -143,6 +161,51 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b);
     r = feature(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // "or" CRLF+ INDENT feature+ DEDENT
+  public static boolean orGroup(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "orGroup")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, OR_GROUP, "<or group>");
+    r = consumeToken(b, "or");
+    r = r && orGroup_1(b, l + 1);
+    r = r && consumeToken(b, INDENT);
+    r = r && orGroup_3(b, l + 1);
+    r = r && consumeToken(b, DEDENT);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // CRLF+
+  private static boolean orGroup_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "orGroup_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, CRLF);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, CRLF)) break;
+      if (!empty_element_parsed_guard_(b, "orGroup_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // feature+
+  private static boolean orGroup_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "orGroup_3")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = feature(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!feature(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "orGroup_3", c)) break;
+    }
     exit_section_(b, m, null, r);
     return r;
   }

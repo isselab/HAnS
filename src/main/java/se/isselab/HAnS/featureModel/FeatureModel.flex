@@ -39,7 +39,7 @@ SPACE= [' ']
 INDENT=[\t]
 
 FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
-
+OPTIONAL=[?]
 %{
     int current_line_indent = 0;
     int indent_level = 0;
@@ -122,7 +122,7 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
     }
 }
 
-<feature>{FEATURENAME}+     {
+<feature>{FEATURENAME}+ ({SPACE} {OPTIONAL})? {
         yybegin(indent);
         return FeatureModelTypes.FEATURENAME;
 }
