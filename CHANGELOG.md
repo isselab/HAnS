@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [0.0.8] - 2025-01-30
+
+### Housekeeping 🧹
+
+- Updated Gradle distribution to 8.11
+- Updated project JDK to 21
+- Updated IntelliJ Platform version to 2.2.1
+- Updated Dependencies
+
 ## [0.0.7] - 2024-08-23
 
 ### Housekeeping 🧹
@@ -102,7 +111,8 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.7...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.8...HEAD
+[0.0.8]: https://github.com/isselab/HAnS/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/isselab/HAnS/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/isselab/HAnS/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/isselab/HAnS/compare/v0.0.4...v0.0.5
