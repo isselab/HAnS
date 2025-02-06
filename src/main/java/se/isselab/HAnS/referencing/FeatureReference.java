@@ -31,6 +31,8 @@ import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.AnnotationIcons;
 import se.isselab.HAnS.codeAnnotation.psi.CodeAnnotationLpq;
 import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationPsiImplUtil;
+import se.isselab.HAnS.featureLocation.FeatureFileMapping;
+import se.isselab.HAnS.featureLocation.FeatureLocation;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
@@ -38,8 +40,12 @@ import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationLpq;
 import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationPsiImplUtil;
 import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
 import se.isselab.HAnS.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil;
+import se.isselab.HAnS.pluginExtensions.ProjectMetricsService;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.FeatureFileMappingCallback;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
 
@@ -108,31 +114,26 @@ public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
         List<ResolveResult> results = new ArrayList<>();
 
         if(element instanceof FileAnnotationLpq) {
-            ApplicationManager.getApplication().runReadAction(new Runnable() {
+            ProjectMetricsService projectMetricsService = new ProjectMetricsService(project);
+            final List<FeatureModelFeature> features = FeatureModelUtil.findLPQ(project, lpq);
+            FeatureModelFeature feature = features.get(0);
+            CompletableFuture<FeatureFileMapping> future = new CompletableFuture<>();
+            projectMetricsService.getFeatureFileMappingBackground(feature, new FeatureFileMappingCallback() {
                 @Override
-                public void run() {
-                    if (element.getParent() != null) {
-                        PsiFile cFile = ReadAction.compute(() -> element.getParent().getContainingFile());
-                        String[] lines = cFile.getText().split("\n");
-
-                        ArrayList<String> fileNames = getAllFileNamesForFeature(lines, ((FileAnnotationLpq) element).getName());
-
-                        VirtualFile currentFile = cFile.getVirtualFile();
-                        VirtualFile parentFolder = currentFile != null ? currentFile.getParent() : null;
-
-                        for (String fileName : fileNames) {
-                            for (VirtualFile file : parentFolder.getChildren()) {
-                                if (!file.isDirectory() && file.getName().equals(fileName)) {
-                                    System.out.print("asdasd");
-                                    PsiFile fileAsPsi = ReadAction.compute(() -> PsiManager.getInstance(project).findFile(file));
-
-                                    results.add(new PsiElementResolveResult(fileAsPsi));
-                                }
-                            }
-                        }
-                    }
+                public void onComplete(FeatureFileMapping featureFileMapping) {
+                    future.complete(featureFileMapping);
                 }
             });
+            try {
+                /* Waiting for this takes to long, but we also do not know how to get it once and save
+                * it for later, as the FeatureReference object is newly constructed everytime */
+                FeatureFileMapping featureFileMapping = future.get();
+                ArrayList<FeatureLocation> featureLocations = featureFileMapping.getFeatureLocations();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
         } else if(element instanceof CodeAnnotationLpq) {
             if (isEndTag(element)) return ResolveResult.EMPTY_ARRAY;
             final List<FeatureModelFeature> features = FeatureModelUtil.findLPQ(project, lpq);
@@ -156,8 +157,8 @@ public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
                     endLineNumber++;
                 }
 
-                // Add the FeatureModelFeature itself as a result
-                results.add(new PsiElementResolveResult(new CustomPsiElement(feature, null)));
+
+                results.add(new PsiElementResolveResult(feature));
             }
         }
         return results.toArray(new ResolveResult[0]);
