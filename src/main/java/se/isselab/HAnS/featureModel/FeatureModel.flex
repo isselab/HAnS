@@ -36,7 +36,7 @@ import java.util.Deque;
 CRLF=[\n|\r\n]
 SPACE= [' ']
 QUESTIONMARK = ['?']
-OR = ['or']
+OR = 'OR'
 XOR = ['xor']
 
 INDENT=[\t]
@@ -53,36 +53,7 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
     int test = 1;
 
     Deque<Integer> indent_levels = new ArrayDeque<Integer>();
-%}
-
-%x indent
-%s feature
-%s dedent
-
-%%
-<YYINITIAL>.         { yypushback(1); indent_levels.push(0); yybegin(feature); }
-
-<indent>{SPACE}      { current_line_indent++; }
-
-<indent>{INDENT}     { current_line_indent = (current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1); }
-<indent>{CRLF}+      { current_line_indent = 0; return FeatureModelTypes.CRLF; }
-
-<indent>{QUESTIONMARK} { System.out.println("Found questionmark\nreturning Question token"); current_line_indent++; return FeatureModelTypes.QUESTIONMARK; }
-
-<dedent>. {
-    indent_levels.pop();
-    if(current_line_indent != indent_levels.peek()) {
-        yypushback(1);
-        return FeatureModelTypes.DEDENT;
-    }
-    else {
-        yypushback(1);
-        yybegin(feature);
-        return FeatureModelTypes.DEDENT;
-    }
-}
-
-<indent>{FEATURENAME}       {
+    private IElementType goIntoFeaturname() {
         if(current_line_indent > indent_levels.peek()) {
             indent_levels.push(current_line_indent);
             yypushback(1);
@@ -116,9 +87,155 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
             yybegin(feature);
             return FeatureModelTypes.CRLF;
         }
+        return null;
+    }
+    private void print(String str) {System.out.println(str);}
+%}
+
+%x indent
+%s feature
+%s dedent
+%s questionmark
+%s or1
+%s or2
+%s xor1
+%s xor2
+%s xor3
+%s returFeaturename
+
+%%
+<YYINITIAL>.         { yypushback(1); indent_levels.push(0); yybegin(feature); }
+
+<indent>{SPACE}      { current_line_indent++; }
+
+<indent>{INDENT}     { current_line_indent = (current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1); }
+<indent>{CRLF}+      { current_line_indent = 0; return FeatureModelTypes.CRLF; }
+
+<returFeaturename>[^] {
+          yybegin(indent);
+          return FeatureModelTypes.FEATURENAME;
+      }
+
+<indent>{QUESTIONMARK} {
+          //System.out.println("Found questionmark\nreturning Question token");
+          yybegin(indent);
+          return FeatureModelTypes.QUESTIONMARK;
+      }
+<indent>"o" {
+          System.out.println("indent: Found o");
+          yybegin(or1);
+      }
+<or1>"r" {
+          System.out.println("or1: Found r");
+          yybegin(or2);
+      }
+<or1>({CRLF}|{INDENT}) {
+          System.out.println("or1: found crlf");
+          if (current_line_indent > indent_levels.peek()) {
+                indent_levels.push(current_line_indent);
+                yypushback(1);
+                yybegin(returFeaturename);
+                return FeatureModelTypes.INDENT;
+            }
+            yybegin(indent);
+            return FeatureModelTypes.FEATURENAME;
+      }
+<or1>[^] {
+          System.out.println("or1: Did not find r");
+          IElementType result = goIntoFeaturname();
+          if (result != null) return result;
+      }
+
+<or2>{FEATURENAME} {
+          print("or2: found featurename");
+          IElementType result = goIntoFeaturname();
+          if (result != null) return result;
+      }
+<or2>[^] {
+          System.out.println("Returning OR");
+          yypushback(1);
+          yybegin(indent);
+          return FeatureModelTypes.OR;
+      }
+
+<indent>"x" {
+          print("indent: Found x");
+          yybegin(xor1);
+      }
+<xor1>"o" {
+          print("xor1: Found o");
+          yybegin(xor2);
+      }
+<xor1>({CRLF}|{INDENT}) {
+          print("xor1: CRLF");
+          if (current_line_indent > indent_levels.peek()) {
+              indent_levels.push(current_line_indent);
+              yypushback(1);
+              yybegin(returFeaturename);
+              return FeatureModelTypes.INDENT;
+          }
+          yybegin(indent);
+          return FeatureModelTypes.FEATURENAME;
+      }
+<xor1>[^] {
+          System.out.println("xor1: Did not find o");
+          IElementType result = goIntoFeaturname();
+          if (result != null) return result;
+      }
+
+<xor2>"r" {
+          print("xor2: Found r");
+          yybegin(xor3);
+      }
+<xor2>({CRLF}|{INDENT}) {
+          print("xor2: found CRLF");
+          if (current_line_indent > indent_levels.peek()) {
+                indent_levels.push(current_line_indent);
+                yypushback(1);
+                yybegin(returFeaturename);
+                return FeatureModelTypes.INDENT;
+            }
+            yybegin(indent);
+            return FeatureModelTypes.FEATURENAME;
+      }
+<xor2>[^] {
+          print("xor2: Did not find r");
+          IElementType result = goIntoFeaturname();
+          if (result != null) return result;
+      }
+<xor3>{FEATURENAME} {
+          print("xor3: got featurename: " + yytext());
+          IElementType result = goIntoFeaturname();
+          if (result != null) return result;
+      }
+<xor3>[^] {
+          System.out.println("Returning XOR");
+          yypushback(1);
+          yybegin(indent);
+          return FeatureModelTypes.XOR;
+      }
+
+
+<dedent>. {
+    indent_levels.pop();
+    if(current_line_indent != indent_levels.peek()) {
+        yypushback(1);
+        return FeatureModelTypes.DEDENT;
+    }
+    else {
+        yypushback(1);
+        yybegin(feature);
+        return FeatureModelTypes.DEDENT;
+    }
+}
+
+<indent>{FEATURENAME}       {
+        IElementType result = goIntoFeaturname();
+          if (result != null) return result;
 }
 
 <indent><<EOF>> {
+          System.out.println("EOF in indent");
     if (indent_levels.peek() != 0) {
         indent_levels.pop();
         return FeatureModelTypes.DEDENT;
@@ -127,9 +244,39 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
         yybegin(YYINITIAL);
     }
 }
+<or2><<EOF>> {
+          System.out.println("EOF in or2");
+          yybegin(indent);
+          return FeatureModelTypes.OR;
+      }
+<xor3><<EOF>> {
+          System.out.println("EOF in xor3");
+          yybegin(indent);
+          return FeatureModelTypes.XOR;
+      }
+
+<or1, xor1, xor2><<EOF>> {
+          print("EOF in or1,xor1,xor2");
+          if (current_line_indent > indent_levels.peek()) {
+            indent_levels.push(current_line_indent);
+            yybegin(returFeaturename);
+            return FeatureModelTypes.INDENT;
+          }
+          yybegin(indent);
+          return FeatureModelTypes.FEATURENAME;
+      }
+<returFeaturename><<EOF>> {
+          yybegin(indent);
+          return FeatureModelTypes.FEATURENAME;
+      }
+
 
 <feature>{FEATURENAME}+     {
         yybegin(indent);
         return FeatureModelTypes.FEATURENAME;
 }
-[^]    { return TokenType.BAD_CHARACTER; }
+[^]    {
+          System.out.println("Got a bad character: \"" + yytext() + "\" in state " + yystate());
+          return TokenType.BAD_CHARACTER;
+      }
+

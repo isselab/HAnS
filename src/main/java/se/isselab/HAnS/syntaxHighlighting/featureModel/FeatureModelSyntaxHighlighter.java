@@ -35,10 +35,13 @@ public class FeatureModelSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("FEATURENAME", DefaultLanguageHighlighterColors.CONSTANT);
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("HAnS_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
+    public static final TextAttributesKey LOGIC =
+            createTextAttributesKey("LOGICKEY", DefaultLanguageHighlighterColors.KEYWORD);
 
 
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
     private static final TextAttributesKey[] FEATURE_KEYS = new TextAttributesKey[]{FEATURE};
+    private static final TextAttributesKey[] LOGIC_KEYS = new TextAttributesKey[]{LOGIC};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
     @Override
@@ -49,8 +52,12 @@ public class FeatureModelSyntaxHighlighter extends SyntaxHighlighterBase {
     @Override
     public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
         if (tokenType.equals(FeatureModelTypes.FEATURENAME)){
+            //System.out.println("Got featurename");
             return FEATURE_KEYS;
-        } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
+        } else if (tokenType.equals(FeatureModelTypes.QUESTIONMARK)) {
+            System.out.println("Got Questionmark returning interface");
+            return LOGIC_KEYS;
+        }else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
             return BAD_CHAR_KEYS;
         } else {
             return EMPTY_KEYS;
