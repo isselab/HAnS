@@ -37,8 +37,8 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // FEATURENAME (OPTIONAL)? (CRLF+ ((INDENT) feature*  DEDENT)?)?
-  // (XOR feature*)?
-  // (OR feature*)?
+  // (XOR_TOKEN feature*)?
+  // (OR_TOKEN feature*)?
   public static boolean feature(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature")) return false;
     if (!nextTokenIs(b, FEATURENAME)) return false;
@@ -123,19 +123,19 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (XOR feature*)?
+  // (XOR_TOKEN feature*)?
   private static boolean feature_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature_3")) return false;
     feature_3_0(b, l + 1);
     return true;
   }
 
-  // XOR feature*
+  // XOR_TOKEN feature*
   private static boolean feature_3_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature_3_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, XOR);
+    r = consumeToken(b, XOR_TOKEN);
     r = r && feature_3_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -152,19 +152,19 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (OR feature*)?
+  // (OR_TOKEN feature*)?
   private static boolean feature_4(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature_4")) return false;
     feature_4_0(b, l + 1);
     return true;
   }
 
-  // OR feature*
+  // OR_TOKEN feature*
   private static boolean feature_4_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature_4_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, OR);
+    r = consumeToken(b, OR_TOKEN);
     r = r && feature_4_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;

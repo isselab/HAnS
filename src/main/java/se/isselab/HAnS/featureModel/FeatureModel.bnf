@@ -34,8 +34,8 @@ featureModelFile ::= (feature (feature)?)?
 
 // &begin[Referencing]
 feature ::= (FEATURENAME (OPTIONAL)? (CRLF+ ((INDENT) feature*  DEDENT)?)?
-(XOR feature*)?
-(OR feature*)?
+(XOR_TOKEN feature*)?
+(OR_TOKEN feature*)?
 ) {
 mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
 implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"

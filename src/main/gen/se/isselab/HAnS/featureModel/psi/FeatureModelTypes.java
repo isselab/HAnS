@@ -15,8 +15,8 @@ public interface FeatureModelTypes {
   IElementType FEATURENAME = new FeatureModelTokenType("FEATURENAME");
   IElementType INDENT = new FeatureModelTokenType("INDENT");
   IElementType OPTIONAL = new FeatureModelTokenType("OPTIONAL");
-  IElementType OR = new FeatureModelTokenType("OR");
-  IElementType XOR = new FeatureModelTokenType("XOR");
+  IElementType OR_TOKEN = new FeatureModelTokenType("OR_TOKEN");
+  IElementType XOR_TOKEN = new FeatureModelTokenType("XOR_TOKEN");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
