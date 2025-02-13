@@ -33,7 +33,10 @@ limitations under the License.
 featureModelFile ::= (feature (feature)?)?
 
 // &begin[Referencing]
-feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?) {
+feature ::= (FEATURENAME (OPTIONAL)? (CRLF+ ((INDENT) feature*  DEDENT)?)?
+(XOR feature*)?
+(OR feature*)?
+) {
 mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
 implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getLPQText getLPQStack renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName getPresentation
