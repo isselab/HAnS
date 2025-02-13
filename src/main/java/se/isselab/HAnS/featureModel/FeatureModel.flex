@@ -40,6 +40,12 @@ INDENT=[\t]
 
 FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 
+OPTIONAL = '?'
+
+XOR_TOKEN = 'XOR'
+
+OR_TOKEN = 'OR'
+
 %{
     int current_line_indent = 0;
     int indent_level = 0;
@@ -122,8 +128,15 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
     }
 }
 
+<feature>{OPTIONAL} { return FeatureModelTypes.OPTIONAL; }
+
+<feature>{XOR_TOKEN} { return FeatureModelTypes.XOR_TOKEN; }
+
+<feature>{OR_TOKEN} { return FeatureModelTypes.OR_TOKEN; }
+
 <feature>{FEATURENAME}+     {
         yybegin(indent);
         return FeatureModelTypes.FEATURENAME;
 }
+
 [^]    { return TokenType.BAD_CHARACTER; }
