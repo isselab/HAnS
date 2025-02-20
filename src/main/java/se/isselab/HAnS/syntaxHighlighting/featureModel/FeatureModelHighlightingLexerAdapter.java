@@ -21,6 +21,6 @@ import se.isselab.HAnS.featureModel.FeatureModelLexer;
 
 public class FeatureModelHighlightingLexerAdapter extends FlexAdapter {
     public FeatureModelHighlightingLexerAdapter() {
-        super(new FeatureModelLexer(null));
+        super(new FeatureModelHighlightingLexer(null));
     }
 }
