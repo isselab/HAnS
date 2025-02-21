@@ -76,6 +76,20 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
     }
 }
 
+<indent>{
+"?"                  { return FeatureModelTypes.OPTIONALITY; }
+"or"                 { return FeatureModelTypes.OR; }
+"xor"                { return FeatureModelTypes.XOR; }
+"["                  { return FeatureModelTypes.LBRACKET; }
+"]"                  { return FeatureModelTypes.RBRACKET; }
+"!"                  { return FeatureModelTypes.NOT; }
+"&&"                 { return FeatureModelTypes.AND; }
+"||"                 { return FeatureModelTypes.OR_OP; } //Avoid confusion with the or keyword
+"=>"                 { return FeatureModelTypes.IMPLIES; }
+"("                  { return FeatureModelTypes.LPAREN; }
+")"                  { return FeatureModelTypes.RPAREN; }
+}
+
 <indent>{FEATURENAME}       {
         if(current_line_indent > indent_levels.peek()) {
             indent_levels.push(current_line_indent);
