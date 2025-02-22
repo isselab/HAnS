@@ -1,5 +1,6 @@
 package se.isselab.HAnS.states;
 
+// &begin [SyntaxHighlighting]
 public class ToggleState {
     private boolean enabled = false;
 
@@ -11,3 +12,5 @@ public class ToggleState {
         this.enabled = enabled;
     }
 }
+        // &end [SyntaxHighlighting]
+

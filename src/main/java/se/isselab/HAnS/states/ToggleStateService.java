@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.components.ServiceManager;
 
+// &begin [SyntaxHighlighting]
 @State(
         name = "ToggleStateService",
         storages = {@Storage("toggleState.xml")} // XML file to persist state
@@ -53,3 +54,4 @@ public class ToggleStateService implements PersistentStateComponent<ToggleState>
         return project.getService(ToggleStateService.class);
     }
 }
+// &end [SyntaxHighlighting]

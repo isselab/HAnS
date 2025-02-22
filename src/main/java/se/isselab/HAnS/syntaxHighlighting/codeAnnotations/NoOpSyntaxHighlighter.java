@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A No-Operation (NoOp) Syntax Highlighter that does not apply any highlighting.
  */
+// &begin [SyntaxHighlighting]
 public class NoOpSyntaxHighlighter extends SyntaxHighlighterBase {
 
 
@@ -117,4 +118,5 @@ public class NoOpSyntaxHighlighter extends SyntaxHighlighterBase {
             this.currentOffset = position.getOffset();
         }
     }
+    // &end [SyntaxHighlighting]
 }

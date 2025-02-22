@@ -46,7 +46,7 @@ public class SettingsPageBuilder implements Configurable {
     public String getDisplayName() {
         return "HAnS Plugin Settings";
     }
-
+//&begin[SyntaxHighlighting]
     @Override
     public @Nullable JComponent createComponent() {
         // Creating Base Panel
@@ -135,4 +135,6 @@ public class SettingsPageBuilder implements Configurable {
         );
         Notifications.Bus.notify(notification);
     }
+    // &end [SyntaxHighlighting]
+
 }

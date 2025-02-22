@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.states.ToggleStateService;
 
+// &begin [SyntaxHighlighting]
 public class CodeAnnotationsSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
     @Override
     public @NotNull SyntaxHighlighter getSyntaxHighlighter(@Nullable Project project, @Nullable VirtualFile virtualFile) {
@@ -34,4 +35,6 @@ public class CodeAnnotationsSyntaxHighlighterFactory extends SyntaxHighlighterFa
         //System.out.println("CodeAnnotationsSyntaxHighlighterFactory: ToggleStateService is enabled or unavailable. Supposed to use NoOpSyntaxHighlighter.");
         return new NoOpSyntaxHighlighter(); //Return syntaxHighlighter that does nothing
     }
+    // &end [SyntaxHighlighting]
+
 }
