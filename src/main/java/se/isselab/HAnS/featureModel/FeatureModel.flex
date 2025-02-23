@@ -33,6 +33,7 @@ import java.util.Deque;
     return;
 %eof}
 
+OPTIONAL = "?"
 CRLF=[\n|\r\n]
 SPACE= [' ']
 
@@ -40,11 +41,9 @@ INDENT=[\t]
 
 FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 
-OPTIONAL = '?'
+XOR_TOKEN = "xor"
 
-XOR_TOKEN = 'XOR'
-
-OR_TOKEN = 'OR'
+OR_TOKEN = "or"
 
 %{
     int current_line_indent = 0;
@@ -63,7 +62,8 @@ OR_TOKEN = 'OR'
 %s dedent
 
 %%
-<YYINITIAL>.         { yypushback(1); indent_levels.push(0); yybegin(feature); }
+
+<YYINITIAL>.        { yypushback(1); indent_levels.push(0); yybegin(feature); }
 
 <indent>{SPACE}      { current_line_indent++; }
 <indent>{INDENT}     { current_line_indent = (current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1); }
@@ -81,6 +81,16 @@ OR_TOKEN = 'OR'
         return FeatureModelTypes.DEDENT;
     }
 }
+<indent> {
+    {XOR_TOKEN} {
+        yybegin(feature);
+        return FeatureModelTypes.XOR_TOKEN;
+    }
+    {OR_TOKEN} {
+        yybegin(feature);
+        return FeatureModelTypes.OR_TOKEN;
+    }
+}
 
 <indent>{FEATURENAME}       {
         if(current_line_indent > indent_levels.peek()) {
@@ -90,24 +100,18 @@ OR_TOKEN = 'OR'
             return FeatureModelTypes.INDENT;
         }
         else if(current_line_indent < indent_levels.peek()) {
-            indent_levels.pop();
-            if (current_line_indent > indent_levels.peek()) {
-                indent_levels.push(current_line_indent);
+            while(current_line_indent < indent_levels.peek()) {
+                    indent_levels.pop();
+                    return FeatureModelTypes.DEDENT;
+                }
                 yypushback(1);
                 yybegin(feature);
-            }
-            else if(current_line_indent != indent_levels.peek()) {
-                yypushback(1);
-                yybegin(dedent);
-                return FeatureModelTypes.DEDENT;
-            }
-            else {
-                yypushback(1);
-                yybegin(feature);
-                return FeatureModelTypes.DEDENT;
-            }
         }
         else if (current_line_indent == 0){
+            while (!indent_levels.isEmpty()) {
+                    indent_levels.pop();
+                    return FeatureModelTypes.DEDENT;
+                }
             yypushback(1);
             yybegin(feature);
         }
@@ -128,12 +132,25 @@ OR_TOKEN = 'OR'
     }
 }
 
-<feature>{OPTIONAL} { return FeatureModelTypes.OPTIONAL; }
+<feature> {
+    {OPTIONAL} {
+        return FeatureModelTypes.OPTIONAL;
+    }
 
-<feature>{XOR_TOKEN} { return FeatureModelTypes.XOR_TOKEN; }
+    {SPACE} {
+        return FeatureModelTypes.SPACE;
+    }
 
-<feature>{OR_TOKEN} { return FeatureModelTypes.OR_TOKEN; }
+    {CRLF} {
+        yybegin(YYINITIAL);
+        return FeatureModelTypes.CRLF;
+    }
+}
 
+<feature> {XOR_TOKEN} { yybegin(indent);
+          return FeatureModelTypes.XOR_TOKEN; }
+<feature> {OR_TOKEN} { yybegin(indent);
+          return FeatureModelTypes.OR_TOKEN; }
 <feature>{FEATURENAME}+     {
         yybegin(indent);
         return FeatureModelTypes.FEATURENAME;

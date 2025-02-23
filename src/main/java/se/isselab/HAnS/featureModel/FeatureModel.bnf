@@ -33,10 +33,17 @@ limitations under the License.
 featureModelFile ::= (feature (feature)?)?
 
 // &begin[Referencing]
-feature ::= (FEATURENAME (OPTIONAL)? (CRLF+ ((INDENT) feature*  DEDENT)?)?
-(XOR_TOKEN feature*)?
-(OR_TOKEN feature*)?
-) {
+//feature ::= (FEATURENAME (SPACE OPTIONAL)?
+//(CRLF+ ((INDENT) feature*  DEDENT)?)?
+//(CRLF+ INDENT (XOR_TOKEN | OR_TOKEN) feature* (CRLF+ (INDENT) feature* DEDENT)?)?
+// (CRLF+ OR_TOKEN (CRLF+ (INDENT) feature* DEDENT)?)?
+
+//)
+private group ::= CRLF+ (XOR_TOKEN | OR_TOKEN) (group_child|children_feature)
+private group_child ::= ((CRLF+ (INDENT))| SPACE)? feature* DEDENT
+private children_feature ::= CRLF+ ((INDENT) feature*  DEDENT)?
+feature ::= FEATURENAME (SPACE OPTIONAL)? (group)? (children_feature)?
+{
 mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
 implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getLPQText getLPQStack renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName getPresentation

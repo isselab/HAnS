@@ -16,6 +16,7 @@ public interface FeatureModelTypes {
   IElementType INDENT = new FeatureModelTokenType("INDENT");
   IElementType OPTIONAL = new FeatureModelTokenType("OPTIONAL");
   IElementType OR_TOKEN = new FeatureModelTokenType("OR_TOKEN");
+  IElementType SPACE = new FeatureModelTokenType("SPACE");
   IElementType XOR_TOKEN = new FeatureModelTokenType("XOR_TOKEN");
 
   class Factory {

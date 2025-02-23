@@ -85,10 +85,10 @@ public class FeatureModelLexer implements FlexLexer {
 
   private static final String ZZ_CMAP_BLOCKS_PACKED_0 =
     "\11\0\1\1\1\2\2\3\1\2\22\0\1\4\6\0"+
-    "\1\5\3\0\1\6\4\0\12\6\7\0\16\6\1\7"+
-    "\2\6\1\10\5\6\1\11\2\6\4\0\1\6\1\0"+
-    "\32\6\1\0\1\12\10\0\1\3\u01a2\0\2\3\326\0"+
-    "\u0100\3";
+    "\1\5\3\0\1\6\4\0\12\6\5\0\1\7\1\0"+
+    "\32\6\4\0\1\6\1\0\16\6\1\10\2\6\1\11"+
+    "\5\6\1\12\2\6\1\0\1\13\10\0\1\3\u01a2\0"+
+    "\2\3\326\0\u0100\3";
 
   private static int [] zzUnpackcmap_blocks() {
     int [] result = new int[1024];
@@ -115,11 +115,12 @@ public class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\4\0\1\1\1\2\1\3\1\4\1\5\1\6\1\7"+
-    "\1\10\1\11\1\7\4\10\1\12\1\10\1\13";
+    "\4\0\1\1\1\2\1\3\1\4\1\5\3\6\1\7"+
+    "\2\10\1\11\1\12\2\11\1\7\1\13\1\14\1\0"+
+    "\1\15\1\11\1\16\1\17";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[21];
+    int [] result = new int[27];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -144,12 +145,13 @@ public class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\13\0\26\0\41\0\54\0\54\0\54\0\67"+
-    "\0\54\0\54\0\102\0\115\0\54\0\115\0\130\0\143"+
-    "\0\156\0\171\0\115\0\204\0\115";
+    "\0\0\0\14\0\30\0\44\0\60\0\60\0\60\0\74"+
+    "\0\60\0\60\0\110\0\124\0\60\0\60\0\140\0\140"+
+    "\0\60\0\154\0\170\0\140\0\60\0\60\0\204\0\140"+
+    "\0\220\0\60\0\140";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[21];
+    int [] result = new int[27];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -172,15 +174,17 @@ public class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_TRANS = zzUnpacktrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\2\5\2\6\7\5\1\0\1\7\1\10\1\0\2\11"+
-    "\4\12\1\10\5\6\1\13\5\14\2\15\2\6\7\15"+
-    "\15\0\1\10\7\0\1\10\5\0\1\16\1\14\1\17"+
-    "\1\14\1\20\1\14\5\0\6\14\5\0\3\14\1\21"+
-    "\2\14\5\0\2\14\1\22\3\14\5\0\1\23\5\14"+
-    "\5\0\3\14\1\24\2\14\5\0\1\25\5\14";
+    "\2\5\2\6\10\5\1\0\1\7\1\10\1\0\2\11"+
+    "\1\12\1\0\1\13\1\12\1\14\1\10\2\6\1\15"+
+    "\1\6\1\16\1\17\1\20\1\21\1\22\1\20\1\23"+
+    "\1\24\2\25\2\6\10\25\16\0\1\10\10\0\1\10"+
+    "\11\0\1\26\12\0\1\27\10\0\2\20\1\0\4\20"+
+    "\5\0\2\20\1\0\1\20\1\30\2\20\5\0\2\20"+
+    "\1\0\1\31\3\20\11\0\1\32\7\0\2\20\1\0"+
+    "\1\20\1\33\2\20";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[143];
+    int [] result = new int[156];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -218,10 +222,11 @@ public class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\4\0\3\11\1\1\2\11\2\1\1\11\10\1";
+    "\4\0\3\11\1\1\2\11\2\1\2\11\2\1\1\11"+
+    "\3\1\2\11\1\0\2\1\1\11\1\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[21];
+    int [] result = new int[27];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -287,11 +292,6 @@ public class FeatureModelLexer implements FlexLexer {
   /** Number of characters up to the start of the matched text. */
   @SuppressWarnings("unused")
   private long yychar;
-
-  /** Whether the scanner is currently at the beginning of a line. */
-
-
-  /** Whether the user-EOF-code has already been executed. */
 
 
   /* user code: */
@@ -567,7 +567,7 @@ public class FeatureModelLexer implements FlexLexer {
         yybegin(YYINITIAL);
     }
             }  // fall though
-            case 22: break;
+            case 28: break;
             default:
         return null;
         }
@@ -578,27 +578,27 @@ public class FeatureModelLexer implements FlexLexer {
             { yypushback(1); indent_levels.push(0); yybegin(feature);
             }
           // fall through
-          case 12: break;
+          case 16: break;
           case 2:
             { return TokenType.BAD_CHARACTER;
             }
           // fall through
-          case 13: break;
+          case 17: break;
           case 3:
             { current_line_indent = (current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1);
             }
           // fall through
-          case 14: break;
+          case 18: break;
           case 4:
             { current_line_indent = 0; return FeatureModelTypes.CRLF;
             }
           // fall through
-          case 15: break;
+          case 19: break;
           case 5:
             { current_line_indent++;
             }
           // fall through
-          case 16: break;
+          case 20: break;
           case 6:
             { if(current_line_indent > indent_levels.peek()) {
             indent_levels.push(current_line_indent);
@@ -607,24 +607,18 @@ public class FeatureModelLexer implements FlexLexer {
             return FeatureModelTypes.INDENT;
         }
         else if(current_line_indent < indent_levels.peek()) {
-            indent_levels.pop();
-            if (current_line_indent > indent_levels.peek()) {
-                indent_levels.push(current_line_indent);
+            while(current_line_indent < indent_levels.peek()) {
+                    indent_levels.pop();
+                    return FeatureModelTypes.DEDENT;
+                }
                 yypushback(1);
                 yybegin(feature);
-            }
-            else if(current_line_indent != indent_levels.peek()) {
-                yypushback(1);
-                yybegin(dedent);
-                return FeatureModelTypes.DEDENT;
-            }
-            else {
-                yypushback(1);
-                yybegin(feature);
-                return FeatureModelTypes.DEDENT;
-            }
         }
         else if (current_line_indent == 0){
+            while (!indent_levels.isEmpty()) {
+                    indent_levels.pop();
+                    return FeatureModelTypes.DEDENT;
+                }
             yypushback(1);
             yybegin(feature);
         }
@@ -635,19 +629,30 @@ public class FeatureModelLexer implements FlexLexer {
         }
             }
           // fall through
-          case 17: break;
+          case 21: break;
           case 7:
-            { return FeatureModelTypes.OPTIONAL;
+            { yybegin(YYINITIAL);
+        return FeatureModelTypes.CRLF;
             }
           // fall through
-          case 18: break;
+          case 22: break;
           case 8:
+            { return FeatureModelTypes.SPACE;
+            }
+          // fall through
+          case 23: break;
+          case 9:
             { yybegin(indent);
         return FeatureModelTypes.FEATURENAME;
             }
           // fall through
-          case 19: break;
-          case 9:
+          case 24: break;
+          case 10:
+            { return FeatureModelTypes.OPTIONAL;
+            }
+          // fall through
+          case 25: break;
+          case 11:
             { indent_levels.pop();
     if(current_line_indent != indent_levels.peek()) {
         yypushback(1);
@@ -660,17 +665,31 @@ public class FeatureModelLexer implements FlexLexer {
     }
             }
           // fall through
-          case 20: break;
-          case 10:
-            { return FeatureModelTypes.OR_TOKEN;
+          case 26: break;
+          case 12:
+            { yybegin(feature);
+        return FeatureModelTypes.OR_TOKEN;
             }
           // fall through
-          case 21: break;
-          case 11:
-            { return FeatureModelTypes.XOR_TOKEN;
+          case 27: break;
+          case 13:
+            { yybegin(indent);
+          return FeatureModelTypes.OR_TOKEN;
             }
           // fall through
-          case 22: break;
+          case 28: break;
+          case 14:
+            { yybegin(feature);
+        return FeatureModelTypes.XOR_TOKEN;
+            }
+          // fall through
+          case 29: break;
+          case 15:
+            { yybegin(indent);
+          return FeatureModelTypes.XOR_TOKEN;
+            }
+          // fall through
+          case 30: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }
