@@ -39,10 +39,9 @@ featureModelFile ::= (feature (feature)?)?
 // (CRLF+ OR_TOKEN (CRLF+ (INDENT) feature* DEDENT)?)?
 
 //)
-private group ::= CRLF+ (XOR_TOKEN | OR_TOKEN) (group_child|children_feature)
-private group_child ::= ((CRLF+ (INDENT))| SPACE)? feature* DEDENT
+private group ::= CRLF+ (OR_TOKEN | XOR_TOKEN) FEATURENAME
 private children_feature ::= CRLF+ ((INDENT) feature*  DEDENT)?
-feature ::= FEATURENAME (SPACE OPTIONAL)? (group)? (children_feature)?
+feature ::= FEATURENAME (OPTIONAL)? (group? (children_feature)?)?
 {
 mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
 implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"

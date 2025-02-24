@@ -94,7 +94,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FEATURENAME (SPACE OPTIONAL)? (group)? (children_feature)?
+  // FEATURENAME (OPTIONAL)? (group? (children_feature)?)?
   public static boolean feature(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature")) return false;
     if (!nextTokenIs(b, FEATURENAME)) return false;
@@ -103,55 +103,52 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, FEATURENAME);
     r = r && feature_1(b, l + 1);
     r = r && feature_2(b, l + 1);
-    r = r && feature_3(b, l + 1);
     exit_section_(b, m, FEATURE, r);
     return r;
   }
 
-  // (SPACE OPTIONAL)?
+  // (OPTIONAL)?
   private static boolean feature_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature_1")) return false;
-    feature_1_0(b, l + 1);
+    consumeToken(b, OPTIONAL);
     return true;
   }
 
-  // SPACE OPTIONAL
-  private static boolean feature_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "feature_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, SPACE, OPTIONAL);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (group)?
+  // (group? (children_feature)?)?
   private static boolean feature_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature_2")) return false;
     feature_2_0(b, l + 1);
     return true;
   }
 
-  // (group)
+  // group? (children_feature)?
   private static boolean feature_2_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = group(b, l + 1);
+    r = feature_2_0_0(b, l + 1);
+    r = r && feature_2_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
+  // group?
+  private static boolean feature_2_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_2_0_0")) return false;
+    group(b, l + 1);
+    return true;
+  }
+
   // (children_feature)?
-  private static boolean feature_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "feature_3")) return false;
-    feature_3_0(b, l + 1);
+  private static boolean feature_2_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_2_0_1")) return false;
+    feature_2_0_1_0(b, l + 1);
     return true;
   }
 
   // (children_feature)
-  private static boolean feature_3_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "feature_3_0")) return false;
+  private static boolean feature_2_0_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_2_0_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = children_feature(b, l + 1);
@@ -196,7 +193,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // CRLF+ (XOR_TOKEN | OR_TOKEN) (group_child|children_feature)
+  // CRLF+ (OR_TOKEN | XOR_TOKEN) FEATURENAME
   static boolean group(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "group")) return false;
     if (!nextTokenIs(b, CRLF)) return false;
@@ -204,7 +201,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = group_0(b, l + 1);
     r = r && group_1(b, l + 1);
-    r = r && group_2(b, l + 1);
+    r = r && consumeToken(b, FEATURENAME);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -224,90 +221,13 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // XOR_TOKEN | OR_TOKEN
+  // OR_TOKEN | XOR_TOKEN
   private static boolean group_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "group_1")) return false;
     boolean r;
-    r = consumeToken(b, XOR_TOKEN);
-    if (!r) r = consumeToken(b, OR_TOKEN);
+    r = consumeToken(b, OR_TOKEN);
+    if (!r) r = consumeToken(b, XOR_TOKEN);
     return r;
-  }
-
-  // group_child|children_feature
-  private static boolean group_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "group_2")) return false;
-    boolean r;
-    r = group_child(b, l + 1);
-    if (!r) r = children_feature(b, l + 1);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // ((CRLF+ (INDENT))| SPACE)? feature* DEDENT
-  static boolean group_child(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "group_child")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = group_child_0(b, l + 1);
-    r = r && group_child_1(b, l + 1);
-    r = r && consumeToken(b, DEDENT);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // ((CRLF+ (INDENT))| SPACE)?
-  private static boolean group_child_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "group_child_0")) return false;
-    group_child_0_0(b, l + 1);
-    return true;
-  }
-
-  // (CRLF+ (INDENT))| SPACE
-  private static boolean group_child_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "group_child_0_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = group_child_0_0_0(b, l + 1);
-    if (!r) r = consumeToken(b, SPACE);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // CRLF+ (INDENT)
-  private static boolean group_child_0_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "group_child_0_0_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = group_child_0_0_0_0(b, l + 1);
-    r = r && consumeToken(b, INDENT);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // CRLF+
-  private static boolean group_child_0_0_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "group_child_0_0_0_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, CRLF);
-    while (r) {
-      int c = current_position_(b);
-      if (!consumeToken(b, CRLF)) break;
-      if (!empty_element_parsed_guard_(b, "group_child_0_0_0_0", c)) break;
-    }
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // feature*
-  private static boolean group_child_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "group_child_1")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!feature(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "group_child_1", c)) break;
-    }
-    return true;
   }
 
 }
