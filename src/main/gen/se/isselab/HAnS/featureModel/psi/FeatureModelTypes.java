@@ -16,10 +16,21 @@ public interface FeatureModelTypes {
   IElementType OR_GROUP = new FeatureModelElementType("OR_GROUP");
   IElementType XOR_GROUP = new FeatureModelElementType("XOR_GROUP");
 
-  IElementType CRLF = new FeatureModelTokenType("CRLF");
-  IElementType DEDENT = new FeatureModelTokenType("DEDENT");
-  IElementType FEATURENAME = new FeatureModelTokenType("FEATURENAME");
-  IElementType INDENT = new FeatureModelTokenType("INDENT");
+  IElementType AND = new FeatureModelTokenType("&&");
+  IElementType CRLF = new FeatureModelTokenType("crlf");
+  IElementType DEDENT = new FeatureModelTokenType("dedent");
+  IElementType FEATURENAME = new FeatureModelTokenType("id");
+  IElementType IMPLIES = new FeatureModelTokenType("=>");
+  IElementType INDENT = new FeatureModelTokenType("indent");
+  IElementType LBRACKET = new FeatureModelTokenType("[");
+  IElementType LPAREN = new FeatureModelTokenType("(");
+  IElementType NOT = new FeatureModelTokenType("!");
+  IElementType OPTIONALITY = new FeatureModelTokenType("?");
+  IElementType OR = new FeatureModelTokenType("or");
+  IElementType OR_OP = new FeatureModelTokenType("||");
+  IElementType RBRACKET = new FeatureModelTokenType("]");
+  IElementType RPAREN = new FeatureModelTokenType(")");
+  IElementType XOR = new FeatureModelTokenType("xor");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {

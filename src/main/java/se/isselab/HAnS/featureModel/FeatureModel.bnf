@@ -15,19 +15,32 @@ limitations under the License.
 */
 {
   parserClass="se.isselab.HAnS.featureModel.parser.FeatureModelParser"
-
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
-
   psiClassPrefix="FeatureModel"
   psiImplClassSuffix="Impl"
   psiPackage="se.isselab.HAnS.featureModel.psi"
   psiImplPackage="se.isselab.HAnS.featureModel.psi.impl"
-
   elementTypeHolderClass="se.isselab.HAnS.featureModel.psi.FeatureModelTypes"
   elementTypeClass="se.isselab.HAnS.featureModel.psi.FeatureModelElementType"
   tokenTypeClass="se.isselab.HAnS.featureModel.psi.FeatureModelTokenType"
-
   psiImplUtilClass="se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil"
+  tokens=[
+    NOT="!"
+    LPAREN="("
+    RPAREN=")"
+    LBRACKET="["
+    RBRACKET="]"
+    AND="&&"
+    IMPLIES="=>"
+    OR="or"
+    XOR="xor"
+    OPTIONALITY="?"
+    OR_OP="||"
+    CRLF="crlf"
+    INDENT="indent"
+    DEDENT="dedent"
+    FEATURENAME="id"
+  ]
 }
 
 featureModelFile ::= (feature (feature)?)?

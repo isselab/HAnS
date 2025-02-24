@@ -61,7 +61,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "booleanExpression_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, "!");
+    r = consumeToken(b, NOT);
     r = r && booleanExpression(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -73,7 +73,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b);
     r = booleanExpression(b, l + 1);
-    r = r && consumeToken(b, "&&");
+    r = r && consumeToken(b, AND);
     r = r && booleanExpression(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -85,7 +85,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b);
     r = booleanExpression(b, l + 1);
-    r = r && consumeToken(b, "||");
+    r = r && consumeToken(b, OR_OP);
     r = r && booleanExpression(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -97,7 +97,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b);
     r = booleanExpression(b, l + 1);
-    r = r && consumeToken(b, "=>");
+    r = r && consumeToken(b, IMPLIES);
     r = r && booleanExpression(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -108,9 +108,9 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "booleanExpression_5")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, "(");
+    r = consumeToken(b, LPAREN);
     r = r && booleanExpression(b, l + 1);
-    r = r && consumeToken(b, ")");
+    r = r && consumeToken(b, RPAREN);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -119,12 +119,13 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   // "[" booleanExpression "]"
   public static boolean constraint(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "constraint")) return false;
+    if (!nextTokenIs(b, LBRACKET)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, CONSTRAINT, "<constraint>");
-    r = consumeToken(b, "[");
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LBRACKET);
     r = r && booleanExpression(b, l + 1);
-    r = r && consumeToken(b, "]");
-    exit_section_(b, l, m, r, false, null);
+    r = r && consumeToken(b, RBRACKET);
+    exit_section_(b, m, CONSTRAINT, r);
     return r;
   }
 
@@ -257,10 +258,11 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   // "?"
   public static boolean optionality(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optionality")) return false;
+    if (!nextTokenIs(b, OPTIONALITY)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, OPTIONALITY, "<optionality>");
-    r = consumeToken(b, "?");
-    exit_section_(b, l, m, r, false, null);
+    Marker m = enter_section_(b);
+    r = consumeToken(b, OPTIONALITY);
+    exit_section_(b, m, OPTIONALITY, r);
     return r;
   }
 
@@ -268,14 +270,15 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   // "or" CRLF+ INDENT feature+ DEDENT
   public static boolean orGroup(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "orGroup")) return false;
+    if (!nextTokenIs(b, OR)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, OR_GROUP, "<or group>");
-    r = consumeToken(b, "or");
+    Marker m = enter_section_(b);
+    r = consumeToken(b, OR);
     r = r && orGroup_1(b, l + 1);
     r = r && consumeToken(b, INDENT);
     r = r && orGroup_3(b, l + 1);
     r = r && consumeToken(b, DEDENT);
-    exit_section_(b, l, m, r, false, null);
+    exit_section_(b, m, OR_GROUP, r);
     return r;
   }
 
@@ -313,14 +316,15 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   // "xor" CRLF+ INDENT feature+ DEDENT
   public static boolean xorGroup(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "xorGroup")) return false;
+    if (!nextTokenIs(b, XOR)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, XOR_GROUP, "<xor group>");
-    r = consumeToken(b, "xor");
+    Marker m = enter_section_(b);
+    r = consumeToken(b, XOR);
     r = r && xorGroup_1(b, l + 1);
     r = r && consumeToken(b, INDENT);
     r = r && xorGroup_3(b, l + 1);
     r = r && consumeToken(b, DEDENT);
-    exit_section_(b, l, m, r, false, null);
+    exit_section_(b, m, XOR_GROUP, r);
     return r;
   }
 
