@@ -25,7 +25,7 @@ public interface FeatureModelTypes {
   IElementType LBRACKET = new FeatureModelTokenType("[");
   IElementType LPAREN = new FeatureModelTokenType("(");
   IElementType NOT = new FeatureModelTokenType("!");
-  IElementType OPTIONALITY = new FeatureModelTokenType("?");
+  IElementType OPTIONALITY_TOKEN = new FeatureModelTokenType("?");
   IElementType OR = new FeatureModelTokenType("or");
   IElementType OR_OP = new FeatureModelTokenType("||");
   IElementType RBRACKET = new FeatureModelTokenType("]");

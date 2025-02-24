@@ -34,7 +34,7 @@ limitations under the License.
     IMPLIES="=>"
     OR="or"
     XOR="xor"
-    OPTIONALITY="?"
+    OPTIONALITY_TOKEN="?"
     OR_OP="||"
     CRLF="crlf"
     INDENT="indent"
@@ -56,7 +56,7 @@ getMaxNestingDepth setMaxNestingDepth getMinNestingDepth setMinNestingDepth getA
 getNumberOfAnnotatedFiles setNumberOfAnnotatedFiles getNumberOfFileAnnotations setNumberOfFileAnnotations getNumberOfFolderAnnotations setNumberOfFolderAnnotations]}
 // &end[Referencing]
 
-optionality ::= "?"
+optionality ::= OPTIONALITY_TOKEN
 
 featureOrGroup ::= feature | orGroup | xorGroup
 

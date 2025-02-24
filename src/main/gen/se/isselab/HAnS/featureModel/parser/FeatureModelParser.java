@@ -255,13 +255,13 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // "?"
+  // OPTIONALITY_TOKEN
   public static boolean optionality(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "optionality")) return false;
-    if (!nextTokenIs(b, OPTIONALITY)) return false;
+    if (!nextTokenIs(b, OPTIONALITY_TOKEN)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, OPTIONALITY);
+    r = consumeToken(b, OPTIONALITY_TOKEN);
     exit_section_(b, m, OPTIONALITY, r);
     return r;
   }

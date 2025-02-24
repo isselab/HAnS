@@ -77,7 +77,7 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 }
 
 <indent>{
-"?"                  { return FeatureModelTypes.OPTIONALITY; }
+"?"                  { return FeatureModelTypes.OPTIONALITY_TOKEN; }
 "or"                 { return FeatureModelTypes.OR; }
 "xor"                { return FeatureModelTypes.XOR; }
 "["                  { return FeatureModelTypes.LBRACKET; }

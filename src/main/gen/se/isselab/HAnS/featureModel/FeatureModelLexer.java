@@ -650,7 +650,7 @@ public class FeatureModelLexer implements FlexLexer {
           // fall through
           case 27: break;
           case 10:
-            { return FeatureModelTypes.OPTIONALITY;
+            { return FeatureModelTypes.OPTIONALITY_TOKEN;
             }
           // fall through
           case 28: break;
