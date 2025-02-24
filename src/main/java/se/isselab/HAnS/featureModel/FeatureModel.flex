@@ -33,7 +33,7 @@ import java.util.Deque;
     return;
 %eof}
 
-OPTIONAL = "?"
+OPTIONAL = [\?]
 CRLF=[\n|\r\n]
 SPACE= [' ']
 
@@ -138,24 +138,25 @@ OR_TOKEN = "or"[ \t]?
     }
 }
 
-<feature> {
-    {OPTIONAL} {
-        return FeatureModelTypes.OPTIONAL;
-    }
-
-    {CRLF} {
-        yybegin(YYINITIAL);
-        return FeatureModelTypes.CRLF;
-    }
-}
-
 <feature> {XOR_TOKEN} {
+          if (indent_levels.isEmpty() || current_line_indent >= indent_levels.peek()) {
+                  indent_levels.push(current_line_indent + TAB_WIDTH);
+                  return FeatureModelTypes.INDENT;
+              }
           return FeatureModelTypes.XOR_TOKEN; }
 <feature> {OR_TOKEN} {
+          if (indent_levels.isEmpty() || current_line_indent >= indent_levels.peek()) {
+                  indent_levels.push(current_line_indent + TAB_WIDTH);
+                  return FeatureModelTypes.INDENT;
+              }
           return FeatureModelTypes.OR_TOKEN; }
 <feature> {OPTIONAL} {
           return FeatureModelTypes.OPTIONAL; }
 <feature>{FEATURENAME}+     {
+          if (!indent_levels.isEmpty() && current_line_indent < indent_levels.peek()) {
+                  indent_levels.pop();
+                  return FeatureModelTypes.DEDENT;
+              }
         yybegin(indent);
         return FeatureModelTypes.FEATURENAME;
 }
