@@ -18,6 +18,7 @@ limitations under the License.
 */
 package se.isselab.HAnS.featureModel;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
 import com.intellij.psi.TokenType;
@@ -597,17 +598,17 @@ public class FeatureModelLexer implements FlexLexer {
           // fall through
           case 23: break;
           case 6:
-            { return FeatureModelTypes.NOT;
+            { //return FeatureModelTypes.NOT;
             }
           // fall through
           case 24: break;
           case 7:
-            { return FeatureModelTypes.LPAREN;
+            { //return FeatureModelTypes.LPAREN;
             }
           // fall through
           case 25: break;
           case 8:
-            { return FeatureModelTypes.RPAREN;
+            { //return FeatureModelTypes.RPAREN;
             }
           // fall through
           case 26: break;
@@ -654,12 +655,12 @@ public class FeatureModelLexer implements FlexLexer {
           // fall through
           case 28: break;
           case 11:
-            { return FeatureModelTypes.LBRACKET;
+            { //return FeatureModelTypes.LBRACKET;
             }
           // fall through
           case 29: break;
           case 12:
-            { return FeatureModelTypes.RBRACKET;
+            { //return FeatureModelTypes.RBRACKET;
             }
           // fall through
           case 30: break;
@@ -684,22 +685,22 @@ public class FeatureModelLexer implements FlexLexer {
           // fall through
           case 32: break;
           case 15:
-            { return FeatureModelTypes.AND;
+            { //return FeatureModelTypes.AND;
             }
           // fall through
           case 33: break;
           case 16:
-            { return FeatureModelTypes.IMPLIES;
+            { //return FeatureModelTypes.IMPLIES;
             }
           // fall through
           case 34: break;
           case 17:
-            { return FeatureModelTypes.OR;
+            { //return FeatureModelTypes.OR;
             }
           // fall through
           case 35: break;
           case 18:
-            { return FeatureModelTypes.XOR;
+            { //return FeatureModelTypes.XOR;
             }
           // fall through
           case 36: break;
