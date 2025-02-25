@@ -49,7 +49,9 @@ public class FeatureModelAnnotator implements Annotator {
         } else {
             // Found at least one property, force the text attributes to Simple syntax value character
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                    .range(feature.getTextRange()).textAttributes(FeatureModelSyntaxHighlighter.FEATURE).create();
+                    .range(feature.getTextRange()).create();
+            // .range(...).textAttributes(FeatureModelSyntaxHighlighter.FEATURE).create()
+            // this forces feature coloring, so that keywords cannot be colored differently
         }
     }
 

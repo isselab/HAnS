@@ -57,14 +57,17 @@ public class FeatureModelSyntaxHighlighter extends SyntaxHighlighterBase {
     @Override
     public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
         // System.out.println("Highlighting token: " + tokenType); // Temporary debug
-        if (tokenType.equals(FeatureModelTypes.FEATURENAME)){
-            return FEATURE_KEYS;
-        }else if (tokenType.equals(FeatureModelTypes.XOR_TOKEN)) {
+        if (tokenType.equals(FeatureModelTypes.XOR_TOKEN)) {
+            System.out.println("Highlighting token: " + tokenType);
             return XOR_KEYS;
         } else if (tokenType.equals(FeatureModelTypes.OR_TOKEN)) {
+            System.out.println("Highlighting token: " + tokenType);
             return OR_KEYS;
         } else if (tokenType.equals(FeatureModelTypes.OPTIONAL)) {
+            System.out.println("Highlighting token: " + tokenType);
             return OPTIONAL_KEYS;
+        } else if (tokenType.equals(FeatureModelTypes.FEATURENAME)){
+            return FEATURE_KEYS;
         } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
             return BAD_CHAR_KEYS;
         } else {
