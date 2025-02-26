@@ -39,6 +39,7 @@ public class FeatureModelLexer implements FlexLexer {
   public static final int indent = 2;
   public static final int feature = 4;
   public static final int dedent = 6;
+  public static final int cross = 8;
 
   /**
    * ZZ_LEXSTATE[l] is the state in the DFA for the lexical state l
@@ -47,7 +48,7 @@ public class FeatureModelLexer implements FlexLexer {
    * l is of the form l = 2*k, k a non negative integer
    */
   private static final int ZZ_LEXSTATE[] = {
-     0,  0,  1,  1,  2,  2,  3, 3
+     0,  0,  1,  1,  2,  2,  3,  3,  4, 4
   };
 
   /**
@@ -85,9 +86,10 @@ public class FeatureModelLexer implements FlexLexer {
 
   private static final String ZZ_CMAP_BLOCKS_PACKED_0 =
     "\11\0\1\1\1\2\2\3\1\2\22\0\1\4\6\0"+
-    "\1\5\3\0\1\6\4\0\12\6\5\0\1\7\1\0"+
-    "\32\6\4\0\1\6\1\0\32\6\1\0\1\10\10\0"+
-    "\1\3\u01a2\0\2\3\326\0\u0100\3";
+    "\1\5\3\0\1\6\4\0\12\6\3\0\1\7\1\10"+
+    "\1\11\1\0\32\6\1\12\1\0\1\13\1\0\1\6"+
+    "\1\0\16\6\1\14\2\6\1\15\5\6\1\16\2\6"+
+    "\1\0\1\17\10\0\1\3\u01a2\0\2\3\326\0\u0100\3";
 
   private static int [] zzUnpackcmap_blocks() {
     int [] result = new int[1024];
@@ -114,11 +116,12 @@ public class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\4\0\1\1\1\2\1\3\1\4\1\5\1\6\1\7"+
-    "\1\10\1\0\2\7";
+    "\5\0\1\1\1\2\1\3\1\4\1\5\1\6\1\7"+
+    "\1\10\2\6\1\11\1\12\1\13\1\2\1\14\2\0"+
+    "\1\15\1\0";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[15];
+    int [] result = new int[24];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -143,11 +146,12 @@ public class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\11\0\22\0\33\0\44\0\44\0\44\0\55"+
-    "\0\44\0\44\0\66\0\44\0\77\0\110\0\44";
+    "\0\0\0\20\0\40\0\60\0\100\0\120\0\120\0\120"+
+    "\0\140\0\120\0\120\0\120\0\120\0\160\0\200\0\220"+
+    "\0\120\0\240\0\260\0\120\0\300\0\160\0\120\0\320";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[15];
+    int [] result = new int[24];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -170,14 +174,16 @@ public class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_TRANS = zzUnpacktrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\2\5\2\6\5\5\1\0\1\7\1\10\1\0\2\11"+
-    "\1\12\1\0\1\10\5\6\2\13\1\6\1\13\2\14"+
-    "\2\6\5\14\13\0\1\10\5\0\1\10\4\0\1\15"+
-    "\1\16\1\13\1\0\1\13\7\0\1\17\5\0\1\15"+
-    "\1\16\1\13\1\17\1\13";
+    "\2\6\2\7\14\6\1\0\1\10\1\11\1\0\2\12"+
+    "\1\13\2\0\1\14\1\15\1\0\1\16\1\13\1\17"+
+    "\1\11\5\7\2\20\3\7\1\15\1\7\4\20\2\21"+
+    "\2\7\14\21\5\7\2\22\1\23\3\7\1\24\4\22"+
+    "\22\0\1\11\14\0\1\11\15\0\1\25\16\0\1\26"+
+    "\10\0\2\20\5\0\4\20\5\0\2\22\5\0\4\22"+
+    "\10\0\1\27\13\0\1\30\20\0\2\13\5\0\4\13";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[81];
+    int [] result = new int[224];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -215,11 +221,11 @@ public class FeatureModelLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\4\0\3\11\1\1\2\11\1\1\1\11\1\0\1\1"+
-    "\1\11";
+    "\5\0\3\11\1\1\4\11\3\1\1\11\2\1\1\11"+
+    "\2\0\1\11\1\0";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[15];
+    int [] result = new int[24];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -560,7 +566,7 @@ public class FeatureModelLexer implements FlexLexer {
         yybegin(YYINITIAL);
     }
             }  // fall though
-            case 16: break;
+            case 25: break;
             default:
         return null;
         }
@@ -571,27 +577,27 @@ public class FeatureModelLexer implements FlexLexer {
             { yypushback(1); indent_levels.push(0); yybegin(feature);
             }
           // fall through
-          case 9: break;
+          case 14: break;
           case 2:
             { return TokenType.BAD_CHARACTER;
             }
           // fall through
-          case 10: break;
+          case 15: break;
           case 3:
             { current_line_indent = (current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1);
             }
           // fall through
-          case 11: break;
+          case 16: break;
           case 4:
             { current_line_indent = 0; return FeatureModelTypes.CRLF;
             }
           // fall through
-          case 12: break;
+          case 17: break;
           case 5:
             { current_line_indent++;
             }
           // fall through
-          case 13: break;
+          case 18: break;
           case 6:
             { if(current_line_indent > indent_levels.peek()) {
             indent_levels.push(current_line_indent);
@@ -628,14 +634,24 @@ public class FeatureModelLexer implements FlexLexer {
         }
             }
           // fall through
-          case 14: break;
+          case 19: break;
           case 7:
-            { yybegin(indent);
-        return FeatureModelTypes.FEATURENAME;
+            { return FeatureModelTypes.OPTIONAL;
             }
           // fall through
-          case 15: break;
+          case 20: break;
           case 8:
+            { yybegin(cross); return FeatureModelTypes.BRACKATSOPEN;
+            }
+          // fall through
+          case 21: break;
+          case 9:
+            { yybegin(indent);
+    return FeatureModelTypes.FEATURENAME;
+            }
+          // fall through
+          case 22: break;
+          case 10:
             { indent_levels.pop();
     if(current_line_indent != indent_levels.peek()) {
         yypushback(1);
@@ -648,7 +664,22 @@ public class FeatureModelLexer implements FlexLexer {
     }
             }
           // fall through
-          case 16: break;
+          case 23: break;
+          case 11:
+            { return FeatureModelTypes.FEATURE1;
+            }
+          // fall through
+          case 24: break;
+          case 12:
+            { yybegin(indent); return FeatureModelTypes.BRACKATSCLOSE;
+            }
+          // fall through
+          case 25: break;
+          case 13:
+            { return FeatureModelTypes.ARROW;
+            }
+          // fall through
+          case 26: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }

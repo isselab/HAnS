@@ -8,12 +8,12 @@ import se.isselab.HAnS.referencing.FeatureAnnotationNamedElement;
 
 public class FeatureModelVisitor extends PsiElementVisitor {
 
-  public void visitFeature(@NotNull FeatureModelFeature o) {
-    visitFeatureAnnotationNamedElement(o);
+  public void visitCrossConstrains(@NotNull FeatureModelCrossConstrains o) {
+    visitPsiElement(o);
   }
 
-  public void visitOrGroup(@NotNull FeatureModelOrGroup o) {
-    visitPsiElement(o);
+  public void visitFeature(@NotNull FeatureModelFeature o) {
+    visitFeatureAnnotationNamedElement(o);
   }
 
   public void visitFeatureAnnotationNamedElement(@NotNull FeatureAnnotationNamedElement o) {

@@ -15,6 +15,7 @@ limitations under the License.
 */
 package se.isselab.HAnS.featureModel;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
 import com.intellij.psi.TokenType;
@@ -37,9 +38,13 @@ CRLF=[\n|\r\n]
 SPACE= [' ']
 
 INDENT=[\t]
-
+XOR = "xor "
+OR = "or "
 FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
-OPTIONAL=[?]
+OPTIONAL=[\?]
+BRACKATSOPEN=[\[]
+BRACKATSCLOSE=[\]]
+ARROW = "=>"
 %{
     int current_line_indent = 0;
     int indent_level = 0;
@@ -55,6 +60,7 @@ OPTIONAL=[?]
 %x indent
 %s feature
 %s dedent
+%s cross
 
 %%
 <YYINITIAL>.         { yypushback(1); indent_levels.push(0); yybegin(feature); }
@@ -62,7 +68,9 @@ OPTIONAL=[?]
 <indent>{SPACE}      { current_line_indent++; }
 <indent>{INDENT}     { current_line_indent = (current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1); }
 <indent>{CRLF}+      { current_line_indent = 0; return FeatureModelTypes.CRLF; }
-
+<indent>{OPTIONAL}   { return FeatureModelTypes.OPTIONAL; }
+<indent>{BRACKATSOPEN} { yybegin(cross); return FeatureModelTypes.BRACKATSOPEN; }
+<feature>{BRACKATSOPEN} { yybegin(cross); return FeatureModelTypes.BRACKATSOPEN; }
 <dedent>. {
     indent_levels.pop();
     if(current_line_indent != indent_levels.peek()) {
@@ -76,7 +84,7 @@ OPTIONAL=[?]
     }
 }
 
-<indent>{FEATURENAME}       {
+<indent>({OR} | {XOR})? {FEATURENAME} {
         if(current_line_indent > indent_levels.peek()) {
             indent_levels.push(current_line_indent);
             yypushback(1);
@@ -111,7 +119,6 @@ OPTIONAL=[?]
             return FeatureModelTypes.CRLF;
         }
 }
-
 <indent><<EOF>> {
     if (indent_levels.peek() != 0) {
         indent_levels.pop();
@@ -121,9 +128,11 @@ OPTIONAL=[?]
         yybegin(YYINITIAL);
     }
 }
-
-<feature>{FEATURENAME}+ ({SPACE} {OPTIONAL})? {
-        yybegin(indent);
-        return FeatureModelTypes.FEATURENAME;
+<feature>{FEATURENAME}+ {
+    yybegin(indent);
+    return FeatureModelTypes.FEATURENAME;
 }
+<cross>{BRACKATSCLOSE} { yybegin(indent); return FeatureModelTypes.BRACKATSCLOSE; }
+<cross>{ARROW} { return FeatureModelTypes.ARROW; }
+<cross>{FEATURENAME}+ { return FeatureModelTypes.FEATURE1; }
 [^]    { return TokenType.BAD_CHARACTER; }
