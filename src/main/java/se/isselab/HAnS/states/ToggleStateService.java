@@ -29,12 +29,10 @@ public class ToggleStateService implements PersistentStateComponent<ToggleState>
 
 
         try {
-            //System.out.println("ToggleStateService: Attempting to refresh all editors.");
             FileEditorManager.getInstance(project).getOpenFiles();
             EditorFactory.getInstance().refreshAllEditors();
 
         } catch (Exception e) {
-            //System.err.println("ToggleStateService: Error during editor refresh - " + e.getMessage());
         }
     }
 
