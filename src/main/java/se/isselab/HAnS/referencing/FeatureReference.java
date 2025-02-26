@@ -114,11 +114,23 @@ public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
         List<ResolveResult> results = new ArrayList<>();
 
         if(element instanceof FileAnnotationLpq) {
+            //System.out.println("FileLpq");
             ProjectMetricsService projectMetricsService = new ProjectMetricsService(project);
             final List<FeatureModelFeature> features = FeatureModelUtil.findLPQ(project, lpq);
+            if (features.isEmpty()) {
+                System.out.println("no feature found");
+                return results.toArray(new ResolveResult[0]);
+            }
             FeatureModelFeature feature = features.get(0);
-            CompletableFuture<FeatureFileMapping> future = new CompletableFuture<>();
-            projectMetricsService.getFeatureFileMappingBackground(feature, new FeatureFileMappingCallback() {
+            System.out.println("Querying");
+            FeatureFileMapping featureFileMapping = FeatureLocationManager.getFeatureFileMappingFile(project, feature);
+            ArrayList<FeatureLocation> featureLocations = featureFileMapping.getFeatureLocations();
+            System.out.println("Amount of locations: " + featureLocations.size());
+            for (FeatureLocation featureLocation : featureLocations) {
+                System.out.println(featureLocation.toString());
+            }
+            //CompletableFuture<FeatureFileMapping> future = new CompletableFuture<>();
+            /*projectMetricsService.getFeatureFileMappingBackground(feature, new FeatureFileMappingCallback() {
                 @Override
                 public void onComplete(FeatureFileMapping featureFileMapping) {
                     future.complete(featureFileMapping);
@@ -126,14 +138,14 @@ public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
             });
             try {
                 /* Waiting for this takes to long, but we also do not know how to get it once and save
-                * it for later, as the FeatureReference object is newly constructed everytime */
+                * it for later, as the FeatureReference object is newly constructed everytime
                 FeatureFileMapping featureFileMapping = future.get();
-                ArrayList<FeatureLocation> featureLocations = featureFileMapping.getFeatureLocations();
+
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } catch (ExecutionException e) {
                 throw new RuntimeException(e);
-            }
+            }*/
         } else if(element instanceof CodeAnnotationLpq) {
             if (isEndTag(element)) return ResolveResult.EMPTY_ARRAY;
             final List<FeatureModelFeature> features = FeatureModelUtil.findLPQ(project, lpq);
