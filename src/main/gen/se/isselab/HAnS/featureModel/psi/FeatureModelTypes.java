@@ -14,6 +14,9 @@ public interface FeatureModelTypes {
   IElementType DEDENT = new FeatureModelTokenType("DEDENT");
   IElementType FEATURENAME = new FeatureModelTokenType("FEATURENAME");
   IElementType INDENT = new FeatureModelTokenType("INDENT");
+  IElementType OR = new FeatureModelTokenType("OR");
+  IElementType QUESTIONMARK = new FeatureModelTokenType("QUESTIONMARK");
+  IElementType XOR = new FeatureModelTokenType("XOR");
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {

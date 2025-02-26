@@ -36,7 +36,7 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?
+  // FEATURENAME (QUESTIONMARK)? (CRLF+ ((INDENT) feature* DEDENT)?)?
   public static boolean feature(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature")) return false;
     if (!nextTokenIs(b, FEATURENAME)) return false;
@@ -44,107 +44,141 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, FEATURENAME);
     r = r && feature_1(b, l + 1);
+    r = r && feature_2(b, l + 1);
     exit_section_(b, m, FEATURE, r);
     return r;
   }
 
-  // (CRLF+ ((INDENT) feature* DEDENT)?)?
+  // (QUESTIONMARK)?
   private static boolean feature_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature_1")) return false;
-    feature_1_0(b, l + 1);
+    consumeToken(b, QUESTIONMARK);
+    return true;
+  }
+
+  // (CRLF+ ((INDENT) feature* DEDENT)?)?
+  private static boolean feature_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_2")) return false;
+    feature_2_0(b, l + 1);
     return true;
   }
 
   // CRLF+ ((INDENT) feature* DEDENT)?
-  private static boolean feature_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "feature_1_0")) return false;
+  private static boolean feature_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = feature_1_0_0(b, l + 1);
-    r = r && feature_1_0_1(b, l + 1);
+    r = feature_2_0_0(b, l + 1);
+    r = r && feature_2_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // CRLF+
-  private static boolean feature_1_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "feature_1_0_0")) return false;
+  private static boolean feature_2_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_2_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, CRLF);
     while (r) {
       int c = current_position_(b);
       if (!consumeToken(b, CRLF)) break;
-      if (!empty_element_parsed_guard_(b, "feature_1_0_0", c)) break;
+      if (!empty_element_parsed_guard_(b, "feature_2_0_0", c)) break;
     }
     exit_section_(b, m, null, r);
     return r;
   }
 
   // ((INDENT) feature* DEDENT)?
-  private static boolean feature_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "feature_1_0_1")) return false;
-    feature_1_0_1_0(b, l + 1);
+  private static boolean feature_2_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_2_0_1")) return false;
+    feature_2_0_1_0(b, l + 1);
     return true;
   }
 
   // (INDENT) feature* DEDENT
-  private static boolean feature_1_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "feature_1_0_1_0")) return false;
+  private static boolean feature_2_0_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_2_0_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, INDENT);
-    r = r && feature_1_0_1_0_1(b, l + 1);
+    r = r && feature_2_0_1_0_1(b, l + 1);
     r = r && consumeToken(b, DEDENT);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // feature*
-  private static boolean feature_1_0_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "feature_1_0_1_0_1")) return false;
+  private static boolean feature_2_0_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_2_0_1_0_1")) return false;
     while (true) {
       int c = current_position_(b);
       if (!feature(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "feature_1_0_1_0_1", c)) break;
+      if (!empty_element_parsed_guard_(b, "feature_2_0_1_0_1", c)) break;
     }
     return true;
   }
 
   /* ********************************************************** */
-  // (feature (feature)?)?
+  // (feature (feature)?)? (OR)? (XOR)?
   static boolean featureModelFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile")) return false;
-    featureModelFile_0(b, l + 1);
+    boolean r;
+    Marker m = enter_section_(b);
+    r = featureModelFile_0(b, l + 1);
+    r = r && featureModelFile_1(b, l + 1);
+    r = r && featureModelFile_2(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (feature (feature)?)?
+  private static boolean featureModelFile_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "featureModelFile_0")) return false;
+    featureModelFile_0_0(b, l + 1);
     return true;
   }
 
   // feature (feature)?
-  private static boolean featureModelFile_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "featureModelFile_0")) return false;
+  private static boolean featureModelFile_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "featureModelFile_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = feature(b, l + 1);
-    r = r && featureModelFile_0_1(b, l + 1);
+    r = r && featureModelFile_0_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // (feature)?
-  private static boolean featureModelFile_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "featureModelFile_0_1")) return false;
-    featureModelFile_0_1_0(b, l + 1);
+  private static boolean featureModelFile_0_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "featureModelFile_0_0_1")) return false;
+    featureModelFile_0_0_1_0(b, l + 1);
     return true;
   }
 
   // (feature)
-  private static boolean featureModelFile_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "featureModelFile_0_1_0")) return false;
+  private static boolean featureModelFile_0_0_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "featureModelFile_0_0_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = feature(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
+  }
+
+  // (OR)?
+  private static boolean featureModelFile_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "featureModelFile_1")) return false;
+    consumeToken(b, OR);
+    return true;
+  }
+
+  // (XOR)?
+  private static boolean featureModelFile_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "featureModelFile_2")) return false;
+    consumeToken(b, XOR);
+    return true;
   }
 
 }
