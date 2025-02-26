@@ -32,7 +32,7 @@ limitations under the License.
                                implementationClass="se.isselab.HAnS.featureModel.FeatureModelParserDefinition"/>
         <!-- &end[HAnS::FeatureModel] -->
         <!-- &begin[SettingsPage] -->
-        <!-- <applicationConfigurable instance="se.isselab.HAnS.settingsPage.SettingsPageBuilder"/> TODO: Comment out until functionality is implemented-->
+        <projectConfigurable instance="se.isselab.HAnS.settingsPage.SettingsPageBuilder"/>
        <!-- &end[SettingsPage] -->
 
         <!-- &begin[HAnS::FileAnnotation] -->
@@ -130,6 +130,9 @@ limitations under the License.
 
         <projectService serviceImplementation="se.isselab.HAnS.pluginExtensions.ProjectMetricsService" serviceInterface="se.isselab.HAnS.pluginExtensions.MetricsService"/>
         <projectService serviceImplementation="se.isselab.HAnS.pluginExtensions.FeatureHighlighterService" serviceInterface="se.isselab.HAnS.pluginExtensions.HighlighterService"/>
+        <projectService
+                serviceInterface="se.isselab.HAnS.states.ToggleStateService"
+                serviceImplementation="se.isselab.HAnS.states.ToggleStateService"/>
     </extensions>
 
 
@@ -187,6 +190,11 @@ limitations under the License.
         </action>
         <!-- &end[NewFile] -->
 
+
+        <action id="ToggleFeature" class="se.isselab.HAnS.actions.ToggleAction"
+                text="Toggle Annotations" description="Toggle Annotations">
+            <add-to-group group-id="HansPluginMenuGroup" anchor="first"/>
+        </action>
         <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />

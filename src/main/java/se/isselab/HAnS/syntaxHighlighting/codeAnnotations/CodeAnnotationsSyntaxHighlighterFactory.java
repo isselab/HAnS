@@ -21,10 +21,20 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import se.isselab.HAnS.states.ToggleStateService;
 
+// &begin [SyntaxHighlighting]
 public class CodeAnnotationsSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
     @Override
     public @NotNull SyntaxHighlighter getSyntaxHighlighter(@Nullable Project project, @Nullable VirtualFile virtualFile) {
-        return new CodeAnnotationsSyntaxHighlighter();
+        ToggleStateService toggleStateService = ToggleStateService.getInstance(project);
+        if (toggleStateService.isEnabled()) {
+            //System.out.println("CodeAnnotationsSyntaxHighlighterFactory: ToggleStateService is disabled. Supposed to use CodeAnnotationsSyntaxHighlighter.");
+            return new CodeAnnotationsSyntaxHighlighter(); //Return regular syntaxHighlighter
+        }
+        //System.out.println("CodeAnnotationsSyntaxHighlighterFactory: ToggleStateService is enabled or unavailable. Supposed to use NoOpSyntaxHighlighter.");
+        return new NoOpSyntaxHighlighter(); //Return syntaxHighlighter that does nothing
     }
+    // &end [SyntaxHighlighting]
+
 }
