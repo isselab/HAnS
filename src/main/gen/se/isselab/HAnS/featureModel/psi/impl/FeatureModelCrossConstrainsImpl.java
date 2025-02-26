@@ -11,14 +11,14 @@ import static se.isselab.HAnS.featureModel.psi.FeatureModelTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import se.isselab.HAnS.featureModel.psi.*;
 
-public class FeatureModelOrGroupImpl extends ASTWrapperPsiElement implements FeatureModelOrGroup {
+public class FeatureModelCrossConstrainsImpl extends ASTWrapperPsiElement implements FeatureModelCrossConstrains {
 
-  public FeatureModelOrGroupImpl(@NotNull ASTNode node) {
+  public FeatureModelCrossConstrainsImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull FeatureModelVisitor visitor) {
-    visitor.visitOrGroup(this);
+    visitor.visitCrossConstrains(this);
   }
 
   @Override
@@ -29,8 +29,8 @@ public class FeatureModelOrGroupImpl extends ASTWrapperPsiElement implements Fea
 
   @Override
   @NotNull
-  public List<FeatureModelFeature> getFeatureList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, FeatureModelFeature.class);
+  public List<FeatureModelCrossConstrains> getCrossConstrainsList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, FeatureModelCrossConstrains.class);
   }
 
 }
