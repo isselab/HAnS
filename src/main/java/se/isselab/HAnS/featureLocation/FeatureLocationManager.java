@@ -18,7 +18,10 @@ package se.isselab.HAnS.featureLocation;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
@@ -97,6 +100,35 @@ public class FeatureLocationManager {
         return featureFileMapping;
     }
     // &end[FeatureFileMapping]
+    public static FeatureFileMapping getFeatureFileMappingFile(Project project, FeatureModelFeature feature) {
+        FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);
+        FileType fileTypeFeatureFile = FileTypeManager.getInstance().getFileTypeByExtension("feature-to-file");
+        System.out.println("Querying");
+        GlobalSearchScope globalSearchScope = GlobalSearchScope.getScopeRestrictedByFileTypes(GlobalSearchScope.projectScope(project), fileTypeFeatureFile);
+        Query<PsiReference> featureReference = ReferencesSearch.search(feature, globalSearchScope, true);
+
+        for (PsiReference reference : ReadAction.compute(() -> featureReference)) {
+            System.out.println("Querying loop");
+            //get comment sibling of the feature comment
+
+            PsiElement element = reference.getElement();
+            var originatingFilePath = ReadAction.compute(()->element.getContainingFile().getVirtualFile().getPath());
+            //determine file type and process content
+            var fileType = ReadAction.compute(element::getContainingFile);
+            if (fileType instanceof CodeAnnotationFile) {
+                processCodeFile(project, featureFileMapping, element, originatingFilePath);
+            } else if (fileType instanceof FileAnnotationFile) {
+                processFeatureToFile(project, featureFileMapping, element, originatingFilePath);
+            } else if (fileType instanceof FolderAnnotationFile) {
+                PsiDirectory dir = ReadAction.compute(fileType::getContainingDirectory);
+                if (dir == null)
+                    continue;
+                processFeatureToFolder(project, featureFileMapping, dir, originatingFilePath);
+            }
+        }
+        featureFileMapping.buildFromQueue();
+        return featureFileMapping;
+    }
 
     private static void processCodeFile(Project project, FeatureFileMapping featureFileMapping, PsiElement element, String originatingFilePath) {
         var commentElement = ReadAction.compute(() -> PsiTreeUtil.getContextOfType(element, PsiComment.class));
