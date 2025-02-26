@@ -61,6 +61,7 @@ OR_TOKEN = "or"[ \t]?
 %s feature
 %s dedent
 
+
 %%
 
 <YYINITIAL>.        { yypushback(1); indent_levels.push(0); yybegin(feature); }
@@ -139,16 +140,8 @@ OR_TOKEN = "or"[ \t]?
 }
 
 <feature> {XOR_TOKEN} {
-          if (indent_levels.isEmpty() || current_line_indent >= indent_levels.peek()) {
-                  indent_levels.push(current_line_indent + TAB_WIDTH);
-                  return FeatureModelTypes.INDENT;
-              }
           return FeatureModelTypes.XOR_TOKEN; }
 <feature> {OR_TOKEN} {
-          if (indent_levels.isEmpty() || current_line_indent >= indent_levels.peek()) {
-                  indent_levels.push(current_line_indent + TAB_WIDTH);
-                  return FeatureModelTypes.INDENT;
-              }
           return FeatureModelTypes.OR_TOKEN; }
 <feature> {OPTIONAL} {
           return FeatureModelTypes.OPTIONAL; }
@@ -159,6 +152,11 @@ OR_TOKEN = "or"[ \t]?
               }
         yybegin(indent);
         return FeatureModelTypes.FEATURENAME;
+}
+
+<feature>{CRLF}  {
+                yybegin(indent);
+                return FeatureModelTypes.CRLF;
 }
 
 [^]    { return TokenType.BAD_CHARACTER; }
