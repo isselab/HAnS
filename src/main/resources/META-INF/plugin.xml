@@ -190,9 +190,6 @@ limitations under the License.
         </action>
         <!-- &end[NewFile] -->
 
-        <group id="HansPluginMenuGroup" popup="true" text="HAnS Actions">
-            <add-to-group group-id="MainMenu" anchor="last"/>
-        </group>
 
         <action id="ToggleFeature" class="se.isselab.HAnS.actions.ToggleAction"
                 text="Toggle Annotations" description="Toggle Annotations">
