@@ -138,3 +138,4 @@ ARROW = "=>"
 <cross>{ARROW} { return FeatureModelTypes.ARROW; }
 <cross>{FEATURENAME}+ { return FeatureModelTypes.FEATURE1; }
 [^]    { return TokenType.BAD_CHARACTER; }
+
