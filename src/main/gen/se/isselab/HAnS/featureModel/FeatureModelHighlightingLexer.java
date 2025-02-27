@@ -80,9 +80,10 @@ public class FeatureModelHighlightingLexer implements FlexLexer {
   private static final int [] ZZ_CMAP_BLOCKS = zzUnpackcmap_blocks();
 
   private static final String ZZ_CMAP_BLOCKS_PACKED_0 =
-    "\11\0\1\1\1\2\2\0\1\2\22\0\1\1\6\0"+
-    "\1\3\3\0\1\4\4\0\12\4\7\0\32\4\4\0"+
-    "\1\4\1\0\32\4\1\0\1\5\u0183\0";
+    "\11\0\1\1\1\2\2\0\1\2\22\0\1\3\6\0"+
+    "\1\4\3\0\1\5\4\0\12\5\7\0\32\5\1\6"+
+    "\1\0\1\7\1\0\1\5\1\0\16\5\1\10\2\5"+
+    "\1\11\5\5\1\12\2\5\1\0\1\13\u0183\0";
 
   private static int [] zzUnpackcmap_blocks() {
     int [] result = new int[512];
@@ -109,10 +110,11 @@ public class FeatureModelHighlightingLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\2\0\1\1\1\2\1\3\3\4";
+    "\2\0\1\1\1\2\1\3\2\4\1\5\1\6\3\4"+
+    "\2\1\2\4\2\0\1\7\1\4\1\0\1\10";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[8];
+    int [] result = new int[22];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -137,10 +139,12 @@ public class FeatureModelHighlightingLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\6\0\14\0\22\0\30\0\36\0\44\0\52";
+    "\0\0\0\14\0\30\0\44\0\60\0\74\0\110\0\30"+
+    "\0\30\0\124\0\140\0\154\0\170\0\204\0\220\0\234"+
+    "\0\250\0\264\0\30\0\300\0\314\0\30";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[8];
+    int [] result = new int[22];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -163,13 +167,20 @@ public class FeatureModelHighlightingLexer implements FlexLexer {
   private static final int [] ZZ_TRANS = zzUnpacktrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\1\3\1\4\1\5\1\6\1\7\1\10\1\3\1\4"+
-    "\1\5\1\4\1\3\1\5\7\0\1\4\1\0\1\4"+
-    "\4\0\1\5\2\0\1\5\1\0\1\4\1\0\1\6"+
-    "\2\7\3\0\3\7\2\0\1\5\2\7\1\10";
+    "\1\3\1\4\1\5\1\4\1\6\1\7\1\10\1\11"+
+    "\1\12\1\7\1\13\1\14\1\3\1\4\1\5\2\4"+
+    "\1\3\1\10\1\11\1\15\1\3\1\16\1\5\15\0"+
+    "\1\4\1\0\2\4\11\0\1\5\10\0\1\5\1\0"+
+    "\1\4\1\0\1\4\1\6\1\7\2\0\4\7\4\0"+
+    "\2\7\2\0\4\7\4\0\2\7\2\0\1\7\1\17"+
+    "\2\7\4\0\2\7\2\0\1\20\3\7\2\0\1\5"+
+    "\1\0\2\7\2\0\3\7\1\14\11\0\1\21\12\0"+
+    "\1\22\6\0\1\23\2\7\2\0\4\7\4\0\2\7"+
+    "\2\0\1\7\1\24\2\7\3\0\1\23\21\0\1\25"+
+    "\5\0\1\26\2\7\2\0\4\7\3\0\1\26\10\0";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[48];
+    int [] result = new int[216];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -207,10 +218,11 @@ public class FeatureModelHighlightingLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\2\0\1\11\5\1";
+    "\2\0\1\11\4\1\2\11\7\1\2\0\1\11\1\1"+
+    "\1\0\1\11";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[8];
+    int [] result = new int[22];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -537,22 +549,42 @@ public class FeatureModelHighlightingLexer implements FlexLexer {
             { return TokenType.BAD_CHARACTER;
             }
           // fall through
-          case 5: break;
+          case 9: break;
           case 2:
             { yybegin(YYINITIAL); return FeatureModelTypes.INDENT;
             }
           // fall through
-          case 6: break;
+          case 10: break;
           case 3:
             { yybegin(YYINITIAL); return FeatureModelTypes.CRLF;
             }
           // fall through
-          case 7: break;
+          case 11: break;
           case 4:
             { yybegin(YYINITIAL); return FeatureModelTypes.FEATURENAME;
             }
           // fall through
-          case 8: break;
+          case 12: break;
+          case 5:
+            { yybegin(YYINITIAL); return FeatureModelTypes.BRACKATSOPEN;
+            }
+          // fall through
+          case 13: break;
+          case 6:
+            { yybegin(YYINITIAL); return FeatureModelTypes.BRACKATSCLOSE;
+            }
+          // fall through
+          case 14: break;
+          case 7:
+            { yybegin(YYINITIAL); return FeatureModelTypes.OR;
+            }
+          // fall through
+          case 15: break;
+          case 8:
+            { yybegin(YYINITIAL); return FeatureModelTypes.XOR;
+            }
+          // fall through
+          case 16: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }

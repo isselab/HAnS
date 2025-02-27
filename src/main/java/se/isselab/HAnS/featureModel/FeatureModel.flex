@@ -69,6 +69,8 @@ ARROW = "=>"
 <indent>{INDENT}     { current_line_indent = (current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1); }
 <indent>{CRLF}+      { current_line_indent = 0; return FeatureModelTypes.CRLF; }
 <indent>{OPTIONAL}   { return FeatureModelTypes.OPTIONAL; }
+<indent>{OR} { yybegin(feature); return FeatureModelTypes.OR;}
+<indent>{XOR} { yybegin(feature); return FeatureModelTypes.XOR;}
 <indent>{BRACKATSOPEN} { yybegin(cross); return FeatureModelTypes.BRACKATSOPEN; }
 <feature>{BRACKATSOPEN} { yybegin(cross); return FeatureModelTypes.BRACKATSOPEN; }
 <dedent>. {
@@ -84,7 +86,7 @@ ARROW = "=>"
     }
 }
 
-<indent>({OR} | {XOR})? {FEATURENAME} {
+<indent>{FEATURENAME} {
         if(current_line_indent > indent_levels.peek()) {
             indent_levels.push(current_line_indent);
             yypushback(1);
