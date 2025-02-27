@@ -32,8 +32,10 @@ import com.intellij.psi.TokenType;
 
 CRLF=[\n|\r\n]
 SPACE= [' ']
-
+OPTIONAL = [\?]
 INDENT=[\t]
+XOR_TOKEN = "xor"[ \t]?
+OR_TOKEN = "or"[ \t]?
 
 FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 
@@ -41,9 +43,14 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 
 %%
 
-<YYINITIAL> {FEATURENAME}+                                 { yybegin(YYINITIAL); return FeatureModelTypes.FEATURENAME; }
 
-<WAITING_VALUE> {CRLF}+                                    { yybegin(YYINITIAL); return FeatureModelTypes.CRLF; }
+<YYINITIAL> {XOR_TOKEN}    { yybegin(YYINITIAL); return FeatureModelTypes.XOR_TOKEN; }
+<YYINITIAL> {OR_TOKEN}     { yybegin(YYINITIAL); return FeatureModelTypes.OR_TOKEN; }
+<YYINITIAL> {OPTIONAL}     { yybegin(YYINITIAL); return FeatureModelTypes.OPTIONAL; }
+
+<YYINITIAL> {FEATURENAME}+ { yybegin(YYINITIAL); return FeatureModelTypes.FEATURENAME; }
+
+<WAITING_VALUE> {CRLF}+                                    {  return FeatureModelTypes.CRLF; }
 
 <WAITING_VALUE> ({SPACE}|{INDENT})+                           { yybegin(YYINITIAL); return FeatureModelTypes.INDENT; }
 

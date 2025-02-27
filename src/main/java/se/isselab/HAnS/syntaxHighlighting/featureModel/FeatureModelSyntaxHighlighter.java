@@ -35,10 +35,18 @@ public class FeatureModelSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("FEATURENAME", DefaultLanguageHighlighterColors.CONSTANT);
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("HAnS_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
-
+    public static final TextAttributesKey XOR =
+            createTextAttributesKey("XOR_TOKEN", DefaultLanguageHighlighterColors.KEYWORD);
+    public static final TextAttributesKey OR =
+            createTextAttributesKey("OR_TOKEN", DefaultLanguageHighlighterColors.KEYWORD);
+    public static final TextAttributesKey OPTIONAL =
+            createTextAttributesKey("OPTIONAL", DefaultLanguageHighlighterColors.OPERATION_SIGN);
 
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
     private static final TextAttributesKey[] FEATURE_KEYS = new TextAttributesKey[]{FEATURE};
+    private static final TextAttributesKey[] XOR_KEYS = new TextAttributesKey[]{XOR};
+    private static final TextAttributesKey[] OR_KEYS = new TextAttributesKey[]{OR};
+    private static final TextAttributesKey[] OPTIONAL_KEYS = new TextAttributesKey[]{OPTIONAL};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
     @Override
@@ -48,7 +56,17 @@ public class FeatureModelSyntaxHighlighter extends SyntaxHighlighterBase {
 
     @Override
     public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
-        if (tokenType.equals(FeatureModelTypes.FEATURENAME)){
+        // System.out.println("Highlighting token: " + tokenType); // Temporary debug
+        if (tokenType.equals(FeatureModelTypes.XOR_TOKEN)) {
+
+            return XOR_KEYS;
+        } else if (tokenType.equals(FeatureModelTypes.OR_TOKEN)) {
+
+            return OR_KEYS;
+        } else if (tokenType.equals(FeatureModelTypes.OPTIONAL)) {
+
+            return OPTIONAL_KEYS;
+        } else if (tokenType.equals(FeatureModelTypes.FEATURENAME)){
             return FEATURE_KEYS;
         } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
             return BAD_CHAR_KEYS;
