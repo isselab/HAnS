@@ -41,7 +41,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
+// &begin[WidgetLocation]
 public class HansTrafficLightWidget extends JPanel {
     private AnAction action;
     private Presentation presentation;
@@ -60,7 +60,7 @@ public class HansTrafficLightWidget extends JPanel {
         this.place = place;
         this.editor = editor;
         setOpaque(false);
-
+        // &begin[WidgetStyle]
         hansIcon = new JLabel();
 
         if (!SystemInfo.isWindows) {
@@ -75,13 +75,13 @@ public class HansTrafficLightWidget extends JPanel {
         ));
 
         hansIcon.setIcon(AnnotationIcons.PluginIcon);
-
+        // &end[WidgetStyle]
         hansIcon.setVisible(false);
 
         searchFeatures();
 
         add(hansIcon);
-
+        // &begin[ClickAndHover]
         mouseListener = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -144,9 +144,9 @@ public class HansTrafficLightWidget extends JPanel {
             var disposable = Disposer.newDisposable();
             EditorUtil.disposeWithEditor(editor, disposable);
         }
-
+        // &end[ClickAndHover]
     }
-
+    // &begin[SearchFeatures]
     private void searchFeatures() {
         new GetFeatureFileMappings(this.editor.getProject(), "Find Feature File Mappings", new FeatureFileMappingCallback() {
             @Override
@@ -169,6 +169,7 @@ public class HansTrafficLightWidget extends JPanel {
             }
         }).queue();
     }
+    // &end[SearchFeatures]
 
     @Override
     public void removeNotify() {
@@ -180,7 +181,7 @@ public class HansTrafficLightWidget extends JPanel {
         super.addNotify();
         addMouseListener(mouseListener);
     }
-
+    // &begin[HoverPopupStyle]
     private void showPopupWithMappingName() {
         Notification notification = new Notification(
                 "notification",
@@ -190,7 +191,7 @@ public class HansTrafficLightWidget extends JPanel {
         );
         Notifications.Bus.notify(notification);
     }
-
+    // &end[HoverPopupStyle]
     private void openMappingsFile() {
         VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(filePath));
         if (virtualFile != null && this.editor.getProject() != null) {
@@ -199,7 +200,7 @@ public class HansTrafficLightWidget extends JPanel {
             JOptionPane.showMessageDialog(null, "File not found: " + filePath);
         }
     }
-
+    // &begin[WidgetStyle]
     @Override
     protected void paintComponent(Graphics graphics) {
         if (filePath == null) return;
@@ -217,4 +218,6 @@ public class HansTrafficLightWidget extends JPanel {
 
         ActionButtonLook.SYSTEM_LOOK.paintLookBackground(graphics, rect, color);
     }
+    // &end[WidgetStyle]
 }
+// &end[WidgetLocation]
