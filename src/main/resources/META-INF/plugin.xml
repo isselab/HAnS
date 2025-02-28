@@ -24,7 +24,6 @@ limitations under the License.
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
 
-
     <extensions defaultExtensionNs="com.intellij">
         <!-- &begin[HAnS::FeatureModel] -->
         <fileType name="Feature Model File" implementationClass="se.isselab.HAnS.featureModel.FeatureModelFileType"
@@ -61,12 +60,18 @@ limitations under the License.
         <completion.contributor language="any"
                                 implementationClass="se.isselab.HAnS.codeCompletion.FileCompletionContributor"/>
         <!-- &end[CodeCompletion] -->
-        <notificationGroup id="Custom Code Folding" displayType="BALLOON" />
 
         <!-- &begin[CodeFolding] -->
+<!--        <lang.foldingBuilder-->
+<!--                language="JAVA"-->
+<!--                implementationClass="se.isselab.HAnS.featureModel.FeatureAnnotationFoldingBuilder"/>-->
+
+<!--        <lang.foldingBuilder-->
+<!--                language="CodeAnnotations"-->
+<!--                implementationClass="se.isselab.HAnS.codeFolding.CodeFoldingBuilder2"/>-->
         <lang.foldingBuilder
-                language="FeatureModel"
-                implementationClass="se.isselab.HAnS.featureModel.FeatureAnnotationFoldingBuilder"/>
+                language="JAVA" order="first"
+                implementationClass="se.isselab.HAnS.codeFolding.CodeFoldingBuilder"/>
         <!-- &end[CodeFolding] -->
 
         <!-- &begin[SyntaxHighlighting] -->
