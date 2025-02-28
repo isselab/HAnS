@@ -16,11 +16,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package se.isselab.HAnS.featureModel;
+package fleet.se.isselab.HAnS.featureModel;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
+import fleet.se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
 import com.intellij.psi.TokenType;
 import java.util.ArrayDeque;
 import java.util.Deque;
