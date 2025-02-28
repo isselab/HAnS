@@ -30,10 +30,15 @@ limitations under the License.
   psiImplUtilClass="se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil"
 }
 
-featureModelFile ::= (feature (feature)?)? (OR)? (XOR)?
 
+featureModelFile ::= (feature (feature)?)?
 // &begin[Referencing]
-feature ::= (FEATURENAME (QUESTIONMARK)? (CRLF+ ((INDENT) feature* DEDENT)?)?) {
+COMPONENT ::= feature | LOGIC
+LOGIC ::= (OR_BLOCK) | (XOR_BLOCK)
+XOR_BLOCK ::= XOR (SUB_LOGIC)
+OR_BLOCK ::= OR (SUB_LOGIC)
+SUB_LOGIC ::= INDENT COMPONENT (COMPONENT)+ DEDENT
+feature ::= (FEATURENAME (QUESTIONMARK)? (CRLF+ ((INDENT) (COMPONENT)* DEDENT)?)?) {
 mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
 implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getLPQText getLPQStack renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName getPresentation

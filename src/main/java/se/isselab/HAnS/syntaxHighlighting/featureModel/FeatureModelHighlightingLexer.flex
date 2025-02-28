@@ -44,11 +44,11 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 
 %%
 
-{QUESTIONMARK}                                { return FeatureModelTypes.QUESTIONMARK;}
+{QUESTIONMARK}                                            { return FeatureModelTypes.QUESTIONMARK;}
 
-{OR}                                          { return FeatureModelTypes.OR;}
+{OR}                                                      { return FeatureModelTypes.OR;}
 
-{XOR}                                            { return FeatureModelTypes.XOR;}
+{XOR}                                                      { return FeatureModelTypes.XOR;}
 
 <YYINITIAL> {FEATURENAME}+                                 {yybegin(YYINITIAL); return FeatureModelTypes.FEATURENAME; }
 
