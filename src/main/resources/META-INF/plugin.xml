@@ -62,13 +62,6 @@ limitations under the License.
         <!-- &end[CodeCompletion] -->
 
         <!-- &begin[CodeFolding] -->
-<!--        <lang.foldingBuilder-->
-<!--                language="JAVA"-->
-<!--                implementationClass="se.isselab.HAnS.featureModel.FeatureAnnotationFoldingBuilder"/>-->
-
-<!--        <lang.foldingBuilder-->
-<!--                language="CodeAnnotations"-->
-<!--                implementationClass="se.isselab.HAnS.codeFolding.CodeFoldingBuilder2"/>-->
         <lang.foldingBuilder
                 language="JAVA" order="first"
                 implementationClass="se.isselab.HAnS.codeFolding.CodeFoldingBuilder"/>
@@ -199,16 +192,5 @@ limitations under the License.
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
         <!-- &end[NewFile] -->
-
-        <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
-            <add-to-group
-                    group-id="EditorPopupMenu" anchor="first" />
-        </action>
-
-        <action id="se.isselab.HAnS.actions.FoldAction" class="se.isselab.HAnS.actions.FoldAction"
-                text="Fold Feature Annotations">
-            <keyboard-shortcut first-keystroke="ctrl shift L" keymap="Default for XWin" />
-            <add-to-group group-id="FoldingGroup" anchor="first"/>
-        </action>
     </actions>
 </idea-plugin>
