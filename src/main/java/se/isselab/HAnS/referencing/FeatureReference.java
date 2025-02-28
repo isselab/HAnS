@@ -108,26 +108,21 @@ public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
         List<ResolveResult> results = new ArrayList<>();
 
         if(element instanceof FileAnnotationLpq) {
-            ApplicationManager.getApplication().runReadAction(new Runnable() {
-                @Override
-                public void run() {
-                    if (element.getParent() != null) {
-                        PsiFile cFile = ReadAction.compute(() -> element.getParent().getContainingFile());
-                        String[] lines = cFile.getText().split("\n");
+            ApplicationManager.getApplication().runReadAction(() -> {
+                if (element.getParent() != null) {
+                    PsiFile cFile = ReadAction.compute(() -> element.getParent().getContainingFile());
+                    String[] lines = cFile.getText().split("\n");
 
-                        ArrayList<String> fileNames = getAllFileNamesForFeature(lines, ((FileAnnotationLpq) element).getName());
+                    ArrayList<String> fileNames = getAllFileNamesForFeature(lines, ((FileAnnotationLpq) element).getName());
 
-                        VirtualFile currentFile = cFile.getVirtualFile();
-                        VirtualFile parentFolder = currentFile != null ? currentFile.getParent() : null;
+                    VirtualFile currentFile = cFile.getVirtualFile();
+                    VirtualFile parentFolder = currentFile != null ? currentFile.getParent() : null;
 
-                        for (String fileName : fileNames) {
-                            for (VirtualFile file : parentFolder.getChildren()) {
-                                if (!file.isDirectory() && file.getName().equals(fileName)) {
-                                    System.out.print("asdasd");
-                                    PsiFile fileAsPsi = ReadAction.compute(() -> PsiManager.getInstance(project).findFile(file));
-
-                                    results.add(new PsiElementResolveResult(fileAsPsi));
-                                }
+                    for (String fileName : fileNames) {
+                        for (VirtualFile file : parentFolder.getChildren()) {
+                            if (!file.isDirectory() && file.getName().equals(fileName)) {
+                                PsiFile fileAsPsi = ReadAction.compute(() -> PsiManager.getInstance(project).findFile(file));
+                                results.add(new PsiElementResolveResult(fileAsPsi));
                             }
                         }
                     }
@@ -141,7 +136,7 @@ public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
 
                 PsiElement commentElement = ReadAction.compute(() -> PsiTreeUtil.getContextOfType(element, PsiComment.class));
 
-                if(commentElement == null) continue;
+                if (commentElement == null) continue;
 
                 PsiFile file = commentElement.getContainingFile();
                 String[] lines = file.getText().split("\n");
@@ -149,8 +144,8 @@ public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
                 int beginLineNumber = getLine(project, commentElement);
                 int endLineNumber = 1;
 
-                for(String line : lines) {
-                    if(endLineNumber > beginLineNumber && line.contains("&end[" + feature.getName() + "]")){
+                for (String line : lines) {
+                    if (endLineNumber > beginLineNumber && line.contains("&end[" + feature.getName() + "]")) {
                         break;
                     }
                     endLineNumber++;
