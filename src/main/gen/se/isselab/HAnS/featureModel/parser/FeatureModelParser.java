@@ -20,14 +20,6 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   }
 
   public void parseLight(IElementType t, PsiBuilder b) {
-    System.out.println("Starting token dump:");
-    PsiBuilder.Marker m_ = b.mark();
-    while (!b.eof()) {
-      System.out.println("Token: " + b.getTokenType());
-      b.advanceLexer();
-    }
-    m_.rollbackTo();  // Roll back to the start so actual parsing can occur
-    System.out.println("Token dump complete. Starting parsing.");
     boolean r;
     b = adapt_builder_(t, b, this, null);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
