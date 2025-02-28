@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class CustomPsiElement implements PsiElement { // Ersetzen Sie MyPsiElementBase durch Ihre tatsächliche Basis-Klasse
+public class CustomPsiElement implements PsiElement {
     private final String customName;
     private final PsiElement element;
 
@@ -109,7 +109,7 @@ public class CustomPsiElement implements PsiElement { // Ersetzen Sie MyPsiEleme
 
     @Override
     public @NlsSafe String getText() {
-        return element.getText();
+        return customName;
     }
 
     @Override

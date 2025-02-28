@@ -150,9 +150,8 @@ public class FeatureReference extends PsiPolyVariantReferenceBase<PsiElement> {
                     }
                     endLineNumber++;
                 }
-
-                // Add the FeatureModelFeature itself as a result
-                results.add(new PsiElementResolveResult(new CustomPsiElement(feature, null)));
+                String customName = feature.getName() + ": " + beginLineNumber + "-" + endLineNumber;
+                results.add(new PsiElementResolveResult(new CustomPsiElement(feature, customName)));
             }
         }
         return results.toArray(new ResolveResult[0]);
