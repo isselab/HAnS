@@ -16,6 +16,8 @@ HAnS
     CodeCompletion
         FileNameProvider
         LiveTemplate
+    CodeFolding
+        CodeFoldingBuilder
     SyntaxHighlighting
         FeatureModel
         FolderAnnotation
