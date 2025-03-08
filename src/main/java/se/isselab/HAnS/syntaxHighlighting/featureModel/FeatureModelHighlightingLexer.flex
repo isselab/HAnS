@@ -34,8 +34,12 @@ CRLF=[\n|\r\n]
 SPACE= [' ']
 
 INDENT=[\t]
-
+XOR = "xor "
+OR = "or "
 FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
+
+BRACKATSOPEN=[\[]
+BRACKATSCLOSE=[\]]
 
 %state WAITING_VALUE
 
@@ -51,4 +55,11 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 
 ({SPACE}|{INDENT})+                                           { yybegin(YYINITIAL); return FeatureModelTypes.INDENT; }
 
+{OR}                                               { yybegin(YYINITIAL); return FeatureModelTypes.OR;}
+
+{XOR}                                               { yybegin(YYINITIAL); return FeatureModelTypes.XOR;}
+
+{BRACKATSOPEN}                                               { yybegin(YYINITIAL); return FeatureModelTypes.BRACKATSOPEN;}
+
+{BRACKATSCLOSE}                                               { yybegin(YYINITIAL); return FeatureModelTypes.BRACKATSCLOSE;}
 [^]    { return TokenType.BAD_CHARACTER; }

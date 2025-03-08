@@ -10,6 +10,9 @@ import java.util.Deque;
 
 public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
+  @Nullable
+  FeatureModelCrossConstrains getCrossConstrains();
+
   @NotNull
   List<FeatureModelFeature> getFeatureList();
 

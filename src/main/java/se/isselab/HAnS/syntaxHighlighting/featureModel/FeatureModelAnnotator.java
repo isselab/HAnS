@@ -40,12 +40,17 @@ public class FeatureModelAnnotator implements Annotator {
 
         Query<PsiReference> psiReferences = ReferencesSearch.search(feature);
         if (psiReferences.findFirst() == null) {
-            holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Feature is never used")
-                    .range(feature.getFirstChild().getTextRange())
-                    .highlightType(ProblemHighlightType.LIKE_UNUSED_SYMBOL)
-                    // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
-                    //.withFix(new FeatureModelCreateNewFeature(featureText))
-                    .create();
+            if (feature.getFirstChild().getText().endsWith("or ") || feature.getFirstChild().getText().endsWith("xor ")){
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                            .range(feature.getFirstChild().getTextRange()).textAttributes(FeatureModelSyntaxHighlighter.OPERATION).create();
+            } else {
+                holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Feature is never used")
+                        .range(feature.getFirstChild().getTextRange())
+                        .highlightType(ProblemHighlightType.LIKE_UNUSED_SYMBOL)
+                        // ** Tutorial step 18.3 - Add a quick fix for the string containing possible properties
+                        //.withFix(new FeatureModelCreateNewFeature(featureText))
+                        .create();
+            }
         } else {
             // Found at least one property, force the text attributes to Simple syntax value character
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
