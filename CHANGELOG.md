@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Added Traffic light feature to show when a code file is mapped by file or folder annotation, [feature video](https://youtu.be/HBZYgyc_xgo).
+
 ## [0.0.8] - 2025-01-30
 
 ### Housekeeping 🧹
@@ -111,7 +114,8 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.7...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.0.8...HEAD
+[0.0.8]: https://github.com/isselab/HAnS/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/isselab/HAnS/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/isselab/HAnS/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/isselab/HAnS/compare/v0.0.4...v0.0.5

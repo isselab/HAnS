@@ -8,6 +8,7 @@
 | Philipp Kusmierz   | [![Philipp github](https://img.shields.io/badge/GitHub-Kuzzi04-181717.svg?style=flat&logo=github)](https://www.github.com/Kuzzi04)            |
 | Mariana Hohashvili | [![Mariana github](https://img.shields.io/badge/GitHub-hohashvili-181717.svg?style=flat&logo=github)](https://www.github.com/hohashvili)      |
 | Luca Kramer        | [![Luca github](https://img.shields.io/badge/GitHub-LucaKramer-181717.svg?style=flat&logo=github)](https://www.github.com/LucaKramer)         |
+| Manhal Jasem       | [![Luca github](https://img.shields.io/badge/GitHub-ManhalJasem-181717.svg?style=flat&logo=github)](https://www.github.com/ManhalJasem)                                                                                                                                              |
 
 
 
