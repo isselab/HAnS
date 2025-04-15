@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface FeatureModelCrossConstrains extends PsiElement {
+public interface FeatureModelOrGroup extends PsiElement {
 
   @NotNull
-  List<FeatureModelCrossConstrains> getCrossConstrainsList();
+  List<FeatureModelFeature> getFeatureList();
 
 }
