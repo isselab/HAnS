@@ -30,12 +30,6 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   }
 
   @Override
-  @Nullable
-  public FeatureModelCrossConstrains getCrossConstrains() {
-    return findChildByClass(FeatureModelCrossConstrains.class);
-  }
-
-  @Override
   @NotNull
   public List<FeatureModelFeature> getFeatureList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, FeatureModelFeature.class);
