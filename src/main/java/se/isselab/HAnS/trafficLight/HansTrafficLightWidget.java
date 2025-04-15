@@ -10,7 +10,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.ColorKey;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -20,12 +19,8 @@ import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.ui.JBInsets;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
-import kotlinx.html.P;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.AnnotationIcons;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
-import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.FeatureFileMappingCallback;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.GetFeatureFileMappings;
 
@@ -37,11 +32,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-// &begin[WidgetLocation]
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class HansTrafficLightWidget extends JPanel {
     private AnAction action;
     private Presentation presentation;
@@ -52,9 +45,10 @@ public class HansTrafficLightWidget extends JPanel {
     private Editor editor;
     private String place;
     private String filePath;
+    private Set<String> featuresInFile = new HashSet<>();
 
     HansTrafficLightWidget(AnAction action, Presentation presentation,
-                           String place, Editor editor){
+                           String place, Editor editor) {
         this.action = action;
         this.presentation = presentation;
         this.place = place;
@@ -107,7 +101,7 @@ public class HansTrafficLightWidget extends JPanel {
             @Override
             public void mouseEntered(MouseEvent e) {
                 mouseHover = true;
-                if (hansIcon.isVisible()){
+                if (hansIcon.isVisible()) {
                     repaint();
                     showPopupWithMappingName();
                 }
@@ -117,7 +111,7 @@ public class HansTrafficLightWidget extends JPanel {
             @Override
             public void mouseExited(MouseEvent e) {
                 mouseHover = false;
-                if (hansIcon.isVisible()){
+                if (hansIcon.isVisible()) {
                     repaint();
                 }
             }
@@ -146,24 +140,32 @@ public class HansTrafficLightWidget extends JPanel {
         }
         // &end[ClickAndHover]
     }
+
     // &begin[SearchFeatures]
     private void searchFeatures() {
         new GetFeatureFileMappings(this.editor.getProject(), "Find Feature File Mappings", new FeatureFileMappingCallback() {
             @Override
             public void onComplete(Map<String, FeatureFileMapping> featureFileMappings) {
-                Set<Set<String>> vals = new HashSet<>();
-                featureFileMappings.forEach((key, value) -> {
-                    var res = value.getFileMappings();
-                    if (!res.isEmpty()) {
-                        vals.add(res);
+                var currentFilePath = editor.getVirtualFile().getPath();
+                Set<String> filePathsOfMappingFiles = new HashSet<>();
+                featuresInFile = new HashSet<>();
+
+                featureFileMappings.forEach((key, mapping) -> {
+                    var featuresMappedToFiles = mapping.getFileMappingPairsForFile(currentFilePath);
+                    if (!featuresMappedToFiles.isEmpty()) {
+                        featuresInFile.addAll(mapping.getFeaturesMappedInFile(currentFilePath));
+                        filePathsOfMappingFiles.addAll(featuresMappedToFiles.stream().map(x -> x.second)
+                                .collect(Collectors.toSet()));
                     }
                 });
-                for (Set<String> val : vals) {
-                    for (String key : val) {
-                        if (key.contains(editor.getVirtualFile().getPath())){
-                            filePath = key.substring(key.indexOf(":")+1);
-                            hansIcon.setVisible(true);
-                        }
+
+                if (!featuresInFile.isEmpty() && !filePathsOfMappingFiles.isEmpty()) {
+                    hansIcon.setText(String.valueOf(featuresInFile.size()));
+                    hansIcon.setVisible(true);
+                    if (filePathsOfMappingFiles.size() == 1) filePath = filePathsOfMappingFiles.iterator().next();
+                    else {
+                        // TODO handle several filePaths
+                        System.out.println(String.join(" --- ", filePathsOfMappingFiles.stream().toList()));
                     }
                 }
             }
@@ -181,16 +183,18 @@ public class HansTrafficLightWidget extends JPanel {
         super.addNotify();
         addMouseListener(mouseListener);
     }
+
     // &begin[HoverPopupStyle]
     private void showPopupWithMappingName() {
         Notification notification = new Notification(
                 "notification",
-                "Mapped feature file",
-                filePath,
+                "Mapped features",
+                String.join(", ", featuresInFile),
                 NotificationType.INFORMATION
         );
         Notifications.Bus.notify(notification);
     }
+
     // &end[HoverPopupStyle]
     private void openMappingsFile() {
         VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(filePath));
@@ -200,6 +204,7 @@ public class HansTrafficLightWidget extends JPanel {
             JOptionPane.showMessageDialog(null, "File not found: " + filePath);
         }
     }
+
     // &begin[WidgetStyle]
     @Override
     protected void paintComponent(Graphics graphics) {
@@ -220,4 +225,3 @@ public class HansTrafficLightWidget extends JPanel {
     }
     // &end[WidgetStyle]
 }
-// &end[WidgetLocation]

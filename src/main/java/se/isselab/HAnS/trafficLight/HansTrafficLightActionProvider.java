@@ -2,11 +2,9 @@ package se.isselab.HAnS.trafficLight;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorKind;
 import com.intellij.openapi.actionSystem.Separator;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.markup.InspectionWidgetActionProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

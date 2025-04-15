@@ -203,19 +203,34 @@ public class FeatureFileMapping {
         return map.keySet();
     }
 
-    public Set<String> getFileMappings() {
+    public Set<Pair<String, String>> getFileMappingPairsForFile(String filePath) {
+        var keys = map.keySet();
+        Set<Pair<String, String>> result = new HashSet<>();
+        for (var key : keys) {
+            var val = map.get(key);
+            if ((val.first.equals(AnnotationType.FILE) || val.first.equals(AnnotationType.FOLDER)) &&
+                    key.getFirst().equals(filePath)) {
+                result.add(key);
+            }
+        }
+        return result;
+
+    }
+
+    public Set<String> getFeaturesMappedInFile(String filePath){
 
         var keys = map.keySet();
         Set<String> result = new HashSet<>();
-
-        for (var key: keys) {
+        for (var key : keys) {
             var val = map.get(key);
-            if (val.first.name().equals("FILE") || val.first.name().equals("FOLDER")) {
-                result.add(key.first + ":" + key.second);
+            if ((val.first.equals(AnnotationType.FILE) || val.first.equals(AnnotationType.FOLDER)) &&
+                    key.getFirst().equals(filePath)) {
+                result.add(mappedFeature.getLPQText());
             }
         }
         return result;
     }
+
     // &begin[LineCount]
 
     /**
