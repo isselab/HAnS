@@ -130,6 +130,7 @@ limitations under the License.
 
         <projectService serviceImplementation="se.isselab.HAnS.pluginExtensions.ProjectMetricsService" serviceInterface="se.isselab.HAnS.pluginExtensions.MetricsService"/>
         <projectService serviceImplementation="se.isselab.HAnS.pluginExtensions.FeatureHighlighterService" serviceInterface="se.isselab.HAnS.pluginExtensions.HighlighterService"/>
+        <iw.actionProvider implementation="se.isselab.HAnS.trafficLight.HansTrafficLightActionProvider"/>
     </extensions>
 
 
