@@ -1,38 +1,58 @@
 package se.isselab.HAnS.trafficLight;
 
-import com.intellij.openapi.actionSystem.ActionUpdateThread;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.DumbAware;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.Pair;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
+import se.isselab.HAnS.featureLocation.FeatureFileMapping;
+import se.isselab.HAnS.pluginExtensions.MetricsService;
+import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.FeatureFileMappingCallback;
 
 import javax.swing.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class HansTrafficLightAction extends AnAction implements DumbAware, CustomComponentAction {
+
+    private static final Key<HansTrafficLightDashboardModel> DASHBOARD_MODEL = new Key<>("DASHBOARD_MODEL");
+
     private Editor editor;
+    private HansTrafficLightWidget widget;
+
     HansTrafficLightAction() {
         super();
     }
+
     HansTrafficLightAction(Editor editor) {
         this.editor = editor;
     }
 
+
     @Override
     public @NotNull JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
-        return new HansTrafficLightWidget(this, presentation, place, editor);
+        widget = new HansTrafficLightWidget(this, presentation, place, editor);
+        return widget;
     }
 
     @Override
-    public void updateCustomComponent(@NotNull JComponent component, @NotNull Presentation presentation) {
-        CustomComponentAction.super.updateCustomComponent(component, presentation);
+    public void updateCustomComponent(@NotNull JComponent component, Presentation presentation) {
+        HansTrafficLightDashboardModel model = presentation.getClientProperty(DASHBOARD_MODEL);
+        if (model != null && component instanceof HansTrafficLightWidget trafficLightWidget) {
+            trafficLightWidget.refresh(model);
+        }
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-
+        if (editor.getProject() != null) {
+            update(anActionEvent);
+        }
     }
 
     @Override
@@ -42,18 +62,70 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
 
     @Override
     public final void update(AnActionEvent e) {
-        var p = e.getProject();
-        if (p == null || !p.isInitialized() || p.isDisposed()) {
+        Project project = e.getProject();
+        if (project == null || !project.isInitialized() || project.isDisposed()) {
             e.getPresentation().setEnabledAndVisible(false);
             return;
         }
-        var visible = e.getPresentation().isVisible();
-        e.getPresentation().setVisible(visible);
-        if (!visible) {
-            e.getPresentation().setEnabled(false);
+
+        e.getPresentation().setVisible(true);
+        e.getPresentation().setEnabled(true);
+
+        // Update the presentation with model
+        updatePresentation(e, project);
+    }
+
+    public void updatePresentation(AnActionEvent e, Project project) {
+        if (project.isDisposed()) {
             return;
         }
 
-        e.getPresentation().setEnabled(true);
+        Presentation presentation = e.getPresentation();
+        VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
+        if (file != null) {
+            var service = project.getService(MetricsService.class);
+            if (service != null) {
+                service.getAllFeatureFileMappingsBackground(new FeatureFileMappingCallback() {
+                    @Override
+                    public void onComplete(Map<String, FeatureFileMapping> featureFileMappings) {
+                        var currentFilePath = editor.getVirtualFile().getPath();
+                        Set<Pair<String, Pair<String,String>>> filePathFeatureMappings = new HashSet<>();
+
+                        featureFileMappings.forEach((key, mapping) -> {
+                            var featuresMappedToFiles = mapping.getFilePathFeatureMappings(currentFilePath);
+
+                            if (!featuresMappedToFiles.isEmpty()) {
+                                filePathFeatureMappings.addAll(featuresMappedToFiles);
+                            }
+                        });
+
+                        Map<String, Map<String, Set<String>>> result = filePathFeatureMappings.stream()
+                                .collect(Collectors.groupingBy(
+                                        pair -> pair.getSecond().getFirst(), // Grouping by String3
+                                        Collectors.groupingBy(
+                                                pair -> pair.getSecond().getSecond(), // Grouping by String2
+                                                Collectors.mapping(
+                                                        pair -> pair.getFirst(), // Collect String1
+                                                        Collectors.toSet()
+                                                )
+                                        )
+                                ));
+
+                        var model = new HansTrafficLightDashboardModel(true, result);
+                        presentation.putClientProperty(DASHBOARD_MODEL, model);
+
+                        ApplicationManager.getApplication().invokeLater(() -> {
+                            if (widget != null) {
+                                widget.refresh(model);
+                                widget.repaint();
+                            }
+                        });
+                    }
+                });
+            }
+        } else {
+            // Set a default model if no file is available
+            presentation.putClientProperty(DASHBOARD_MODEL, new HansTrafficLightDashboardModel(false, null));
+        }
     }
 }

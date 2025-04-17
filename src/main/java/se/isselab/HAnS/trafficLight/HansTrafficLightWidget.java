@@ -1,28 +1,20 @@
 package se.isselab.HAnS.trafficLight;
 
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.ActionButtonLook;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.ColorKey;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.SystemInfo;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.scale.JBUIScale;
 import com.intellij.util.ui.JBInsets;
 import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.UIUtil;
 import se.isselab.HAnS.AnnotationIcons;
-import se.isselab.HAnS.featureLocation.FeatureFileMapping;
-import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.FeatureFileMappingCallback;
-import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.GetFeatureFileMappings;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -31,59 +23,45 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class HansTrafficLightWidget extends JPanel {
-    private AnAction action;
-    private Presentation presentation;
+    private HansTrafficLightPopup dashboardPopup;
     private MouseListener mouseListener;
+    private JLabel iconAndFeatureCountLabel = new JBLabel();
     private boolean mousePressed = false;
     private boolean mouseHover = false;
-    private JLabel hansIcon;
+
     private Editor editor;
-    private String place;
     private String filePath;
-    private Set<String> featuresInFile = new HashSet<>();
 
     HansTrafficLightWidget(AnAction action, Presentation presentation,
                            String place, Editor editor) {
-        this.action = action;
-        this.presentation = presentation;
-        this.place = place;
         this.editor = editor;
+        dashboardPopup = new HansTrafficLightPopup(editor);
+
         setOpaque(false);
         // &begin[WidgetStyle]
-        hansIcon = new JLabel();
 
         if (!SystemInfo.isWindows) {
-            hansIcon.setFont(new FontUIResource(getFont().deriveFont(getFont().getStyle(),
-                    (float) (getFont().getSize() - JBUIScale.scale(2)))));
+            iconAndFeatureCountLabel.setFont(new FontUIResource(getFont().deriveFont(getFont().getStyle(),
+                    (getFont().getSize() - JBUIScale.scale(2)))));
         }
 
-        hansIcon.setForeground(new JBColor(
+        iconAndFeatureCountLabel.setForeground(new JBColor(
                 Objects.requireNonNull(editor.getColorsScheme().getColor(ColorKey.createColorKey("ActionButton.iconTextForeground",
                         UIUtil.getContextHelpForeground()))),
                 ColorKey.createColorKey("ActionButton.iconTextForeground", UIUtil.getContextHelpForeground()).getDefaultColor()
         ));
-
-        hansIcon.setIcon(AnnotationIcons.PluginIcon);
         // &end[WidgetStyle]
-        hansIcon.setVisible(false);
+        add(iconAndFeatureCountLabel);
 
-        searchFeatures();
-
-        add(hansIcon);
         // &begin[ClickAndHover]
         mouseListener = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 mousePressed = true;
-                if (hansIcon.isVisible()) {
-                    repaint();
-                }
-
+                repaint();
             }
 
             @Override
@@ -92,28 +70,21 @@ public class HansTrafficLightWidget extends JPanel {
                 var event = AnActionEvent.createFromInputEvent(e, place, presentation, context, false, true);
                 ActionUtil.performActionDumbAwareWithCallbacks(action, event);
                 mousePressed = false;
-                if (hansIcon.isVisible()) {
-                    repaint();
-                    openMappingsFile();
-                }
+                repaint();
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
                 mouseHover = true;
-                if (hansIcon.isVisible()) {
-                    repaint();
-                    showPopupWithMappingName();
-                }
-
+                repaint();
+                dashboardPopup.scheduleShow(HansTrafficLightWidget.this);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 mouseHover = false;
-                if (hansIcon.isVisible()) {
-                    repaint();
-                }
+                repaint();
+                dashboardPopup.scheduleHide();
             }
         };
 
@@ -141,38 +112,6 @@ public class HansTrafficLightWidget extends JPanel {
         // &end[ClickAndHover]
     }
 
-    // &begin[SearchFeatures]
-    private void searchFeatures() {
-        new GetFeatureFileMappings(this.editor.getProject(), "Find Feature File Mappings", new FeatureFileMappingCallback() {
-            @Override
-            public void onComplete(Map<String, FeatureFileMapping> featureFileMappings) {
-                var currentFilePath = editor.getVirtualFile().getPath();
-                Set<String> filePathsOfMappingFiles = new HashSet<>();
-                featuresInFile = new HashSet<>();
-
-                featureFileMappings.forEach((key, mapping) -> {
-                    var featuresMappedToFiles = mapping.getFileMappingPairsForFile(currentFilePath);
-                    if (!featuresMappedToFiles.isEmpty()) {
-                        featuresInFile.addAll(mapping.getFeaturesMappedInFile(currentFilePath));
-                        filePathsOfMappingFiles.addAll(featuresMappedToFiles.stream().map(x -> x.second)
-                                .collect(Collectors.toSet()));
-                    }
-                });
-
-                if (!featuresInFile.isEmpty() && !filePathsOfMappingFiles.isEmpty()) {
-                    hansIcon.setText(String.valueOf(featuresInFile.size()));
-                    hansIcon.setVisible(true);
-                    if (filePathsOfMappingFiles.size() == 1) filePath = filePathsOfMappingFiles.iterator().next();
-                    else {
-                        // TODO handle several filePaths
-                        System.out.println(String.join(" --- ", filePathsOfMappingFiles.stream().toList()));
-                    }
-                }
-            }
-        }).queue();
-    }
-    // &end[SearchFeatures]
-
     @Override
     public void removeNotify() {
         removeMouseListener(mouseListener);
@@ -182,27 +121,6 @@ public class HansTrafficLightWidget extends JPanel {
     public void addNotify() {
         super.addNotify();
         addMouseListener(mouseListener);
-    }
-
-    // &begin[HoverPopupStyle]
-    private void showPopupWithMappingName() {
-        Notification notification = new Notification(
-                "notification",
-                "Mapped features",
-                String.join(", ", featuresInFile),
-                NotificationType.INFORMATION
-        );
-        Notifications.Bus.notify(notification);
-    }
-
-    // &end[HoverPopupStyle]
-    private void openMappingsFile() {
-        VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(new File(filePath));
-        if (virtualFile != null && this.editor.getProject() != null) {
-            FileEditorManager.getInstance(this.editor.getProject()).openFile(virtualFile, true);
-        } else {
-            JOptionPane.showMessageDialog(null, "File not found: " + filePath);
-        }
     }
 
     // &begin[WidgetStyle]
@@ -224,4 +142,19 @@ public class HansTrafficLightWidget extends JPanel {
         ActionButtonLook.SYSTEM_LOOK.paintLookBackground(graphics, rect, color);
     }
     // &end[WidgetStyle]
+
+    public void refresh(HansTrafficLightDashboardModel model) {
+        if (!model.isAlive()) {
+            iconAndFeatureCountLabel.setIcon(AnnotationIcons.PluginIcon);
+            iconAndFeatureCountLabel.setText("DEAD");
+        } else if (model.hasFindings()) {
+            iconAndFeatureCountLabel.setIcon(AnnotationIcons.PluginIcon);
+            iconAndFeatureCountLabel.setText(String.valueOf(model.findingsCount()));
+        }
+        else {
+            iconAndFeatureCountLabel.setIcon(AnnotationIcons.PluginIcon);
+            iconAndFeatureCountLabel.setText(null);
+        }
+        dashboardPopup.refresh(model);
+    }
 }
