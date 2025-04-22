@@ -34,7 +34,7 @@ public class FeatureFileMapping {
 
     public enum AnnotationType {FOLDER, FILE, CODE}
 
-    private final HashMap<Pair<String,String>, Pair<AnnotationType, ArrayList<FeatureLocationBlock>>> map = new HashMap<>();
+    private final HashMap<Pair<String, String>, Pair<AnnotationType, ArrayList<FeatureLocationBlock>>> map = new HashMap<>();
     private HashMap<Pair<String, String>, Pair<AnnotationType, ArrayList<Pair<MarkerType, Integer>>>> cache = new HashMap<>();
     private final FeatureModelFeature mappedFeature;
 
@@ -98,7 +98,8 @@ public class FeatureFileMapping {
                         int beginLine = stack.pop();
                         add(key, new FeatureLocationBlock(beginLine, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                     }
-                    case LINE -> add(key, new FeatureLocationBlock(markerToLinePair.second, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
+                    case LINE ->
+                            add(key, new FeatureLocationBlock(markerToLinePair.second, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                     case NONE -> // should only happen if file is a feature-to-file or feature-to-folder
                             add(key, new FeatureLocationBlock(0, markerToLinePair.second), annotationTypeToLocationBlockPair.first);
                     default -> {
@@ -133,15 +134,15 @@ public class FeatureFileMapping {
     /**
      * Maps the given file to a FeatureLocationBlock.
      *
-     * @param pathPairOriginatingPath           the file pathPairOriginatingPath which is mapped to a given block
-     * @param block          the location of the feature block inside the given file
-     * @param annotationType the annotation type for the corresponding filepath
+     * @param pathPairOriginatingPath the file pathPairOriginatingPath which is mapped to a given block
+     * @param block                   the location of the feature block inside the given file
+     * @param annotationType          the annotation type for the corresponding filepath
      */
-    private void add(Pair<String,String> pathPairOriginatingPath, FeatureLocationBlock block, AnnotationType annotationType) {
+    private void add(Pair<String, String> pathPairOriginatingPath, FeatureLocationBlock block, AnnotationType annotationType) {
         //check if file is already mapped to given feature
 
         //add block to already existing arraylist
-        map.computeIfPresent(pathPairOriginatingPath, (k,v) -> {
+        map.computeIfPresent(pathPairOriginatingPath, (k, v) -> {
             v.second.add(block);
             return v;
         });
@@ -201,6 +202,20 @@ public class FeatureFileMapping {
 
     public Set<Pair<String, String>> getMappedPathPair() {
         return map.keySet();
+    }
+
+    public Set<Pair<String, Pair<String,String>>> getFilePathFeatureMappings(String filePath) {
+        var keys = map.keySet();
+        Set<Pair<String, Pair<String, String>>> result = new HashSet<>();
+        for (var key : keys) {
+            var val = map.get(key);
+            if ((val.first.equals(AnnotationType.FILE) || val.first.equals(AnnotationType.FOLDER)) &&
+                    key.getFirst().equals(filePath)) {
+                var filePair = new Pair<>(val.getFirst().toString(), key.getSecond());
+                result.add(new Pair<>(mappedFeature.getLPQText(), filePair));
+            }
+        }
+        return result;
     }
 
     // &begin[LineCount]

@@ -36,6 +36,12 @@ HAnS
     ExtensionPoint
         Callback
         Service
+    TrafficLight
+        WidgetLocation
+        WidgetStyle
+        SearchFeatures
+        ClickAndHover
+        HoverPopupStyle
     FileHighlighter
     FeatureView
     FileTemplate
