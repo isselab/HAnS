@@ -29,11 +29,9 @@ limitations under the License.
 
   psiImplUtilClass="se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil"
 }
-
 featureModelFile ::= (feature (feature)?)?
-
 // &begin[Referencing]
-feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?) {
+feature ::= ((OR | XOR)? (FEATURENAME) (OPTIONAL)? (CRLF+ ((INDENT) feature* DEDENT)?)? (cross_constrains)?) {
 mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
 implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getLPQText getLPQStack renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName getPresentation
@@ -41,4 +39,5 @@ addToFeatureModel deleteFromFeatureModel moveFeatureWithChildren deleteFeatureWi
 getTanglingDegree setTanglingDegree getScatteringDegree setScatteringDegree getLineCount setLineCount
 getMaxNestingDepth setMaxNestingDepth getMinNestingDepth setMinNestingDepth getAvgNestingDepth setAvgNestingDepth
 getNumberOfAnnotatedFiles setNumberOfAnnotatedFiles getNumberOfFileAnnotations setNumberOfFileAnnotations getNumberOfFolderAnnotations setNumberOfFolderAnnotations]}
+cross_constrains ::= ( BRACKATSOPEN FEATURE1 ARROW FEATURE1 BRACKATSCLOSE (CRLF+ (cross_constrains)?)* )
 // &end[Referencing]
