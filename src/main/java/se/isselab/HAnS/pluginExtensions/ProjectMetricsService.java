@@ -23,11 +23,9 @@ import com.intellij.openapi.project.Project;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocation;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
-import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
 import se.isselab.HAnS.metrics.calculators.FeatureScattering;
-import se.isselab.HAnS.metrics.calculators.FeatureTangling;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.MetricsCallback;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.GetProjectMetrics;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
@@ -167,41 +165,6 @@ public final class ProjectMetricsService implements MetricsService {
     }
     //endregion
 
-    //region Synchronous Methods
-
-    /**
-     * Returns the locations of a Feature as a {@link FeatureFileMapping}.
-     *
-     * @param feature Feature whose file mapping is to be calculated
-     * @return Locations of a Feature as a {@link FeatureFileMapping}
-     * @see FeatureLocationManager#getFeatureFileMapping(Project, FeatureModelFeature)
-     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
-     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
-     * and {@link #getFeatureFileMappingOfFeature(HashMap, FeatureModelFeature)} instead.
-     * <p> OR use {@link #getFeatureFileMappingBackground(FeatureModelFeature, FeatureFileMappingCallback)}.
-     */
-    @Deprecated(since = "0.0.5", forRemoval = true)
-    @Override
-    public FeatureFileMapping getFeatureFileMapping(FeatureModelFeature feature) {
-        return FeatureLocationManager.getFeatureFileMapping(project, feature);
-    }
-
-    /**
-     * Calculates all {@link FeatureFileMapping} of the project
-     *
-     * @return HashMap of all {@link FeatureFileMapping} of the project
-     * @see FeatureLocationManager#getAllFeatureFileMappings(Project)
-     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
-     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
-     * <p> OR use {@link #getAllFeatureFileMappingsBackground(FeatureFileMappingCallback)}.
-     */
-    @Deprecated(since = "0.0.5", forRemoval = true)
-    @Override
-    public HashMap<String, FeatureFileMapping> getAllFeatureFileMappings() {
-        return FeatureLocationManager.getAllFeatureFileMappings(project);
-    }
-    //endregion
-
     //region Asynchronous Methods
 
     /**
@@ -275,77 +238,6 @@ public final class ProjectMetricsService implements MetricsService {
     }
     //endregion
 
-    //region Synchronous Methods
-
-    /**
-     * Returns the tangling degree of the given feature.
-     * Use this method only if you want to calculate it for one feature.
-     * Otherwise, use {@link #getFeatureTangling(HashMap, FeatureModelFeature)} so that the featureFileMappings is only calculated once
-     *
-     * @param feature FeatureModelFeature
-     * @return TanglingDegree of the given feature
-     * @see FeatureFileMapping
-     * @see #getFeatureTangling(HashMap, FeatureModelFeature)
-     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
-     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
-     * <p> OR use {@link #getFeatureTanglingDegreeBackground(FeatureModelFeature, FeatureCallback)}.
-     */
-    @Deprecated(since = "0.0.5", forRemoval = true)
-    @Override
-    public int getFeatureTangling(FeatureModelFeature feature) {
-        var resultMap = getTanglingMap().get(feature);
-        return resultMap != null ? resultMap.size() : 0;
-    }
-
-    /**
-     * Returns the tangling degree of the given feature. Uses pre-calculated HashMap of feature file mappings
-     *
-     * @param featureFileMappings All {@link FeatureFileMapping} of the project as HashMap
-     * @param feature             FeatureModelFeature
-     * @return TanglingDegree of the given feature
-     * @see FeatureFileMapping
-     * @see #getFeatureTangling(HashMap, FeatureModelFeature)
-     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
-     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
-     * <p> OR use {@link #getFeatureTanglingDegreeBackground(FeatureModelFeature, FeatureCallback)}.
-     */
-    @Deprecated(since = "0.0.5", forRemoval = true)
-    @Override
-    public int getFeatureTangling(HashMap<String, FeatureFileMapping> featureFileMappings, FeatureModelFeature feature) {
-        var resultMap = getTanglingMap(featureFileMappings).get(feature);
-        return resultMap != null ? resultMap.size() : 0;
-    }
-
-    /**
-     * Uses expensive method ReferencesSearch.search(), which can cause UI freezes. Maybe use a BackgroundTask instead.
-     *
-     * @return the tanglingMap of all features
-     * @see FeatureTangling#getTanglingMap(Project)
-     * @see #getTanglingMapBackground(TanglingMapCallback)
-     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
-     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
-     * <p> OR use {@link #getTanglingMapBackground(TanglingMapCallback)}.
-     */
-    @Deprecated(since = "0.0.5", forRemoval = true)
-    @Override
-    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap() {
-        return FeatureTangling.getTanglingMap(project);
-    }
-
-    /**
-     * @param featureFileMappings All {@link FeatureFileMapping} of the project
-     * @return the tanglingMap of the features represented by the fileMapping
-     * @see FeatureTangling#getTanglingMap(Project, HashMap)
-     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
-     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
-     */
-    @Deprecated(since = "0.0.5", forRemoval = true)
-    @Override
-    public HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(HashMap<String, FeatureFileMapping> featureFileMappings) {
-        return FeatureTangling.getTanglingMap(project, featureFileMappings);
-    }
-    //endregion
-
     //region Asynchronous Methods
 
     /**
@@ -396,23 +288,6 @@ public final class ProjectMetricsService implements MetricsService {
     @Override
     public int getFeatureScattering(FeatureFileMapping featureFileMapping) {
         return FeatureScattering.getScatteringDegree(featureFileMapping);
-    }
-    //endregion
-
-    //region Synchronous Methods
-
-    /**
-     * @param feature {@link FeatureModelFeature}
-     * @return scattering degree of the feature
-     * @see FeatureScattering#getScatteringDegree(Project, FeatureModelFeature)
-     * @deprecated This method is deprecated since 0.0.5 and will be removed in the future.
-     * <p> Use background task {@link #getProjectMetricsBackground(MetricsCallback)}
-     * <p> OR use {@link #getFeatureScatteringBackground(FeatureModelFeature, FeatureCallback)}.
-     */
-    @Deprecated(since = "0.0.5", forRemoval = true)
-    @Override
-    public int getFeatureScattering(FeatureModelFeature feature) {
-        return FeatureScattering.getScatteringDegree(project, feature);
     }
     //endregion
 
