@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Housekeeping 🧹
+- Removed deprecated methods from metrics service
+- Clean up code in regard to the referencing feature
+- Updated dependencies
+
 ## [0.0.8] - 2025-01-30
 
 ### Housekeeping 🧹
