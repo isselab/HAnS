@@ -19,18 +19,32 @@ import com.intellij.lang.Commenter;
 import com.intellij.lang.LanguageCommenters;
 import com.intellij.lang.injection.MultiHostInjector;
 import com.intellij.lang.injection.MultiHostRegistrar;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import se.isselab.HAnS.states.ToggleStateService;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
 class CodeAnnotationInjector implements MultiHostInjector {
+
+    private final ToggleStateService toggleStateService;
+
+    @SuppressWarnings("UnstableApiUsage") // Suppress the warning about Project being a parameter in the constructor (IntelliJ 2023.3 or later)
+    public CodeAnnotationInjector(Project project) {
+        this.toggleStateService = project.getService(ToggleStateService.class);
+    }
     @Override
     public void getLanguagesToInject(@NotNull MultiHostRegistrar registrar, @NotNull PsiElement context) {
+
+        if (toggleStateService == null || !toggleStateService.isEnabled()) {
+            return; // Don't inject if the service is unavailable or disabled
+        }
+
         if (context instanceof PsiDocCommentBase) {
             return;
         }
