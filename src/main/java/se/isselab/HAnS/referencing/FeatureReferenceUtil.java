@@ -29,6 +29,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.Range;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.FeatureAnnotationToDelete;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocation;
@@ -60,8 +61,7 @@ public class FeatureReferenceUtil {
     public static String getLPQ(FeatureModelFeature feature, String newName) {
         if (lpq == null) {
             return setLPQ(feature, newName);
-        }
-        else {
+        } else {
             return lpq;
         }
     }
@@ -85,7 +85,9 @@ public class FeatureReferenceUtil {
         mapToDeleteAfterDeletingWithCode.clear();
     }
 
-    public static Map<Document, Set<Integer>> getMapToDeleteAfterDeletingWithCode() { return mapToDeleteAfterDeletingWithCode; }
+    public static Map<Document, Set<Integer>> getMapToDeleteAfterDeletingWithCode() {
+        return mapToDeleteAfterDeletingWithCode;
+    }
 
     public static Map<FeatureModelFeature, List<PsiReference>> getElementsToRename() {
         return mapToRename;
@@ -99,7 +101,9 @@ public class FeatureReferenceUtil {
         return mapToRenameWhenAdding;
     }
 
-    public static Map<FeatureModelFeature, ArrayList<Object>> getMapToDeleteWithCode() { return mapToDeleteWithCode; }
+    public static Map<FeatureModelFeature, ArrayList<Object>> getMapToDeleteWithCode() {
+        return mapToDeleteWithCode;
+    }
 
     private static String setLPQ(FeatureModelFeature feature, String newName) {
         PsiElement fileCopy = feature.getContainingFile().copy();
@@ -107,11 +111,11 @@ public class FeatureReferenceUtil {
         fileCopy.accept(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement element) {
-                if (element instanceof FeatureModelFeature){
-                    if (((FeatureModelFeature) element).getLPQText().equals(feature.getLPQText())) {
-                        e[0] = (FeatureModelFeature) element;
-                    }
+                if (element instanceof FeatureModelFeature featureModelFeature &&
+                        featureModelFeature.getLPQText().equals(feature.getLPQText())) {
+                    e[0] = featureModelFeature;
                 }
+
                 super.visitElement(element);
             }
         });
@@ -122,7 +126,8 @@ public class FeatureReferenceUtil {
             e[0].getNode().replaceChild(featureNode, newKeyNode);
         }
         origin = feature;
-        return lpq = e[0].getLPQText();
+        lpq = e[0].getLPQText();
+        return lpq;
     }
 
     public static void rename() {
@@ -130,10 +135,7 @@ public class FeatureReferenceUtil {
 
         for (Map.Entry<FeatureModelFeature, List<PsiReference>> entry : toRename.entrySet()) {
             String newLPQ = entry.getKey().getLPQText();
-            System.out.println(newLPQ);
-            for (PsiReference reference:entry.getValue()) {
-                System.out.println(reference.getElement().getText());
-                System.out.println(reference.getElement().getContainingFile());
+            for (PsiReference reference : entry.getValue()) {
                 reference.handleElementRename(newLPQ);
             }
         }
@@ -141,36 +143,23 @@ public class FeatureReferenceUtil {
 
     public static void setElementsToRenameWhenRenaming(FeatureModelFeature element, String newName) {
         Map<FeatureModelFeature, List<PsiReference>> toRename = new HashMap<>();
-
-        System.out.println("Will rename");
-
         List<FeatureModelFeature> elementsToRename = getElementsToRenameWhenRenaming(element, newName);
 
-        for (FeatureModelFeature e : elementsToRename) {
-            System.out.println(e.getLPQText());
-            List<PsiReference> referencedElements = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(e)) {
-                referencedElements.add(reference);
-            }
-            toRename.put(e, referencedElements);
-        }
-
-        mapToRename = toRename;
+        mapElementsToRename(toRename, elementsToRename);
     }
 
     private static List<FeatureModelFeature> getElementsToRenameWhenRenaming(FeatureModelFeature element, String newName) {
-        List<FeatureModelFeature> elementsToRename= new ArrayList<>();
+        List<FeatureModelFeature> elementsToRename = new ArrayList<>();
         element.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement e) {
-                if (e instanceof FeatureModelFeature){
-                    if (((FeatureModelFeature) e).getLPQText().contains(newName)) {
-                        elementsToRename.add((FeatureModelFeature) e);
-                    }
-                    else if (((FeatureModelFeature) e).getLPQText().contains(Objects.requireNonNull(element.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getText())) {
-                        elementsToRename.add((FeatureModelFeature) e);
-                    }
+                if (e instanceof FeatureModelFeature featureModelFeature &&
+                        (featureModelFeature.getLPQText().contains(newName) ||
+                                featureModelFeature.getLPQText().contains(Objects.requireNonNull(element.getNode()
+                                        .findChildByType(FeatureModelTypes.FEATURENAME)).getText()))) {
+                    elementsToRename.add(featureModelFeature);
                 }
+
                 super.visitElement(e);
             }
         });
@@ -196,12 +185,12 @@ public class FeatureReferenceUtil {
     }
 
     private static List<FeatureModelFeature> getElementsToRenameWhenAdding(FeatureModelFeature element, String newName) {
-        List<FeatureModelFeature> elementsToRename= new ArrayList<>();
+        List<FeatureModelFeature> elementsToRename = new ArrayList<>();
         element.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement e) {
-                if (e instanceof FeatureModelFeature && ((FeatureModelFeature) e).getLPQText().contains(newName)){
-                    elementsToRename.add((FeatureModelFeature) e);
+                if (e instanceof FeatureModelFeature featureModelFeature && (featureModelFeature).getLPQText().contains(newName)) {
+                    elementsToRename.add(featureModelFeature);
                 }
                 super.visitElement(e);
             }
@@ -214,7 +203,7 @@ public class FeatureReferenceUtil {
 
         for (Map.Entry<FeatureModelFeature, List<PsiReference>> entry : toDelete.entrySet()) {
 
-            for (PsiReference reference:entry.getValue()) {
+            for (PsiReference reference : entry.getValue()) {
                 InjectedLanguageManager injManager = InjectedLanguageManager.getInstance(entry.getKey().getProject());
 
                 PsiLanguageInjectionHost host = injManager.getInjectionHost(reference.getElement());
@@ -280,21 +269,16 @@ public class FeatureReferenceUtil {
             WriteCommandAction.runWriteCommandAction(project, r);
         }
 
-        if (reference.getElement().getPrevSibling() == null && reference.getElement().getNextSibling() == null) { // if it's last feature mapped to file
-            if (reference.getElement().getParent().getPrevSibling() != null) { // if newline exists
-                if (reference.getElement().getParent().getPrevSibling().getPrevSibling() != null &&
-                        reference.getElement().getParent().getPrevSibling().getPrevSibling() instanceof FileAnnotationFileReferences) { // get file list
-                    Runnable r = () -> {
-                        reference.getElement().getParent().getPrevSibling().getPrevSibling().delete(); // delete all files
-                    };
-                    WriteCommandAction.runWriteCommandAction(project, r);
-                }
-            }
+        if (reference.getElement().getPrevSibling() == null && reference.getElement().getNextSibling() == null &&
+                reference.getElement().getParent().getPrevSibling() != null &&
+                reference.getElement().getParent().getPrevSibling().getPrevSibling() instanceof FileAnnotationFileReferences) { // get file list
+            Runnable r = () ->
+                    reference.getElement().getParent().getPrevSibling().getPrevSibling().delete(); // delete all files
+            WriteCommandAction.runWriteCommandAction(project, r);
         }
 
-        Runnable r = () -> {
-            reference.getElement().delete(); // remove element
-        };
+
+        Runnable r = () -> reference.getElement().delete(); // remove element
         WriteCommandAction.runWriteCommandAction(project, r);
     }
 
@@ -371,7 +355,7 @@ public class FeatureReferenceUtil {
     }
 
     public static void setMapToDeleteWithCode(FeatureModelFeature feature) {
-        List<PsiElement> elementsToDelete= new ArrayList<>();
+        List<PsiElement> elementsToDelete = new ArrayList<>();
         traverseFeatureWithChildren(feature, elementsToDelete, new ArrayList<>());
 
         Project projectInstance = feature.getProject();
@@ -408,12 +392,12 @@ public class FeatureReferenceUtil {
 
                     if (entry == null) {
                         entry = new HashSet<>();
-                        for (int i = block.getStartLine(); i < block.getEndLine()+1; i++) {
+                        for (int i = block.getStartLine(); i < block.getEndLine() + 1; i++) {
                             entry.add(i);
                         }
                         mapToDrop.put(fm.getMappedPathPairMappedBy(), entry);
                     } else {
-                        for (int i = block.getStartLine(); i < block.getEndLine()+1; i++) {
+                        for (int i = block.getStartLine(); i < block.getEndLine() + 1; i++) {
                             entry.add(i);
                         }
                     }
@@ -502,11 +486,11 @@ public class FeatureReferenceUtil {
 
     // returns set of all features tangled with FeatureModelFeature feature
     private static HashSet<FeatureModelFeature> getTangledFeatures(HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, FeatureModelFeature feature) {
-        HashSet<FeatureModelFeature> tangledFeatures= new HashSet<>();
+        HashSet<FeatureModelFeature> tangledFeatures = new HashSet<>();
 
-        for (FeatureModelFeature key : tanglingMap.keySet()) {
-            if(key.getLPQText().equals(feature.getLPQText())) {
-                tangledFeatures = tanglingMap.get(key);
+        for (var entry : tanglingMap.entrySet()) {
+            if (entry.getKey().getLPQText().equals(feature.getLPQText())) {
+                tangledFeatures = entry.getValue();
             }
         }
 
@@ -554,7 +538,7 @@ public class FeatureReferenceUtil {
                 newElement.setMainAnnotationType(baseLocation.getMainAnnotationType()); // 6: main annotation type
 
                 if (tangledLocation.getTangledAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE) &&
-                    baseLocation.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE)) {
+                        baseLocation.getMainAnnotationType().equals(FeatureFileMapping.AnnotationType.CODE)) {
                     ArrayList<Integer> rangeResult = getRange(baseLocation.getStartLine(), baseLocation.getEndLine(), tangledLocation.getStartLine(), tangledLocation.getEndLine());
                     if (rangeResult != null) {
                         newElement.setStartLine(rangeResult.get(0)); // 2: start line
@@ -585,7 +569,7 @@ public class FeatureReferenceUtil {
 
     // if two features are tangled using code annotation,
     // finds line range that includes both FeatureA and FeatureB
-    private static ArrayList<Integer> getRange(int startA, int endA, int startB, int endB) {
+    private static @Nullable ArrayList<Integer> getRange(int startA, int endA, int startB, int endB) {
         ArrayList<Integer> result = new ArrayList<>();
         Range<Integer> rangeA = new Range<>(startA, endA);
         Range<Integer> rangeB = new Range<>(startB, endB);
@@ -605,7 +589,7 @@ public class FeatureReferenceUtil {
             result.add(endB);
             return result;
         }
-        if (rangeB.isWithin(startA, true)){
+        if (rangeB.isWithin(startA, true)) {
             result.add(startB);
             result.add(endA);
             return result;
@@ -616,7 +600,7 @@ public class FeatureReferenceUtil {
     public static void setElementsToDelete(FeatureModelFeature element) {
         Map<FeatureModelFeature, List<PsiReference>> toDelete = new HashMap<>();
 
-        List<PsiElement> elementsToDelete= new ArrayList<>();
+        List<PsiElement> elementsToDelete = new ArrayList<>();
         traverseFeatureWithChildren(element, elementsToDelete, new ArrayList<>());
         GlobalSearchScope scope = GlobalSearchScope.allScope(element.getProject());
 
@@ -637,8 +621,8 @@ public class FeatureReferenceUtil {
 
         Map<FeatureModelFeature, List<PsiReference>> toRename = new HashMap<>();
 
-        List<PsiElement> elementsToDelete= new ArrayList<>();
-        List<String> lpqToDelete= new ArrayList<>();
+        List<PsiElement> elementsToDelete = new ArrayList<>();
+        List<String> lpqToDelete = new ArrayList<>();
         traverseFeatureWithChildren(element, elementsToDelete, lpqToDelete);
 
         List<FeatureModelFeature> elementsToRename = new ArrayList<>();
@@ -646,6 +630,10 @@ public class FeatureReferenceUtil {
             elementsToRename.addAll(getElementsToRenameWhenDeleting(((FeatureModelFeature) feature), lpqToDelete));
         }
 
+        mapElementsToRename(toRename, elementsToRename);
+    }
+
+    private static void mapElementsToRename(Map<FeatureModelFeature, List<PsiReference>> toRename, List<FeatureModelFeature> elementsToRename) {
         for (FeatureModelFeature e : elementsToRename) {
             List<PsiReference> referencedElements = new ArrayList<>();
             for (PsiReference reference : ReferencesSearch.search(e)) {
@@ -657,16 +645,16 @@ public class FeatureReferenceUtil {
     }
 
     private static List<FeatureModelFeature> getElementsToRenameWhenDeleting(FeatureModelFeature element, List<String> lpqToRemove) {
-        List<FeatureModelFeature> elementsToRename= new ArrayList<>();
+        List<FeatureModelFeature> elementsToRename = new ArrayList<>();
         element.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
             @Override
             public void visitElement(@NotNull PsiElement e) {
-                if (e instanceof FeatureModelFeature){
-                    if (((FeatureModelFeature) e).getLPQText().contains(element.getFeatureName()) &&
-                        !(lpqToRemove.contains(((FeatureModelFeature) e).getLPQText()))) {
-                        elementsToRename.add((FeatureModelFeature) e);
-                    }
+                if (e instanceof FeatureModelFeature featureModelFeature &&
+                        featureModelFeature.getLPQText().contains(element.getFeatureName()) &&
+                        !(lpqToRemove.contains(featureModelFeature.getLPQText()))) {
+                    elementsToRename.add(featureModelFeature);
                 }
+
                 super.visitElement(e);
             }
         });
@@ -691,7 +679,7 @@ public class FeatureReferenceUtil {
             for (Map.Entry<String, List<PsiReference>> entry : toUpdate.entrySet()) {
                 if (entry.getKey().equals(oldlpqList.get(i))) {
 
-                    for (PsiReference reference:entry.getValue()) {
+                    for (PsiReference reference : entry.getValue()) {
                         reference.handleElementRename(newlpqList.get(i));
                     }
 
@@ -705,7 +693,7 @@ public class FeatureReferenceUtil {
     public static void setElementsToRenameAfterAddingWithChildren(FeatureModelFeature element) {
         Map<String, List<PsiReference>> toUpdate = new HashMap<>();
 
-        List<PsiElement> elementsToUpdate= getElementsToRenameAfterAddingWithChildren(element);
+        List<PsiElement> elementsToUpdate = getElementsToRenameAfterAddingWithChildren(element);
         for (PsiElement e : elementsToUpdate) {
             List<PsiReference> referencedElements = new ArrayList<>();
             for (PsiReference reference : ReferencesSearch.search(e)) {
@@ -717,8 +705,8 @@ public class FeatureReferenceUtil {
     }
 
     private static List<PsiElement> getElementsToRenameAfterAddingWithChildren(FeatureModelFeature element) {
-        List<PsiElement> elementsToUpdate= new ArrayList<>();
-        List<String> lpqToDelete= new ArrayList<>();
+        List<PsiElement> elementsToUpdate = new ArrayList<>();
+        List<String> lpqToDelete = new ArrayList<>();
 
         traverseFeatureWithChildren(element, elementsToUpdate, lpqToDelete);
         return elementsToUpdate;

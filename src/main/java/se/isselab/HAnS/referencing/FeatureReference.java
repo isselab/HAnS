@@ -59,14 +59,14 @@ public class FeatureReference extends PsiReferenceBase<PsiElement> {
             newLPQ = newElementName;
         }
 
-        if (myElement instanceof FolderAnnotationLpq) {
-            FolderAnnotationPsiImplUtil.setName((FolderAnnotationLpq) myElement, newLPQ);
-        }
-        else if (myElement instanceof FileAnnotationLpq) {
-            FileAnnotationPsiImplUtil.setName((FileAnnotationLpq) myElement, newLPQ);
-        }
-        else if (myElement instanceof CodeAnnotationLpq) {
-            CodeAnnotationPsiImplUtil.setName((CodeAnnotationLpq) myElement, newLPQ);
+        switch (myElement) {
+            case FolderAnnotationLpq folderAnnotationLpq ->
+                    FolderAnnotationPsiImplUtil.setName(folderAnnotationLpq, newLPQ);
+            case FileAnnotationLpq fileAnnotationLpq -> FileAnnotationPsiImplUtil.setName(fileAnnotationLpq, newLPQ);
+            case CodeAnnotationLpq codeAnnotationLpq -> CodeAnnotationPsiImplUtil.setName(codeAnnotationLpq, newLPQ);
+            default -> {
+                return myElement;
+            }
         }
         return myElement;
     }
@@ -80,7 +80,7 @@ public class FeatureReference extends PsiReferenceBase<PsiElement> {
         for (FeatureModelFeature feature : features) {
             results.add(new PsiElementResolveResult(feature));
         }
-        return results.size() == 1 ? results.get(0).getElement() : null;
+        return results.size() == 1 ? results.getFirst().getElement() : null;
     }
 
     @Override

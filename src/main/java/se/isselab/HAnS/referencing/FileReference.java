@@ -38,8 +38,8 @@ public class FileReference extends PsiReferenceBase<PsiElement> implements PsiPo
     public ResolveResult @NotNull [] multiResolve(boolean incompleteCode) {
         final List<PsiFile> files = FileReferenceUtil.findFile(myElement, file);
         List<ResolveResult> results = new ArrayList<>();
-        for (PsiFile file : files) {
-            results.add(new PsiElementResolveResult(file));
+        for (PsiFile currentFile : files) {
+            results.add(new PsiElementResolveResult(currentFile));
         }
         return results.toArray(new ResolveResult[0]);
     }
@@ -55,10 +55,10 @@ public class FileReference extends PsiReferenceBase<PsiElement> implements PsiPo
     public Object @NotNull [] getVariants() {
         List<PsiFile> files = FileReferenceUtil.findFiles(myElement);
         List<LookupElement> variants = new ArrayList<>();
-        for (final PsiFile file : files) {
-            if (!file.getName().isEmpty()) {
+        for (final PsiFile currentFile : files) {
+            if (!currentFile.getName().isEmpty()) {
                 variants.add(LookupElementBuilder
-                        .create(file.getName())
+                        .create(currentFile.getName())
                 );
             }
         }
