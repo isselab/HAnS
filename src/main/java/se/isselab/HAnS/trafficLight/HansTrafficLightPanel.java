@@ -3,18 +3,17 @@ package se.isselab.HAnS.trafficLight;
 import com.intellij.codeInsight.hint.HintManagerImpl;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.ShowLogAction;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.impl.ActionButton;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.HyperlinkLabel;
-import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.GridBag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,12 +24,14 @@ import java.util.Set;
 public class HansTrafficLightPanel {
     private static final String NO_FINDINGS_TEXT = "File is not mapped.";
     private static final String METRICS_ERROR_MSG = "Error while fetching mapping.";
-    private static final String FEATURE_FILE_MAPPINGS = "Mapped features through *.feature-file";
-    private static final String FEATURE_FOLDER_MAPPINGS = "Mapped features through *.feature-folder";
+    private static final String FEATURE_FILE_MAPPINGS = "Mapped features through *.feature-file:";
+    private static final String FEATURE_FOLDER_MAPPINGS = "Mapped features through *.feature-folder:";
 
     JPanel panel = new JPanel(new GridBagLayout());
 
     private final JBLabel findingsSummaryLabel = new JBLabel(NO_FINDINGS_TEXT);
+    private final JBLabel hansCrashed = new JBLabel(METRICS_ERROR_MSG);
+
 
     private final JPanel fileMappingsPanel = new JPanel(new GridBagLayout());
     private final JPanel folderMappingsPanel = new JPanel(new GridBagLayout());
@@ -40,8 +41,8 @@ public class HansTrafficLightPanel {
     public HansTrafficLightPanel(Editor editor) {
         this.editor = editor;
 
-        ActionButton menuButton =
-                new ActionButton(
+        TrafficLightActionButton menuButton =
+                new TrafficLightActionButton(
                         new MenuAction(),
                         null,
                         ActionPlaces.EDITOR_POPUP,
@@ -50,7 +51,6 @@ public class HansTrafficLightPanel {
         GridBag gc = new GridBag();
         gc.nextLine().next().anchor(GridBagConstraints.LINE_START).weightx(1.0).fillCellHorizontally().insets(10, 10, 10, 10);
 
-        JBLabel hansCrashed = new JBLabel(METRICS_ERROR_MSG);
         hansCrashed.setVisible(false);
         panel.add(hansCrashed, gc);
 
@@ -58,12 +58,15 @@ public class HansTrafficLightPanel {
 
         panel.add(menuButton, gc.next().anchor(GridBagConstraints.LINE_END).weightx(0.0).insets(10, 6, 10, 6));
 
-        panel.add(fileMappingsPanel, gc.nextLine().next().anchor(GridBagConstraints.LINE_START).fillCellHorizontally().insets(0, 6, 10, 6));
-        panel.add(folderMappingsPanel, gc.nextLine().next().anchor(GridBagConstraints.LINE_START).fillCellHorizontally().insets(0, 6, 10, 6));
+        panel.add(fileMappingsPanel, gc.nextLine().next().anchor(GridBagConstraints.LINE_START).weightx(1.0).fillCellHorizontally().insets(0, 5, 10, 0)
+                 );
+        panel.add(folderMappingsPanel, gc.nextLine().next().anchor(GridBagConstraints.LINE_START).weightx(1.0).fillCellHorizontally().insets(0, 5, 10, 0)
+                );
     }
 
     private void handleIfAlive(Boolean isAlive) {
         findingsSummaryLabel.setVisible(isAlive);
+        hansCrashed.setVisible(!isAlive);
     }
 
     protected void refresh(HansTrafficLightDashboardModel model) {
@@ -77,24 +80,27 @@ public class HansTrafficLightPanel {
             populateMappings(fileMappingsPanel, model.getFilePathsFeatureFileMapping(), FEATURE_FILE_MAPPINGS);
             populateMappings(folderMappingsPanel, model.getFilePathsFeatureFolderMapping(), FEATURE_FOLDER_MAPPINGS);
         }
-        fileMappingsPanel.setBorder(BorderFactory.createLineBorder(JBColor.RED));
-        folderMappingsPanel.setBorder(BorderFactory.createLineBorder(JBColor.BLUE));
         panel.revalidate();
         panel.repaint();
     }
 
     private void populateMappings(JPanel mappingsPanel, Map<String, Set<String>> mappings, String headerText) {
-        GridBag gc = new GridBag();
-
+        mappingsPanel.removeAll();
         if (mappings != null && !mappings.isEmpty()) {
+            GridBag gc = new GridBag();
             JBLabel headerLabel = new JBLabel(headerText);
-            headerLabel.setFont(new Font(null, Font.BOLD, 12));
-            mappingsPanel.add(headerLabel, gc.nextLine().next().anchor(GridBagConstraints.LINE_START).insets(5, 10, 5, 10));
+            mappingsPanel.add(headerLabel, gc.nextLine().next().anchor(GridBagConstraints.LINE_START).weightx(1.0).fillCellHorizontally()
+                    .insets(0, 10, 6, 10)
+                    );
             mappings.forEach((path, features) -> features.forEach(feature -> {
                 HyperlinkLabel featureLink = new HyperlinkLabel(feature);
                 featureLink.addHyperlinkListener(e -> openLink(path));
-                mappingsPanel.add(featureLink, gc.nextLine().next().anchor(GridBagConstraints.LINE_START).insets(5, 10, 5, 10));
+                mappingsPanel.add(featureLink, gc.nextLine().next().anchor(GridBagConstraints.LINE_START).weightx(1.0).fillCellHorizontally()
+                        .insets(0, 10, 6, 10)
+                );
             }));
+            mappingsPanel.revalidate();
+            mappingsPanel.repaint();
         }
     }
 
@@ -112,7 +118,19 @@ public class HansTrafficLightPanel {
             add(new ShowLogAction());
             getTemplatePresentation().setPopupGroup(true);
             getTemplatePresentation().setIcon(AllIcons.Actions.More);
-            getTemplatePresentation().putClientProperty(ActionButton.HIDE_DROPDOWN_ICON, true);
+        }
+    }
+
+    private static class TrafficLightActionButton extends ActionButton {
+
+        public TrafficLightActionButton(@NotNull AnAction action, @Nullable Presentation presentation,
+                                        @NotNull String place, @NotNull Dimension minimumSize) {
+            super(action, presentation, place, minimumSize);
+        }
+
+        @Override
+        protected boolean shallPaintDownArrow() {
+            return false;
         }
     }
 }
