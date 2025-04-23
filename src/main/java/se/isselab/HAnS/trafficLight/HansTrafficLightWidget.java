@@ -17,7 +17,6 @@ package se.isselab.HAnS.trafficLight;
 
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.ActionButtonLook;
-import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.ColorKey;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
@@ -51,8 +50,7 @@ public class HansTrafficLightWidget extends JPanel {
     private boolean mouseHover = false;
     private final transient MouseListener customMouseListener;
 
-    HansTrafficLightWidget(AnAction action, Presentation presentation,
-                           String place, Editor editor, HansTrafficLightPopup dashboardPopup) {
+    HansTrafficLightWidget(Editor editor, HansTrafficLightPopup dashboardPopup) {
         setOpaque(false);
         // &begin[WidgetStyle]
 

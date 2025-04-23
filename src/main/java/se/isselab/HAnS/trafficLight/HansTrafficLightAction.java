@@ -53,7 +53,7 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
 
     @Override
     public @NotNull JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
-        widget = new HansTrafficLightWidget(this, presentation, place, editor, popup);
+        widget = new HansTrafficLightWidget(editor, popup);
         return widget;
     }
 
