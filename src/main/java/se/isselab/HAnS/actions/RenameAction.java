@@ -15,9 +15,7 @@ limitations under the License.
 */
 package se.isselab.HAnS.actions;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.refactoring.rename.RenameDialog;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
@@ -25,16 +23,21 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 public class RenameAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        if (e.getData(LangDataKeys.PSI_ELEMENT) instanceof FeatureModelFeature feature && e.getProject() != null) {
+        if (e.getData(CommonDataKeys.PSI_ELEMENT) instanceof FeatureModelFeature feature && e.getProject() != null) {
             new RenameDialog(e.getProject(), feature, null, null).show();
         }
     }
 
     @Override
     public void update(@NotNull AnActionEvent e) {
-        var array = e.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
+        var array = e.getData(PlatformCoreDataKeys.PSI_ELEMENT_ARRAY);
         if(array != null) {
             e.getPresentation().setEnabled(array.length == 1);
         }
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
     }
 }

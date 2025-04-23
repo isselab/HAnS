@@ -59,7 +59,7 @@ public class GetProjectMetrics extends Task.Backgroundable {
         indicator.setText("Getting metrics");
         indicator.setFraction(0.0);
 
-        int total = featureFileMappings.values().size();
+        int total = featureFileMappings.size();
         int processed = 0;
 
         for(var featureFileMapping : featureFileMappings.values()){

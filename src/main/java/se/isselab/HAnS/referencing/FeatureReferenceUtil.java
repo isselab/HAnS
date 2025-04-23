@@ -42,7 +42,6 @@ import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
 import se.isselab.HAnS.metrics.calculators.FeatureTangling;
 
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -57,6 +56,8 @@ public class FeatureReferenceUtil {
     private static final Map<FeatureModelFeature, ArrayList<Object>> mapToDeleteWithCode = new HashMap<>();
     private static Map<String, List<PsiReference>> mapToRenameWhenAdding = new HashMap<>();
     private static final Map<Document, Set<Integer>> mapToDeleteAfterDeletingWithCode = new HashMap<>(); // stores document->empty lines to remove after renaming, because otherwise it would corrupt the document
+
+    private FeatureReferenceUtil() {}
 
     public static String getLPQ(FeatureModelFeature feature, String newName) {
         if (lpq == null) {
@@ -213,7 +214,7 @@ public class FeatureReferenceUtil {
                         Runnable r = () -> {
                             PsiElement parent = reference.getElement().getParent();
                             String parentPsi = parent.getText(); // e.g. [A, B ,  C]
-                            String[] array = parentPsi.replaceAll("\\[|]|\\s", "").split(","); // transform to list of features {A, B, C}
+                            String[] array = parentPsi.replaceAll("\\[|]|\\s", "").split(","); // transform to list of features A, B, C
 
                             ArrayList<String> featuresArr = new ArrayList<>(Arrays.asList(array)); // transform to arraylist
                             featuresArr.remove(reference.getElement().getText()); // remove our element from arraylist

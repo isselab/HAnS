@@ -22,19 +22,21 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 public class AddAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        if (e.getData(LangDataKeys.PSI_ELEMENT) instanceof FeatureModelFeature) {
-            FeatureModelFeature feature = (FeatureModelFeature) e.getData(LangDataKeys.PSI_ELEMENT);
-            if (feature != null) {
-                feature.addFeature();
-            }
+        if (e.getData(CommonDataKeys.PSI_ELEMENT) instanceof FeatureModelFeature feature) {
+            feature.addFeature();
         }
     }
 
     @Override
     public void update(@NotNull AnActionEvent e) {
-        var array = e.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
+        var array = e.getData(PlatformCoreDataKeys.PSI_ELEMENT_ARRAY);
         if(array != null) {
             e.getPresentation().setEnabled(array.length == 1);
         }
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
     }
 }

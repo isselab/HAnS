@@ -1,3 +1,18 @@
+/*
+Copyright 2025 Johan Martinson & Manhal Jaseem
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package se.isselab.HAnS.trafficLight;
 
 import com.intellij.openapi.actionSystem.*;
@@ -24,6 +39,7 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
 
     private Editor editor;
     private HansTrafficLightWidget widget;
+    private HansTrafficLightPopup popup;
 
     HansTrafficLightAction() {
         super();
@@ -31,12 +47,13 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
 
     HansTrafficLightAction(Editor editor) {
         this.editor = editor;
+        popup = new HansTrafficLightPopup(editor);
     }
 
 
     @Override
     public @NotNull JComponent createCustomComponent(@NotNull Presentation presentation, @NotNull String place) {
-        widget = new HansTrafficLightWidget(this, presentation, place, editor);
+        widget = new HansTrafficLightWidget(this, presentation, place, editor, popup);
         return widget;
     }
 
@@ -44,7 +61,7 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
     public void updateCustomComponent(@NotNull JComponent component, Presentation presentation) {
         HansTrafficLightDashboardModel model = presentation.getClientProperty(DASHBOARD_MODEL);
         if (model != null && component instanceof HansTrafficLightWidget trafficLightWidget) {
-            trafficLightWidget.refresh(model);
+            trafficLightWidget.refresh(model, popup);
         }
     }
 
@@ -116,7 +133,7 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
 
                         ApplicationManager.getApplication().invokeLater(() -> {
                             if (widget != null) {
-                                widget.refresh(model);
+                                widget.refresh(model, popup);
                                 widget.repaint();
                             }
                         });
@@ -125,7 +142,7 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
             }
         } else {
             // Set a default model if no file is available
-            presentation.putClientProperty(DASHBOARD_MODEL, new HansTrafficLightDashboardModel(false, null));
+            presentation.putClientProperty(DASHBOARD_MODEL, new HansTrafficLightDashboardModel(false));
         }
     }
 }
