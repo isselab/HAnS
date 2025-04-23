@@ -56,11 +56,11 @@ public class HansTrafficLightDashboardModel {
         return findingsCount() != 0;
     }
 
-    public Map<String, Set<String>> getFilePathsFeatureFileMapping() {
+    public @Nullable Map<String, Set<String>> getFilePathsFeatureFileMapping() {
         return filePathsFeatureFileMapping;
     }
 
-    public Map<String, Set<String>> getFilePathsFeatureFolderMapping() {
+    public @Nullable Map<String, Set<String>> getFilePathsFeatureFolderMapping() {
         return filePathsFeatureFolderMapping;
     }
 }
