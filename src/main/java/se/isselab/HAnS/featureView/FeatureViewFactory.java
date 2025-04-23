@@ -116,7 +116,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
                         featureModelFile.setBinaryContent(contentBytes);
 
                         //Remove current content from the ToolWindow and replace it with the normal feature view model
-                        ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Feature Model View");
+                        ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("hans.toolwindow.feature-model-view");
                         ContentManager contentManager = Objects.requireNonNull(toolWindow).getContentManager();
                         contentManager.removeAllContents(true);
                         createToolWindowContent(project, toolWindow);

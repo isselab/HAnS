@@ -67,9 +67,7 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-        if (editor.getProject() != null) {
-            update(anActionEvent);
-        }
+        // Nothing to do as for now
     }
 
     @Override

@@ -21,8 +21,12 @@ import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.colors.ColorKey;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.scale.JBUIScale;
@@ -75,9 +79,13 @@ public class HansTrafficLightWidget extends JPanel {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                var context = ActionToolbar.getDataContextFor(HansTrafficLightWidget.this);
-                var event = AnActionEvent.createFromInputEvent(e, place, presentation, context, false, true);
-                ActionUtil.performActionDumbAwareWithCallbacks(action, event);
+                Project project = ProjectManager.getInstance().getOpenProjects()[0];
+                ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("hans.toolwindow.feature-model-view");
+                if (toolWindow != null && !toolWindow.isVisible()) {
+                    toolWindow.show(null);
+                } else if (toolWindow != null && toolWindow.isVisible()) {
+                    toolWindow.hide(null);
+                }
                 mousePressed = false;
                 repaint();
             }

@@ -42,7 +42,7 @@ public class HansTrafficLightPopup {
         }
     };
 
-    private final Alarm popupAlarm = new Alarm();
+    private final Alarm popupAlarm;
     private JBPopup myPopup;
     private boolean insidePopup = false;
     private final HansTrafficLightPanel dashboard;
@@ -52,6 +52,7 @@ public class HansTrafficLightPopup {
     public HansTrafficLightPopup(Editor editor) {
         this.editor = editor;
         dashboard = new HansTrafficLightPanel(editor);
+        popupAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD);
 
         dashboard.panel.addMouseListener(new MouseAdapter() {
             @Override
