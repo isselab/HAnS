@@ -19,38 +19,21 @@ import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.*;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
-import se.isselab.HAnS.codeAnnotation.psi.CodeAnnotationLpq;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationLpq;
-import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
 
 public class FeatureReferenceContributor extends PsiReferenceContributor {
 
+   private final PsiReferenceProvider psiReferenceProvider = new PsiReferenceProvider() {
+        @Override
+        public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
+                @NotNull ProcessingContext context) {
+            var featureReference = new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()));
+            return new PsiReference[]{featureReference};
+        }
+    };
+
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
-        registrar.registerReferenceProvider(PlatformPatterns.psiElement(FolderAnnotationLpq.class),
-                new PsiReferenceProvider() {
-                    @Override
-                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
-                                                                           @NotNull ProcessingContext context) {
-                        return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
-                    }
-                });
-        registrar.registerReferenceProvider(PlatformPatterns.psiElement(FileAnnotationLpq.class),
-                new PsiReferenceProvider() {
-                    @Override
-                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
-                                                                                    @NotNull ProcessingContext context) {
-                        return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
-                    }
-                });
-        registrar.registerReferenceProvider(PlatformPatterns.psiElement(CodeAnnotationLpq.class),
-                new PsiReferenceProvider() {
-                    @Override
-                    public PsiReference @NotNull [] getReferencesByElement(@NotNull PsiElement element,
-                                                                                    @NotNull ProcessingContext context) {
-                        return new PsiReference[]{new FeatureReference(element, element.getTextRange().shiftLeft(element.getTextOffset()))};
-                    }
-                });
+        registrar.registerReferenceProvider(PlatformPatterns.psiElement(FeatureAnnotationNamedElement.class),psiReferenceProvider);
     }
 
 }

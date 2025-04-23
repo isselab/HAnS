@@ -380,9 +380,6 @@ public class FeatureModelPsiImplUtil {
         int offset = feature.getTextOffset() + Objects.requireNonNull(feature.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getTextLength();
 
         int indent;
-
-        System.out.println(newFeatureName);
-
         if (feature.getParent() instanceof PsiFile) {
             indent = 4;
         }

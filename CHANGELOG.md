@@ -5,6 +5,11 @@
 ### Added
 - Added Traffic light feature to show when a code file is mapped by file or folder annotation, [feature video](https://youtu.be/HBZYgyc_xgo).
 
+### Housekeeping 🧹
+- Removed deprecated methods from metrics service
+- Clean up code in regard to the referencing feature
+- Updated dependencies
+
 ## [0.0.8] - 2025-01-30
 
 ### Housekeeping 🧹
