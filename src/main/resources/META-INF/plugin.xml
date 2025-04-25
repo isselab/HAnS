@@ -61,6 +61,12 @@ limitations under the License.
                                 implementationClass="se.isselab.HAnS.codeCompletion.FileCompletionContributor"/>
         <!-- &end[CodeCompletion] -->
 
+        <!-- &begin[CodeFolding] -->
+        <lang.foldingBuilder
+                language="JAVA" order="FIRST"
+                implementationClass="se.isselab.HAnS.codeFolding.CodeFoldingBuilder"/>
+        <!-- &begin[CodeFolding] -->
+
         <!-- &begin[SyntaxHighlighting] -->
         <!-- &begin[SyntaxHighlighting::FeatureModel] -->
         <lang.syntaxHighlighterFactory language="FeatureModel"
