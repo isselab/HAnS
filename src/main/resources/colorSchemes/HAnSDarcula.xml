@@ -40,4 +40,19 @@ limitations under the License.
             <option name="BACKGROUND" value="DDCFD9"/>
         </value>
     </option>
+    <option name="XOR_TOKEN">
+        <value>
+            <option name="FOREGROUND" value="cc7832"/>
+        </value>
+    </option>
+    <option name="OR_TOKEN">
+        <value>
+            <option name="FOREGROUND" value="cc7832"/>
+        </value>
+    </option>
+    <option name="OPTIONAL">
+        <value>
+            <option name="FOREGROUND" value="cc7832"/>
+        </value>
+    </option>
 </list>
