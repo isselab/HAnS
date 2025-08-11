@@ -3,9 +3,9 @@ package se.isselab.HAnS.folderAnnotationTests;
 import com.intellij.testFramework.ParsingTestCase;
 import se.isselab.HAnS.folderAnnotation.FolderAnnotationParserDefinition;
 
-public class FolderAnnotationParsingTest_feature_to_folder extends ParsingTestCase {
-    public FolderAnnotationParsingTest_feature_to_folder () {
-        super("", "feature-to-folder", new FolderAnnotationParserDefinition());
+public class FolderAnnotationParsingFeatureChildrenCollection_feature_folder extends ParsingTestCase {
+    public FolderAnnotationParsingFeatureChildrenCollection_feature_folder() {
+        super("", "feature-folder", new FolderAnnotationParserDefinition());
     }
 
     public void testParsingTestData() {
@@ -17,7 +17,7 @@ public class FolderAnnotationParsingTest_feature_to_folder extends ParsingTestCa
      */
     @Override
     protected String getTestDataPath() {
-        return "src/test/resources/folderAnnotationTestData/parsingTest/feature-to-folder";
+        return "src/test/resources/folderAnnotationTestData/parsingTest/feature-folder";
     }
 
     @Override

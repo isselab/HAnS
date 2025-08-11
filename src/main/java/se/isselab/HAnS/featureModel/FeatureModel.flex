@@ -33,12 +33,17 @@ import java.util.Deque;
     return;
 %eof}
 
+OPTIONAL = [\?]
 CRLF=[\n|\r\n]
 SPACE= [' ']
 
 INDENT=[\t]
 
 FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
+
+XOR_TOKEN = "xor"[ \t]?
+
+OR_TOKEN = "or"[ \t]?
 
 %{
     int current_line_indent = 0;
@@ -56,10 +61,13 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 %s feature
 %s dedent
 
+
 %%
-<YYINITIAL>.         { yypushback(1); indent_levels.push(0); yybegin(feature); }
+
+<YYINITIAL>.        { yypushback(1); indent_levels.push(0); yybegin(feature); }
 
 <indent>{SPACE}      { current_line_indent++; }
+<indent>{OPTIONAL}   { return FeatureModelTypes.OPTIONAL; }
 <indent>{INDENT}     { current_line_indent = (current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1); }
 <indent>{CRLF}+      { current_line_indent = 0; return FeatureModelTypes.CRLF; }
 
@@ -75,41 +83,50 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
         return FeatureModelTypes.DEDENT;
     }
 }
+<indent>{XOR_TOKEN}          {
+          yybegin(feature);
+          return FeatureModelTypes.XOR_TOKEN;
+      }
+
+<indent>{OR_TOKEN}          {
+          yybegin(feature);
+          return FeatureModelTypes.OR_TOKEN;
+      }
 
 <indent>{FEATURENAME}       {
         if(current_line_indent > indent_levels.peek()) {
-            indent_levels.push(current_line_indent);
-            yypushback(1);
-            yybegin(feature);
-            return FeatureModelTypes.INDENT;
-        }
-        else if(current_line_indent < indent_levels.peek()) {
-            indent_levels.pop();
-            if (current_line_indent > indent_levels.peek()) {
-                indent_levels.push(current_line_indent);
-                yypushback(1);
-                yybegin(feature);
-            }
-            else if(current_line_indent != indent_levels.peek()) {
-                yypushback(1);
-                yybegin(dedent);
-                return FeatureModelTypes.DEDENT;
-            }
-            else {
-                yypushback(1);
-                yybegin(feature);
-                return FeatureModelTypes.DEDENT;
-            }
-        }
-        else if (current_line_indent == 0){
-            yypushback(1);
-            yybegin(feature);
-        }
-        else {
-            yypushback(1);
-            yybegin(feature);
-            return FeatureModelTypes.CRLF;
-        }
+                    indent_levels.push(current_line_indent);
+                    yypushback(1);
+                    yybegin(feature);
+                    return FeatureModelTypes.INDENT;
+                }
+                else if(current_line_indent < indent_levels.peek()) {
+                    indent_levels.pop();
+                    if (current_line_indent > indent_levels.peek()) {
+                        indent_levels.push(current_line_indent);
+                        yypushback(1);
+                        yybegin(feature);
+                    }
+                    else if(current_line_indent != indent_levels.peek()) {
+                        yypushback(1);
+                        yybegin(dedent);
+                        return FeatureModelTypes.DEDENT;
+                    }
+                    else {
+                        yypushback(1);
+                        yybegin(feature);
+                        return FeatureModelTypes.DEDENT;
+                    }
+                }
+                else if (current_line_indent == 0){
+                    yypushback(1);
+                    yybegin(feature);
+                }
+                else {
+                    yypushback(1);
+                    yybegin(feature);
+                    return FeatureModelTypes.CRLF;
+                }
 }
 
 <indent><<EOF>> {
@@ -122,8 +139,24 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
     }
 }
 
+<feature> {XOR_TOKEN} {
+          return FeatureModelTypes.XOR_TOKEN; }
+<feature> {OR_TOKEN} {
+          return FeatureModelTypes.OR_TOKEN; }
+<feature> {OPTIONAL} {
+          return FeatureModelTypes.OPTIONAL; }
 <feature>{FEATURENAME}+     {
+          if (!indent_levels.isEmpty() && current_line_indent < indent_levels.peek()) {
+                  indent_levels.pop();
+                  return FeatureModelTypes.DEDENT;
+              }
         yybegin(indent);
         return FeatureModelTypes.FEATURENAME;
 }
+
+<feature>{CRLF}  {
+                yybegin(indent);
+                return FeatureModelTypes.CRLF;
+}
+
 [^]    { return TokenType.BAD_CHARACTER; }

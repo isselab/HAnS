@@ -3,8 +3,8 @@ package se.isselab.HAnS.featureModelTests;
 import com.intellij.testFramework.ParsingTestCase;
 import se.isselab.HAnS.featureModel.FeatureModelParserDefinition;
 
-public class FeatureModelParsingTest extends ParsingTestCase {
-    public FeatureModelParsingTest() {
+public class FeatureModelParsingFeatureChildrenCollection extends ParsingTestCase {
+    public FeatureModelParsingFeatureChildrenCollection() {
         super("", "feature-model", new FeatureModelParserDefinition());
     }
 
