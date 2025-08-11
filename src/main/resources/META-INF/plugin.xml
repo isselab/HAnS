@@ -192,5 +192,9 @@ limitations under the License.
             <add-to-group
                     group-id="EditorPopupMenu" anchor="first" />
         </action>
+        <action id="se.isselab.HAnS.actions.FindChildrenAction" class="se.isselab.HAnS.actions.FindChildrenAction"
+                text="Find Feature Children">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
     </actions>
 </idea-plugin>

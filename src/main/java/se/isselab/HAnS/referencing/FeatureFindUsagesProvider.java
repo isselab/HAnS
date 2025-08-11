@@ -25,6 +25,8 @@ import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
 import se.isselab.HAnS.syntaxHighlighting.featureModel.FeatureModelHighlightingLexerAdapter;
 
+
+
 public class FeatureFindUsagesProvider implements FindUsagesProvider {
 
     @Nullable
@@ -64,5 +66,6 @@ public class FeatureFindUsagesProvider implements FindUsagesProvider {
     public String getNodeText(@NotNull PsiElement element, boolean useFullName) {
         return element.getText();
     }
+
 
 }
