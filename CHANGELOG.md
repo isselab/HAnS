@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 ### Housekeeping 🧹
-- Bump
+- Bump dependencies to make available on latest IDE builds
 
 
 ## [0.1.1] - 2025-04-23
