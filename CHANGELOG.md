@@ -2,9 +2,11 @@
 
 ## [Unreleased]
 
-### Housekeeping 🧹
-- Bump dependencies to make available on latest IDE builds
+## [0.1.2] - 2025-08-11
 
+### Housekeeping 🧹
+
+- Bump dependencies to make available on latest IDE builds
 
 ## [0.1.1] - 2025-04-23
 
@@ -139,7 +141,8 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/isselab/HAnS/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/isselab/HAnS/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/isselab/HAnS/compare/v0.0.8...v0.1.0
 [0.0.8]: https://github.com/isselab/HAnS/compare/v0.0.7...v0.0.8
