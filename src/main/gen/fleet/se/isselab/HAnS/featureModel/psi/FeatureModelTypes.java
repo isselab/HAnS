@@ -1,10 +1,9 @@
 // This is a generated file. Not intended for manual editing.
-package se.isselab.HAnS.featureModel.psi;
+package fleet.se.isselab.HAnS.featureModel.psi;
 
 import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.PsiElement;
-import com.intellij.lang.ASTNode;
-import se.isselab.HAnS.featureModel.psi.impl.*;
+import se.isselab.HAnS.featureModel.psi.FeatureModelElementType;
+import se.isselab.HAnS.featureModel.psi.FeatureModelTokenType;
 
 public interface FeatureModelTypes {
 
@@ -17,14 +16,4 @@ public interface FeatureModelTypes {
   IElementType OPTIONALITY = new FeatureModelTokenType("OPTIONALITY");
   IElementType OR = new FeatureModelTokenType("OR");
   IElementType XOR = new FeatureModelTokenType("XOR");
-
-  class Factory {
-    public static PsiElement createElement(ASTNode node) {
-      IElementType type = node.getElementType();
-      if (type == FEATURE) {
-        return new FeatureModelFeatureImpl(node);
-      }
-      throw new AssertionError("Unknown element type: " + type);
-    }
-  }
 }
