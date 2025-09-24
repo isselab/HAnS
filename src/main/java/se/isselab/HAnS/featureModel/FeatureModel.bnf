@@ -30,10 +30,10 @@ limitations under the License.
   psiImplUtilClass="se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil"
 }
 
-featureModelFile ::= (feature (feature)?)?
+featureModelFile ::= feature?
 
 // &begin[Referencing]
-feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?) {
+feature ::= ((groupModifier FEATURENAME | FEATURENAME optionalModifier?) (CRLF+ ((INDENT) feature* DEDENT)?)?) {
 mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
 implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getLPQText getLPQStack renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName getPresentation
@@ -42,3 +42,6 @@ getTanglingDegree setTanglingDegree getScatteringDegree setScatteringDegree getL
 getMaxNestingDepth setMaxNestingDepth getMinNestingDepth setMinNestingDepth getAvgNestingDepth setAvgNestingDepth
 getNumberOfAnnotatedFiles setNumberOfAnnotatedFiles getNumberOfFileAnnotations setNumberOfFileAnnotations getNumberOfFolderAnnotations setNumberOfFolderAnnotations]}
 // &end[Referencing]
+
+optionalModifier ::= OPTIONAL
+groupModifier ::= (XOR | OR)

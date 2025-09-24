@@ -36,16 +36,55 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?
+  // (groupModifier FEATURENAME | FEATURENAME optionalModifier?) (CRLF+ ((INDENT) feature* DEDENT)?)?
   public static boolean feature(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "feature")) return false;
-    if (!nextTokenIs(b, FEATURENAME)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, FEATURE, "<feature>");
+    r = feature_0(b, l + 1);
+    r = r && feature_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // groupModifier FEATURENAME | FEATURENAME optionalModifier?
+  private static boolean feature_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = feature_0_0(b, l + 1);
+    if (!r) r = feature_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // groupModifier FEATURENAME
+  private static boolean feature_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = groupModifier(b, l + 1);
+    r = r && consumeToken(b, FEATURENAME);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // FEATURENAME optionalModifier?
+  private static boolean feature_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_0_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, FEATURENAME);
-    r = r && feature_1(b, l + 1);
-    exit_section_(b, m, FEATURE, r);
+    r = r && feature_0_1_1(b, l + 1);
+    exit_section_(b, m, null, r);
     return r;
+  }
+
+  // optionalModifier?
+  private static boolean feature_0_1_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "feature_0_1_1")) return false;
+    optionalModifier(b, l + 1);
+    return true;
   }
 
   // (CRLF+ ((INDENT) feature* DEDENT)?)?
@@ -112,38 +151,35 @@ public class FeatureModelParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (feature (feature)?)?
+  // feature?
   static boolean featureModelFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "featureModelFile")) return false;
-    featureModelFile_0(b, l + 1);
+    feature(b, l + 1);
     return true;
   }
 
-  // feature (feature)?
-  private static boolean featureModelFile_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "featureModelFile_0")) return false;
+  /* ********************************************************** */
+  // XOR | OR
+  public static boolean groupModifier(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "groupModifier")) return false;
+    if (!nextTokenIs(b, "<group modifier>", OR, XOR)) return false;
     boolean r;
-    Marker m = enter_section_(b);
-    r = feature(b, l + 1);
-    r = r && featureModelFile_0_1(b, l + 1);
-    exit_section_(b, m, null, r);
+    Marker m = enter_section_(b, l, _NONE_, GROUP_MODIFIER, "<group modifier>");
+    r = consumeToken(b, XOR);
+    if (!r) r = consumeToken(b, OR);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // (feature)?
-  private static boolean featureModelFile_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "featureModelFile_0_1")) return false;
-    featureModelFile_0_1_0(b, l + 1);
-    return true;
-  }
-
-  // (feature)
-  private static boolean featureModelFile_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "featureModelFile_0_1_0")) return false;
+  /* ********************************************************** */
+  // OPTIONAL
+  public static boolean optionalModifier(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "optionalModifier")) return false;
+    if (!nextTokenIs(b, OPTIONAL)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = feature(b, l + 1);
-    exit_section_(b, m, null, r);
+    r = consumeToken(b, OPTIONAL);
+    exit_section_(b, m, OPTIONAL_MODIFIER, r);
     return r;
   }
 

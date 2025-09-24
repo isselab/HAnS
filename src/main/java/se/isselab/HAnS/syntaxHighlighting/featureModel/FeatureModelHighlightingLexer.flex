@@ -37,9 +37,18 @@ INDENT=[\t]
 
 FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 
+OR="or"
+XOR="xor"
+OPTIONAL="?"
+
 %state WAITING_VALUE
 
 %%
+
+
+<YYINITIAL> {OR} { yybegin(YYINITIAL); return FeatureModelTypes.OR; }
+<YYINITIAL> {XOR} { yybegin(YYINITIAL); return FeatureModelTypes.XOR; }
+<YYINITIAL> {OPTIONAL} { yybegin(YYINITIAL); return FeatureModelTypes.OPTIONAL; }
 
 <YYINITIAL> {FEATURENAME}+                                 { yybegin(YYINITIAL); return FeatureModelTypes.FEATURENAME; }
 

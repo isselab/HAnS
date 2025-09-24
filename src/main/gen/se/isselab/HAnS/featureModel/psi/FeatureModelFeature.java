@@ -13,6 +13,12 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
   @NotNull
   List<FeatureModelFeature> getFeatureList();
 
+  @Nullable
+  FeatureModelGroupModifier getGroupModifier();
+
+  @Nullable
+  FeatureModelOptionalModifier getOptionalModifier();
+
   String getLPQText();
 
   Deque<PsiElement> getLPQStack();

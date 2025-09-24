@@ -35,20 +35,17 @@ import java.util.Deque;
 
 CRLF=[\n|\r\n]
 SPACE= [' ']
-
 INDENT=[\t]
 
-FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
+OPTIONAL=\?
+XOR=(xor)
+OR=(or)
+
+FEATURENAME=([A-Za-z0-9_']+)
 
 %{
     int current_line_indent = 0;
-    int indent_level = 0;
-    int indent_caller = indent;
-
     final int TAB_WIDTH = 4;
-
-    int test = 1;
-
     Deque<Integer> indent_levels = new ArrayDeque<Integer>();
 %}
 
@@ -57,7 +54,7 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 %s dedent
 
 %%
-<YYINITIAL>.         { yypushback(1); indent_levels.push(0); yybegin(feature); }
+<YYINITIAL>.         { yypushback(yylength()); indent_levels.push(0); yybegin(feature); }
 
 <indent>{SPACE}      { current_line_indent++; }
 <indent>{INDENT}     { current_line_indent = (current_line_indent + TAB_WIDTH) & ~(TAB_WIDTH-1); }
@@ -66,20 +63,20 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 <dedent>. {
     indent_levels.pop();
     if(current_line_indent != indent_levels.peek()) {
-        yypushback(1);
+        yypushback(yylength());
         return FeatureModelTypes.DEDENT;
     }
     else {
-        yypushback(1);
+        yypushback(yylength());
         yybegin(feature);
         return FeatureModelTypes.DEDENT;
     }
 }
 
-<indent>{FEATURENAME}       {
+<indent>{XOR}        {
         if(current_line_indent > indent_levels.peek()) {
             indent_levels.push(current_line_indent);
-            yypushback(1);
+            yypushback(yylength());
             yybegin(feature);
             return FeatureModelTypes.INDENT;
         }
@@ -87,26 +84,96 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
             indent_levels.pop();
             if (current_line_indent > indent_levels.peek()) {
                 indent_levels.push(current_line_indent);
-                yypushback(1);
+                yypushback(yylength());
                 yybegin(feature);
             }
             else if(current_line_indent != indent_levels.peek()) {
-                yypushback(1);
+                yypushback(yylength());
                 yybegin(dedent);
                 return FeatureModelTypes.DEDENT;
             }
             else {
-                yypushback(1);
+                yypushback(yylength());
                 yybegin(feature);
                 return FeatureModelTypes.DEDENT;
             }
         }
         else if (current_line_indent == 0){
-            yypushback(1);
+            yypushback(yylength());
             yybegin(feature);
         }
         else {
-            yypushback(1);
+            yypushback(yylength());
+            yybegin(feature);
+        }
+}
+
+<indent>{OR}         {
+        if(current_line_indent > indent_levels.peek()) {
+            indent_levels.push(current_line_indent);
+            yypushback(yylength());
+            yybegin(feature);
+            return FeatureModelTypes.INDENT;
+        }
+        else if(current_line_indent < indent_levels.peek()) {
+            indent_levels.pop();
+            if (current_line_indent > indent_levels.peek()) {
+                indent_levels.push(current_line_indent);
+                yypushback(yylength());
+                yybegin(feature);
+            }
+            else if(current_line_indent != indent_levels.peek()) {
+                yypushback(yylength());
+                yybegin(dedent);
+                return FeatureModelTypes.DEDENT;
+            }
+            else {
+                yypushback(yylength());
+                yybegin(feature);
+                return FeatureModelTypes.DEDENT;
+            }
+        }
+        else if (current_line_indent == 0){
+            yypushback(yylength());
+            yybegin(feature);
+        }
+        else {
+            yypushback(yylength());
+            yybegin(feature);
+        }
+}
+
+<indent>{FEATURENAME}       {
+        if(current_line_indent > indent_levels.peek()) {
+            indent_levels.push(current_line_indent);
+            yypushback(yylength());
+            yybegin(feature);
+            return FeatureModelTypes.INDENT;
+        }
+        else if(current_line_indent < indent_levels.peek()) {
+            indent_levels.pop();
+            if (current_line_indent > indent_levels.peek()) {
+                indent_levels.push(current_line_indent);
+                yypushback(yylength());
+                yybegin(feature);
+            }
+            else if(current_line_indent != indent_levels.peek()) {
+                yypushback(yylength());
+                yybegin(dedent);
+                return FeatureModelTypes.DEDENT;
+            }
+            else {
+                yypushback(yylength());
+                yybegin(feature);
+                return FeatureModelTypes.DEDENT;
+            }
+        }
+        else if (current_line_indent == 0){
+            yypushback(yylength());
+            yybegin(feature);
+        }
+        else {
+            yypushback(yylength());
             yybegin(feature);
             return FeatureModelTypes.CRLF;
         }
@@ -122,8 +189,26 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
     }
 }
 
-<feature>{FEATURENAME}+     {
-        yybegin(indent);
-        return FeatureModelTypes.FEATURENAME;
+<feature>[ ]+              { /* skip spaces */ }
+<feature>{OPTIONAL}   { return FeatureModelTypes.OPTIONAL; }
+<feature>{XOR}        { return FeatureModelTypes.XOR; }
+<feature>{OR}         { return FeatureModelTypes.OR; }
+<feature>{FEATURENAME}+ { return FeatureModelTypes.FEATURENAME;
 }
+
+<feature>{CRLF}+ {
+        current_line_indent = 0;
+        yybegin(indent);
+        return FeatureModelTypes.CRLF;
+}
+
+<feature><<EOF>> {
+    current_line_indent = 0;
+    if (indent_levels.size() > 1) {
+        indent_levels.pop();
+       return FeatureModelTypes.DEDENT;
+    }
+    return FeatureModelTypes.CRLF;
+}
+
 [^]    { return TokenType.BAD_CHARACTER; }
