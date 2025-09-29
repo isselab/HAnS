@@ -21,7 +21,10 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.Query;
+import groovy.util.logging.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.isselab.HAnS.FeatureAnnotationSearchScope;
 import se.isselab.HAnS.codeAnnotation.psi.*;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
@@ -37,9 +40,16 @@ import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
 import se.isselab.HAnS.referencing.FileReferenceUtil;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-
+@Slf4j
 public class FeatureLocationManager {
+
+    private static final Map<String, FeatureFileMapping> CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, Long> FEATURE_INITIALIZED = new ConcurrentHashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(FeatureLocationManager.class);
+    private static boolean wasAllInitialized = false;
 
     private FeatureLocationManager() { }
 
@@ -54,12 +64,10 @@ public class FeatureLocationManager {
      * @see FeatureFileMapping
      */
     public static HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(Project project) {
-        HashMap<String, FeatureFileMapping> mapping = new HashMap<>();
-        for (var feature : ReadAction.compute(() -> FeatureModelUtil.findFeatures(project))) {
-            mapping.put(ReadAction.compute(feature::getLPQText), FeatureLocationManager.getFeatureFileMapping(project, feature));
+        if(!wasAllInitialized) {
+            calculateAllFeatureFileMappings(project);
         }
-
-        return mapping;
+        return new HashMap<>(CACHE);
     }
     // &begin[FeatureFileMapping]
 
@@ -73,13 +81,30 @@ public class FeatureLocationManager {
      * @see com.intellij.openapi.progress.Task.Backgroundable
      */
     public static FeatureFileMapping getFeatureFileMapping(Project project, FeatureModelFeature feature) {
+        if (!wasAllInitialized && !FEATURE_INITIALIZED.containsKey(feature.getLPQText())) {
+            calculateFeatureFileMapping(project, feature);
+        }
+        return CACHE.get(feature.getLPQText());
+    }
+
+    public static void calculateAllFeatureFileMappings(Project project) {
+        log.atDebug().log("Calculating all feature file mappings...");
+        for (var feature : ReadAction.compute(() -> FeatureModelUtil.findFeatures(project))) {
+            FeatureLocationManager.calculateFeatureFileMapping(project, feature);
+        }
+        wasAllInitialized = true;
+        log.atDebug().log("All feature file mappings have been calculated.");
+    }
+
+    public static void calculateFeatureFileMapping(Project project, FeatureModelFeature feature) {
+        log.atDebug().log("Calculating feature file mapping for feature: " + feature.getLPQText());
         FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);
         Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(project), true);
         for (PsiReference reference : ReadAction.compute(() -> featureReference)) {
             //get comment sibling of the feature comment
 
             PsiElement element = reference.getElement();
-            var originatingFilePath = ReadAction.compute(()->element.getContainingFile().getVirtualFile().getPath());
+            var originatingFilePath = ReadAction.compute(() -> element.getContainingFile().getVirtualFile().getPath());
             //determine file type and process content
             var fileType = ReadAction.compute(element::getContainingFile);
             if (fileType instanceof CodeAnnotationFile) {
@@ -94,7 +119,9 @@ public class FeatureLocationManager {
             }
         }
         featureFileMapping.buildFromQueue();
-        return featureFileMapping;
+        CACHE.put(feature.getLPQText(), featureFileMapping);
+        FEATURE_INITIALIZED.put(feature.getLPQText(), System.currentTimeMillis());
+        log.atDebug().log("FileMapping for Feature [{}] has been calculated.", feature.getLPQText());
     }
     // &end[FeatureFileMapping]
 
