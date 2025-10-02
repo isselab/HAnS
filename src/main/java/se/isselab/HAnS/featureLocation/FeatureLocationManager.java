@@ -23,17 +23,18 @@ import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.FeatureAnnotationSearchScope;
-import se.isselab.HAnS.codeAnnotation.psi.*;
+import se.isselab.HAnS.featureAnnotation.codeAnnotation.psi.*;
+import se.isselab.HAnS.featureAnnotation.codeAnnotation.psi.CodeAnnotationFile;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileAnnotation;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
-import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationFile;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationFileAnnotation;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationFileReferences;
+import se.isselab.HAnS.featureAnnotation.folderAnnotation.psi.FolderAnnotationFile;
 import se.isselab.HAnS.referencing.FileReferenceUtil;
 
 import java.util.HashMap;
@@ -159,7 +160,7 @@ public class FeatureLocationManager {
                 var fileName = ReadAction.compute(() -> FileReferenceUtil.findFile(file, file.getFileName().getText()));
                 if (fileName.isEmpty())
                     continue;
-                var psiFile = fileName.get(0);
+                var psiFile = fileName.getFirst();
 
                 Document document = ReadAction.compute(() -> psiDocumentManager.getDocument(psiFile));
                 if (document == null)
