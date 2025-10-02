@@ -280,7 +280,7 @@ public class FeatureModelPsiImplUtil {
     }
 
     private static FeatureModelFeature getFeatureFromLPQ(Project project, String lpq) {
-        List<FeatureModelFeature> listOfFeatures = ReadAction.compute(() -> FeatureModelUtil.findFullLPQ(project, lpq));
+        List<FeatureModelFeature> listOfFeatures = ReadAction.compute(() -> FeatureModelUtil.findLPQ(project, lpq));
         if (listOfFeatures.isEmpty()) { return null; }
         if (listOfFeatures.size() > 1) {
             Messages.showMessageDialog("Multiple features with the same LPQ found.",
