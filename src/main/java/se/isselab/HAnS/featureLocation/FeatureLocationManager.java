@@ -24,7 +24,6 @@ import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.FeatureAnnotationSearchScope;
 import se.isselab.HAnS.featureAnnotation.codeAnnotation.psi.*;
-import se.isselab.HAnS.featureAnnotation.codeAnnotation.psi.CodeAnnotationFile;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
