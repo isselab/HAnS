@@ -1,10 +1,10 @@
 package se.isselab.HAnS.fileAnnotationTests;
 
 import com.intellij.testFramework.ParsingTestCase;
-import se.isselab.HAnS.fileAnnotation.FileAnnotationParserDefinition;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.FileAnnotationParserDefinition;
 
-public class FileAnnotationParsingTest_feature_to_file extends ParsingTestCase {
-    public FileAnnotationParsingTest_feature_to_file() {
+public class FileAnnotationParsingFeatureToFileTestCase extends ParsingTestCase {
+    public FileAnnotationParsingFeatureToFileTestCase() {
         super("", "feature-to-file", new FileAnnotationParserDefinition());
     }
 
