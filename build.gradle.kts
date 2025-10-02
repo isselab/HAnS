@@ -37,16 +37,17 @@ dependencies {
     testImplementation(libs.opentest4j)
 
     intellijPlatform {
-        create(properties("platformType"), properties("platformVersion"))
+        create(providers.gradleProperty("platformType"), providers.gradleProperty("platformVersion"))
 
         // Plugin Dependencies. Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
-        bundledPlugins(properties("platformBundledPlugins").map { it.split(',') })
+        bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })
 
         // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file for plugin from JetBrains Marketplace.
-        plugins(properties("platformPlugins").map { it.split(',') })
+        plugins(providers.gradleProperty("platformPlugins").map { it.split(',') })
 
-        pluginVerifier()
-        zipSigner()
+        // Module Dependencies. Uses `platformBundledModules` property from the gradle.properties file for bundled IntelliJ Platform modules.
+        bundledModules(providers.gradleProperty("platformBundledModules").map { it.split(',') })
+
         testFramework(TestFrameworkType.Platform)
     }
 }
@@ -96,6 +97,7 @@ intellijPlatform {
 
         ideaVersion {
             sinceBuild = properties("pluginSinceBuild")
+            untilBuild = properties("pluginUntilBuild")
         }
     }
 
