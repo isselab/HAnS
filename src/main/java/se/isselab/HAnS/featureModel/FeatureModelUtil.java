@@ -30,6 +30,19 @@ import java.util.List;
 
 public class FeatureModelUtil {
 
+    /**
+     * Searches for {@link FeatureModelFeature} instances in the given {@link Project} whose LPQ (Least Partially Qualified)
+     * exactly matches the specified {@code lpq} string.
+     * <p>
+     * This method scans all files of type {@code FeatureModelFileType} within the project's global scope and collects
+     * all {@code FeatureModelFeature} elements. It then compares each feature's LPQ text with the provided {@code lpq}
+     * and returns those that match exactly.
+     * </p>
+     *
+     * @param project the IntelliJ {@link Project} context used to search for feature model files.
+     * @param lpq the Least Partially Qualified string to match against each feature's LPQ text.
+     * @return a list of {@link FeatureModelFeature} instances whose LPQ text matches the given {@code lpq}.
+     */
     public static List<FeatureModelFeature> findLPQ(Project project, String lpq) {
         List<FeatureModelFeature> result = new ArrayList<>();
         Collection<VirtualFile> virtualFiles =
@@ -48,6 +61,70 @@ public class FeatureModelUtil {
         return result;
     }
 
+    /**
+     * Searches for {@link FeatureModelFeature} instances in the given {@link Project} that match the specified LPQ (Least Partially Qualified).
+     * <p>
+     * This method scans all files of type {@code FeatureModelFileType} within the project scope and attempts to find features
+     * whose names or LPQ text match the provided {@code lpq} string. It handles both exact and hierarchical matches.
+     * </p>
+     *
+     * <p>
+     * Matching logic:
+     * <ul>
+     *   <li>If exactly one feature matches the end of the LPQ string, it checks if the full LPQ ends with "::lpq" or equals lpq.</li>
+     *   <li>If multiple features match, it checks if the LPQ starts with the parent feature name and ends with the full LPQ.</li>
+     * </ul>
+     * </p>
+     *
+     * @param project the IntelliJ {@link Project} context used to search for feature model files.
+     * @param lpq the Least Partially Qualified string to match against feature names and LPQ text.
+     * @return a list of {@link FeatureModelFeature} instances that match the given LPQ.
+     */
+    public static List<FeatureModelFeature> findFullLPQ(Project project, String lpq) {
+        List<FeatureModelFeature> result = new ArrayList<>();
+        Collection<VirtualFile> virtualFiles =
+                FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScope.allScope(project));
+        for (VirtualFile virtualFile : virtualFiles) {
+            FeatureModelFile featureModelFile = (FeatureModelFile) PsiManager.getInstance(project).findFile(virtualFile);
+            if (featureModelFile != null) {
+                Collection<FeatureModelFeature> features = PsiTreeUtil.collectElementsOfType(featureModelFile, FeatureModelFeature.class);
+
+                var selectedFeature = features.stream().filter(featureModelFeature -> lpq.endsWith(featureModelFeature.getFeatureName())).toList();
+
+                if (selectedFeature.size() == 1) {
+                    var feature = selectedFeature.getFirst();
+                    var fullLPQ = feature.getFullLPQText();
+                    if (fullLPQ.endsWith("::" + lpq) || fullLPQ.equals(lpq)) {
+                        result.add(feature);
+                    }
+                }
+                else if  (selectedFeature.size() > 1) {
+                    selectedFeature.forEach(feature -> {
+                        var fullLPQ = feature.getFullLPQText();
+                        if (feature.getParent() instanceof FeatureModelFeature parent){
+                            var parentFeatureName = parent.getFeatureName();
+                            if (lpq.startsWith(parentFeatureName) && fullLPQ.endsWith(lpq)) {
+                                result.add(feature);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * Retrieves all {@link FeatureModelFeature} instances defined in the current {@link Project}.
+     * <p>
+     * This method scans all files of type {@code FeatureModelFileType} within the project's global scope
+     * and collects every {@code FeatureModelFeature} found in those files.
+     * </p>
+     *
+     * @param project the IntelliJ {@link Project} context used to search for feature model files.
+     * @return a list of all {@link FeatureModelFeature} instances found in the project.
+     */
     public static List<FeatureModelFeature> findFeatures(Project project) {
         List<FeatureModelFeature> result = new ArrayList<>();
         Collection<VirtualFile> virtualFiles =
@@ -61,5 +138,4 @@ public class FeatureModelUtil {
         }
         return result;
     }
-
 }

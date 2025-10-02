@@ -132,6 +132,43 @@ public class FeatureModelPsiImplUtil {
     }
     // &end[Referencing]
 
+    public static String getFullLPQText(PsiElement feature) {
+        Deque<PsiElement> lpqStack = getFullLPQStack(feature);
+
+        if (lpqStack.isEmpty()) {
+            return null;
+        }
+
+        // Convert stack into full LPQ string
+        StringBuilder lpq = new StringBuilder();
+        Iterator<PsiElement> it = lpqStack.descendingIterator(); // root → leaf order
+        while (it.hasNext()) {
+            if (!lpq.isEmpty()) {
+                lpq.insert(0,"::");
+            }
+            lpq.insert(0,it.next().getText());
+        }
+
+        return lpq.toString();
+    }
+
+    private static Deque<PsiElement> getFullLPQStack(PsiElement feature) {
+        Deque<PsiElement> stack = new ArrayDeque<>();
+
+        PsiElement current = feature;
+        while (current != null && !(current instanceof PsiFile)) {
+            // Assuming FeatureModelFeature nodes have a firstChild that is the name identifier
+            PsiElement nameElement = current.getFirstChild();
+            if (nameElement != null) {
+                stack.push(nameElement);
+            }
+            // Move up: parent of the feature node → then its parent, etc.
+            current = current.getParent();
+        }
+
+        return stack;
+    }
+
     public static String getLPQText(PsiElement feature) {
         Deque<PsiElement> lpqStack = getLPQStack(feature);
         String lpq = null;
@@ -243,7 +280,7 @@ public class FeatureModelPsiImplUtil {
     }
 
     private static FeatureModelFeature getFeatureFromLPQ(Project project, String lpq) {
-        List<FeatureModelFeature> listOfFeatures = ReadAction.compute(() -> FeatureModelUtil.findLPQ(project, lpq));
+        List<FeatureModelFeature> listOfFeatures = ReadAction.compute(() -> FeatureModelUtil.findFullLPQ(project, lpq));
         if (listOfFeatures.isEmpty()) { return null; }
         if (listOfFeatures.size() > 1) {
             Messages.showMessageDialog("Multiple features with the same LPQ found.",
