@@ -44,11 +44,11 @@ public class FileHighlighter {
      */
     public static void highlightFeatureInFeatureModel(Project project, String featureLpq) {
 
-        List<FeatureModelFeature> selectedFeatures = ReadAction.compute(() -> FeatureModelUtil.findLPQ(project, featureLpq));
+        List<FeatureModelFeature> selectedFeatures = ReadAction.compute(() -> FeatureModelUtil.findFullLPQ(project, featureLpq));
         if (selectedFeatures.isEmpty()) {
             return;
         }
-        ApplicationManager.getApplication().invokeLater(() -> PsiNavigateUtil.navigate(selectedFeatures.get(0)));
+        ApplicationManager.getApplication().invokeLater(() -> PsiNavigateUtil.navigate(selectedFeatures.getFirst()));
     }
 
     /**

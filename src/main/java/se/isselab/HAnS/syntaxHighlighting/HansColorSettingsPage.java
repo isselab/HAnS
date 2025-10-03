@@ -21,9 +21,9 @@ import com.intellij.openapi.options.colors.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.AnnotationIcons;
-import se.isselab.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighter;
+import se.isselab.HAnS.syntaxHighlighting.featureAnnotations.codeAnnotations.CodeAnnotationsSyntaxHighlighter;
 import se.isselab.HAnS.syntaxHighlighting.featureModel.FeatureModelSyntaxHighlighter;
-import se.isselab.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationSyntaxHighlighter;
+import se.isselab.HAnS.syntaxHighlighting.featureAnnotations.fileAnnotations.FileAnnotationSyntaxHighlighter;
 
 import javax.swing.*;
 import java.util.HashMap;

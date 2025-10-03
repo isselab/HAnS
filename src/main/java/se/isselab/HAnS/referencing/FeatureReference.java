@@ -27,14 +27,14 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.AnnotationIcons;
-import se.isselab.HAnS.codeAnnotation.psi.CodeAnnotationLpq;
-import se.isselab.HAnS.codeAnnotation.psi.impl.CodeAnnotationPsiImplUtil;
+import se.isselab.HAnS.featureAnnotation.codeAnnotation.psi.CodeAnnotationLpq;
+import se.isselab.HAnS.featureAnnotation.codeAnnotation.psi.impl.CodeAnnotationPsiImplUtil;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationLpq;
-import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationPsiImplUtil;
-import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationLpq;
-import se.isselab.HAnS.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationLpq;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.impl.FileAnnotationPsiImplUtil;
+import se.isselab.HAnS.featureAnnotation.folderAnnotation.psi.FolderAnnotationLpq;
+import se.isselab.HAnS.featureAnnotation.folderAnnotation.psi.impl.FolderAnnotationPsiImplUtil;
 
 import java.util.*;
 
@@ -54,8 +54,7 @@ public class FeatureReference extends PsiReferenceBase<PsiElement> {
                 || FeatureReferenceUtil.getOrigin() == null)
                 && !FeatureReferenceUtil.getAddingOrDeleting()) {
             newLPQ = FeatureReferenceUtil.getLPQ((FeatureModelFeature) myElement.getReferences()[0].resolve(), newElementName);
-        }
-        else {
+        } else {
             newLPQ = newElementName;
         }
 
@@ -75,7 +74,7 @@ public class FeatureReference extends PsiReferenceBase<PsiElement> {
     @Override
     public PsiElement resolve() {
         Project project = myElement.getProject();
-        final List<FeatureModelFeature> features = FeatureModelUtil.findLPQ(project, lpq);
+        final List<FeatureModelFeature> features = FeatureModelUtil.findFullLPQ(project, lpq);
         List<ResolveResult> results = new ArrayList<>();
         for (FeatureModelFeature feature : features) {
             results.add(new PsiElementResolveResult(feature));
@@ -98,5 +97,4 @@ public class FeatureReference extends PsiReferenceBase<PsiElement> {
         }
         return variants.toArray();
     }
-
 }
