@@ -141,9 +141,8 @@ public class FeatureModelPsiImplUtil {
 
         // Convert stack into full LPQ string
         StringJoiner joiner = new StringJoiner("::");
-        Iterator<PsiElement> it = lpqStack.descendingIterator();
-        while (it.hasNext()) {
-            joiner.add(it.next().getText());
+        for(var psiElement : lpqStack) {
+            joiner.add(psiElement.getText());
         }
 
         return joiner.toString();
