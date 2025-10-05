@@ -140,16 +140,13 @@ public class FeatureModelPsiImplUtil {
         }
 
         // Convert stack into full LPQ string
-        StringBuilder lpq = new StringBuilder();
-        Iterator<PsiElement> it = lpqStack.descendingIterator(); // root → leaf order
+        StringJoiner joiner = new StringJoiner("::");
+        Iterator<PsiElement> it = lpqStack.descendingIterator();
         while (it.hasNext()) {
-            if (!lpq.isEmpty()) {
-                lpq.insert(0,"::");
-            }
-            lpq.insert(0,it.next().getText());
+            joiner.add(it.next().getText());
         }
 
-        return lpq.toString();
+        return joiner.toString();
     }
 
     private static Deque<PsiElement> getFullLPQStack(PsiElement feature) {

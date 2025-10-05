@@ -27,6 +27,7 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class FeatureModelUtil {
 
@@ -45,18 +46,15 @@ public class FeatureModelUtil {
      */
     public static List<FeatureModelFeature> findLPQ(Project project, String lpq) {
         List<FeatureModelFeature> result = new ArrayList<>();
-        Collection<VirtualFile> virtualFiles =
-                FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScope.allScope(project));
+        Collection<VirtualFile> virtualFiles = getFeatureModelFiles(project);
         for (VirtualFile virtualFile : virtualFiles) {
             FeatureModelFile featureModelFile = (FeatureModelFile) PsiManager.getInstance(project).findFile(virtualFile);
-            if (featureModelFile != null) {
-                Collection<FeatureModelFeature> features = PsiTreeUtil.collectElementsOfType(featureModelFile, FeatureModelFeature.class);
-                for (FeatureModelFeature feature : features) {
-                    if (lpq.equals(feature.getLPQText())) {
-                        result.add(feature);
-                    }
-                }
-            }
+            if (featureModelFile == null) continue;
+
+            Collection<FeatureModelFeature> features = PsiTreeUtil.collectElementsOfType(featureModelFile, FeatureModelFeature.class);
+            features.stream()
+                    .filter(feature -> lpq.equals(feature.getLPQText()))
+                    .forEach(result::add);
         }
         return result;
     }
@@ -82,34 +80,40 @@ public class FeatureModelUtil {
      */
     public static List<FeatureModelFeature> findFullLPQ(Project project, String lpq) {
         List<FeatureModelFeature> result = new ArrayList<>();
-        Collection<VirtualFile> virtualFiles =
-                FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScope.allScope(project));
+        Collection<VirtualFile> virtualFiles = getFeatureModelFiles(project);
         for (VirtualFile virtualFile : virtualFiles) {
             FeatureModelFile featureModelFile = (FeatureModelFile) PsiManager.getInstance(project).findFile(virtualFile);
-            if (featureModelFile != null) {
-                Collection<FeatureModelFeature> features = PsiTreeUtil.collectElementsOfType(featureModelFile, FeatureModelFeature.class);
 
-                var selectedFeature = features.stream().filter(featureModelFeature -> lpq.endsWith(featureModelFeature.getFeatureName())).toList();
+            if(featureModelFile == null) continue;
 
-                if (selectedFeature.size() == 1) {
-                    var feature = selectedFeature.getFirst();
-                    var fullLPQ = feature.getFullLPQText();
-                    if (fullLPQ.endsWith("::" + lpq) || fullLPQ.equals(lpq)) {
+            var selectedFeatures = PsiTreeUtil.collectElementsOfType(featureModelFile, FeatureModelFeature.class).stream()
+                    .filter(Objects::nonNull)
+                    .filter(featureModelFeature -> lpq.endsWith(featureModelFeature.getFeatureName()))
+                    .toList();
+
+            result.addAll(processSelectedFeatures(lpq, selectedFeatures));
+        }
+        return result;
+    }
+
+    private static Collection<FeatureModelFeature> processSelectedFeatures(String lpq, List<FeatureModelFeature> selectedFeatures) {
+        var result = new ArrayList<FeatureModelFeature>();
+        if (selectedFeatures.size() == 1) {
+            var feature = selectedFeatures.getFirst();
+            var fullLPQ = feature.getFullLPQText();
+            if (fullLPQ.endsWith("::" + lpq) || fullLPQ.equals(lpq)) {
+                result.add(feature);
+            }
+        } else if (selectedFeatures.size() > 1) {
+            selectedFeatures.forEach(feature -> {
+                var fullLPQ = feature.getFullLPQText();
+                if (feature.getParent() instanceof FeatureModelFeature parent) {
+                    var parentFeatureName = parent.getFeatureName();
+                    if (lpq.startsWith(parentFeatureName) && fullLPQ.endsWith(lpq)) {
                         result.add(feature);
                     }
                 }
-                else if  (selectedFeature.size() > 1) {
-                    selectedFeature.forEach(feature -> {
-                        var fullLPQ = feature.getFullLPQText();
-                        if (feature.getParent() instanceof FeatureModelFeature parent){
-                            var parentFeatureName = parent.getFeatureName();
-                            if (lpq.startsWith(parentFeatureName) && fullLPQ.endsWith(lpq)) {
-                                result.add(feature);
-                            }
-                        }
-                    });
-                }
-            }
+            });
         }
         return result;
     }
@@ -127,8 +131,7 @@ public class FeatureModelUtil {
      */
     public static List<FeatureModelFeature> findFeatures(Project project) {
         List<FeatureModelFeature> result = new ArrayList<>();
-        Collection<VirtualFile> virtualFiles =
-                FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScope.allScope(project));
+        Collection<VirtualFile> virtualFiles = getFeatureModelFiles(project);
         for (VirtualFile virtualFile : virtualFiles) {
             FeatureModelFile featureModelFile = (FeatureModelFile) PsiManager.getInstance(project).findFile(virtualFile);
             if (featureModelFile != null) {
@@ -137,5 +140,9 @@ public class FeatureModelUtil {
             }
         }
         return result;
+    }
+
+    private static Collection<VirtualFile> getFeatureModelFiles(Project project) {
+        return FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScope.allScope(project));
     }
 }
