@@ -58,7 +58,7 @@ jobs:
               break
             fi
             echo "Waiting for checks to pass... ($i/80)"
-            sleep 10
+            sleep 60000
           done
           echo "Timed out waiting for status checks to pass."
           exit 1
