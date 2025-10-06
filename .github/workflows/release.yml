@@ -137,15 +137,17 @@ jobs:
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
         run: |
           PR_URL="${{ steps.find_pr.outputs.pr_url }}"
-          for i in {1..30}; do
+          for i in {1..80}; do
             STATUS=$(gh pr view "$PR_URL" --json statusCheckRollup -q '.statusCheckRollup[].state' | grep -v SUCCESS || true)
             if [[ -z "$STATUS" ]]; then
               echo "All checks passed."
               break
             fi
-            echo "Waiting for checks to pass..."
+            echo "Waiting for checks to pass... ($i/80)"
             sleep 10
           done
+          echo "Timed out waiting for status checks to pass."
+          exit 1
 
       - name: Squash Merge PR
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
