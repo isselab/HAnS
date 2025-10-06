@@ -43,9 +43,9 @@ jobs:
             echo "only_changelog=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Approve PR ✅
-        if: steps.check_changelog_only.outputs.only_changelog == 'true'
-        run: gh pr review "${{ steps.find_pr.outputs.pr_url }}" --approve
+      #- name: Approve PR ✅
+       # if: steps.check_changelog_only.outputs.only_changelog == 'true'
+        #run: gh pr review "${{ steps.find_pr.outputs.pr_url }}" --approve
 
       - name: Wait for Status Checks
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
@@ -65,4 +65,4 @@ jobs:
 
       - name: Squash Merge PR
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
-        run: gh pr merge "${{ steps.find_pr.outputs.pr_url }}" --squash --delete-branch
+        run: gh pr merge "${{ steps.find_pr.outputs.pr_url }}" --squash --auto --delete-branch
