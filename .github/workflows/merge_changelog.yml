@@ -1,8 +1,9 @@
 name: AutoMerge Changelog
 
 on:
+  workflow_dispatch:
   workflow_run:
-    workflows: ["Release-Test"]
+    workflows: ["Release"]
     types:
       - completed
 
