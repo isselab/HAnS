@@ -1,8 +1,9 @@
 name: AutoMerge Changelog
 
 on:
+  workflow_dispatch:
   workflow_run:
-    workflows: ["Release-Test"]
+    workflows: ["Release"]
     types:
       - completed
 
@@ -11,10 +12,13 @@ jobs:
     name: Auto-Approve & Merge Changelog PR
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.BOT_TOKEN }}
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
+
+      - name: Authenticate GitHub CLI with Bot Token
+        run: echo "${{ secrets.BOT_TOKEN }}" | gh auth login --with-token
 
       - name: Find Changelog PR
         id: find_pr
@@ -39,9 +43,9 @@ jobs:
             echo "only_changelog=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Approve PR ✅
-        if: steps.check_changelog_only.outputs.only_changelog == 'true'
-        run: gh pr review "${{ steps.find_pr.outputs.pr_url }}" --approve
+      #- name: Approve PR ✅
+       # if: steps.check_changelog_only.outputs.only_changelog == 'true'
+        #run: gh pr review "${{ steps.find_pr.outputs.pr_url }}" --approve
 
       - name: Wait for Status Checks
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
@@ -61,4 +65,4 @@ jobs:
 
       - name: Squash Merge PR
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
-        run: gh pr merge "${{ steps.find_pr.outputs.pr_url }}" --squash --delete-branch
+        run: gh pr merge "${{ steps.find_pr.outputs.pr_url }}" --squash --auto --delete-branch
