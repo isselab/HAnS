@@ -13,6 +13,9 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.BOT_TOKEN }}
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
       - name: Find Changelog PR
         id: find_pr
         run: |
