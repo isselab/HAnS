@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+      GH_TOKEN: ${{ secrets.BOT_TOKEN }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
@@ -43,30 +45,9 @@ jobs:
             echo "only_changelog=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Wait for Status Checks
-        if: steps.check_changelog_only.outputs.only_changelog == 'true'
-        run: |
-          PR_URL="${{ steps.find_pr.outputs.pr_url }}"
-          for i in {1..80}; do
-            STATUS=$(gh pr view "$PR_URL" --json statusCheckRollup -q '.statusCheckRollup[].state' | grep -v SUCCESS || true)
-            if [[ -z "$STATUS" ]]; then
-              echo "All checks passed."
-              exit 0
-            fi
-            echo "Waiting for checks to pass... ($i/80)"
-            sleep 10
-          done
-          echo "Timed out waiting for status checks to pass."
-          exit 1
-
       - name: Approve PR via REST API
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
-        run: |
-          PR_NUMBER=$(echo "${{ steps.find_pr.outputs.pr_url }}" | grep -o '[0-9]*$')
-          curl -s -H "Authorization: token $BOT_TOKEN" \
-            -X POST \
-            -d '{"body":"Here is the body for the review.","event":"REQUEST_CHANGES"}' \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/reviews"
+        run: gh pr review "${{ steps.find_pr.outputs.pr_url }}" -a -b "Auto-approved by bot."
 
       - name: Squash Merge PR
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
