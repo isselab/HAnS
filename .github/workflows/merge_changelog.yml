@@ -55,10 +55,10 @@ jobs:
             STATUS=$(gh pr view "$PR_URL" --json statusCheckRollup -q '.statusCheckRollup[].state' | grep -v SUCCESS || true)
             if [[ -z "$STATUS" ]]; then
               echo "All checks passed."
-              break
+              exit 0
             fi
             echo "Waiting for checks to pass... ($i/80)"
-            sleep 60000
+            sleep 10
           done
           echo "Timed out waiting for status checks to pass."
           exit 1
