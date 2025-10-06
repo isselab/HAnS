@@ -1,0 +1,10 @@
+name: Release-Test
+on:
+  workflow_dispatch:
+
+jobs:
+  simulate-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simulate release
+        run: echo "Pretending to release v0.1.2"

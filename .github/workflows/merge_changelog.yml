@@ -2,7 +2,7 @@ name: AutoMerge Changelog
 
 on:
   workflow_run:
-    workflows: ["Release"]
+    workflows: ["Release-Test"]
     types:
       - completed
 
