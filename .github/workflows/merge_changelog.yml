@@ -19,8 +19,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v5
 
-      - name: Authenticate GitHub CLI with Bot Token
-        run: echo "${{ secrets.BOT_TOKEN }}" | gh auth login --with-token
+#      - name: Authenticate GitHub CLI with Bot Token
+#        run: echo "${{ secrets.BOT_TOKEN }}" | gh auth login --with-token
 
       - name: Find Changelog PR
         id: find_pr
