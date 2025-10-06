@@ -1,0 +1,61 @@
+name: AutoMerge Changelog
+
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
+
+jobs:
+  automerge:
+    name: Auto-Approve & Merge Changelog PR
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.BOT_TOKEN }}
+    steps:
+      - name: Find Changelog PR
+        id: find_pr
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          PR_URL=$(gh pr list --search "Changelog update - \`$VERSION\`" --json url -q '.[0].url')
+          echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
+
+      - name: Get Changed Files
+        id: changed_files
+        run: |
+          FILES=$(gh pr view "${{ steps.find_pr.outputs.pr_url }}" --json files -q '.files[].path')
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Check if only CHANGELOG.md was changed
+        id: check_changelog_only
+        run: |
+          FILES="${{ steps.changed_files.outputs.files }}"
+          if [[ "$FILES" == "CHANGELOG.md" ]]; then
+            echo "only_changelog=true" >> $GITHUB_OUTPUT
+          else
+            echo "only_changelog=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Approve PR ✅
+        if: steps.check_changelog_only.outputs.only_changelog == 'true'
+        run: gh pr review "${{ steps.find_pr.outputs.pr_url }}" --approve
+
+      - name: Wait for Status Checks
+        if: steps.check_changelog_only.outputs.only_changelog == 'true'
+        run: |
+          PR_URL="${{ steps.find_pr.outputs.pr_url }}"
+          for i in {1..80}; do
+            STATUS=$(gh pr view "$PR_URL" --json statusCheckRollup -q '.statusCheckRollup[].state' | grep -v SUCCESS || true)
+            if [[ -z "$STATUS" ]]; then
+              echo "All checks passed."
+              break
+            fi
+            echo "Waiting for checks to pass... ($i/80)"
+            sleep 10
+          done
+          echo "Timed out waiting for status checks to pass."
+          exit 1
+
+      - name: Squash Merge PR
+        if: steps.check_changelog_only.outputs.only_changelog == 'true'
+        run: gh pr merge "${{ steps.find_pr.outputs.pr_url }}" --squash --delete-branch
