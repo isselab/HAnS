@@ -45,6 +45,16 @@ jobs:
             echo "only_changelog=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Trigger Build
+        if: steps.check_changelog_only.outputs.only_changelog == 'true'
+        run: |
+          git config --global user.email "johmara-bot@users.noreply.github.com"
+          git config --global user.name "johmara-bot"
+          git checkout main
+          git pull origin main
+          git commit --allow-empty -m "Trigger build after changelog merge"
+          git push origin main
+
       - name: Approve PR via REST API
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
         run: gh pr review "${{ steps.find_pr.outputs.pr_url }}" -a -b "Auto-approved by bot."
