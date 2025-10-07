@@ -16,8 +16,6 @@ limitations under the License.
 package se.isselab.HAnS.featureView;
 
 import com.intellij.ide.structureView.newStructureView.StructureViewComponent;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -28,25 +26,17 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
 import com.intellij.ui.content.*;
-import com.intellij.util.Consumer;
-import com.intellij.util.concurrency.AppExecutorUtil;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.AnnotationIcons;
+import se.isselab.HAnS.featureModel.FeatureModelUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.Objects;
-
-import static com.intellij.psi.search.FilenameIndex.getAllFilesByExt;
-import static com.intellij.psi.search.FilenameIndex.getVirtualFilesByName;
-import static com.intellij.psi.search.GlobalSearchScope.projectScope;
 
 public class FeatureViewFactory implements ToolWindowFactory {
 
@@ -58,7 +48,7 @@ public class FeatureViewFactory implements ToolWindowFactory {
         toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
         var fileEditorManager = FileEditorManager.getInstance(project);
         var fileEditor = fileEditorManager.getSelectedEditor();
-        findFeatureModelAsync(project, psiFile -> {
+        FeatureModelUtil.findFeatureModelAsync(project, psiFile -> {
             JComponent component;
             if (psiFile != null)
                 component = new StructureViewComponent(fileEditor, new FeatureViewModel(psiFile), project, false);
@@ -127,26 +117,5 @@ public class FeatureViewFactory implements ToolWindowFactory {
                 }
             });
         }
-    }
-
-    private void findFeatureModelAsync(@NotNull Project project, @NotNull Consumer<PsiFile> callback) {
-        ReadAction.nonBlocking(() -> findFeatureModel(project))
-                .inSmartMode(project)
-                .finishOnUiThread(ModalityState.defaultModalityState(), callback)
-                .submit(AppExecutorUtil.getAppExecutorService());
-    }
-
-    private PsiFile findFeatureModel(@NotNull Project project) {
-        var allFilenames = getVirtualFilesByName(".feature-model", projectScope(project));
-        PsiFile psiFile = null;
-        if (!allFilenames.isEmpty()) {
-            psiFile = PsiManager.getInstance(project).findFile(allFilenames.iterator().next());
-        } else {
-            Collection<VirtualFile> virtualFileCollection = getAllFilesByExt(project, "feature-model");
-            if (!virtualFileCollection.isEmpty()) {
-                psiFile = PsiManager.getInstance(project).findFile(virtualFileCollection.iterator().next());
-            }
-        }
-        return psiFile;
     }
 }

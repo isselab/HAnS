@@ -15,12 +15,18 @@ limitations under the License.
 */
 package se.isselab.HAnS.featureModel;
 
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.Consumer;
+import com.intellij.util.concurrency.AppExecutorUtil;
+import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
 
@@ -29,7 +35,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-public class FeatureModelUtil {
+import static com.intellij.psi.search.FilenameIndex.getAllFilesByExt;
+import static com.intellij.psi.search.FilenameIndex.getVirtualFilesByName;
+import static com.intellij.psi.search.GlobalSearchScope.projectScope;
+
+public final class FeatureModelUtil {
+
+    private FeatureModelUtil() {
+    }
 
     /**
      * Searches for {@link FeatureModelFeature} instances in the given {@link Project} whose LPQ (Least Partially Qualified)
@@ -144,5 +157,29 @@ public class FeatureModelUtil {
 
     private static Collection<VirtualFile> getFeatureModelFiles(Project project) {
         return FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScope.allScope(project));
+    }
+
+
+    public static void findFeatureModelAsync(@NotNull Project project, @NotNull Consumer<PsiFile> callback) {
+        ReadAction.nonBlocking(() -> findFeatureModel(project))
+                .inSmartMode(project)
+                .finishOnUiThread(ModalityState.defaultModalityState(), callback)
+                .submit(AppExecutorUtil.getAppExecutorService());
+    }
+
+    public static PsiFile findFeatureModel(@NotNull Project project) {
+        var allFilenames = getVirtualFilesByName(".feature-model", projectScope(project));
+        if (!allFilenames.isEmpty()) {
+            return PsiManager.getInstance(project).findFile(allFilenames.iterator().next());
+        }
+        Collection<VirtualFile> virtualFileCollection = getAllFilesByExt(project, "feature-model");
+        if (!virtualFileCollection.isEmpty()) {
+            return PsiManager.getInstance(project).findFile(virtualFileCollection.iterator().next());
+        }
+        Collection<VirtualFile> virtualFiles = getFeatureModelFiles(project);
+        if (!virtualFiles.isEmpty()) {
+            return PsiManager.getInstance(project).findFile(virtualFiles.iterator().next());
+        }
+        return null;
     }
 }
