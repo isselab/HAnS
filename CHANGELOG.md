@@ -2,12 +2,14 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-10-07
+
 ### New ✨
 
 - Optional parent paths (LPQs) in annotations
   - You can now include parent paths even when a feature name is unique. 
   - This gives you the flexibility to add extra context where it improves readability. 
-  - Existing projects remain unaffected: LPQs are still only required when duplicate feature names exist. 
+  - Existing projects remain unaffected: LPQs are still only required when duplicate feature names exist.
 
 ## [0.1.2] - 2025-08-11
 
@@ -148,7 +150,8 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/isselab/HAnS/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/isselab/HAnS/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/isselab/HAnS/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/isselab/HAnS/compare/v0.0.8...v0.1.0
