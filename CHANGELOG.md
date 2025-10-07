@@ -2,13 +2,6 @@
 
 ## [Unreleased]
 
-### New ✨
-
-- Optional parent paths (LPQs) in annotations
-    - You can now include parent paths even when a feature name is unique.
-    - This gives you the flexibility to add extra context where it improves readability.
-    - Existing projects remain unaffected: LPQs are still only required when duplicate feature names exist.
-
 ### Fixed 🐛
 - Addressed discrepancies in how the feature model was previously resolved in different contexts.
 
