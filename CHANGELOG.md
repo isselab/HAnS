@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed 🐛
+- Addressed discrepancies in how the feature model was previously resolved in different contexts.
+
 ## [0.2.0] - 2025-10-07
 
 ### New ✨

@@ -18,7 +18,6 @@ package se.isselab.HAnS.unassignedFeature;
 
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
 import com.intellij.lang.ASTNode;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileChooser.FileChooser;
@@ -31,15 +30,12 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.FileTypeIndex;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureModel.FeatureModelFileType;
+import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
-
-import java.util.Collection;
 
 // An Intention Action
 public class UnassignedFeatureQuickFix extends BaseIntentionAction {
@@ -69,11 +65,10 @@ public class UnassignedFeatureQuickFix extends BaseIntentionAction {
     @Override
     public void invoke(@NotNull final Project project, final Editor editor, PsiFile file) throws
             IncorrectOperationException {
-        ApplicationManager.getApplication().invokeLaterOnWriteThread(() -> {
-            Collection<VirtualFile> virtualFiles =
-                    FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScope.allScope(project));
-            if (virtualFiles.size() == 1) {
-                createFeatureInFeatureModel(project, virtualFiles.iterator().next());
+
+        FeatureModelUtil.findFeatureModelAsync(project , psiFile -> {
+            if (psiFile != null) {
+                createFeatureInFeatureModel(project, psiFile.getVirtualFile());
             } else {
                 final FileChooserDescriptor descriptor =
                         FileChooserDescriptorFactory.createSingleFileDescriptor(FeatureModelFileType.INSTANCE);
