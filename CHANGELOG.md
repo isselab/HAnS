@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- ✅ Updated internal code to remove deprecated IntelliJ APIs for future compatibility.
+- 🧹 Minor cleanup and documentation updates
+
 ## [0.2.1] - 2025-10-08
 
 ### Fixed 🐛
