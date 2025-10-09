@@ -23,13 +23,15 @@ jobs:
         id: get_tag
         run: |
           VERSION=$(git tag --sort=-creatordate | head -n 1)
+          BRANCH="changelog-update-$VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
 
       - name: Find Changelog PR
         id: find_pr
         run: |
           VERSION=${{ steps.get_tag.outputs.version }}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
           PR_URL=$(gh pr list --search "Changelog update - \`$VERSION\`" --json url -q '.[0].url')
           echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
 
@@ -53,9 +55,9 @@ jobs:
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
         run: |
           VERSION=${{ steps.get_tag.outputs.version }}
-          BRANCH="changelog-update-$VERSION"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          BRANCH=${{ steps.get_tag.outputs.branch }}
+          echo "Version: $VERSION"
+          echo "Branch: $BRANCH"
           
           git config --global user.email "johmara-bot@users.noreply.github.com"
           git config --global user.name "johmara-bot"
