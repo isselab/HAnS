@@ -19,10 +19,16 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v5
 
+      - name: Get Latest Tag by Date
+        id: get_tag
+        run: |
+          VERSION=$(git tag --sort=-creatordate | head -n 1)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Find Changelog PR
         id: find_pr
         run: |
-          VERSION=$(git describe --tags --abbrev=0)
+          VERSION=${{ steps.get_tag.outputs.version }}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           PR_URL=$(gh pr list --search "Changelog update - \`$VERSION\`" --json url -q '.[0].url')
           echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
@@ -46,7 +52,7 @@ jobs:
       - name: Trigger Build
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
         run: |
-          VERSION=$(git describe --tags --abbrev=0)
+          VERSION=${{ steps.get_tag.outputs.version }}
           BRANCH="changelog-update-$VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
