@@ -26,7 +26,9 @@ jobs:
           BRANCH="changelog-update-$VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "branch=$BRANCH" >> $GITHUB_OUTPUT
-
+          
+          echo "Version: $VERSION"
+          echo "Branch: $BRANCH"
 
       - name: Find Changelog PR
         id: find_pr
