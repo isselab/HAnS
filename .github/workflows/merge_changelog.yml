@@ -22,6 +22,7 @@ jobs:
       - name: Get Latest Tag by Date
         id: get_tag
         run: |
+          git fetch --tags
           VERSION=$(git tag --sort=-creatordate | head -n 1)
           BRANCH="changelog-update-$VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
