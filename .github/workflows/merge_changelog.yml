@@ -19,13 +19,22 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v5
 
-#      - name: Authenticate GitHub CLI with Bot Token
-#        run: echo "${{ secrets.BOT_TOKEN }}" | gh auth login --with-token
+      - name: Get Latest Tag by Date
+        id: get_tag
+        run: |
+          git fetch --tags
+          VERSION=$(git tag --sort=-creatordate | head -n 1)
+          BRANCH="changelog-update-$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          
+          echo "Version: $VERSION"
+          echo "Branch: $BRANCH"
 
       - name: Find Changelog PR
         id: find_pr
         run: |
-          VERSION="${{ github.event.release.tag_name }}"
+          VERSION=${{ steps.get_tag.outputs.version }}
           PR_URL=$(gh pr list --search "Changelog update - \`$VERSION\`" --json url -q '.[0].url')
           echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
 
@@ -48,8 +57,10 @@ jobs:
       - name: Trigger Build
         if: steps.check_changelog_only.outputs.only_changelog == 'true'
         run: |
-          VERSION="${{ github.event.release.tag_name }}"
-          BRANCH="changelog-update-$VERSION"
+          VERSION=${{ steps.get_tag.outputs.version }}
+          BRANCH=${{ steps.get_tag.outputs.branch }}
+          echo "Version: $VERSION"
+          echo "Branch: $BRANCH"
           
           git config --global user.email "johmara-bot@users.noreply.github.com"
           git config --global user.name "johmara-bot"
