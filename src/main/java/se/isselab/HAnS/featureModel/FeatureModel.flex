@@ -34,6 +34,10 @@ import com.intellij.lexer.FlexLexer;
     return;
 %eof}
 
+OR="or"[' ']+
+XOR="xor"[' ']+
+OPTIONALITY=[\?]
+
 CRLF=[\n|\r\n]
 SPACE= [' ']
 
@@ -122,6 +126,10 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
         yybegin(YYINITIAL);
     }
 }
+
+<indent>{OR}?      { current_line_indent += 2; yybegin(feature); return FeatureModelTypes.OR; }
+<indent>{XOR}?       { current_line_indent += 3; yybegin(feature); return FeatureModelTypes.XOR; }
+<indent>{OPTIONALITY}?   { return FeatureModelTypes.OPTIONALITY; }
 
 <feature>{FEATURENAME}+     {
         yybegin(indent);
