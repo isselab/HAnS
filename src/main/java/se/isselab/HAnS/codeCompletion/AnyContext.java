@@ -17,15 +17,32 @@ package se.isselab.HAnS.codeCompletion;
 
 import com.intellij.codeInsight.template.TemplateActionContext;
 import com.intellij.codeInsight.template.TemplateContextType;
+import com.intellij.psi.PsiComment;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class AnyContext extends TemplateContextType {
-    protected AnyContext() {
-        super("Any");
+    public AnyContext() {
+        super("ANY");
     }
 
     @Override
     public boolean isInContext(@NotNull TemplateActionContext templateActionContext) {
+        // Allow templates in comment contexts (where EFA markers are typically used)
+        PsiFile file = templateActionContext.getFile();
+        final int offset = templateActionContext.getStartOffset();
+
+        PsiElement element = file.findElementAt(offset);
+        if (element != null) {
+            PsiComment comment = PsiTreeUtil.getParentOfType(element, PsiComment.class, false);
+            if (comment != null) {
+                return true;
+            }
+        }
+
+        // Also allow in any code context
         return true;
     }
 

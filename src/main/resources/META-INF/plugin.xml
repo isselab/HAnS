@@ -55,7 +55,9 @@ limitations under the License.
         <!-- &end[HAnS::CodeAnnotation] -->
 
         <!-- &begin[CodeCompletion] -->
-        <completion.contributor language="any"
+        <completion.contributor language="FileAnnotation"
+                                implementationClass="se.isselab.HAnS.codeCompletion.FileCompletionContributor"/>
+        <completion.contributor language="FolderAnnotation"
                                 implementationClass="se.isselab.HAnS.codeCompletion.FileCompletionContributor"/>
         <!-- &end[CodeCompletion] -->
 

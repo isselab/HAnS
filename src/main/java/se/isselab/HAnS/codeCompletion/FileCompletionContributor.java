@@ -31,5 +31,12 @@ public class FileCompletionContributor extends CompletionContributor {
                                 withParent(FileAnnotationFeatureNameImpl.class)),
                 new FileNameCompletionProvider(false));
         // &end[FileNameProvider]
+
+        // &begin[FeatureNameProvider]
+        extend(CompletionType.BASIC,
+                psiElement(FileAnnotationTypes.STRING).
+                        withParent(FileAnnotationFeatureNameImpl.class),
+                new FeatureNameCompletionProvider());
+        // &end[FeatureNameProvider]
     }
 }
