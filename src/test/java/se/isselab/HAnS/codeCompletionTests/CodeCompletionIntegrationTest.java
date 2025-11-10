@@ -31,9 +31,11 @@ public class CodeCompletionIntegrationTest extends BasePlatformTestCase {
 
         // Create feature model with features
         myFixture.configureByText("test.feature-model",
-                "Root\n" +
-                "    CoreFeature\n" +
-                "    CoreFeature2\n");
+                """
+                Root
+                    CoreFeature
+                    CoreFeature2
+                """);
 
         // Test completion in feature-to-file path field
         myFixture.configureByText("test.feature-to-file",
@@ -49,10 +51,12 @@ public class CodeCompletionIntegrationTest extends BasePlatformTestCase {
     public void testFeatureNameCompletionInAnnotationFile() {
         // Create feature model with known features
         myFixture.configureByText("features.feature-model",
-                "Root\n" +
-                "    Authentication\n" +
-                "    Authorization\n" +
-                "    Logging\n");
+                """
+                Root
+                    Authentication
+                    Authorization
+                    Logging
+                """);
 
         // Test completion for feature names starting with 'A'
         myFixture.configureByText("test.feature-to-file",
@@ -67,10 +71,11 @@ public class CodeCompletionIntegrationTest extends BasePlatformTestCase {
     public void testCompletionWithMultipleFeatures() {
         // Create feature model with multiple features
         myFixture.configureByText("model.feature-model",
-                "Root\n" +
-                "    UserManagement\n" +
-                "    UserAuthentication\n" +
-                "    UserProfile\n");
+                """
+                Root
+                    UserManagement
+                    UserAuthentication
+                    UserProfile""");
 
         // Test completion filters by prefix
         myFixture.configureByText("test.feature-to-file",
@@ -100,7 +105,7 @@ public class CodeCompletionIntegrationTest extends BasePlatformTestCase {
 
         // Annotation files should be excluded IF completions are provided
         // Null is acceptable in test environment
-        if (completions != null && completions.length > 0) {
+        if (completions != null) {
             for (LookupElement completion : completions) {
                 String name = completion.getLookupString();
                 assertFalse("Should exclude .feature-to-file files",
@@ -127,8 +132,7 @@ public class CodeCompletionIntegrationTest extends BasePlatformTestCase {
     public void testCompletionInFeatureToFolder() {
         // Create feature model
         myFixture.configureByText("features.feature-model",
-                "Root\n" +
-                "    ModuleA\n");
+                "Root\n    ModuleA\n");
 
         // Test completion in feature-to-folder file
         myFixture.configureByText("test.feature-to-folder",
@@ -142,9 +146,11 @@ public class CodeCompletionIntegrationTest extends BasePlatformTestCase {
 
     public void testCompletionPatternMatching() {
         myFixture.configureByText("features.feature-model",
-                "Root\n" +
-                "    PaymentGateway\n" +
-                "    PaymentProcessor\n");
+                """
+                Root
+                    PaymentGateway
+                    PaymentProcessor
+                """);
 
         myFixture.configureByText("file.txt", "regular file");
         myFixture.configureByText("service.java", "regular java file");

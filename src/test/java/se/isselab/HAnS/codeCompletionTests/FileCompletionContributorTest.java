@@ -15,7 +15,6 @@ limitations under the License.
 */
 package se.isselab.HAnS.codeCompletionTests;
 
-import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import se.isselab.HAnS.codeCompletion.FileCompletionContributor;
@@ -25,12 +24,6 @@ import se.isselab.HAnS.codeCompletion.FileCompletionContributor;
  * Validates that both file name and feature name completion providers work together.
  */
 public class FileCompletionContributorTest extends BasePlatformTestCase {
-
-    public void testFileCompletionContributorIsCompletionContributor() {
-        FileCompletionContributor contributor = new FileCompletionContributor();
-        assertTrue("FileCompletionContributor should extend CompletionContributor",
-                contributor instanceof CompletionContributor);
-    }
 
     public void testFileCompletionContributorCanBeInstantiated() {
         FileCompletionContributor contributor = new FileCompletionContributor();
@@ -53,8 +46,10 @@ public class FileCompletionContributorTest extends BasePlatformTestCase {
         // When completing in feature field (feature-name STRING)
         // the FeatureNameCompletionProvider should be active
         myFixture.configureByText("test.feature-model",
-                "Root\n" +
-                "    AuthModule\n");
+                """
+                Root
+                    AuthModule
+                """);
 
         myFixture.configureByText("test.feature-to-file",
                 "src/Test.java\nAu<caret>");
@@ -68,8 +63,10 @@ public class FileCompletionContributorTest extends BasePlatformTestCase {
     public void testBothProvidersWork() {
         // Create a test project with both files and features
         myFixture.configureByText("test.feature-model",
-                "Root\n" +
-                "    TestFeature\n");
+                """
+                Root
+                    TestFeature
+                """);
 
         myFixture.configureByText("TestFile.java", "public class TestFile {}");
 
@@ -90,8 +87,10 @@ public class FileCompletionContributorTest extends BasePlatformTestCase {
 
     public void testCompletionInFeatureToFolder() {
         myFixture.configureByText("test.feature-model",
-                "Root\n" +
-                "    FolderFeature\n");
+                """
+                Root
+                    FolderFeature
+                """);
 
         myFixture.configureByText("test.feature-to-folder",
                 "src/\nFold<caret>");
@@ -118,7 +117,7 @@ public class FileCompletionContributorTest extends BasePlatformTestCase {
         // Completions may or may not be provided, but if they are,
         // they should exclude annotation files
         // Null is acceptable in test environment
-        if (completions != null && completions.length > 0) {
+        if (completions != null) {
             for (LookupElement element : completions) {
                 String name = element.getLookupString();
                 assertFalse("Should not include .feature-to-file files",

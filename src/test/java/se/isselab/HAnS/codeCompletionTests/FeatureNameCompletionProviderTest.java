@@ -15,7 +15,6 @@ limitations under the License.
 */
 package se.isselab.HAnS.codeCompletionTests;
 
-import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import se.isselab.HAnS.codeCompletion.FeatureNameCompletionProvider;
@@ -25,12 +24,6 @@ import se.isselab.HAnS.codeCompletion.FeatureNameCompletionProvider;
  * Tests actual code completion results for feature names in feature-to-file annotations.
  */
 public class FeatureNameCompletionProviderTest extends BasePlatformTestCase {
-
-    public void testFeatureNameCompletionProviderIsCompletionProvider() {
-        FeatureNameCompletionProvider provider = new FeatureNameCompletionProvider();
-        assertTrue("FeatureNameCompletionProvider should extend CompletionProvider",
-                provider instanceof CompletionProvider);
-    }
 
     public void testFeatureNameCompletionProviderCanBeInstantiated() {
         FeatureNameCompletionProvider provider = new FeatureNameCompletionProvider();
@@ -51,9 +44,11 @@ public class FeatureNameCompletionProviderTest extends BasePlatformTestCase {
     public void testFeatureCompletionFiltering() {
         // Create a test feature model with known features
         myFixture.configureByText("test.feature-model",
-                "Root\n" +
-                "    UserAuth\n" +
-                "    UserProcessing\n");
+                """
+                Root
+                    UserAuth
+                    UserProcessing
+                """);
 
         myFixture.configureByText("test.feature-to-file",
                 "TestFile.java\nUser<caret>");
@@ -84,25 +79,14 @@ public class FeatureNameCompletionProviderTest extends BasePlatformTestCase {
 
     public void testCompletionWithSpecialCharacters() {
         myFixture.configureByText("test.feature-model",
-                "Root\n" +
-                "    Feature_With_Underscores\n");
+                "Root\n    Feature_With_Underscores\n    Feature_Other\n");
 
         myFixture.configureByText("test.feature-to-file",
                 "TestFile.java\nFeature_<caret>");
 
         LookupElement[] completions = myFixture.completeBasic();
 
-        // Just verify completion doesn't crash with special characters
-        // Null return is acceptable in test environment
-
-        FeatureNameCompletionProvider provider = new FeatureNameCompletionProvider();
-        assertTrue("FeatureNameCompletionProvider should extend CompletionProvider",
-                provider instanceof CompletionProvider);
-    }
-
-    public void testCompletionProviderExists() {
-        FeatureNameCompletionProvider provider = new FeatureNameCompletionProvider();
-        assertNotNull("FeatureNameCompletionProvider should be instantiable", provider);
+        assertNotNull("Should provide completions at any location", completions);
     }
 }
 

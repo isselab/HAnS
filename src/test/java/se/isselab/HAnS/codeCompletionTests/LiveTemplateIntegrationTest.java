@@ -35,11 +35,13 @@ public class LiveTemplateIntegrationTest extends BasePlatformTestCase {
     }
 
     public void testTemplateAvailableInLineComments() {
-        String javaCode = "public class Test {\n" +
-                         "    // &begin[Feature]\n" +
-                         "    public void method() {}\n" +
-                         "    // &end[Feature]\n" +
-                         "}\n";
+        String javaCode = """
+                public class Test {
+                    // &begin[Feature]
+                    public void method() {}
+                    // &end[Feature]
+                }
+                """;
         myFixture.configureByText("Test.java", javaCode);
 
         int offset = javaCode.indexOf("&begin");
@@ -55,11 +57,13 @@ public class LiveTemplateIntegrationTest extends BasePlatformTestCase {
     }
 
     public void testTemplateAvailableInBlockComments() {
-        String javaCode = "public class Test {\n" +
-                         "    /* &begin[Feature] */\n" +
-                         "    public void method() {}\n" +
-                         "    /* &end[Feature] */\n" +
-                         "}\n";
+        String javaCode = """
+                public class Test {
+                    /* &begin[Feature] */
+                    public void method() {}
+                    /* &end[Feature] */
+                }
+                """;
         myFixture.configureByText("Test.java", javaCode);
 
         int offset = javaCode.indexOf("&begin");
@@ -75,10 +79,13 @@ public class LiveTemplateIntegrationTest extends BasePlatformTestCase {
     }
 
     public void testTemplateNotAvailableOutsideComments() {
-        String javaCode = "public class Test {\n" +
-                         "    public void method() { // &begin[Feature]\n" +
-                         "    }\n" +
-                         "}\n";
+        String javaCode = """
+                public class Test {
+                    public void method() {
+                    // &begin[Feature]
+                    }
+                }
+                """;
         myFixture.configureByText("Test.java", javaCode);
 
         // Position on the method declaration (not in comment)
@@ -128,14 +135,16 @@ public class LiveTemplateIntegrationTest extends BasePlatformTestCase {
     }
 
     public void testMultipleTemplateMarkers() {
-        String javaCode = "public class Test {\n" +
-                         "    // &begin[Feature1]\n" +
-                         "    public void method1() {}\n" +
-                         "    // &end[Feature1]\n" +
-                         "    // &begin[Feature2]\n" +
-                         "    public void method2() {}\n" +
-                         "    // &end[Feature2]\n" +
-                         "}\n";
+        String javaCode = """
+                public class Test {
+                    // &begin[Feature1]
+                    public void method1() {}
+                    // &end[Feature1]
+                    // &begin[Feature2]
+                    public void method2() {}
+                    // &end[Feature2]
+                }
+                """;
         myFixture.configureByText("Test.java", javaCode);
 
         // Check first marker
@@ -164,11 +173,13 @@ public class LiveTemplateIntegrationTest extends BasePlatformTestCase {
     }
 
     public void testLineTemplateMarker() {
-        String javaCode = "public class Test {\n" +
-                         "    public void method() {\n" +
-                         "        // &line[Feature]\n" +
-                         "    }\n" +
-                         "}\n";
+        String javaCode = """
+                public class Test {
+                    public void method() {
+                        // &line[Feature]
+                    }
+                }
+                """;
         myFixture.configureByText("Test.java", javaCode);
 
         int offset = javaCode.indexOf("&line");
@@ -184,9 +195,11 @@ public class LiveTemplateIntegrationTest extends BasePlatformTestCase {
     }
 
     public void testInlineCommentWithMarker() {
-        String javaCode = "public class Test {\n" +
-                         "    int field; // &begin[Feature]\n" +
-                         "}\n";
+        String javaCode = """
+                public class Test {
+                    int field; // &begin[Feature]
+                }
+                """;
         myFixture.configureByText("Test.java", javaCode);
 
         int offset = javaCode.indexOf("&begin");

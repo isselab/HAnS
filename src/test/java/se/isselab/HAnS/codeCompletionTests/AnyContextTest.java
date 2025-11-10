@@ -16,7 +16,6 @@ limitations under the License.
 package se.isselab.HAnS.codeCompletionTests;
 
 import com.intellij.codeInsight.template.TemplateActionContext;
-import com.intellij.codeInsight.template.TemplateContextType;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import se.isselab.HAnS.codeCompletion.AnyContext;
 
@@ -34,17 +33,14 @@ public class AnyContextTest extends BasePlatformTestCase {
         anyContext = new AnyContext();
     }
 
-    public void testAnyContextIsTemplateContextType() {
-        assertTrue("AnyContext should extend TemplateContextType",
-                anyContext instanceof TemplateContextType);
-    }
-
     public void testContextIsActiveInLineComments() {
-        String javaCode = "public class Test {\n" +
-                         "    // &begin[Feature]\n" +
-                         "    public void method() {}\n" +
-                         "    // &end[Feature]\n" +
-                         "}\n";
+        String javaCode = """
+                         public class Test {
+                             // &begin[Feature]
+                             public void method() {}
+                             // &end[Feature]
+                         }
+                         """;
         myFixture.configureByText("Test.java", javaCode);
 
         int offset = javaCode.indexOf("&begin");
@@ -114,14 +110,16 @@ public class AnyContextTest extends BasePlatformTestCase {
     }
 
     public void testContextWithMultipleMarkers() {
-        String javaCode = "public class Test {\n" +
-                         "    // &begin[Feature1]\n" +
-                         "    public void method1() {}\n" +
-                         "    // &end[Feature1]\n" +
-                         "    // &begin[Feature2]\n" +
-                         "    public void method2() {}\n" +
-                         "    // &end[Feature2]\n" +
-                         "}\n";
+        String javaCode = """
+                public class Test {
+                    // &begin[Feature1]
+                    public void method1() {}
+                    // &end[Feature1]
+                    // &begin[Feature2]
+                    public void method2() {}
+                    // &end[Feature2]
+                }
+                """;
         myFixture.configureByText("Test.java", javaCode);
 
         int offset = javaCode.indexOf("&begin");
