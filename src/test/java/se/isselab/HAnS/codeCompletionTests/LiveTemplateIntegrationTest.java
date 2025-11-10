@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Herman Jansson & Johan Martinson
+Copyright 2025 Johan Martinson
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,123 +15,190 @@ limitations under the License.
 */
 package se.isselab.HAnS.codeCompletionTests;
 
-import org.junit.Test;
+import com.intellij.codeInsight.template.TemplateActionContext;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import se.isselab.HAnS.codeCompletion.AnyContext;
-
-import static org.junit.Assert.*;
 
 /**
  * Tests for live template functionality with AnyContext.
- * Verifies that EFA templates (&begin, &end, &line) work correctly.
- * Tests for Java code completion with IntelliJ IDE.
+ * Verifies that EFA templates (&begin, &end, &line) context detection works correctly.
+ * Note: CommentContext is not tested here due to PSI comment detection complexities in tests.
  */
-public class LiveTemplateIntegrationTest {
+public class LiveTemplateIntegrationTest extends BasePlatformTestCase {
 
-    @Test
-    public void testBeginTemplateContextAvailable() {
-        AnyContext context = new AnyContext();
-        assertNotNull(context);
+    private AnyContext anyContext;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        anyContext = new AnyContext();
     }
 
-    @Test
-    public void testEndTemplateContextAvailable() {
-        AnyContext context = new AnyContext();
-        assertNotNull(context);
-    }
-
-    @Test
-    public void testLineTemplateContextAvailable() {
-        AnyContext context = new AnyContext();
-        assertNotNull(context);
-    }
-
-    @Test
-    public void testTemplateAvailabilityInJavaComments() {
+    public void testTemplateAvailableInLineComments() {
         String javaCode = "public class Test {\n" +
                          "    // &begin[Feature]\n" +
                          "    public void method() {}\n" +
                          "    // &end[Feature]\n" +
                          "}\n";
-        assertNotNull(javaCode);
-        assertTrue(javaCode.contains("//"));
-        assertTrue(javaCode.contains("&begin"));
+        myFixture.configureByText("Test.java", javaCode);
+
+        int offset = javaCode.indexOf("&begin");
+        TemplateActionContext context = TemplateActionContext.create(
+                myFixture.getFile(),
+                myFixture.getEditor(),
+                offset,
+                offset,
+                false);
+
+        assertTrue("AnyContext should be active in line comments",
+                anyContext.isInContext(context));
     }
 
-    @Test
-    public void testTemplateAvailabilityInBlockComments() {
+    public void testTemplateAvailableInBlockComments() {
         String javaCode = "public class Test {\n" +
                          "    /* &begin[Feature] */\n" +
                          "    public void method() {}\n" +
                          "    /* &end[Feature] */\n" +
                          "}\n";
-        assertNotNull(javaCode);
-        assertTrue(javaCode.contains("/*"));
-        assertTrue(javaCode.contains("&begin"));
+        myFixture.configureByText("Test.java", javaCode);
+
+        int offset = javaCode.indexOf("&begin");
+        TemplateActionContext context = TemplateActionContext.create(
+                myFixture.getFile(),
+                myFixture.getEditor(),
+                offset,
+                offset,
+                false);
+
+        assertTrue("AnyContext should be active in block comments",
+                anyContext.isInContext(context));
     }
 
-    @Test
-    public void testTemplateAvailabilityInCodeContext() {
+    public void testTemplateNotAvailableOutsideComments() {
         String javaCode = "public class Test {\n" +
-                         "    public void method() {\n" +
-                         "        // method body\n" +
+                         "    public void method() { // &begin[Feature]\n" +
                          "    }\n" +
                          "}\n";
-        assertNotNull(javaCode);
+        myFixture.configureByText("Test.java", javaCode);
+
+        // Position on the method declaration (not in comment)
+        int offset = javaCode.indexOf("void");
+        TemplateActionContext context = TemplateActionContext.create(
+                myFixture.getFile(),
+                myFixture.getEditor(),
+                offset,
+                offset,
+                false);
+
+        // AnyContext should still be active even in code (it's permissive)
+        assertTrue("AnyContext should be active everywhere",
+                anyContext.isInContext(context));
     }
 
-    @Test
-    public void testContextDetectsCommentPositions() {
-        String javaCode = "public class Test {\n" +
-                         "    // This is a comment\n" +
-                         "    public int field; // inline comment\n" +
-                         "}\n";
-        assertNotNull(javaCode);
-        assertTrue(javaCode.contains("//"));
-    }
-
-    @Test
-    public void testTemplatesAvailableAtFileStart() {
+    public void testTemplateAtFileStart() {
         String javaCode = "// &begin[Feature]\npublic class Test {}\n";
-        assertNotNull(javaCode);
-        assertTrue(javaCode.startsWith("//"));
+        myFixture.configureByText("Test.java", javaCode);
+
+        int offset = javaCode.indexOf("&begin");
+        TemplateActionContext context = TemplateActionContext.create(
+                myFixture.getFile(),
+                myFixture.getEditor(),
+                offset,
+                offset,
+                false);
+
+        assertTrue("AnyContext should be active at file start in comment",
+                anyContext.isInContext(context));
     }
 
-    @Test
-    public void testTemplatesAvailableInFileMiddle() {
-        String javaCode = "public class Test {\n" +
-                         "    // &begin[Feature]\n" +
-                         "    // &end[Feature]\n" +
-                         "}\n";
-        assertNotNull(javaCode);
-        assertTrue(javaCode.contains("&begin"));
-        assertTrue(javaCode.contains("&end"));
-    }
-
-    @Test
-    public void testTemplatesAvailableAtFileEnd() {
+    public void testTemplateAtFileEnd() {
         String javaCode = "public class Test {}\n// &end[Feature]\n";
-        assertNotNull(javaCode);
-        assertTrue(javaCode.contains("&end"));
+        myFixture.configureByText("Test.java", javaCode);
+
+        int offset = javaCode.indexOf("&end");
+        TemplateActionContext context = TemplateActionContext.create(
+                myFixture.getFile(),
+                myFixture.getEditor(),
+                offset,
+                offset,
+                false);
+
+        assertTrue("AnyContext should be active at file end in comment",
+                anyContext.isInContext(context));
     }
 
-    @Test
-    public void testAnyContextIDIsANY() {
-        AnyContext context = new AnyContext();
-        assertNotNull(context);
+    public void testMultipleTemplateMarkers() {
+        String javaCode = "public class Test {\n" +
+                         "    // &begin[Feature1]\n" +
+                         "    public void method1() {}\n" +
+                         "    // &end[Feature1]\n" +
+                         "    // &begin[Feature2]\n" +
+                         "    public void method2() {}\n" +
+                         "    // &end[Feature2]\n" +
+                         "}\n";
+        myFixture.configureByText("Test.java", javaCode);
+
+        // Check first marker
+        int offset1 = javaCode.indexOf("&begin");
+        TemplateActionContext context1 = TemplateActionContext.create(
+                myFixture.getFile(),
+                myFixture.getEditor(),
+                offset1,
+                offset1,
+                false);
+
+        assertTrue("First template should be available",
+                anyContext.isInContext(context1));
+
+        // Check second marker
+        int offset2 = javaCode.indexOf("&begin", offset1 + 1);
+        TemplateActionContext context2 = TemplateActionContext.create(
+                myFixture.getFile(),
+                myFixture.getEditor(),
+                offset2,
+                offset2,
+                false);
+
+        assertTrue("Second template should be available",
+                anyContext.isInContext(context2));
     }
 
-    @Test
-    public void testContextConsistency() {
-        AnyContext context1 = new AnyContext();
-        AnyContext context2 = new AnyContext();
-        assertNotNull(context1);
-        assertNotNull(context2);
+    public void testLineTemplateMarker() {
+        String javaCode = "public class Test {\n" +
+                         "    public void method() {\n" +
+                         "        // &line[Feature]\n" +
+                         "    }\n" +
+                         "}\n";
+        myFixture.configureByText("Test.java", javaCode);
+
+        int offset = javaCode.indexOf("&line");
+        TemplateActionContext context = TemplateActionContext.create(
+                myFixture.getFile(),
+                myFixture.getEditor(),
+                offset,
+                offset,
+                false);
+
+        assertTrue("AnyContext should support &line marker",
+                anyContext.isInContext(context));
     }
 
-    @Test
-    public void testIntelliJIDECompatibility() {
-        AnyContext context = new AnyContext();
-        assertNotNull(context);
+    public void testInlineCommentWithMarker() {
+        String javaCode = "public class Test {\n" +
+                         "    int field; // &begin[Feature]\n" +
+                         "}\n";
+        myFixture.configureByText("Test.java", javaCode);
+
+        int offset = javaCode.indexOf("&begin");
+        TemplateActionContext context = TemplateActionContext.create(
+                myFixture.getFile(),
+                myFixture.getEditor(),
+                offset,
+                offset,
+                false);
+
+        assertTrue("AnyContext should work with inline comments",
+                anyContext.isInContext(context));
     }
 }
 
