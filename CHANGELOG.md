@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Enhanced 🚀
+
+- **Improved Rider IDE Support** - Better compatibility with JetBrains Rider through explicit language registration for code completion
+- **Better Live Template Support** - Live template markers (`&begin`, `&end`, `&line`) now work reliably in comments across all IDEs
+
+### Fixed 🐛
+
+- Improved code completion context detection for more accurate suggestions
+
 ## [0.2.2] - 2025-10-09
 
 - ✅ Updated internal code to remove deprecated IntelliJ APIs for future compatibility.
