@@ -19,24 +19,24 @@ package se.isselab.HAnS.featureLocation;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
-import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
-import se.isselab.HAnS.FeatureAnnotationSearchScope;
-import se.isselab.HAnS.codeAnnotation.psi.*;
+import se.isselab.HAnS.featureAnnotation.codeAnnotation.psi.*;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFile;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileAnnotation;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
-import se.isselab.HAnS.folderAnnotation.psi.FolderAnnotationFile;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationFile;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationFileAnnotation;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationFileReferences;
+import se.isselab.HAnS.featureAnnotation.folderAnnotation.psi.FolderAnnotationFile;
 import se.isselab.HAnS.referencing.FileReferenceUtil;
 
 import java.util.HashMap;
+import java.util.List;
 
 
 public class FeatureLocationManager {
@@ -74,23 +74,27 @@ public class FeatureLocationManager {
      */
     public static FeatureFileMapping getFeatureFileMapping(Project project, FeatureModelFeature feature) {
         FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);
-        Query<PsiReference> featureReference = ReferencesSearch.search(feature, FeatureAnnotationSearchScope.projectScope(project), true);
-        for (PsiReference reference : ReadAction.compute(() -> featureReference)) {
-            //get comment sibling of the feature comment
+        List<PsiReference> references = ReadAction.compute(() ->
+                ReferencesSearch.search(feature, GlobalSearchScope.projectScope(project), true)
+                        .findAll().stream().toList()
+        );
 
+        for (PsiReference reference : references) {
             PsiElement element = reference.getElement();
-            var originatingFilePath = ReadAction.compute(()->element.getContainingFile().getVirtualFile().getPath());
-            //determine file type and process content
-            var fileType = ReadAction.compute(element::getContainingFile);
+            String originatingFilePath = ReadAction.compute(() ->
+                    element.getContainingFile().getVirtualFile().getPath()
+            );
+            PsiFile fileType = ReadAction.compute(element::getContainingFile);
+
             if (fileType instanceof CodeAnnotationFile) {
                 processCodeFile(project, featureFileMapping, element, originatingFilePath);
             } else if (fileType instanceof FileAnnotationFile) {
                 processFeatureToFile(project, featureFileMapping, element, originatingFilePath);
             } else if (fileType instanceof FolderAnnotationFile) {
                 PsiDirectory dir = ReadAction.compute(fileType::getContainingDirectory);
-                if (dir == null)
-                    continue;
-                processFeatureToFolder(project, featureFileMapping, dir, originatingFilePath);
+                if (dir != null) {
+                    processFeatureToFolder(project, featureFileMapping, dir, originatingFilePath);
+                }
             }
         }
         featureFileMapping.buildFromQueue();
@@ -159,7 +163,7 @@ public class FeatureLocationManager {
                 var fileName = ReadAction.compute(() -> FileReferenceUtil.findFile(file, file.getFileName().getText()));
                 if (fileName.isEmpty())
                     continue;
-                var psiFile = fileName.get(0);
+                var psiFile = fileName.getFirst();
 
                 Document document = ReadAction.compute(() -> psiDocumentManager.getDocument(psiFile));
                 if (document == null)

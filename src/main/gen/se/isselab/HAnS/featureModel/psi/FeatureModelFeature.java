@@ -13,6 +13,8 @@ public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
   @NotNull
   List<FeatureModelFeature> getFeatureList();
 
+  String getFullLPQText();
+
   @Nullable
   FeatureModelGroupModifier getGroupModifier();
 

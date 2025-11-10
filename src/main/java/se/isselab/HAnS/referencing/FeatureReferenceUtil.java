@@ -17,6 +17,7 @@ package se.isselab.HAnS.referencing;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.injection.InjectedLanguageManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -38,7 +39,7 @@ import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationFileReferences;
 import se.isselab.HAnS.metrics.calculators.FeatureTangling;
 
 import java.util.*;
@@ -169,15 +170,15 @@ public class FeatureReferenceUtil {
 
     public static void setElementsToRenameWhenAdding(FeatureModelFeature element, String newName) {
         Map<FeatureModelFeature, List<PsiReference>> toRename = new HashMap<>();
-
+        GlobalSearchScope scope = GlobalSearchScope.allScope(element.getProject());
         List<FeatureModelFeature> elementsToRename = getElementsToRenameWhenAdding(element, newName);
 
-        for (FeatureModelFeature e : elementsToRename) {
-            List<PsiReference> referencedElements = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(e)) {
-                referencedElements.add(reference);
-            }
-            toRename.put(e, referencedElements);
+        for (FeatureModelFeature feature : elementsToRename) {
+            List<PsiReference> referencedElements = ReadAction.compute(() ->
+                    ReferencesSearch.search(feature, scope, true)
+                            .findAll().stream().toList()
+            );
+            toRename.put(feature, referencedElements);
         }
 
         addingOrDeleting = true;
@@ -359,16 +360,22 @@ public class FeatureReferenceUtil {
         List<PsiElement> elementsToDelete = new ArrayList<>();
         traverseFeatureWithChildren(feature, elementsToDelete, new ArrayList<>());
 
-        Project projectInstance = feature.getProject();
+        Project project = feature.getProject();
         elementsToDelete.forEach(child -> {
             FeatureModelFeature childFeature = (FeatureModelFeature) child;
 
-            FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, childFeature);
+            FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(project, childFeature);
             Map<Document, Set<Integer>> codeAnnotations = getCodeAnnotations(fileToAnnotation); // code Annotations
 
             List<PsiReference> fileAndFolderAnnotations = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(child)) {
-                InjectedLanguageManager injManager = InjectedLanguageManager.getInstance(projectInstance);
+
+            List<PsiReference> references = ReadAction.compute(() ->
+                    ReferencesSearch.search(child, GlobalSearchScope.projectScope(project), true)
+                            .findAll().stream().toList()
+            );
+
+            for (PsiReference reference : references) {
+                InjectedLanguageManager injManager = InjectedLanguageManager.getInstance(project);
 
                 PsiLanguageInjectionHost host = injManager.getInjectionHost(reference.getElement());
                 if (host == null) { // if it's file or folder annotation, so not an injection
@@ -605,12 +612,12 @@ public class FeatureReferenceUtil {
         traverseFeatureWithChildren(element, elementsToDelete, new ArrayList<>());
         GlobalSearchScope scope = GlobalSearchScope.allScope(element.getProject());
 
-        for (PsiElement e : elementsToDelete) {
-            List<PsiReference> referencedElements = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(e, scope)) {
-                referencedElements.add(reference);
-            }
-            toDelete.put(((FeatureModelFeature) e), referencedElements);
+        for (PsiElement feature : elementsToDelete) {
+            List<PsiReference> references = ReadAction.compute(() ->
+                    ReferencesSearch.search(feature, scope, true)
+                            .findAll().stream().toList()
+            );
+            toDelete.put(((FeatureModelFeature) feature), references);
         }
 
         addingOrDeleting = true;
@@ -635,12 +642,16 @@ public class FeatureReferenceUtil {
     }
 
     private static void mapElementsToRename(Map<FeatureModelFeature, List<PsiReference>> toRename, List<FeatureModelFeature> elementsToRename) {
-        for (FeatureModelFeature e : elementsToRename) {
-            List<PsiReference> referencedElements = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(e)) {
-                referencedElements.add(reference);
-            }
-            toRename.put(e, referencedElements);
+
+        for (FeatureModelFeature feature : elementsToRename) {
+            GlobalSearchScope scope = GlobalSearchScope.allScope(feature.getProject());
+
+            List<PsiReference> referencedElements = ReadAction.compute(() ->
+                    ReferencesSearch.search(feature, scope, true)
+                            .findAll().stream().toList()
+            );
+
+            toRename.put(feature, referencedElements);
         }
         mapToRename = toRename;
     }
@@ -693,14 +704,15 @@ public class FeatureReferenceUtil {
 
     public static void setElementsToRenameAfterAddingWithChildren(FeatureModelFeature element) {
         Map<String, List<PsiReference>> toUpdate = new HashMap<>();
-
+        GlobalSearchScope scope = GlobalSearchScope.allScope(element.getProject());
         List<PsiElement> elementsToUpdate = getElementsToRenameAfterAddingWithChildren(element);
-        for (PsiElement e : elementsToUpdate) {
-            List<PsiReference> referencedElements = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(e)) {
-                referencedElements.add(reference);
-            }
-            toUpdate.put(((FeatureModelFeature) e).getLPQText(), referencedElements);
+
+        for (PsiElement feature : elementsToUpdate) {
+            List<PsiReference> referencedElements = ReadAction.compute(() ->
+                    ReferencesSearch.search(feature, scope, true)
+                            .findAll().stream().toList()
+            );
+            toUpdate.put(((FeatureModelFeature) feature).getLPQText(), referencedElements);
         }
         mapToRenameWhenAdding = toUpdate;
     }

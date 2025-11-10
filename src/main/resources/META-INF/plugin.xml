@@ -34,24 +34,24 @@ limitations under the License.
        <!-- &end[SettingsPage] -->
 
         <!-- &begin[HAnS::FileAnnotation] -->
-        <fileType name="File Annotation File" implementationClass="se.isselab.HAnS.fileAnnotation.FileAnnotationFileType"
+        <fileType name="File Annotation File" implementationClass="se.isselab.HAnS.featureAnnotation.fileAnnotation.FileAnnotationFileType"
                   fieldName="INSTANCE" language="FileAnnotation" extensions="feature-file;feature-to-file"/>
         <lang.parserDefinition language="FileAnnotation"
-                                implementationClass="se.isselab.HAnS.fileAnnotation.FileAnnotationParserDefinition"/>
+                                implementationClass="se.isselab.HAnS.featureAnnotation.fileAnnotation.FileAnnotationParserDefinition"/>
         <!-- &end[HAnS::FileAnnotation] -->
 
         <!-- &begin[HAnS::FolderAnnotation] -->
-        <fileType name="Feature To Folder File" implementationClass="se.isselab.HAnS.folderAnnotation.FolderAnnotationFileType"
+        <fileType name="Feature To Folder File" implementationClass="se.isselab.HAnS.featureAnnotation.folderAnnotation.FolderAnnotationFileType"
                   fieldName="INSTANCE" language="FolderAnnotation" extensions="feature-folder;feature-to-folder"/>
         <lang.parserDefinition language="FolderAnnotation"
-                               implementationClass="se.isselab.HAnS.folderAnnotation.FolderAnnotationParserDefinition"/>
+                               implementationClass="se.isselab.HAnS.featureAnnotation.folderAnnotation.FolderAnnotationParserDefinition"/>
         <!-- &end[HAnS::FolderAnnotation] -->
 
         <!-- &begin[HAnS::CodeAnnotation] -->
-        <fileType name="Code Annotation File" implementationClass="se.isselab.HAnS.codeAnnotation.CodeAnnotationFileType"
+        <fileType name="Code Annotation File" implementationClass="se.isselab.HAnS.featureAnnotation.codeAnnotation.CodeAnnotationFileType"
                   fieldName="INSTANCE" language="CodeAnnotations" extensions="code-annotation"/>
         <lang.parserDefinition language="CodeAnnotations"
-                               implementationClass="se.isselab.HAnS.codeAnnotation.CodeAnnotationParserDefinition"/>
+                               implementationClass="se.isselab.HAnS.featureAnnotation.codeAnnotation.CodeAnnotationParserDefinition"/>
         <!-- &end[HAnS::CodeAnnotation] -->
 
         <!-- &begin[CodeCompletion] -->
@@ -68,21 +68,21 @@ limitations under the License.
         <!-- &end[SyntaxHighlighting::FeatureModel] -->
 
         <!-- &begin[SyntaxHighlighting::FolderAnnotation] -->
-        <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.isselab.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="FolderAnnotation" implementationClass="se.isselab.HAnS.syntaxHighlighting.featureAnnotations.folderAnnotations.FolderAnnotationSyntaxHighlighterFactory"/>
         <annotator language="FolderAnnotation"
-                   implementationClass="se.isselab.HAnS.syntaxHighlighting.folderAnnotations.FolderAnnotationAnnotator"/>
+                   implementationClass="se.isselab.HAnS.syntaxHighlighting.featureAnnotations.folderAnnotations.FolderAnnotationAnnotator"/>
         <!-- &end[SyntaxHighlighting::FolderAnnotation] -->
 
         <!-- &begin[SyntaxHighlighting::FileAnnotation] -->
-        <lang.syntaxHighlighterFactory language="FileAnnotation" implementationClass="se.isselab.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FileAnnotation]-->
+        <lang.syntaxHighlighterFactory language="FileAnnotation" implementationClass="se.isselab.HAnS.syntaxHighlighting.featureAnnotations.fileAnnotations.FileAnnotationSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::FileAnnotation]-->
         <annotator language="FileAnnotation"
-                   implementationClass="se.isselab.HAnS.syntaxHighlighting.fileAnnotations.FileAnnotationAnnotator"/>
+                   implementationClass="se.isselab.HAnS.syntaxHighlighting.featureAnnotations.fileAnnotations.FileAnnotationAnnotator"/>
         <!-- &end[SyntaxHighlighting::FileAnnotation] -->
 
         <!-- &begin[SyntaxHighlighting::CodeAnnotation] -->
-        <lang.syntaxHighlighterFactory language="CodeAnnotations" implementationClass="se.isselab.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::CodeAnnotation]-->
+        <lang.syntaxHighlighterFactory language="CodeAnnotations" implementationClass="se.isselab.HAnS.syntaxHighlighting.featureAnnotations.codeAnnotations.CodeAnnotationsSyntaxHighlighterFactory"/> <!-- &line[SyntaxHighlighting::CodeAnnotation]-->
         <annotator language="CodeAnnotations"
-                   implementationClass="se.isselab.HAnS.syntaxHighlighting.codeAnnotations.CodeAnnotationAnnotator"/>
+                   implementationClass="se.isselab.HAnS.syntaxHighlighting.featureAnnotations.codeAnnotations.CodeAnnotationAnnotator"/>
         <!-- &end[SyntaxHighlighting::CodeAnnotation] -->
 
         <!-- &begin[ColorSettingsPage] -->
@@ -94,7 +94,7 @@ limitations under the License.
         <!-- &end[SyntaxHighlighting] -->
 
         <!-- &begin[Injection] -->
-        <multiHostInjector implementation="se.isselab.HAnS.codeAnnotation.CodeAnnotationInjector"/>
+        <multiHostInjector implementation="se.isselab.HAnS.featureAnnotation.codeAnnotation.CodeAnnotationInjector"/>
         <!-- &end[Injection] -->
 
         <!-- &begin[FeatureView] -->

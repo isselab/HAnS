@@ -2,9 +2,31 @@
 
 ## [Unreleased]
 
-### Housekeeping 🧹
-- Bump dependencies to make available on latest IDE builds
+## [0.2.2] - 2025-10-09
 
+- ✅ Updated internal code to remove deprecated IntelliJ APIs for future compatibility.
+- 🧹 Minor cleanup and documentation updates
+
+## [0.2.1] - 2025-10-08
+
+### Fixed 🐛
+
+- Addressed discrepancies in how the feature model was previously resolved in different contexts.
+
+## [0.2.0] - 2025-10-07
+
+### New ✨
+
+- Optional parent paths (LPQs) in annotations
+  - You can now include parent paths even when a feature name is unique. 
+  - This gives you the flexibility to add extra context where it improves readability. 
+  - Existing projects remain unaffected: LPQs are still only required when duplicate feature names exist.
+
+## [0.1.2] - 2025-08-11
+
+### Housekeeping 🧹
+
+- Bump dependencies to make available on latest IDE builds
 
 ## [0.1.1] - 2025-04-23
 
@@ -139,7 +161,11 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/isselab/HAnS/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/isselab/HAnS/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/isselab/HAnS/compare/v0.1.2...v0.2.0
+[0.1.2]: https://github.com/isselab/HAnS/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/isselab/HAnS/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/isselab/HAnS/compare/v0.0.8...v0.1.0
 [0.0.8]: https://github.com/isselab/HAnS/compare/v0.0.7...v0.0.8

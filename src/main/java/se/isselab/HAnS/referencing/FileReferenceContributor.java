@@ -19,7 +19,7 @@ import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.*;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReference;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationFileReference;
 
 public class FileReferenceContributor extends PsiReferenceContributor {
 

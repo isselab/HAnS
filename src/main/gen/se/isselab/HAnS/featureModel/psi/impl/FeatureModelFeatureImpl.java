@@ -36,6 +36,11 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
   }
 
   @Override
+  public String getFullLPQText() {
+    return FeatureModelPsiImplUtil.getFullLPQText(this);
+  }
+
+  @Override
   @Nullable
   public FeatureModelGroupModifier getGroupModifier() {
     return findChildByClass(FeatureModelGroupModifier.class);

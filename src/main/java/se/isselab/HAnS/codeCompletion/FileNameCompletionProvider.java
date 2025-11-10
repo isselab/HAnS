@@ -24,8 +24,8 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
-import se.isselab.HAnS.fileAnnotation.FileAnnotationFileType;
-import se.isselab.HAnS.folderAnnotation.FolderAnnotationFileType;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.FileAnnotationFileType;
+import se.isselab.HAnS.featureAnnotation.folderAnnotation.FolderAnnotationFileType;
 
 import java.util.Objects;
 
