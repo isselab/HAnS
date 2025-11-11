@@ -118,21 +118,17 @@ public final class ProjectMetricsService implements MetricsService {
         if (featureList.isEmpty())
             return rootFeatures;
 
-        FeatureModelFeature entryFeature = featureList.get(0);
-        rootFeatures.add(entryFeature);
+        FeatureModelFeature siblingFeature = featureList.getFirst();
+        rootFeatures.add(siblingFeature);
 
         //traverse left siblings
-        FeatureModelFeature siblingFeature = entryFeature;
-        while (siblingFeature.getPrevSibling() instanceof FeatureModelFeature) {
-            siblingFeature = (FeatureModelFeature) siblingFeature.getPrevSibling();
-            rootFeatures.add(siblingFeature);
+        while (siblingFeature.getPrevSibling() instanceof FeatureModelFeature featureModelFeature) {
+            rootFeatures.add(featureModelFeature);
         }
 
         //traverse right siblings
-        siblingFeature = entryFeature;
-        while (siblingFeature.getNextSibling() instanceof FeatureModelFeature) {
-            siblingFeature = (FeatureModelFeature) siblingFeature.getNextSibling();
-            rootFeatures.add(siblingFeature);
+        while (siblingFeature.getNextSibling() instanceof FeatureModelFeature featureModelFeature) {
+            rootFeatures.add(featureModelFeature);
         }
 
         return rootFeatures;
@@ -349,7 +345,7 @@ public final class ProjectMetricsService implements MetricsService {
      * @return ArrayList of {@link FeatureLocation} of the Feature
      */
     @Override
-    public ArrayList<FeatureLocation> getFeatureLocations(FeatureFileMapping featureFileMapping) {
+    public List<FeatureLocation> getFeatureLocations(FeatureFileMapping featureFileMapping) {
         return featureFileMapping.getFeatureLocations();
     }
 

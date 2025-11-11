@@ -444,7 +444,7 @@ public class FeatureReferenceUtil {
         FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, feature); // Feature -> FeatureLocations, each FeatureLocation -> FeatureBlocks
         ArrayList<FeatureAnnotationToDelete> baseFeatureLocations = getFeatureAnnotationLocations(fileToAnnotation, feature); // parentFeature, mapped File, start, end
 
-        HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = FeatureTangling.getTanglingMap(projectInstance); // Feature -> Features (tangled)
+        Map<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = FeatureTangling.getTanglingMap(projectInstance); // Feature -> Features (tangled)
         HashSet<FeatureModelFeature> tangledFeatures = getTangledFeatures(tanglingMap, feature); // tangled features of specific Feature N
 
         ArrayList<FeatureAnnotationToDelete> tangledLocations = getTangledLocations(projectInstance, feature, tangledFeatures, fileToAnnotation, featureTreeLPQs);
@@ -460,7 +460,7 @@ public class FeatureReferenceUtil {
         ArrayList<FeatureAnnotationToDelete> storeInterlockedLocations = new ArrayList<>();
 
         for (FeatureModelFeature tangled : tangledFeatures) { // for each feature tangled with A
-            ArrayList<FeatureLocation> tangledLocations = FeatureLocationManager.getFeatureFileMapping(projectInstance, tangled).getFeatureLocations();
+            List<FeatureLocation> tangledLocations = FeatureLocationManager.getFeatureFileMapping(projectInstance, tangled).getFeatureLocations();
             for (FeatureLocation location : tangledLocations) {
                 fileToAnnotation.getFeatureLocations().forEach(baseLocation -> {
                     if (baseLocation.getMappedPath().equals(location.getMappedPath())) {
@@ -493,7 +493,7 @@ public class FeatureReferenceUtil {
     }
 
     // returns set of all features tangled with FeatureModelFeature feature
-    private static HashSet<FeatureModelFeature> getTangledFeatures(HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, FeatureModelFeature feature) {
+    private static HashSet<FeatureModelFeature> getTangledFeatures(Map<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, FeatureModelFeature feature) {
         HashSet<FeatureModelFeature> tangledFeatures = new HashSet<>();
 
         for (var entry : tanglingMap.entrySet()) {

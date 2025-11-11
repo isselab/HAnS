@@ -27,8 +27,11 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class FeatureTangling {
+
+    private FeatureTangling() {}
 
     /**
      * Returns the tangling degree of the given feature.
@@ -51,7 +54,7 @@ public class FeatureTangling {
      * @param feature      the feature which should be checked
      * @return tangling degree of the given feature
      */
-    public static int getFeatureTanglingDegree(Project project, HashMap<String, FeatureFileMapping> fileMappings, FeatureModelFeature feature) {
+    public static int getFeatureTanglingDegree(Project project, Map<String, FeatureFileMapping> fileMappings, FeatureModelFeature feature) {
         var tanglingMap = getTanglingMap(project, fileMappings);
         return tanglingMap.getOrDefault(feature, new HashSet<>()).size();
     }
@@ -61,7 +64,7 @@ public class FeatureTangling {
      *
      * @return TanglingMap
      */
-    public static HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(Project project) {
+    public static Map<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(Project project) {
         return getTanglingMap(project, FeatureLocationManager.getAllFeatureFileMappings(project));
     }
 
@@ -71,12 +74,12 @@ public class FeatureTangling {
      * @param fileMappings fileMappings which should be used
      * @return TanglingMap
      */
-    public static HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(Project project, HashMap<String, FeatureFileMapping> fileMappings) {
+    public static Map<FeatureModelFeature, HashSet<FeatureModelFeature>> getTanglingMap(Project project, Map<String, FeatureFileMapping> fileMappings) {
 
         //map which contains Features and their tangled features
         HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = new HashMap<>();
 
-        //map which contains file to {features and their blocks}
+        //map which contains file to features and their blocks
         HashMap<String, HashMap<FeatureModelFeature, List<FeatureLocationBlock>>> featureFileMapping = new HashMap<>();
         //iterate over each feature and get the locations from them
         for (FeatureModelFeature feature : ReadAction.compute(() -> FeatureModelUtil.findFeatures(project))) {
@@ -92,6 +95,11 @@ public class FeatureTangling {
     }
 
     private static void extractTangledFeatures(FeatureModelFeature feature, FeatureFileMapping locationMap, HashMap<String, HashMap<FeatureModelFeature, List<FeatureLocationBlock>>> featureFileMapping, HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap) {
+        //check if locationMap is null (feature may not have any locations)
+        if (locationMap == null) {
+            return;
+        }
+        
         //iterate over each file inside this map
         for (var featureLocation : locationMap.getFeatureLocations()) {
             //get the path and the corresponding feature locations within this path

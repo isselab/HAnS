@@ -27,7 +27,6 @@ import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureTasks.FeatureCallback;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.tanglingMapTasks.TanglingMapCallback;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -276,7 +275,7 @@ public interface MetricsService {
      * @return ArrayList of {@link FeatureLocation} of the Feature
      */
 
-    ArrayList<FeatureLocation> getFeatureLocations(FeatureFileMapping featureFileMapping);
+    List<FeatureLocation> getFeatureLocations(FeatureFileMapping featureFileMapping);
 
     /**
      * Gets {@link FeatureLocationBlock} of a {@link FeatureLocation}

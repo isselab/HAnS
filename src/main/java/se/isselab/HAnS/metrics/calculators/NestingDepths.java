@@ -35,13 +35,15 @@ import java.util.*;
  */
 public class NestingDepths {
 
+    private NestingDepths() {}
+
     public static List<Pair<String, Integer>> getFeatureNestingDepths(Project project, FeatureModelFeature feature) {
         var nestingDepthMap = getNestingDepthMap(FeatureLocationManager.getAllFeatureFileMappings(project));
         var featureLPQ = ReadAction.compute(feature::getLPQText);
         return nestingDepthMap.containsKey(featureLPQ)? nestingDepthMap.get(featureLPQ).stream().toList(): null;
     }
 
-    public static Map<String, List<Pair<String, Integer>>> getNestingDepthMap(HashMap<String, FeatureFileMapping> fileMappings) {
+    public static Map<String, List<Pair<String, Integer>>> getNestingDepthMap(Map<String, FeatureFileMapping> fileMappings) {
         // Key = FeatureLPQ -> Value = List of Pair<FilePath, NestingDepth>
         var nestingDepthMap = new HashMap<String, List<Pair<String, Integer>>>();
 
