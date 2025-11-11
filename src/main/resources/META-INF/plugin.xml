@@ -61,6 +61,12 @@ limitations under the License.
                                 implementationClass="se.isselab.HAnS.codeCompletion.FileCompletionContributor"/>
         <!-- &end[CodeCompletion] -->
 
+        <!-- &begin[CodeFolding] -->
+        <lang.foldingBuilder
+                language="JAVA" order="first"
+                implementationClass="se.isselab.HAnS.codeFolding.CodeFoldingBuilder"/>
+        <!-- &end[CodeFolding] -->
+
         <!-- &begin[SyntaxHighlighting] -->
         <!-- &begin[SyntaxHighlighting::FeatureModel] -->
         <lang.syntaxHighlighterFactory language="FeatureModel"
@@ -187,10 +193,5 @@ limitations under the License.
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
         <!-- &end[NewFile] -->
-
-        <action text="Surround with Feature Annotation" class="com.intellij.codeInsight.template.impl.actions.SurroundWithTemplateAction" use-shortcut-of="SurroundWithLiveTemplate" >
-            <add-to-group
-                    group-id="EditorPopupMenu" anchor="first" />
-        </action>
     </actions>
 </idea-plugin>

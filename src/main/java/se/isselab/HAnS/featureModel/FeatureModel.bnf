@@ -15,6 +15,7 @@ limitations under the License.
 */
 {
   parserClass="se.isselab.HAnS.featureModel.parser.FeatureModelParser"
+  parserUtilClass="se.isselab.HAnS.featureModel.parser.FeatureModelParserUtil"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -33,7 +34,7 @@ limitations under the License.
 featureModelFile ::= (feature (feature)?)?
 
 // &begin[Referencing]
-feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?) {
+feature ::= ((OR | XOR)? FEATURENAME (OPTIONALITY)? (CRLF+ ((INDENT) feature* DEDENT)?)?)  {
 mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
 implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getFullLPQText getLPQText getLPQStack renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName getPresentation

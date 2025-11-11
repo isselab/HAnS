@@ -1,11 +1,10 @@
 // This is a generated file. Not intended for manual editing.
-package se.isselab.HAnS.featureModel.parser;
+package fleet.se.isselab.HAnS.featureModel.parser;
 
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import static se.isselab.HAnS.featureModel.psi.FeatureModelTypes.*;
+import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.TokenSet;

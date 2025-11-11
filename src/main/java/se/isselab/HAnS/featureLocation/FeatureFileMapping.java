@@ -148,9 +148,11 @@ public class FeatureFileMapping {
         });
 
         //add file and location to map
-        ArrayList<FeatureLocationBlock> list = new ArrayList<>();
-        list.add(block);
-        map.put(pathPairOriginatingPath, new Pair<>(annotationType, list));
+        if(map.isEmpty()||!map.containsKey(pathPairOriginatingPath)){
+            ArrayList<FeatureLocationBlock> list = new ArrayList<>();
+            list.add(block);
+            map.put(pathPairOriginatingPath, new Pair<>(annotationType, list));
+        }
     }
     // &begin[FeatureLocation]
 
