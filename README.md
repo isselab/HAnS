@@ -1,4 +1,5 @@
-# HAnS (Helping Annotate Software) #
+# HAnS (Helping Annotate Software)
+
 ![Build](https://github.com/isselab/HAnS/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/22759.svg)](https://plugins.jetbrains.com/plugin/22759)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/22759.svg)](https://plugins.jetbrains.com/plugin/22759)
@@ -6,86 +7,149 @@
 [![Static Badge](https://img.shields.io/badge/-HAnS%20Community-darkgrey?logo=Discord&logoColor=%23FFF&labelColor=%235865F2&color=%23000000)](https://discord.gg/7hgRnRnW9r)
 
 <!-- Plugin description -->
-HAnS is a plugin that aims to help developers with annotating software assets with features.
+HAnS is a JetBrains IDE plugin that supports feature-oriented software development by enabling developers to annotate, track, and analyze features throughout their codebase. The plugin provides comprehensive tooling for feature location, mapping, and metrics collection in software systems.
 
-The features of HAnS are:
-  - Feature Annotation Languages
-  - Mapping code fragments to features
-  - Mapping files or directories to features
-  - Completion aid when annotating
-  - Feature Model View
-  - Referencing
-  - Renaming features
-  - Quick fixes
-  - Live templates
+## Key Features
 
-### [Demo video](https://youtu.be/cx_-ZshHLgA)
+### Feature Modeling & Annotation
+- **Feature Model Language** - Define hierarchical feature models using the `.feature-model` format
+- **Code Annotation** - Annotate code fragments with feature markers using lightweight comments (`&begin[Feature]`, `&end[Feature]`, `&line[Feature]`)
+- **File & Folder Mapping** - Map entire files or directories to features using `.feature-to-file` and `.feature-to-folder` mappings
+- **Live Templates** - Quick insertion of feature annotations with predefined templates
+- **Intelligent Completion** - Context-aware code completion for feature names and annotation syntax
 
+### IDE Integration
+- **Feature Model View** - Visual tool window displaying the hierarchical feature structure
+- **Feature Metrics View** - Bottom panel showing calculated metrics including:
+  - Line Count per feature
+  - Feature-to-File mappings
+  - Feature Scattering degree
+  - Feature Tangling degree
+- **Traffic Light Indicator** - Visual indicator showing file/folder feature mapping status
+- **Syntax Highlighting** - Custom syntax highlighting for all feature annotation languages with configurable color schemes (Darcula and Default themes)
 
+### Refactoring & Navigation
+- **Smart Referencing** - Navigate between feature definitions and their usages
+- **Feature Renaming** - Rename features across the entire project with automatic reference updates
+- **Find Usages** - Locate all occurrences of a feature throughout the codebase
+- **Quick Fixes** - Automated fixes for unassigned features and annotation errors
+
+### Extensibility
+- **Extension Points** - Plugin architecture with callbacks for metrics and feature tracking
+- **Service Layer** - Metrics service and highlighter service for plugin extensions
+- **Background Tasks** - Asynchronous processing for metrics calculation and feature analysis
+
+### [Demo Video](https://youtu.be/cx_-ZshHLgA)
 
 <!-- Plugin description end -->
 
-## Installation
+## Getting Started
 
-- Using the IDE built-in plugin system:
+### Installation
 
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "HAnS"</kbd> >
-  <kbd>Install</kbd>
+**From JetBrains Marketplace (Recommended):**
 
-- Manually:
+<kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "HAnS"</kbd> > <kbd>Install</kbd>
 
-  Download the [latest release](https://github.com/isselab/HAnS/releases/latest) and install it manually using
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
+**Manual Installation:**
 
-### Contribution guidelines ###
-You are free to contribute to this repository.
+Download the [latest release](https://github.com/isselab/HAnS/releases/latest) and install using:
+<kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
-#### Getting started
- + Fork the repository
- + Start adding your contribution as an annotated feature in the code
- + Build and Test
- + Make a pull request
+### Compatibility
 
-To build and test you new snippet run the gradle [runIde] task.
+- **Supported IDEs**: All JetBrains IDEs (IntelliJ IDEA, Rider, PyCharm, WebStorm, etc.)
+- **Minimum Build**: 2025.1 (251)
+- **Java Version**: 21+
 
-Pull requests should be named like this: *`folder`*-*`featureName`*-*`contributor`*-*`description`*.
+### Quick Start
 
-Folder can be either *`Feature`* or *`Bug`*. FeatureName should be one that is already in the featuremodel or some new featureName.
-Lastly contributor is your git name and the description should be a short description of the new feature or the bug.
+1. Create a `.feature-model` file in your project root to define your feature hierarchy
+2. Use live templates or quick actions to annotate code with features
+3. View your feature structure in the Feature Model View tool window
+4. Access feature metrics in the Feature Metrics View panel
+5. Track file/folder mappings with the traffic light indicator
 
-#### As a reviewer
-The repository has policies in place (similar to other Git repositories) for which a team of members is responsible for ensuring the code quality of the features before they can be merged to the main branch. 
-If you have experience with plugin development or want to help out by becoming a member of the review team, please reach out and contact any member in the existing team. 
+## Contributing
 
-##### Current review group
+We welcome contributions from the community! HAnS itself is annotated with features, serving as a practical example of the plugin's capabilities.
+
+### How to Contribute
+
+1. **Fork the repository**
+2. **Annotate your contribution** - Add feature annotations to your code following the existing patterns
+4. **Build and test** - Run the `runIde` Gradle task to test your changes, write unit tests when appropriate
+5. **Submit a pull request**
+
+### Pull Request Guidelines
+
+Name your PR using this format: `[Folder]-[FeatureName]-[Contributor]-[Description]`
+
+- **Folder**: Either `Feature` or `Bug`
+- **FeatureName**: Use an existing feature from the feature model or propose a new one
+- **Contributor**: Your GitHub username
+- **Description**: Brief description of the change
+
+### Code Review Team
+
+All contributions are reviewed by our core team to ensure code quality and maintainability. Interested in joining the review team? Contact any current reviewer.
+
+#### Current Reviewers
 [![jhc github](https://img.shields.io/badge/GitHub-johmara-181717.svg?style=flat&logo=github)](https://www.github.com/johmara)
 [![jhc github](https://img.shields.io/badge/GitHub-janssonherman-181717.svg?style=flat&logo=github)](https://www.github.com/janssonherman)
+[![jhc github](https://img.shields.io/badge/GitHub-HerrKermet-181717.svg?style=flat&logo=github)](https://www.github.com/HerrKermet)
 
-### Who do I talk to? 
-[![jhc github](https://img.shields.io/badge/GitHub-johmara-181717.svg?style=flat&logo=github)](https://www.github.com/johmara)
-[![jhc github](https://img.shields.io/badge/GitHub-janssonherman-181717.svg?style=flat&logo=github)](https://www.github.com/janssonherman)
+## Research & Publications
 
-#### Research group
-[![jhc github](https://img.shields.io/badge/GitHub-isselab-181717.svg?style=flat&logo=github)](https://www.github.com/isselab)
-[![](https://img.shields.io/website.svg?down_color=red&down_message=down&up_color=green&up_message=isselab.org&url=http%3A%2F%2Fshields.io)](https://www.isselab.org)
-#### Chair of Software Engineering   
+HAnS is developed and maintained by academic research groups focused on software engineering and feature-oriented development.
+
+### Research Group
+
+[![ISSELab](https://img.shields.io/badge/GitHub-isselab-181717.svg?style=flat&logo=github)](https://www.github.com/isselab)
+[![ISSELab Website](https://img.shields.io/website.svg?down_color=red&down_message=down&up_color=green&up_message=isselab.org&url=http%3A%2F%2Fshields.io)](https://se.rub.de/research-group/)
+
 [![Chair of Software Engineering](https://img.shields.io/website.svg?down_color=red&down_message=down&up_color=green&up_message=se.ruhr-uni-bochum.de&url=http%3A%2F%2Fshields.io)](http://se.rub.de)
 
-#### Papers published:
-##### 2024
- - An IDE Plugin for Clone Management by Ahmad Al Shihabi, Jan Sollmann, Johan Martinson, Wardah Mahmood, Thorsten Berger T.
-   
-   [![An IDE Plugin for Clone Management](https://zenodo.org/badge/DOI/10.1145/3646548.3678298.svg)](https://doi.org/10.1145/3646548.3678298)
-##### 2021
-- Master Thesis by Johan Martinson & Herman Jansson  
-  [![Johan & Herman](https://zenodo.org/badge/DOI/20.500.12380/302926.svg)](https://doi.org/20.500.12380/302926)
-- HAnS: IDE-based editing support for embedded feature annotations by Johan Martinson, Herman Jansson, Mukelabai Mukelabai, Thorsten Berger, Alexandre Bergel, and Truong Ho-Quang.  
-  [![](https://zenodo.org/badge/DOI/10.1145/3461002.3473072.svg)](https://doi.org/10.1145/3461002.3473072)
+### Publications
+**2025**
+- **Lightweight Visualization of Software Features with HAnS-viz** by Johan Martinson, Kevin Hermann, Riman Houbbi, David Stechow, Thorsten Berger
 
-  #### Annotated Datasets:
-  - https://bitbucket.org/easelab/workspace/projects/EA
-  - https://github.com/johmara/Snake
-  - https://github.com/isselab/HAnS-Vis
+    [![DOI](https://zenodo.org/badge/DOI/10.1145/3748269.3748487.svg)](https://doi.org/10.1145/3748269.3748487)
 
-### [Contributors](CONTRIBUTORS.md)
+**2024**
+- **An IDE Plugin for Clone Management** by Ahmad Al Shihabi, Jan Sollmann, Johan Martinson, Wardah Mahmood, Thorsten Berger
+  
+  [![DOI](https://zenodo.org/badge/DOI/10.1145/3646548.3678298.svg)](https://doi.org/10.1145/3646548.3678298)
+
+**2021**
+- **Master Thesis** by Johan Martinson & Herman Jansson
+  
+  [![DOI](https://zenodo.org/badge/DOI/20.500.12380/302926.svg)](https://doi.org/20.500.12380/302926)
+
+- **HAnS: IDE-based editing support for embedded feature annotations** by Johan Martinson, Herman Jansson, Mukelabai Mukelabai, Thorsten Berger, Alexandre Bergel, and Truong Ho-Quang
+  
+  [![DOI](https://zenodo.org/badge/DOI/10.1145/3461002.3473072.svg)](https://doi.org/10.1145/3461002.3473072)
+
+### Annotated Datasets
+
+Example projects using HAnS for feature annotation:
+
+- [EASE Lab Workspace](https://bitbucket.org/easelab/workspace/projects/EA)
+- [Snake Game](https://github.com/johmara/Snake)
+- [HAnS-Viz Visualization Tool](https://github.com/isselab/HAnS-Viz)
+
+## Contact & Support
+
+### Maintainers
+[![johmara](https://img.shields.io/badge/GitHub-johmara-181717.svg?style=flat&logo=github)](https://www.github.com/johmara)
+
+### Community
+Join our [Discord community](https://discord.gg/7hgRnRnW9r) for discussions, support, and updates.
+
+### Contributors
+See our [CONTRIBUTORS.md](CONTRIBUTORS.md) for a full list of project contributors.
+
+## License
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
 

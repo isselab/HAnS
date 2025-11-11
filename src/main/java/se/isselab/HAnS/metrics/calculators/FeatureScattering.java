@@ -18,15 +18,18 @@ package se.isselab.HAnS.metrics.calculators;
 
 import com.intellij.openapi.project.Project;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
+import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 
 public class FeatureScattering {
 
+    private FeatureScattering(){}
     /**
      * Returns the scattering degree of the given feature while making use of a pre-calculated fileMapping
      *
@@ -43,27 +46,28 @@ public class FeatureScattering {
             //get all blocks of code annotated with the feature for the given file
             var blocks = locations.getFeatureLocations();
 
-            if (blocks.isEmpty())
-                continue;
-
-
-            //get line numbers annotated by the blocks
-            for (var block : blocks) {
-                for (int i = block.getStartLine(); i <= block.getEndLine(); i++) {
-                    lines.add(i);
-                }
-            }
-
-            //if there were no lines then continue
-            if (lines.isEmpty())
-                continue;
+            if (getFeatureAnnotationLines(blocks, lines)) continue;
 
             //count segments annotated by the feature within a file and increase scattering degree for each
             scatteringDegree += countSegments(lines);
-
         }
 
         return scatteringDegree;
+    }
+
+    private static boolean getFeatureAnnotationLines(List<FeatureLocationBlock> blocks, SortedSet<Integer> lines) {
+        if (blocks.isEmpty())
+            return true;
+
+        //get line numbers annotated by the blocks
+        for (var block : blocks) {
+            for (int i = block.getStartLine(); i <= block.getEndLine(); i++) {
+                lines.add(i);
+            }
+        }
+
+        //if there were no lines then continue
+        return lines.isEmpty();
     }
 
     /**
@@ -72,15 +76,15 @@ public class FeatureScattering {
      * @return Number of contiguous segments within the set
      */
     private static int countSegments(SortedSet<Integer> set) {
-        int segments = 0;
+        int gaps = 0;
         int prevLine = set.first();
         for (int line : set) {
             if (prevLine + 1 != line) {
-                segments++;
+                gaps++;
             }
             prevLine = line;
         }
-        return segments;
+        return gaps;
     }
 
     /**

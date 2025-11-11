@@ -41,11 +41,11 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
     private HansTrafficLightWidget widget;
     private HansTrafficLightPopup popup;
 
-    HansTrafficLightAction() {
+    public HansTrafficLightAction() {
         super();
     }
 
-    HansTrafficLightAction(Editor editor) {
+    public HansTrafficLightAction(Editor editor) {
         this.editor = editor;
         popup = new HansTrafficLightPopup(editor);
     }

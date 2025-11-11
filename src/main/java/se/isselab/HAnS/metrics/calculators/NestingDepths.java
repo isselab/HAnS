@@ -35,13 +35,15 @@ import java.util.*;
  */
 public class NestingDepths {
 
+    private NestingDepths() {}
+
     public static List<Pair<String, Integer>> getFeatureNestingDepths(Project project, FeatureModelFeature feature) {
         var nestingDepthMap = getNestingDepthMap(FeatureLocationManager.getAllFeatureFileMappings(project));
         var featureLPQ = ReadAction.compute(feature::getLPQText);
         return nestingDepthMap.containsKey(featureLPQ)? nestingDepthMap.get(featureLPQ).stream().toList(): null;
     }
 
-    public static Map<String, List<Pair<String, Integer>>> getNestingDepthMap(HashMap<String, FeatureFileMapping> fileMappings) {
+    public static Map<String, List<Pair<String, Integer>>> getNestingDepthMap(Map<String, FeatureFileMapping> fileMappings) {
         // Key = FeatureLPQ -> Value = List of Pair<FilePath, NestingDepth>
         var nestingDepthMap = new HashMap<String, List<Pair<String, Integer>>>();
 
@@ -52,7 +54,7 @@ public class NestingDepths {
 
             for (var featureLocation: fileMapping.getFeatureLocations()) {
                 var filePath = featureLocation.getMappedPath();
-                var nestingDepth = 1;
+                var maxNestingLevel = 0;
 
                 var projectFeatureLocations = fileMappings.values().stream().map(FeatureFileMapping::getFeatureLocations)
                         .flatMap(List::stream).toList().stream().filter(f -> f.getMappedPath().equals(filePath)).toList();
@@ -62,8 +64,11 @@ public class NestingDepths {
 
                 for (var block : featureLocation.getFeatureLocations()) {
                     var fileFeatureLocationsExceptThisBlock = fileFeatureLocations.stream().filter(f -> f != block).toList();
-                    nestingDepth += block.countTimesInsideOfBlocks(fileFeatureLocationsExceptThisBlock);
+                    var blockNestingLevel = block.countTimesInsideOfBlocks(fileFeatureLocationsExceptThisBlock);
+                    maxNestingLevel = Math.max(maxNestingLevel, blockNestingLevel);
                 }
+                
+                var nestingDepth = 1 + maxNestingLevel;
 
                 if(nestingDepthMap.containsKey(featureLPQ)){
                     nestingDepthMap.get(featureLPQ).add(new Pair<>(filePath, nestingDepth));

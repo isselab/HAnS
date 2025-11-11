@@ -37,6 +37,7 @@ import se.isselab.HAnS.referencing.FileReferenceUtil;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class FeatureLocationManager {
@@ -53,7 +54,7 @@ public class FeatureLocationManager {
      * @return Map of all FeatureFileMappings for the given project
      * @see FeatureFileMapping
      */
-    public static HashMap<String, FeatureFileMapping> getAllFeatureFileMappings(Project project) {
+    public static Map<String, FeatureFileMapping> getAllFeatureFileMappings(Project project) {
         HashMap<String, FeatureFileMapping> mapping = new HashMap<>();
         for (var feature : ReadAction.compute(() -> FeatureModelUtil.findFeatures(project))) {
             mapping.put(ReadAction.compute(feature::getLPQText), FeatureLocationManager.getFeatureFileMapping(project, feature));

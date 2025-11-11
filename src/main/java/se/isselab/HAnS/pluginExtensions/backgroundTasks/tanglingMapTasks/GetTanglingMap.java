@@ -25,12 +25,12 @@ import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.metrics.calculators.FeatureTangling;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public class GetTanglingMap extends Task.Backgroundable{
 
-    private HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap;
+    private Map<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap;
     private final TanglingMapCallback callback;
 
     public GetTanglingMap(@Nullable Project project, @NotNull String title, TanglingMapCallback callback) {
