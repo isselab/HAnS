@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.2.4] - 2025-11-11
+
+### Enhanced 🚀
+
+- **Feature Model Template Auto-Population** - Feature Model files now automatically populate with the current project name instead of a placeholder when created
+
+### Fixed 🐛
+
+- Fixed Feature Model file template not replacing `${Project_Name}` placeholder with actual project name
+
 ## [0.2.3] - 2025-11-11
 
 ### Enhanced 🚀
@@ -172,7 +182,8 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/isselab/HAnS/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/isselab/HAnS/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/isselab/HAnS/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/isselab/HAnS/compare/v0.2.0...v0.2.1
