@@ -132,6 +132,39 @@ public class FeatureModelPsiImplUtil {
     }
     // &end[Referencing]
 
+    public static String getFullLPQText(PsiElement feature) {
+        Deque<PsiElement> lpqStack = getFullLPQStack(feature);
+
+        if (lpqStack.isEmpty()) {
+            return null;
+        }
+
+        // Convert stack into full LPQ string
+        StringJoiner joiner = new StringJoiner("::");
+        for(var psiElement : lpqStack) {
+            joiner.add(psiElement.getText());
+        }
+
+        return joiner.toString();
+    }
+
+    private static Deque<PsiElement> getFullLPQStack(PsiElement feature) {
+        Deque<PsiElement> stack = new ArrayDeque<>();
+
+        PsiElement current = feature;
+        while (current != null && !(current instanceof PsiFile)) {
+            // Assuming FeatureModelFeature nodes have a firstChild that is the name identifier
+            PsiElement nameElement = current.getFirstChild();
+            if (nameElement != null) {
+                stack.push(nameElement);
+            }
+            // Move up: parent of the feature node → then its parent, etc.
+            current = current.getParent();
+        }
+
+        return stack;
+    }
+
     public static String getLPQText(PsiElement feature) {
         Deque<PsiElement> lpqStack = getLPQStack(feature);
         String lpq = null;

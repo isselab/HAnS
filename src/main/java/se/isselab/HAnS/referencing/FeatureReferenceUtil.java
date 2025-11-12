@@ -20,6 +20,7 @@ import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -38,7 +39,7 @@ import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationFileReferences;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationFileReferences;
 import se.isselab.HAnS.metrics.calculators.FeatureTangling;
 
 import java.util.*;
@@ -169,15 +170,15 @@ public class FeatureReferenceUtil {
 
     public static void setElementsToRenameWhenAdding(FeatureModelFeature element, String newName) {
         Map<FeatureModelFeature, List<PsiReference>> toRename = new HashMap<>();
-
+        GlobalSearchScope scope = GlobalSearchScope.allScope(element.getProject());
         List<FeatureModelFeature> elementsToRename = getElementsToRenameWhenAdding(element, newName);
 
-        for (FeatureModelFeature e : elementsToRename) {
-            List<PsiReference> referencedElements = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(e)) {
-                referencedElements.add(reference);
-            }
-            toRename.put(e, referencedElements);
+        for (FeatureModelFeature feature : elementsToRename) {
+            List<PsiReference> referencedElements = DumbService.getInstance(element.getProject()).tryRunReadActionInSmartMode(() ->
+                    ReferencesSearch.search(feature, scope, true)
+                            .findAll().stream().toList(), ""
+            );
+            toRename.put(feature, referencedElements);
         }
 
         addingOrDeleting = true;
@@ -359,16 +360,23 @@ public class FeatureReferenceUtil {
         List<PsiElement> elementsToDelete = new ArrayList<>();
         traverseFeatureWithChildren(feature, elementsToDelete, new ArrayList<>());
 
-        Project projectInstance = feature.getProject();
+        Project project = feature.getProject();
         elementsToDelete.forEach(child -> {
             FeatureModelFeature childFeature = (FeatureModelFeature) child;
 
-            FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, childFeature);
+            FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(project, childFeature);
             Map<Document, Set<Integer>> codeAnnotations = getCodeAnnotations(fileToAnnotation); // code Annotations
 
             List<PsiReference> fileAndFolderAnnotations = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(child)) {
-                InjectedLanguageManager injManager = InjectedLanguageManager.getInstance(projectInstance);
+
+            List<PsiReference> references = DumbService.getInstance(project).tryRunReadActionInSmartMode(() ->
+                    ReferencesSearch.search(child, GlobalSearchScope.projectScope(project), true)
+                            .findAll().stream().toList(), ""
+            );
+            if (references == null) return;
+
+            for (PsiReference reference : references) {
+                InjectedLanguageManager injManager = InjectedLanguageManager.getInstance(project);
 
                 PsiLanguageInjectionHost host = injManager.getInjectionHost(reference.getElement());
                 if (host == null) { // if it's file or folder annotation, so not an injection
@@ -437,7 +445,7 @@ public class FeatureReferenceUtil {
         FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, feature); // Feature -> FeatureLocations, each FeatureLocation -> FeatureBlocks
         ArrayList<FeatureAnnotationToDelete> baseFeatureLocations = getFeatureAnnotationLocations(fileToAnnotation, feature); // parentFeature, mapped File, start, end
 
-        HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = FeatureTangling.getTanglingMap(projectInstance); // Feature -> Features (tangled)
+        Map<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = FeatureTangling.getTanglingMap(projectInstance); // Feature -> Features (tangled)
         HashSet<FeatureModelFeature> tangledFeatures = getTangledFeatures(tanglingMap, feature); // tangled features of specific Feature N
 
         ArrayList<FeatureAnnotationToDelete> tangledLocations = getTangledLocations(projectInstance, feature, tangledFeatures, fileToAnnotation, featureTreeLPQs);
@@ -453,7 +461,7 @@ public class FeatureReferenceUtil {
         ArrayList<FeatureAnnotationToDelete> storeInterlockedLocations = new ArrayList<>();
 
         for (FeatureModelFeature tangled : tangledFeatures) { // for each feature tangled with A
-            ArrayList<FeatureLocation> tangledLocations = FeatureLocationManager.getFeatureFileMapping(projectInstance, tangled).getFeatureLocations();
+            List<FeatureLocation> tangledLocations = FeatureLocationManager.getFeatureFileMapping(projectInstance, tangled).getFeatureLocations();
             for (FeatureLocation location : tangledLocations) {
                 fileToAnnotation.getFeatureLocations().forEach(baseLocation -> {
                     if (baseLocation.getMappedPath().equals(location.getMappedPath())) {
@@ -486,7 +494,7 @@ public class FeatureReferenceUtil {
     }
 
     // returns set of all features tangled with FeatureModelFeature feature
-    private static HashSet<FeatureModelFeature> getTangledFeatures(HashMap<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, FeatureModelFeature feature) {
+    private static HashSet<FeatureModelFeature> getTangledFeatures(Map<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap, FeatureModelFeature feature) {
         HashSet<FeatureModelFeature> tangledFeatures = new HashSet<>();
 
         for (var entry : tanglingMap.entrySet()) {
@@ -605,12 +613,12 @@ public class FeatureReferenceUtil {
         traverseFeatureWithChildren(element, elementsToDelete, new ArrayList<>());
         GlobalSearchScope scope = GlobalSearchScope.allScope(element.getProject());
 
-        for (PsiElement e : elementsToDelete) {
-            List<PsiReference> referencedElements = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(e, scope)) {
-                referencedElements.add(reference);
-            }
-            toDelete.put(((FeatureModelFeature) e), referencedElements);
+        for (PsiElement feature : elementsToDelete) {
+            List<PsiReference> references = DumbService.getInstance(element.getProject()).tryRunReadActionInSmartMode(() ->
+                    ReferencesSearch.search(feature, scope, true)
+                            .findAll().stream().toList(), ""
+            );
+            toDelete.put(((FeatureModelFeature) feature), references);
         }
 
         addingOrDeleting = true;
@@ -635,12 +643,16 @@ public class FeatureReferenceUtil {
     }
 
     private static void mapElementsToRename(Map<FeatureModelFeature, List<PsiReference>> toRename, List<FeatureModelFeature> elementsToRename) {
-        for (FeatureModelFeature e : elementsToRename) {
-            List<PsiReference> referencedElements = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(e)) {
-                referencedElements.add(reference);
-            }
-            toRename.put(e, referencedElements);
+
+        for (FeatureModelFeature feature : elementsToRename) {
+            GlobalSearchScope scope = GlobalSearchScope.allScope(feature.getProject());
+
+            List<PsiReference> referencedElements = DumbService.getInstance(feature.getProject()).tryRunReadActionInSmartMode(() ->
+                    ReferencesSearch.search(feature, scope, true)
+                            .findAll().stream().toList(), ""
+            );
+
+            toRename.put(feature, referencedElements);
         }
         mapToRename = toRename;
     }
@@ -693,14 +705,15 @@ public class FeatureReferenceUtil {
 
     public static void setElementsToRenameAfterAddingWithChildren(FeatureModelFeature element) {
         Map<String, List<PsiReference>> toUpdate = new HashMap<>();
-
+        GlobalSearchScope scope = GlobalSearchScope.allScope(element.getProject());
         List<PsiElement> elementsToUpdate = getElementsToRenameAfterAddingWithChildren(element);
-        for (PsiElement e : elementsToUpdate) {
-            List<PsiReference> referencedElements = new ArrayList<>();
-            for (PsiReference reference : ReferencesSearch.search(e)) {
-                referencedElements.add(reference);
-            }
-            toUpdate.put(((FeatureModelFeature) e).getLPQText(), referencedElements);
+
+        for (PsiElement feature : elementsToUpdate) {
+            List<PsiReference> referencedElements = DumbService.getInstance(element.getProject()).tryRunReadActionInSmartMode(() ->
+                    ReferencesSearch.search(feature, scope, true)
+                            .findAll().stream().toList(), ""
+            );
+            toUpdate.put(((FeatureModelFeature) feature).getLPQText(), referencedElements);
         }
         mapToRenameWhenAdding = toUpdate;
     }

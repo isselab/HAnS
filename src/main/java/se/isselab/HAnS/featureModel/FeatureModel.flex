@@ -20,6 +20,7 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
 import com.intellij.psi.TokenType;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import com.intellij.lexer.FlexLexer;
 
 %%
 

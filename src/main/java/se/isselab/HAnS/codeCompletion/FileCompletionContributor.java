@@ -17,8 +17,8 @@ package se.isselab.HAnS.codeCompletion;
 
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionType;
-import se.isselab.HAnS.fileAnnotation.psi.FileAnnotationTypes;
-import se.isselab.HAnS.fileAnnotation.psi.impl.FileAnnotationFeatureNameImpl;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationTypes;
+import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.impl.FileAnnotationFeatureNameImpl;
 
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
@@ -31,5 +31,12 @@ public class FileCompletionContributor extends CompletionContributor {
                                 withParent(FileAnnotationFeatureNameImpl.class)),
                 new FileNameCompletionProvider(false));
         // &end[FileNameProvider]
+
+        // &begin[FeatureNameProvider]
+        extend(CompletionType.BASIC,
+                psiElement(FileAnnotationTypes.STRING).
+                        withParent(FileAnnotationFeatureNameImpl.class),
+                new FeatureNameCompletionProvider());
+        // &end[FeatureNameProvider]
     }
 }
