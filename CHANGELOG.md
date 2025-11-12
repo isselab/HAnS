@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.2.4] - 2025-11-12
+
 ### Enhanced 🚀
 
 - **Feature Model Template Auto-Population** - Feature Model files now automatically populate with the current project name instead of a placeholder when created
