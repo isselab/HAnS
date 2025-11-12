@@ -1,6 +1,7 @@
 # HAnS (Helping Annotate Software)
 
 ![Build](https://github.com/isselab/HAnS/workflows/Build/badge.svg)
+[![codecov](https://codecov.io/github/isselab/HAnS/graph/badge.svg?token=0MA6DI636A)](https://codecov.io/github/isselab/HAnS)
 [![Version](https://img.shields.io/jetbrains/plugin/v/22759.svg)](https://plugins.jetbrains.com/plugin/22759)
 [![Downloads](https://img.shields.io/jetbrains/plugin/d/22759.svg)](https://plugins.jetbrains.com/plugin/22759)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
