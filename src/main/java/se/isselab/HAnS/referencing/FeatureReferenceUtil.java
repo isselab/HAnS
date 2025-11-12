@@ -17,10 +17,10 @@ package se.isselab.HAnS.referencing;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.injection.InjectedLanguageManager;
-import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -174,9 +174,9 @@ public class FeatureReferenceUtil {
         List<FeatureModelFeature> elementsToRename = getElementsToRenameWhenAdding(element, newName);
 
         for (FeatureModelFeature feature : elementsToRename) {
-            List<PsiReference> referencedElements = ReadAction.compute(() ->
+            List<PsiReference> referencedElements = DumbService.getInstance(element.getProject()).tryRunReadActionInSmartMode(() ->
                     ReferencesSearch.search(feature, scope, true)
-                            .findAll().stream().toList()
+                            .findAll().stream().toList(), ""
             );
             toRename.put(feature, referencedElements);
         }
@@ -369,10 +369,11 @@ public class FeatureReferenceUtil {
 
             List<PsiReference> fileAndFolderAnnotations = new ArrayList<>();
 
-            List<PsiReference> references = ReadAction.compute(() ->
+            List<PsiReference> references = DumbService.getInstance(project).tryRunReadActionInSmartMode(() ->
                     ReferencesSearch.search(child, GlobalSearchScope.projectScope(project), true)
-                            .findAll().stream().toList()
+                            .findAll().stream().toList(), ""
             );
+            if (references == null) return;
 
             for (PsiReference reference : references) {
                 InjectedLanguageManager injManager = InjectedLanguageManager.getInstance(project);
@@ -613,9 +614,9 @@ public class FeatureReferenceUtil {
         GlobalSearchScope scope = GlobalSearchScope.allScope(element.getProject());
 
         for (PsiElement feature : elementsToDelete) {
-            List<PsiReference> references = ReadAction.compute(() ->
+            List<PsiReference> references = DumbService.getInstance(element.getProject()).tryRunReadActionInSmartMode(() ->
                     ReferencesSearch.search(feature, scope, true)
-                            .findAll().stream().toList()
+                            .findAll().stream().toList(), ""
             );
             toDelete.put(((FeatureModelFeature) feature), references);
         }
@@ -646,9 +647,9 @@ public class FeatureReferenceUtil {
         for (FeatureModelFeature feature : elementsToRename) {
             GlobalSearchScope scope = GlobalSearchScope.allScope(feature.getProject());
 
-            List<PsiReference> referencedElements = ReadAction.compute(() ->
+            List<PsiReference> referencedElements = DumbService.getInstance(feature.getProject()).tryRunReadActionInSmartMode(() ->
                     ReferencesSearch.search(feature, scope, true)
-                            .findAll().stream().toList()
+                            .findAll().stream().toList(), ""
             );
 
             toRename.put(feature, referencedElements);
@@ -708,9 +709,9 @@ public class FeatureReferenceUtil {
         List<PsiElement> elementsToUpdate = getElementsToRenameAfterAddingWithChildren(element);
 
         for (PsiElement feature : elementsToUpdate) {
-            List<PsiReference> referencedElements = ReadAction.compute(() ->
+            List<PsiReference> referencedElements = DumbService.getInstance(element.getProject()).tryRunReadActionInSmartMode(() ->
                     ReferencesSearch.search(feature, scope, true)
-                            .findAll().stream().toList()
+                            .findAll().stream().toList(), ""
             );
             toUpdate.put(((FeatureModelFeature) feature).getLPQText(), referencedElements);
         }

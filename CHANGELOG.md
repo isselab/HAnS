@@ -9,6 +9,7 @@
 ### Fixed 🐛
 
 - Fixed Feature Model file template not replacing `${Project_Name}` placeholder with actual project name
+- Fixed issue where references where trying to be retrieved before the indexes where built, causing errors on first load
 
 ## [0.2.3] - 2025-11-11
 

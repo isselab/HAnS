@@ -18,6 +18,7 @@ package se.isselab.HAnS.featureLocation;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
@@ -75,10 +76,11 @@ public class FeatureLocationManager {
      */
     public static FeatureFileMapping getFeatureFileMapping(Project project, FeatureModelFeature feature) {
         FeatureFileMapping featureFileMapping = new FeatureFileMapping(feature);
-        List<PsiReference> references = ReadAction.compute(() ->
+        List<PsiReference> references = DumbService.getInstance(project).tryRunReadActionInSmartMode(() ->
                 ReferencesSearch.search(feature, GlobalSearchScope.projectScope(project), true)
-                        .findAll().stream().toList()
+                        .findAll().stream().toList(), ""
         );
+        if (references == null) return featureFileMapping;
 
         for (PsiReference reference : references) {
             PsiElement element = reference.getElement();
