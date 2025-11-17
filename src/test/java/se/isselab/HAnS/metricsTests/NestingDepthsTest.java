@@ -2,6 +2,8 @@ package se.isselab.HAnS.metricsTests;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.util.Pair;
+import com.intellij.psi.SmartPointerManager;
+import com.intellij.psi.SmartPsiElementPointer;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
@@ -22,10 +24,15 @@ public class NestingDepthsTest extends BasePlatformTestCase {
         FeatureModelFeature f1 = features.stream().filter(f -> f.getFeatureName().equals("F1")).findFirst().orElse(null);
         assertNotNull(f1);
 
-        FeatureFileMapping m1 = new FeatureFileMapping(f1);
-        m1.enqueue("/src/File.java", 10, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m1.enqueue("/src/File.java", 15, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
-        m1.buildFromQueue();
+        SmartPsiElementPointer<FeatureModelFeature> f1Pointer = 
+            SmartPointerManager.getInstance(f1.getProject()).createSmartPsiElementPointer(f1);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap = new HashMap<>();
+        FeatureFileMapping.FileAnnotationKey key = new FeatureFileMapping.FileAnnotationKey("/src/File.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder = markerDataMap.computeIfAbsent(key, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder.addMarker(FeatureFileMapping.MarkerType.BEGIN, 10);
+        builder.addMarker(FeatureFileMapping.MarkerType.END, 15);
+        FeatureFileMapping m1 = FeatureFileMapping.create(f1Pointer, markerDataMap);
 
         Map<String, FeatureFileMapping> fileMappings = new HashMap<>();
         fileMappings.put(ReadAction.compute(f1::getLPQText), m1);
@@ -48,19 +55,27 @@ public class NestingDepthsTest extends BasePlatformTestCase {
         assertNotNull(f1);
         assertNotNull(f2);
 
-        FeatureFileMapping m1 = new FeatureFileMapping(f1);
-        FeatureFileMapping m2 = new FeatureFileMapping(f2);
-
         // F1: lines 0-20
-        m1.enqueue("/src/File.java", 0, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m1.enqueue("/src/File.java", 20, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
+        SmartPsiElementPointer<FeatureModelFeature> f1Pointer = 
+            SmartPointerManager.getInstance(f1.getProject()).createSmartPsiElementPointer(f1);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap1 = new HashMap<>();
+        FeatureFileMapping.FileAnnotationKey key1 = new FeatureFileMapping.FileAnnotationKey("/src/File.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder1 = markerDataMap1.computeIfAbsent(key1, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder1.addMarker(FeatureFileMapping.MarkerType.BEGIN, 0);
+        builder1.addMarker(FeatureFileMapping.MarkerType.END, 20);
+        FeatureFileMapping m1 = FeatureFileMapping.create(f1Pointer, markerDataMap1);
 
         // F2: lines 5-10 (nested inside F1)
-        m2.enqueue("/src/File.java", 5, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m2.enqueue("/src/File.java", 10, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
-
-        m1.buildFromQueue();
-        m2.buildFromQueue();
+        SmartPsiElementPointer<FeatureModelFeature> f2Pointer = 
+            SmartPointerManager.getInstance(f2.getProject()).createSmartPsiElementPointer(f2);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap2 = new HashMap<>();
+        FeatureFileMapping.FileAnnotationKey key2 = new FeatureFileMapping.FileAnnotationKey("/src/File.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder2 = markerDataMap2.computeIfAbsent(key2, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder2.addMarker(FeatureFileMapping.MarkerType.BEGIN, 5);
+        builder2.addMarker(FeatureFileMapping.MarkerType.END, 10);
+        FeatureFileMapping m2 = FeatureFileMapping.create(f2Pointer, markerDataMap2);
 
         Map<String, FeatureFileMapping> fileMappings = new HashMap<>();
         fileMappings.put(ReadAction.compute(f1::getLPQText), m1);
@@ -92,25 +107,38 @@ public class NestingDepthsTest extends BasePlatformTestCase {
         assertNotNull(f2);
         assertNotNull(f3);
 
-        FeatureFileMapping m1 = new FeatureFileMapping(f1);
-        FeatureFileMapping m2 = new FeatureFileMapping(f2);
-        FeatureFileMapping m3 = new FeatureFileMapping(f3);
-
         // F1: lines 0-30
-        m1.enqueue("/src/File.java", 0, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m1.enqueue("/src/File.java", 30, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
+        SmartPsiElementPointer<FeatureModelFeature> f1Pointer = 
+            SmartPointerManager.getInstance(f1.getProject()).createSmartPsiElementPointer(f1);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap1 = new HashMap<>();
+        FeatureFileMapping.FileAnnotationKey key1 = new FeatureFileMapping.FileAnnotationKey("/src/File.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder1 = markerDataMap1.computeIfAbsent(key1, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder1.addMarker(FeatureFileMapping.MarkerType.BEGIN, 0);
+        builder1.addMarker(FeatureFileMapping.MarkerType.END, 30);
+        FeatureFileMapping m1 = FeatureFileMapping.create(f1Pointer, markerDataMap1);
 
         // F2: lines 5-25 (nested inside F1)
-        m2.enqueue("/src/File.java", 5, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m2.enqueue("/src/File.java", 25, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
+        SmartPsiElementPointer<FeatureModelFeature> f2Pointer = 
+            SmartPointerManager.getInstance(f2.getProject()).createSmartPsiElementPointer(f2);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap2 = new HashMap<>();
+        FeatureFileMapping.FileAnnotationKey key2 = new FeatureFileMapping.FileAnnotationKey("/src/File.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder2 = markerDataMap2.computeIfAbsent(key2, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder2.addMarker(FeatureFileMapping.MarkerType.BEGIN, 5);
+        builder2.addMarker(FeatureFileMapping.MarkerType.END, 25);
+        FeatureFileMapping m2 = FeatureFileMapping.create(f2Pointer, markerDataMap2);
 
         // F3: lines 10-20 (nested inside F2, which is inside F1)
-        m3.enqueue("/src/File.java", 10, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m3.enqueue("/src/File.java", 20, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
-
-        m1.buildFromQueue();
-        m2.buildFromQueue();
-        m3.buildFromQueue();
+        SmartPsiElementPointer<FeatureModelFeature> f3Pointer = 
+            SmartPointerManager.getInstance(f3.getProject()).createSmartPsiElementPointer(f3);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap3 = new HashMap<>();
+        FeatureFileMapping.FileAnnotationKey key3 = new FeatureFileMapping.FileAnnotationKey("/src/File.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder3 = markerDataMap3.computeIfAbsent(key3, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder3.addMarker(FeatureFileMapping.MarkerType.BEGIN, 10);
+        builder3.addMarker(FeatureFileMapping.MarkerType.END, 20);
+        FeatureFileMapping m3 = FeatureFileMapping.create(f3Pointer, markerDataMap3);
 
         Map<String, FeatureFileMapping> fileMappings = new HashMap<>();
         fileMappings.put(ReadAction.compute(f1::getLPQText), m1);
@@ -146,19 +174,27 @@ public class NestingDepthsTest extends BasePlatformTestCase {
         assertNotNull(f1);
         assertNotNull(f2);
 
-        FeatureFileMapping m1 = new FeatureFileMapping(f1);
-        FeatureFileMapping m2 = new FeatureFileMapping(f2);
-
         // F1: lines 0-15
-        m1.enqueue("/src/File.java", 0, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m1.enqueue("/src/File.java", 15, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
+        SmartPsiElementPointer<FeatureModelFeature> f1Pointer = 
+            SmartPointerManager.getInstance(f1.getProject()).createSmartPsiElementPointer(f1);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap1 = new HashMap<>();
+        FeatureFileMapping.FileAnnotationKey key1 = new FeatureFileMapping.FileAnnotationKey("/src/File.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder1 = markerDataMap1.computeIfAbsent(key1, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder1.addMarker(FeatureFileMapping.MarkerType.BEGIN, 0);
+        builder1.addMarker(FeatureFileMapping.MarkerType.END, 15);
+        FeatureFileMapping m1 = FeatureFileMapping.create(f1Pointer, markerDataMap1);
 
         // F2: lines 10-20 (partially overlaps, not fully nested)
-        m2.enqueue("/src/File.java", 10, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m2.enqueue("/src/File.java", 20, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
-
-        m1.buildFromQueue();
-        m2.buildFromQueue();
+        SmartPsiElementPointer<FeatureModelFeature> f2Pointer = 
+            SmartPointerManager.getInstance(f2.getProject()).createSmartPsiElementPointer(f2);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap2 = new HashMap<>();
+        FeatureFileMapping.FileAnnotationKey key2 = new FeatureFileMapping.FileAnnotationKey("/src/File.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder2 = markerDataMap2.computeIfAbsent(key2, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder2.addMarker(FeatureFileMapping.MarkerType.BEGIN, 10);
+        builder2.addMarker(FeatureFileMapping.MarkerType.END, 20);
+        FeatureFileMapping m2 = FeatureFileMapping.create(f2Pointer, markerDataMap2);
 
         Map<String, FeatureFileMapping> fileMappings = new HashMap<>();
         fileMappings.put(ReadAction.compute(f1::getLPQText), m1);
@@ -183,22 +219,35 @@ public class NestingDepthsTest extends BasePlatformTestCase {
         assertNotNull(f1);
         assertNotNull(f2);
 
-        FeatureFileMapping m1 = new FeatureFileMapping(f1);
-        FeatureFileMapping m2 = new FeatureFileMapping(f2);
-
         // File1: F2 nested inside F1
-        m1.enqueue("/src/File1.java", 0, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m1.enqueue("/src/File1.java", 20, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
+        SmartPsiElementPointer<FeatureModelFeature> f1Pointer = 
+            SmartPointerManager.getInstance(f1.getProject()).createSmartPsiElementPointer(f1);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap1 = new HashMap<>();
+        FeatureFileMapping.FileAnnotationKey key1 = new FeatureFileMapping.FileAnnotationKey("/src/File1.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder1 = markerDataMap1.computeIfAbsent(key1, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder1.addMarker(FeatureFileMapping.MarkerType.BEGIN, 0);
+        builder1.addMarker(FeatureFileMapping.MarkerType.END, 20);
+        FeatureFileMapping m1 = FeatureFileMapping.create(f1Pointer, markerDataMap1);
 
-        m2.enqueue("/src/File1.java", 5, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m2.enqueue("/src/File1.java", 10, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
+        SmartPsiElementPointer<FeatureModelFeature> f2Pointer = 
+            SmartPointerManager.getInstance(f2.getProject()).createSmartPsiElementPointer(f2);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap2 = new HashMap<>();
+        
+        FeatureFileMapping.FileAnnotationKey key2a = new FeatureFileMapping.FileAnnotationKey("/src/File1.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder2a = markerDataMap2.computeIfAbsent(key2a, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder2a.addMarker(FeatureFileMapping.MarkerType.BEGIN, 5);
+        builder2a.addMarker(FeatureFileMapping.MarkerType.END, 10);
 
         // File2: F2 not nested
-        m2.enqueue("/src/File2.java", 0, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m2.enqueue("/src/File2.java", 5, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
-
-        m1.buildFromQueue();
-        m2.buildFromQueue();
+        FeatureFileMapping.FileAnnotationKey key2b = new FeatureFileMapping.FileAnnotationKey("/src/File2.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder2b = markerDataMap2.computeIfAbsent(key2b, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder2b.addMarker(FeatureFileMapping.MarkerType.BEGIN, 0);
+        builder2b.addMarker(FeatureFileMapping.MarkerType.END, 5);
+        
+        FeatureFileMapping m2 = FeatureFileMapping.create(f2Pointer, markerDataMap2);
 
         Map<String, FeatureFileMapping> fileMappings = new HashMap<>();
         fileMappings.put(ReadAction.compute(f1::getLPQText), m1);
@@ -234,25 +283,31 @@ public class NestingDepthsTest extends BasePlatformTestCase {
         assertNotNull(f1);
         assertNotNull(f2);
 
-        FeatureFileMapping m1 = new FeatureFileMapping(f1);
-        FeatureFileMapping m2 = new FeatureFileMapping(f2);
-
         // F1: two separate blocks
-        m1.enqueue("/src/File.java", 0, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m1.enqueue("/src/File.java", 10, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
-
-        m1.enqueue("/src/File.java", 20, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m1.enqueue("/src/File.java", 30, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
+        SmartPsiElementPointer<FeatureModelFeature> f1Pointer = 
+            SmartPointerManager.getInstance(f1.getProject()).createSmartPsiElementPointer(f1);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap1 = new HashMap<>();
+        FeatureFileMapping.FileAnnotationKey key1 = new FeatureFileMapping.FileAnnotationKey("/src/File.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder1 = markerDataMap1.computeIfAbsent(key1, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder1.addMarker(FeatureFileMapping.MarkerType.BEGIN, 0);
+        builder1.addMarker(FeatureFileMapping.MarkerType.END, 10);
+        builder1.addMarker(FeatureFileMapping.MarkerType.BEGIN, 20);
+        builder1.addMarker(FeatureFileMapping.MarkerType.END, 30);
+        FeatureFileMapping m1 = FeatureFileMapping.create(f1Pointer, markerDataMap1);
 
         // F2: one block nested in first F1 block, another nested in second F1 block
-        m2.enqueue("/src/File.java", 3, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m2.enqueue("/src/File.java", 5, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
-
-        m2.enqueue("/src/File.java", 23, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "o");
-        m2.enqueue("/src/File.java", 25, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "o");
-
-        m1.buildFromQueue();
-        m2.buildFromQueue();
+        SmartPsiElementPointer<FeatureModelFeature> f2Pointer = 
+            SmartPointerManager.getInstance(f2.getProject()).createSmartPsiElementPointer(f2);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap2 = new HashMap<>();
+        FeatureFileMapping.FileAnnotationKey key2 = new FeatureFileMapping.FileAnnotationKey("/src/File.java", "o");
+        FeatureFileMapping.MarkerDataBuilder builder2 = markerDataMap2.computeIfAbsent(key2, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder2.addMarker(FeatureFileMapping.MarkerType.BEGIN, 3);
+        builder2.addMarker(FeatureFileMapping.MarkerType.END, 5);
+        builder2.addMarker(FeatureFileMapping.MarkerType.BEGIN, 23);
+        builder2.addMarker(FeatureFileMapping.MarkerType.END, 25);
+        FeatureFileMapping m2 = FeatureFileMapping.create(f2Pointer, markerDataMap2);
 
         Map<String, FeatureFileMapping> fileMappings = new HashMap<>();
         fileMappings.put(ReadAction.compute(f1::getLPQText), m1);
@@ -276,8 +331,10 @@ public class NestingDepthsTest extends BasePlatformTestCase {
         FeatureModelFeature f1 = features.stream().filter(f -> f.getFeatureName().equals("F1")).findFirst().orElse(null);
         assertNotNull(f1);
 
-        FeatureFileMapping m1 = new FeatureFileMapping(f1);
-        m1.buildFromQueue(); // No locations
+        SmartPsiElementPointer<FeatureModelFeature> f1Pointer = 
+            SmartPointerManager.getInstance(f1.getProject()).createSmartPsiElementPointer(f1);
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap = new HashMap<>();
+        FeatureFileMapping m1 = FeatureFileMapping.create(f1Pointer, markerDataMap); // No locations
 
         Map<String, FeatureFileMapping> fileMappings = new HashMap<>();
         fileMappings.put(ReadAction.compute(f1::getLPQText), m1);

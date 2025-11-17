@@ -1,6 +1,7 @@
 package se.isselab.HAnS.featureLocationTests;
 
-import com.intellij.openapi.util.Pair;
+import com.intellij.psi.SmartPointerManager;
+import com.intellij.psi.SmartPsiElementPointer;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
@@ -8,19 +9,33 @@ import se.isselab.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FeatureLocationBlockTest extends BasePlatformTestCase {
 
     private FeatureLocationBlock createBlock(int start, int end) {
         FeatureModelFeature feature = FeatureModelElementFactory.createFeature(getProject(), "Root\n    TestFeature");
-        FeatureFileMapping mapping = new FeatureFileMapping(feature);
-        mapping.enqueue("/test/File.java", start, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "origin");
-        mapping.enqueue("/test/File.java", end, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "origin");
-        mapping.buildFromQueue();
         
-        Pair<String, String> key = new Pair<>("/test/File.java", "origin");
-        se.isselab.HAnS.featureLocation.FeatureLocation location = mapping.getFeatureLocationsForFile(key);
+        // Create SmartPsiElementPointer
+        SmartPsiElementPointer<FeatureModelFeature> featurePointer = 
+            SmartPointerManager.getInstance(feature.getProject()).createSmartPsiElementPointer(feature);
+
+        // Build marker data map
+        Map<FeatureFileMapping.FileAnnotationKey, FeatureFileMapping.MarkerDataBuilder> markerDataMap = new HashMap<>();
+        
+        FeatureFileMapping.FileAnnotationKey key = new FeatureFileMapping.FileAnnotationKey("/test/File.java", "origin");
+        FeatureFileMapping.MarkerDataBuilder builder = markerDataMap.computeIfAbsent(key, 
+            k -> new FeatureFileMapping.MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builder.addMarker(FeatureFileMapping.MarkerType.BEGIN, start);
+        builder.addMarker(FeatureFileMapping.MarkerType.END, end);
+
+        // Create immutable FeatureFileMapping
+        FeatureFileMapping mapping = FeatureFileMapping.create(featurePointer, markerDataMap);
+        
+        FeatureFileMapping.FileAnnotationKey fileKey = new FeatureFileMapping.FileAnnotationKey("/test/File.java", "origin");
+        se.isselab.HAnS.featureLocation.FeatureLocation location = mapping.getFeatureLocationsForFile(fileKey);
         assertNotNull(location);
         List<FeatureLocationBlock> blocks = location.getFeatureLocations();
         assertNotNull(blocks);

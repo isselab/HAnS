@@ -1,40 +1,53 @@
 package se.isselab.HAnS.featureLocationTests;
 
-import com.intellij.openapi.util.Pair;
+import com.intellij.psi.SmartPointerManager;
+import com.intellij.psi.SmartPsiElementPointer;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
+import se.isselab.HAnS.featureLocation.FeatureFileMapping.FileAnnotationKey;
+import se.isselab.HAnS.featureLocation.FeatureFileMapping.MarkerDataBuilder;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelElementFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class FeatureFileMappingTest extends BasePlatformTestCase {
 
     public void testEnqueueBuildAndLineCounts() {
         FeatureModelFeature feature = FeatureModelElementFactory.createFeature(getProject(), "Root\n    F1");
-        FeatureFileMapping mapping = new FeatureFileMapping(feature);
+        SmartPsiElementPointer<FeatureModelFeature> featurePointer = 
+                SmartPointerManager.getInstance(getProject()).createSmartPsiElementPointer(feature);
 
-        // add a single-line code annotation (LINE)
-        mapping.enqueue("/path/FileA.java", 10, FeatureFileMapping.MarkerType.LINE, FeatureFileMapping.AnnotationType.CODE, "originA");
+        // Build marker data using the new builder pattern
+        Map<FileAnnotationKey, MarkerDataBuilder> markerData = new HashMap<>();
 
-        // add a begin/end block
-        mapping.enqueue("/path/FileA.java", 2, FeatureFileMapping.MarkerType.BEGIN, FeatureFileMapping.AnnotationType.CODE, "originA");
-        mapping.enqueue("/path/FileA.java", 4, FeatureFileMapping.MarkerType.END, FeatureFileMapping.AnnotationType.CODE, "originA");
+        FileAnnotationKey keyA = new FileAnnotationKey("/path/FileA.java", "originA");
+        FileAnnotationKey keyB = new FileAnnotationKey("/path/FileB.java", "originB");
 
-        // add a file-annotation (NONE) where endline is used
-        mapping.enqueue("/path/FileB.java", 20, FeatureFileMapping.MarkerType.NONE, FeatureFileMapping.AnnotationType.FILE, "originB");
+        // Add data for FileA
+        MarkerDataBuilder builderA = markerData.computeIfAbsent(keyA,
+                k -> new MarkerDataBuilder(FeatureFileMapping.AnnotationType.CODE));
+        builderA.addMarker(FeatureFileMapping.MarkerType.LINE, 10);
+        builderA.addMarker(FeatureFileMapping.MarkerType.BEGIN, 2);
+        builderA.addMarker(FeatureFileMapping.MarkerType.END, 4);
 
-        mapping.buildFromQueue();
+        // Add data for FileB
+        MarkerDataBuilder builderB = markerData.computeIfAbsent(keyB,
+                k -> new MarkerDataBuilder(FeatureFileMapping.AnnotationType.FILE));
+        builderB.addMarker(FeatureFileMapping.MarkerType.NONE, 20);
 
-        Pair<String, String> pairA = new Pair<>((String) "/path/FileA.java", "originA");
-        Pair<String, String> pairB = new Pair<>((String) "/path/FileB.java", "originB");
+        // Build the immutable mapping
+        FeatureFileMapping mapping = FeatureFileMapping.create(featurePointer, markerData);
 
         // FileA: lines covered -> 2..4 and 10 => lines {2,3,4,10} -> 4
-        assertEquals(4, mapping.getFeatureLineCountInFile(pairA));
+        assertEquals(4, mapping.getFeatureLineCountInFile(keyA));
 
         // FileB: NONE created block from 0..20 -> linecount = 21
-        assertEquals(21, mapping.getFeatureLineCountInFile(pairB));
+        assertEquals(21, mapping.getFeatureLineCountInFile(keyB));
 
         // total should be sum
-        int expectedTotal = mapping.getFeatureLineCountInFile(pairA) + mapping.getFeatureLineCountInFile(pairB);
+        int expectedTotal = mapping.getFeatureLineCountInFile(keyA) + mapping.getFeatureLineCountInFile(keyB);
         assertEquals(expectedTotal, mapping.getTotalFeatureLineCount());
 
         // mapped file paths should include both files
@@ -42,3 +55,4 @@ public class FeatureFileMappingTest extends BasePlatformTestCase {
         assertTrue(mapping.getMappedFilePaths().contains("/path/FileB.java"));
     }
 }
+

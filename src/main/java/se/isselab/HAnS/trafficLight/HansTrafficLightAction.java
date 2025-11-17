@@ -18,14 +18,15 @@ package se.isselab.HAnS.trafficLight;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
+import se.isselab.HAnS.featureLocation.FeatureFileMapping.FeatureMappingInfo;
 import se.isselab.HAnS.pluginExtensions.MetricsService;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.FeatureFileMappingCallback;
 
@@ -104,10 +105,12 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
                     @Override
                     public void onComplete(Map<String, FeatureFileMapping> featureFileMappings) {
                         var currentFilePath = editor.getVirtualFile().getPath();
-                        Set<Pair<String, Pair<String,String>>> filePathFeatureMappings = new HashSet<>();
+                        Set<FeatureMappingInfo> filePathFeatureMappings = new HashSet<>();
 
                         featureFileMappings.forEach((key, mapping) -> {
-                            var featuresMappedToFiles = mapping.getFilePathFeatureMappings(currentFilePath);
+                            var featuresMappedToFiles = ReadAction.compute(() -> 
+                                mapping.getFilePathFeatureMappings(currentFilePath)
+                            );
 
                             if (!featuresMappedToFiles.isEmpty()) {
                                 filePathFeatureMappings.addAll(featuresMappedToFiles);
@@ -116,11 +119,11 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
 
                         Map<String, Map<String, Set<String>>> result = filePathFeatureMappings.stream()
                                 .collect(Collectors.groupingBy(
-                                        pair -> pair.getSecond().getFirst(), // Grouping by String3
+                                        FeatureMappingInfo::annotationType, // Grouping by annotation type
                                         Collectors.groupingBy(
-                                                pair -> pair.getSecond().getSecond(), // Grouping by String2
+                                                FeatureMappingInfo::originPath, // Grouping by origin path
                                                 Collectors.mapping(
-                                                        pair -> pair.getFirst(), // Collect String1
+                                                        FeatureMappingInfo::featureLpq, // Collect feature LPQ
                                                         Collectors.toSet()
                                                 )
                                         )
