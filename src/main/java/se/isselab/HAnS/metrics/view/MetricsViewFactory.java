@@ -135,7 +135,7 @@ public class MetricsViewFactory implements ToolWindowFactory {
     private void populateTable(JBTable table, ProjectMetrics metrics, MetricsService service) {
         for (var featureFileMapping : metrics.getFeatureFileMappings().values()) {
             var feature = featureFileMapping.getFeature();
-            if (service.isRootFeature(feature)) continue;
+            if (feature == null || service.isRootFeature(feature)) continue;
 
             ((DefaultTableModel) table.getModel()).addRow(new Object[]{feature.getLPQText(), feature.getScatteringDegree(),
                     feature.getTanglingDegree(), feature.getLineCount(), feature.getAvgNestingDepth(), feature.getMaxNestingDepth(),

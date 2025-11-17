@@ -22,7 +22,6 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
@@ -365,6 +364,7 @@ public class FeatureReferenceUtil {
             FeatureModelFeature childFeature = (FeatureModelFeature) child;
 
             FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(project, childFeature);
+            if (fileToAnnotation == null) return;
             Map<Document, Set<Integer>> codeAnnotations = getCodeAnnotations(fileToAnnotation); // code Annotations
 
             List<PsiReference> fileAndFolderAnnotations = new ArrayList<>();
@@ -443,6 +443,7 @@ public class FeatureReferenceUtil {
         Project projectInstance = feature.getProject();
 
         FeatureFileMapping fileToAnnotation = FeatureLocationManager.getFeatureFileMapping(projectInstance, feature); // Feature -> FeatureLocations, each FeatureLocation -> FeatureBlocks
+        if (fileToAnnotation == null) return new HashSet<>();
         ArrayList<FeatureAnnotationToDelete> baseFeatureLocations = getFeatureAnnotationLocations(fileToAnnotation, feature); // parentFeature, mapped File, start, end
 
         Map<FeatureModelFeature, HashSet<FeatureModelFeature>> tanglingMap = FeatureTangling.getTanglingMap(projectInstance); // Feature -> Features (tangled)
@@ -461,8 +462,9 @@ public class FeatureReferenceUtil {
         ArrayList<FeatureAnnotationToDelete> storeInterlockedLocations = new ArrayList<>();
 
         for (FeatureModelFeature tangled : tangledFeatures) { // for each feature tangled with A
-            List<FeatureLocation> tangledLocations = FeatureLocationManager.getFeatureFileMapping(projectInstance, tangled).getFeatureLocations();
-            for (FeatureLocation location : tangledLocations) {
+            var tangledLocations = FeatureLocationManager.getFeatureFileMapping(projectInstance, tangled);
+            var allTangledLocations = tangledLocations != null ? tangledLocations.getFeatureLocations() : new ArrayList<FeatureLocation>();
+            for (FeatureLocation location : allTangledLocations) {
                 fileToAnnotation.getFeatureLocations().forEach(baseLocation -> {
                     if (baseLocation.getMappedPath().equals(location.getMappedPath())) {
                         for (FeatureLocationBlock fl : location.getFeatureLocations()) {

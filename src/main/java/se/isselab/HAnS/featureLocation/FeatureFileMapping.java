@@ -19,7 +19,6 @@ package se.isselab.HAnS.featureLocation;
 
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.psi.SmartPointerManager;
 import com.intellij.psi.SmartPsiElementPointer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,7 +53,7 @@ public final class FeatureFileMapping {
 
     // Immutable state - all built in constructor
     private final Map<FileAnnotationKey, AnnotationData> locationMap;
-    
+
     // Use SmartPsiElementPointer to prevent memory leaks - allows PSI tree to be garbage collected
     private final SmartPsiElementPointer<FeatureModelFeature> mappedFeaturePointer;
 
@@ -82,34 +81,34 @@ public final class FeatureFileMapping {
      * </p>
      *
      * @param featurePointer SmartPsiElementPointer to the feature (prevents memory leaks)
-     * @param markerData Map of file keys to marker data collected during scanning
+     * @param markerData     Map of file keys to marker data collected during scanning
      * @return Immutable FeatureFileMapping instance
      */
     @NotNull
     public static FeatureFileMapping create(
             @NotNull SmartPsiElementPointer<FeatureModelFeature> featurePointer,
             @NotNull Map<FileAnnotationKey, MarkerDataBuilder> markerData) {
-        
+
         if (markerData.isEmpty()) {
             return new FeatureFileMapping(featurePointer, Collections.emptyMap());
         }
 
         // Build location map from marker data
         Map<FileAnnotationKey, AnnotationData> locationMap = new LinkedHashMap<>(markerData.size());
-        
+
         for (Map.Entry<FileAnnotationKey, MarkerDataBuilder> entry : markerData.entrySet()) {
             FileAnnotationKey fileKey = entry.getKey();
             MarkerDataBuilder builder = entry.getValue();
-            
+
             List<MarkerLine> markers = builder.markers();
             AnnotationType annotationType = builder.annotationType();
-            
+
             // Sort markers by line number for efficient processing
             markers.sort(Comparator.comparingInt(MarkerLine::lineNumber));
 
             // Use stack for matching BEGIN/END pairs with appropriate initial capacity
             Deque<Integer> beginStack = new ArrayDeque<>(markers.size() / 2 + 1);
-            
+
             // Pre-size block list
             List<FeatureLocationBlock> blocks = new ArrayList<>(markers.size());
 
@@ -117,29 +116,29 @@ public final class FeatureFileMapping {
             for (MarkerLine marker : markers) {
                 switch (marker.type) {
                     case BEGIN -> beginStack.push(marker.lineNumber);
-                    
+
                     case END -> {
                         if (beginStack.isEmpty()) {
                             LOG.warn(String.format(
-                                "Found &end marker without matching &begin marker in [%s] at line [%d]. Metrics may be inaccurate.",
-                                fileKey.filePath(), marker.lineNumber + 1
+                                    "Found &end marker without matching &begin marker in [%s] at line [%d]. Metrics may be inaccurate.",
+                                    fileKey.filePath(), marker.lineNumber + 1
                             ));
                         } else {
                             int beginLine = beginStack.pop();
                             blocks.add(new FeatureLocationBlock(beginLine, marker.lineNumber));
                         }
                     }
-                    
+
                     case LINE -> blocks.add(new FeatureLocationBlock(marker.lineNumber, marker.lineNumber));
-                    
+
                     case NONE -> // File/folder annotations span entire file
-                        blocks.add(new FeatureLocationBlock(0, marker.lineNumber));
+                            blocks.add(new FeatureLocationBlock(0, marker.lineNumber));
                 }
             }
 
             // Check for unmatched BEGIN markers
             validateBeginEndMatching(beginStack, fileKey);
-            
+
             // Store immutable block list
             locationMap.put(fileKey, new AnnotationData(annotationType, List.copyOf(blocks)));
         }
@@ -150,13 +149,13 @@ public final class FeatureFileMapping {
     /**
      * Validates that all BEGIN markers have matching END markers.
      */
-    private static void validateBeginEndMatching(@NotNull Deque<Integer> unmatchedBegins, 
+    private static void validateBeginEndMatching(@NotNull Deque<Integer> unmatchedBegins,
                                                  @NotNull FileAnnotationKey fileKey) {
         if (!unmatchedBegins.isEmpty()) {
             for (Integer beginLine : unmatchedBegins) {
                 LOG.warn(String.format(
-                    "Missing closing &end marker for &begin in [%s] at line [%d]. Metrics may be inaccurate.",
-                    fileKey.filePath(), beginLine + 1
+                        "Missing closing &end marker for &begin in [%s] at line [%d]. Metrics may be inaccurate.",
+                        fileKey.filePath(), beginLine + 1
                 ));
             }
         }
@@ -172,7 +171,7 @@ public final class FeatureFileMapping {
      */
     @Nullable
     public FeatureModelFeature getFeature() {
-        return ReadAction.compute(() -> mappedFeaturePointer.getElement());
+        return ReadAction.compute(mappedFeaturePointer::getElement);
     }
 
     /**
@@ -200,32 +199,36 @@ public final class FeatureFileMapping {
         if (locationMap.isEmpty()) {
             return Collections.emptyList();
         }
-        
+
         return ReadAction.compute(() -> {
             FeatureModelFeature feature = mappedFeaturePointer.getElement();
             if (feature == null) {
-                LOG.warn("Feature PSI element has been garbage collected");
+                logFeatureCollectedWarning();
                 return Collections.emptyList();
             }
-            
+
             // Pre-size for better performance
             List<FeatureLocation> result = new ArrayList<>(locationMap.size());
-            
+
             for (Map.Entry<FileAnnotationKey, AnnotationData> entry : locationMap.entrySet()) {
                 FileAnnotationKey fileKey = entry.getKey();
                 AnnotationData annotationData = entry.getValue();
-                
+
                 result.add(new FeatureLocation(
-                    fileKey.filePath(),
-                    fileKey.originatingAnnotationPath(),
-                    feature,
-                    annotationData.annotationType(),
-                    annotationData.blocks()
+                        fileKey.filePath(),
+                        fileKey.originatingAnnotationPath(),
+                        feature,
+                        annotationData.annotationType(),
+                        annotationData.blocks()
                 ));
             }
-            
+
             return Collections.unmodifiableList(result);
         });
+    }
+
+    private void logFeatureCollectedWarning() {
+        LOG.warn("Feature PSI element has been garbage collected");
     }
     // &end[FeatureLocation]
 
@@ -243,7 +246,7 @@ public final class FeatureFileMapping {
     @Nullable
     public FeatureLocation getFeatureLocationsForFile(@NotNull FileAnnotationKey fileKey) {
         AnnotationData annotationData = locationMap.get(fileKey);
-        
+
         if (annotationData == null) {
             return null;
         }
@@ -251,16 +254,16 @@ public final class FeatureFileMapping {
         return ReadAction.compute(() -> {
             FeatureModelFeature feature = mappedFeaturePointer.getElement();
             if (feature == null) {
-                LOG.warn("Feature PSI element has been garbage collected");
+                logFeatureCollectedWarning();
                 return null;
             }
-            
+
             return new FeatureLocation(
-                fileKey.filePath(),
-                fileKey.originatingAnnotationPath(),
-                feature,
-                annotationData.annotationType(),
-                annotationData.blocks()
+                    fileKey.filePath(),
+                    fileKey.originatingAnnotationPath(),
+                    feature,
+                    annotationData.annotationType(),
+                    annotationData.blocks()
             );
         });
     }
@@ -279,7 +282,7 @@ public final class FeatureFileMapping {
         if (locationMap.isEmpty()) {
             return Collections.emptySet();
         }
-        
+
         return locationMap.keySet().stream()
                 .map(FileAnnotationKey::filePath)
                 .collect(Collectors.toUnmodifiableSet());
@@ -312,21 +315,21 @@ public final class FeatureFileMapping {
         if (locationMap.isEmpty()) {
             return Collections.emptySet();
         }
-        
+
         return ReadAction.compute(() -> {
             FeatureModelFeature feature = mappedFeaturePointer.getElement();
             if (feature == null) {
-                LOG.warn("Feature PSI element has been garbage collected");
+                logFeatureCollectedWarning();
                 return Collections.emptySet();
             }
-            
+
             String featureLpq = feature.getLPQText();
-            
+
             return locationMap.entrySet().stream()
                     .filter(entry -> {
                         AnnotationType type = entry.getValue().annotationType();
                         String path = entry.getKey().filePath();
-                        return (type == AnnotationType.FILE || type == AnnotationType.FOLDER) 
+                        return (type == AnnotationType.FILE || type == AnnotationType.FOLDER)
                                 && path.equals(filePath);
                     })
                     .map(entry -> new FeatureMappingInfo(
@@ -360,25 +363,25 @@ public final class FeatureFileMapping {
         }
 
         List<FeatureLocationBlock> blocks = annotationData.blocks();
-        
+
         // For single block, optimization: direct calculation
         if (blocks.size() == 1) {
             return blocks.getFirst().getLineCount();
         }
-        
+
         // Find max line number to size BitSet appropriately
         int maxLine = blocks.stream()
                 .mapToInt(FeatureLocationBlock::getEndLine)
                 .max()
                 .orElse(0);
-        
+
         // BitSet is more memory-efficient than HashSet<Integer> for dense ranges
         BitSet lineSet = new BitSet(maxLine + 1);
-        
+
         for (FeatureLocationBlock block : blocks) {
             lineSet.set(block.getStartLine(), block.getEndLine() + 1);
         }
-        
+
         return lineSet.cardinality();
     }
     // &end[LineCount]
@@ -397,7 +400,7 @@ public final class FeatureFileMapping {
         if (locationMap.isEmpty()) {
             return 0;
         }
-        
+
         return locationMap.keySet().stream()
                 .mapToInt(this::getFeatureLineCountInFile)
                 .sum();
@@ -417,8 +420,8 @@ public final class FeatureFileMapping {
         return getFeatureLocations().stream()
                 .filter(fl -> fl.getAnnotationType() == AnnotationType.FOLDER)
                 .collect(Collectors.groupingBy(
-                    FeatureLocation::getMappedBy,
-                    Collectors.toUnmodifiableList()
+                        FeatureLocation::getMappedBy,
+                        Collectors.toUnmodifiableList()
                 ));
     }
 
@@ -435,8 +438,8 @@ public final class FeatureFileMapping {
         return getFeatureLocations().stream()
                 .filter(fl -> fl.getAnnotationType() == AnnotationType.FILE)
                 .collect(Collectors.groupingBy(
-                    FeatureLocation::getMappedBy,
-                    Collectors.toUnmodifiableList()
+                        FeatureLocation::getMappedBy,
+                        Collectors.toUnmodifiableList()
                 ));
     }
 
@@ -455,7 +458,8 @@ public final class FeatureFileMapping {
     public record FileAnnotationKey(
             @NotNull String filePath,
             @NotNull String originatingAnnotationPath
-    ) {}
+    ) {
+    }
 
     /**
      * Internal record for storing annotation data (type + blocks).
@@ -466,7 +470,8 @@ public final class FeatureFileMapping {
     private record AnnotationData(
             @NotNull AnnotationType annotationType,
             @NotNull List<FeatureLocationBlock> blocks
-    ) {}
+    ) {
+    }
 
     /**
      * Internal record for efficient marker data storage during build phase.
@@ -474,7 +479,8 @@ public final class FeatureFileMapping {
      * Immutable by default with compact memory layout.
      * </p>
      */
-    private record MarkerLine(@NotNull MarkerType type, int lineNumber) {}
+    private record MarkerLine(@NotNull MarkerType type, int lineNumber) {
+    }
 
     /**
      * Builder for collecting marker data before creating immutable FeatureFileMapping.
@@ -503,5 +509,6 @@ public final class FeatureFileMapping {
             @NotNull String featureLpq,
             @NotNull String annotationType,
             @NotNull String originPath
-    ) {}
+    ) {
+    }
 }

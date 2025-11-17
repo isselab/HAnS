@@ -209,7 +209,6 @@ public final class ProjectMetricsService implements MetricsService {
      * @param featureFileMapping {@link FeatureFileMapping}
      * @param featureLocation    {@link FeatureLocation}
      * @return total line-count of a feature in a file
-     * @see FeatureFileMapping#getFeatureLineCountInFile(com.intellij.openapi.util.Pair)
      */
     @Override
     public int getFeatureLineCountInFile(FeatureFileMapping featureFileMapping, FeatureLocation featureLocation) {

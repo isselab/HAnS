@@ -26,7 +26,6 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.*;
 import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.NotNull;

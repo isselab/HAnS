@@ -17,6 +17,7 @@ limitations under the License.
 package se.isselab.HAnS.metrics.calculators;
 
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.Nullable;
 import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureLocation.FeatureLocationManager;
@@ -36,11 +37,14 @@ public class FeatureScattering {
      * @param featureFileMapping fileMapping of the feature to search for
      * @return scattering degree of the given feature
      */
-    public static int getScatteringDegree(FeatureFileMapping featureFileMapping) {
+    public static int getScatteringDegree(@Nullable FeatureFileMapping featureFileMapping) {
         int scatteringDegree = 0;
+        if (featureFileMapping == null)
+            return scatteringDegree;
 
         for (var pathPair : featureFileMapping.getMappedPathPair()) {
             var locations = featureFileMapping.getFeatureLocationsForFile(pathPair);
+            if (locations == null) {continue;}
             //use sorted set to provide O(logN) complexity  -  used for sorting and traversing
             SortedSet<Integer> lines = new TreeSet<>();
             //get all blocks of code annotated with the feature for the given file

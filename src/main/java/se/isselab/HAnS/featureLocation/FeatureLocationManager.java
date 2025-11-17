@@ -45,7 +45,6 @@ import se.isselab.HAnS.referencing.FileReferenceUtil;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 
 /**
  * Thread-safe manager for feature location mappings with optimized caching and batch processing.
@@ -94,8 +93,8 @@ public class FeatureLocationManager {
      * @return Immutable map of feature LPQ to corresponding file mapping
      * @see com.intellij.openapi.progress.Task.Backgroundable
      */
-    public static Map<String, FeatureFileMapping> getAllFeatureFileMappings(@NotNull Project project) {
-        if (project.isDisposed()) {
+    public static Map<String, FeatureFileMapping> getAllFeatureFileMappings(@Nullable Project project) {
+        if (project == null || project.isDisposed()) {
             log.warn("Attempted to get feature mappings for disposed project");
             return Collections.emptyMap();
         }
@@ -122,8 +121,8 @@ public class FeatureLocationManager {
      * @see com.intellij.openapi.progress.Task.Backgroundable
      */
     @Nullable
-    public static FeatureFileMapping getFeatureFileMapping(@NotNull Project project, @NotNull FeatureModelFeature feature) {
-        if (project.isDisposed()) {
+    public static FeatureFileMapping getFeatureFileMapping(@Nullable Project project, @NotNull FeatureModelFeature feature) {
+        if (project == null || project.isDisposed()) {
             log.warn("Attempted to get feature mapping for disposed project");
             return null;
         }
@@ -289,6 +288,11 @@ public class FeatureLocationManager {
             return dataList;
         }, "Feature Location Reference Search");
 
+        if (referenceDataList == null)
+        {
+            log.warn("Reference search returned null for feature: {}", featureLpq);
+            return;
+        }
         // Process each reference type
         for (ReferenceData refData : referenceDataList) {
             if (project.isDisposed()) {
@@ -380,10 +384,7 @@ public class FeatureLocationManager {
 
         // Validate annotation type consistency
         if (builder.annotationType() != FeatureFileMapping.AnnotationType.CODE) {
-            log.warn(String.format(
-                    "Feature [%s] is linked to file [%s] via different annotation types. This may result in inaccurate metrics.",
-                    featureLpq, file.getPath()
-            ));
+            log.warn("Feature [{}] is linked to file [{}] via different annotation types. This may result in inaccurate metrics.", featureLpq, file.getPath());
         }
 
         builder.addMarker(type, lineNumber);

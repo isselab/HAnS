@@ -66,6 +66,7 @@ public class GetProjectMetrics extends Task.Backgroundable {
             if (indicator.isCanceled()) break;
 
             var feature = featureFileMapping.getFeature();
+            if (feature == null) continue;
             var featureLPQ = ReadAction.compute(feature::getLPQText);
 
             feature.setScatteringDegree(FeatureScattering.getScatteringDegree(featureFileMapping));

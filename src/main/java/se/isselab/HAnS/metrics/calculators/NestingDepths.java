@@ -49,7 +49,11 @@ public class NestingDepths {
 
         // FilePath -> Feature -> Location
         for (var fileMapping : fileMappings.values()) {
-            var featureLPQ = ReadAction.compute(fileMapping.getFeature()::getLPQText);
+            var feature = fileMapping.getFeature();
+            if (feature == null)
+                continue;
+
+            var featureLPQ = ReadAction.compute(feature::getLPQText);
 
 
             for (var featureLocation: fileMapping.getFeatureLocations()) {

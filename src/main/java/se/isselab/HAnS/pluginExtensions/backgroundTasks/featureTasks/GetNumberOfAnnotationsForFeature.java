@@ -38,6 +38,9 @@ public class GetNumberOfAnnotationsForFeature extends Task.Backgroundable {
     @Override
     public void run(@NotNull ProgressIndicator indicator) {
         var featureFileMapping = FeatureLocationManager.getFeatureFileMapping(super.getProject(), feature);
+        if (featureFileMapping == null) {
+            return;
+        }
 
         feature.setNumberOfAnnotatedFiles(featureFileMapping.getMappedFilePaths().size());
         feature.setNumberOfFolderAnnotations(featureFileMapping.getFolderAnnotations().size());

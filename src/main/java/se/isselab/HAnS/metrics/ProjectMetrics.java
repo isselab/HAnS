@@ -58,14 +58,14 @@ public class ProjectMetrics {
         // &begin[Scattering]
         AvgScatteringDegree = featureFileMappings.values().stream()
                 .map(FeatureFileMapping::getFeature)
-                .mapToInt(FeatureModelFeature::getScatteringDegree)
+                .mapToInt(feature -> feature != null ? feature.getScatteringDegree() : 0)
                 .average().orElse(0);
         // &end[Scattering]
 
         // &begin[LineCount]
         AvgLinesOfFeatureCode = featureFileMappings.values().stream()
                 .map(FeatureFileMapping::getFeature)
-                .mapToInt(FeatureModelFeature::getLineCount)
+                .mapToInt(feature -> feature != null ? feature.getLineCount() : 0)
                 .average().orElse(0);
         // &end[LineCount]
 

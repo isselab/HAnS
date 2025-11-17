@@ -27,7 +27,7 @@ public class FeatureModelElementFactory {
     }
 
     public static FeatureModelFile createFile(Project project, String text) {
-        String name = "dummy.feature-model";
+        String name = ".feature-model";
         return (FeatureModelFile) PsiFileFactory.getInstance(project).
                 createFileFromText(name, FeatureModelFileType.INSTANCE, text);
     }
