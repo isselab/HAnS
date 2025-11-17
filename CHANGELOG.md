@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Enhanced 🚀
+- **Feature Location Performance Improvements** - Added caching for feature file mappings to improve performance when resolving feature locations
+- **Code Quality** - Fixed Qodana static analysis issues and improved code organization across multiple modules
+
+###  Changed 🔧
+- Updated various components for better performance and maintainability
+
+### Housekeeping 🧹
+- Added `AGENTS.md` developer guide for AI coding agents with build commands, code style conventions, and contributing guidelines
+
 ## [0.2.4] - 2025-11-12
 
 ### Enhanced 🚀
