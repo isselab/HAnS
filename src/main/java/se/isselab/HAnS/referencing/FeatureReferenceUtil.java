@@ -391,7 +391,7 @@ public class FeatureReferenceUtil {
     }
 
     private static Map<Document, Set<Integer>> getCodeAnnotations(FeatureFileMapping fileToAnnotation) {
-        Map<Pair<String, String>, Set<Integer>> mapToDrop = new HashMap<>(); // documentName -> ranges of annotation blocks
+        Map<FeatureFileMapping.FileAnnotationKey, Set<Integer>> mapToDrop = new HashMap<>(); // documentName -> ranges of annotation blocks
 
         for (FeatureLocation fm : fileToAnnotation.getFeatureLocations()) {
             fm.getFeatureLocations().forEach(block -> {
@@ -417,7 +417,7 @@ public class FeatureReferenceUtil {
         // substitute string to document
         return mapToDrop.entrySet().stream()
                 .collect(Collectors.toMap(entry -> {
-                    VirtualFile file = LocalFileSystem.getInstance().findFileByPath(entry.getKey().first);
+                    VirtualFile file = LocalFileSystem.getInstance().findFileByPath(entry.getKey().filePath());
                     if (file != null) {
                         return FileDocumentManager.getInstance().getDocument(file);
                     }

@@ -16,7 +16,7 @@ limitations under the License.
 
 package se.isselab.HAnS.featureLocation;
 
-import com.intellij.openapi.util.Pair;
+import se.isselab.HAnS.featureLocation.FeatureFileMapping.FileAnnotationKey;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 import java.util.List;
@@ -93,7 +93,11 @@ public class FeatureLocation {
         return mappedBy;
     }
 
-    public Pair<String, String> getMappedPathPairMappedBy(){
-        return new Pair<>(mappedPath, mappedBy);
+    /**
+     * Method to get the file annotation key for this location
+     * @return FileAnnotationKey containing file path and originating annotation path
+     */
+    public FileAnnotationKey getMappedPathPairMappedBy(){
+        return new FileAnnotationKey(mappedPath, mappedBy);
     }
 }
