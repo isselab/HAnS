@@ -2,14 +2,19 @@
 
 ## [Unreleased]
 
+## [0.2.5] - 2025-11-17
+
 ### Enhanced 🚀
+
 - **Feature Location Performance Improvements** - Added caching for feature file mappings to improve performance when resolving feature locations
 - **Code Quality** - Fixed Qodana static analysis issues and improved code organization across multiple modules
 
-###  Changed 🔧
+### Changed 🔧
+
 - Updated various components for better performance and maintainability
 
 ### Housekeeping 🧹
+
 - Added `AGENTS.md` developer guide for AI coding agents with build commands, code style conventions, and contributing guidelines
 
 ## [0.2.4] - 2025-11-12
@@ -193,7 +198,8 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.2.4...HEAD
+[Unreleased]: https://github.com/isselab/HAnS/compare/v0.2.5...HEAD
+[0.2.5]: https://github.com/isselab/HAnS/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/isselab/HAnS/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/isselab/HAnS/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/isselab/HAnS/compare/v0.2.1...v0.2.2
