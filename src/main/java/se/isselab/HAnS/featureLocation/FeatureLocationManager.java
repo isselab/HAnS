@@ -25,7 +25,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -255,16 +254,16 @@ public class FeatureLocationManager {
                 return Collections.emptyList();
             }
 
-            // Execute reference search
-            Query<PsiReference> featureReference = ReferencesSearch.search(
+            // Execute reference search using findAll() to avoid deprecated iterator()
+            List<PsiReference> references = ReferencesSearch.search(
                     feature,
                     FeatureAnnotationSearchScope.projectScope(project),
                     true
-            );
+            ).findAll().stream().toList();
 
             // Collect reference data
             List<ReferenceData> dataList = new ArrayList<>();
-            for (PsiReference reference : featureReference) {
+            for (PsiReference reference : references) {
                 PsiElement element = reference.getElement();
                 if (!element.isValid()) {
                     continue;
