@@ -15,19 +15,32 @@ limitations under the License.
 */
 {
   parserClass="se.isselab.HAnS.featureModel.parser.FeatureModelParser"
-
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
-
   psiClassPrefix="FeatureModel"
   psiImplClassSuffix="Impl"
   psiPackage="se.isselab.HAnS.featureModel.psi"
   psiImplPackage="se.isselab.HAnS.featureModel.psi.impl"
-
   elementTypeHolderClass="se.isselab.HAnS.featureModel.psi.FeatureModelTypes"
   elementTypeClass="se.isselab.HAnS.featureModel.psi.FeatureModelElementType"
   tokenTypeClass="se.isselab.HAnS.featureModel.psi.FeatureModelTokenType"
-
   psiImplUtilClass="se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil"
+  tokens=[
+    NOT="!"
+    LPAREN="("
+    RPAREN=")"
+    LBRACKET="["
+    RBRACKET="]"
+    AND="&&"
+    IMPLIES="=>"
+    OR="or"
+    XOR="xor"
+    OPTIONALITY_TOKEN="?"
+    OR_OP="||"
+    CRLF="crlf"
+    INDENT="indent"
+    DEDENT="dedent"
+    FEATURENAME="id"
+  ]
 }
 
 featureModelFile ::= (feature (feature)?)?
@@ -42,3 +55,19 @@ getTanglingDegree setTanglingDegree getScatteringDegree setScatteringDegree getL
 getMaxNestingDepth setMaxNestingDepth getMinNestingDepth setMinNestingDepth getAvgNestingDepth setAvgNestingDepth
 getNumberOfAnnotatedFiles setNumberOfAnnotatedFiles getNumberOfFileAnnotations setNumberOfFileAnnotations getNumberOfFolderAnnotations setNumberOfFolderAnnotations]}
 // &end[Referencing]
+
+optionality ::= OPTIONALITY_TOKEN
+
+featureOrGroup ::= feature | orGroup | xorGroup
+
+orGroup ::= "or" CRLF+ INDENT feature+ DEDENT
+xorGroup ::= "xor" CRLF+ INDENT feature+ DEDENT
+
+constraint ::= "[" booleanExpression "]"
+
+booleanExpression ::= FEATURENAME // Simplified for now
+                      | "!" booleanExpression
+                      | booleanExpression "&&" booleanExpression
+                      | booleanExpression "||" booleanExpression
+                      | booleanExpression "=>" booleanExpression
+                      | "(" booleanExpression ")"
