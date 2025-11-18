@@ -35,10 +35,19 @@ public class FeatureModelSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("FEATURENAME", DefaultLanguageHighlighterColors.CONSTANT);
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("HAnS_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
+    public static final TextAttributesKey QUESTIONMARK =
+            createTextAttributesKey("LOGICKEY", DefaultLanguageHighlighterColors.KEYWORD);
+    public static final TextAttributesKey OR =
+            createTextAttributesKey("OR", DefaultLanguageHighlighterColors.DOC_COMMENT_TAG);
+    public static final TextAttributesKey XOR =
+            createTextAttributesKey("XOR", DefaultLanguageHighlighterColors.NUMBER);
 
 
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
     private static final TextAttributesKey[] FEATURE_KEYS = new TextAttributesKey[]{FEATURE};
+    private static final TextAttributesKey[] QUESTIONMARK_KEYS = new TextAttributesKey[]{QUESTIONMARK};
+    private static final TextAttributesKey[] OR_KEYS = new TextAttributesKey[]{OR};
+    private static final TextAttributesKey[] XOR_KEYS = new TextAttributesKey[]{XOR};
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
     @Override
@@ -50,7 +59,13 @@ public class FeatureModelSyntaxHighlighter extends SyntaxHighlighterBase {
     public TextAttributesKey @NotNull [] getTokenHighlights(IElementType tokenType) {
         if (tokenType.equals(FeatureModelTypes.FEATURENAME)){
             return FEATURE_KEYS;
-        } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
+        } else if (tokenType.equals(FeatureModelTypes.QUESTIONMARK)) {
+            return QUESTIONMARK_KEYS;
+        } else if (tokenType.equals(FeatureModelTypes.OR)) {
+            return OR_KEYS;
+        } else if (tokenType.equals(FeatureModelTypes.XOR)) {
+            return XOR_KEYS;
+        }else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
             return BAD_CHAR_KEYS;
         } else {
             return EMPTY_KEYS;

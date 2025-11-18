@@ -11,7 +11,7 @@ import java.util.Deque;
 public interface FeatureModelFeature extends FeatureAnnotationNamedElement {
 
   @NotNull
-  List<FeatureModelFeature> getFeatureList();
+  List<FeatureModelComponent> getComponentList();
 
   String getFullLPQText();
 
