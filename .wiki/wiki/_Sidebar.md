@@ -3,38 +3,38 @@
 ---
 
 **Modules**
-- [Code Annotation](modules/Code-Annotation-Module)
-- [Feature Model](modules/HAnS-Feature-Model)
-- [Feature Location](modules/Feature-Location-Module)
-- [Metrics](modules/Metrics-Module)
-- [Plugin Extensions](modules/Plugin-Extensions-Module)
-- [Build Configuration](modules/Build-Configuration)
+- [Code Annotation](Code-Annotation-Module)
+- [Feature Model](HAnS-Feature-Model)
+- [Feature Location](Feature-Location-Module)
+- [Metrics](Metrics-Module)
+- [Plugin Extensions](Plugin-Extensions-Module)
+- [Build Configuration](Build-Configuration)
 
 **Components**
-- [Annotation Syntax](components/Annotation-Syntax)
-- [Feature Model Language](components/Feature-Model-Language)
-- [Feature Model View](components/Feature-Model-View)
-- [Feature Metrics View](components/Feature-Metrics-View)
-- [Traffic Light](components/Traffic-Light-Indicator)
-- [Extension Points](components/Extension-Points)
-- [Syntax Highlighting](components/Syntax-Highlighting)
-- [Live Templates](components/Live-Templates)
+- [Annotation Syntax](Annotation-Syntax)
+- [Feature Model Language](Feature-Model-Language)
+- [Feature Model View](Feature-Model-View)
+- [Feature Metrics View](Feature-Metrics-View)
+- [Traffic Light](Traffic-Light-Indicator)
+- [Extension Points](Extension-Points)
+- [Syntax Highlighting](Syntax-Highlighting)
+- [Live Templates](Live-Templates)
 
 **Decisions**
-- [ADR-001](decisions/ADR-001-Extension-Points-for-Metrics)
-- [ADR-002](decisions/ADR-002-Dual-File-Extensions)
-- [ADR-003](decisions/ADR-003-Traffic-Light-Feature)
-- [ADR-004](decisions/ADR-004-Optional-LPQ-Paths)
-- [ADR-005](decisions/ADR-005-Feature-Location-Caching)
+- [ADR-001](ADR-001-Extension-Points-for-Metrics)
+- [ADR-002](ADR-002-Dual-File-Extensions)
+- [ADR-003](ADR-003-Traffic-Light-Feature)
+- [ADR-004](ADR-004-Optional-LPQ-Paths)
+- [ADR-005](ADR-005-Feature-Location-Caching)
 
 **Dependencies**
-- [IntelliJ Platform](dependencies/IntelliJ-Platform)
-- [Kotlin](dependencies/Kotlin)
-- [Gradle Plugins](dependencies/Gradle-Plugins)
-- [Test Dependencies](dependencies/Test-Dependencies)
+- [IntelliJ Platform](IntelliJ-Platform)
+- [Kotlin](Kotlin)
+- [Gradle Plugins](Gradle-Plugins)
+- [Test Dependencies](Test-Dependencies)
 
 **Flows**
-- [Annotation Processing](flows/Annotation-Processing-Flow)
+- [Annotation Processing](Annotation-Processing-Flow)
 
 ---
 
