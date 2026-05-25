@@ -148,7 +148,7 @@ jobs:
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@main
         with:
-          tool-cache: false
+          tool-cache: true
           large-packages: false
 
       # Check out the current repository
@@ -181,7 +181,7 @@ jobs:
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@main
         with:
-          tool-cache: false
+          tool-cache: true
           large-packages: false
 
       # Check out the current repository
