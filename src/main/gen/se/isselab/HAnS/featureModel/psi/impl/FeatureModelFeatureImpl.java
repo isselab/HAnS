@@ -31,13 +31,8 @@ public class FeatureModelFeatureImpl extends FeatureAnnotationNamedElementImpl i
 
   @Override
   @NotNull
-  public List<FeatureModelFeature> getFeatureList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, FeatureModelFeature.class);
-  }
-
-  @Override
-  public String getFullLPQText() {
-    return FeatureModelPsiImplUtil.getFullLPQText(this);
+  public List<FeatureModelComponent> getComponentList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, FeatureModelComponent.class);
   }
 
   @Override

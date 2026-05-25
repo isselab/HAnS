@@ -19,41 +19,27 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
-import com.intellij.openapi.project.DumbService;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
-import se.isselab.HAnS.FeatureAnnotationSearchScope;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 
 public class FeatureModelAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (!(element instanceof FeatureModelFeature feature)) {
+        if (!(element instanceof FeatureModelFeature)){
             return;
         }
+        FeatureModelFeature feature = (FeatureModelFeature) element;
         // Removes project node from annotation check
-        if (dontCheckProjectNode(feature)) {
+        if (dontCheckProjectNode(feature)){
             return;
         }
 
-        // Skip annotation during dumb mode (when indices are not ready)
-        if (DumbService.isDumb(element.getProject())) {
-            return;
-        }
-
-        Query<PsiReference> psiReferences = ReferencesSearch.search(
-                feature,
-                FeatureAnnotationSearchScope.projectScope(element.getProject()),
-                true  // ignoreAccessScope - search everywhere including comments/annotations
-        );
-
-        boolean hasRealUsage = psiReferences.findAll().stream()
-                .anyMatch(ref -> ref.getElement() != feature);
-        
-        if (!hasRealUsage) {
+        Query<PsiReference> psiReferences = ReferencesSearch.search(feature);
+        if (psiReferences.findFirst() == null) {
             holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Feature is never used")
                     .range(feature.getFirstChild().getTextRange())
                     .highlightType(ProblemHighlightType.LIKE_UNUSED_SYMBOL)
@@ -63,7 +49,9 @@ public class FeatureModelAnnotator implements Annotator {
         } else {
             // Found at least one property, force the text attributes to Simple syntax value character
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                    .range(feature.getTextRange()).textAttributes(FeatureModelSyntaxHighlighter.FEATURE).create();
+                    .range(feature.getTextRange()).create();
+            // .range(...).textAttributes(FeatureModelSyntaxHighlighter.FEATURE).create()
+            // this forces feature coloring, so that keywords cannot be colored differently
         }
     }
 
