@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<!--
+Copyright [2021] [Herman Jansson & Johan Martinson]
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<templateSet group="EFA">
+    -<template
+        useStaticImport="false"
+        toShortenFQNames="true"
+        toReformat="true"
+        description="EFA block (&amp;begin[] &amp;end[])"
+        value="$COMMENT$ &amp;begin[$FEATURE$]$END_COMMENT$&#10;$SELECTION$$END$&#10;$COMMENT$ &amp;end[$FEATURE$]$END_COMMENT$"
+        name="&amp;begin">
+
+
+        <variable name="COMMENT" alwaysStopAt="false" defaultValue="" expression="commentStart()"/>
+        <variable name="FEATURE" alwaysStopAt="true" defaultValue="" expression=""/>
+        <variable name="END_COMMENT" alwaysStopAt="false" defaultValue="" expression="commentEnd()"/>
+        -<context>
+            <option value="true" name="ANY"/>
+        </context>
+    </template>
+
+    -<template
+        useStaticImport="false"
+        toShortenFQNames="true"
+        toReformat="true"
+        description="Closing EFA (&amp;end[])"
+        value="$COMMENT$ &amp;end[$FEATURE$]$END_COMMENT$ $END$"
+        name="&amp;end">
+
+        <variable name="COMMENT" alwaysStopAt="false" defaultValue="" expression="commentStart()"/>
+        <variable name="FEATURE" alwaysStopAt="true" defaultValue="" expression=""/>
+        <variable name="END_COMMENT" alwaysStopAt="false" defaultValue="" expression="commentEnd()"/>
+        -<context>
+            <option value="true" name="ANY"/>
+        </context>
+    </template>
+
+    -<template
+        useStaticImport="false"
+        toShortenFQNames="true"
+        toReformat="true"
+        description="EFA Line (&amp;line[])"
+        value="$SELECTION$ $COMMENT$ &amp;line[$FEATURE$]$END_COMMENT$ $END$"
+        name="&amp;line">
+
+        <variable name="COMMENT" alwaysStopAt="false" defaultValue="" expression="commentStart()"/>
+        <variable name="FEATURE" alwaysStopAt="true" defaultValue="" expression=""/>
+        <variable name="END_COMMENT" alwaysStopAt="false" defaultValue="" expression="commentEnd()"/>
+        -<context>
+            <option value="true" name="ANY"/>
+        </context>
+    </template>
+
+    <!-- -<template
+            useStaticImport="true"
+            toShortenFQNames="true"
+            toReformat="false"
+            name="begin"
+            value="&amp;begin[$FEATURE$] $END_COMMENT$$END$"
+            description="begin tag of EFA block">
+
+        <variable name="FEATURE" alwaysStopAt="true" defaultValue="" expression=""/>
+        <variable name="END_COMMENT" alwaysStopAt="false" defaultValue="" expression="commentEnd()"/>
+        -<context>
+            <option name="COMMENT" value="true"/>
+        </context>
+    </template>
+
+    -<template
+        useStaticImport="true"
+        toShortenFQNames="true"
+        toReformat="false"
+        name="end"
+        value="&amp;end[$FEATURE$] $END_COMMENT$ $END$"
+        description="end tag of EFA block">
+
+        <variable name="FEATURE" alwaysStopAt="true" defaultValue="" expression=""/>
+        <variable name="END_COMMENT" alwaysStopAt="false" defaultValue="" expression="commentEnd()"/>
+        -<context>
+            <option name="COMMENT" value="true"/>
+        </context>
+    </template>
+
+    -<template
+        useStaticImport="true"
+        toShortenFQNames="true"
+        toReformat="false"
+        name="line"
+        value="&amp;line[$FEATURE$] $END_COMMENT$ $END$"
+        description="tag for EFA line">
+
+        <variable name="FEATURE" alwaysStopAt="true" defaultValue="" expression=""/>
+        <variable name="END_COMMENT" alwaysStopAt="false" defaultValue="" expression="commentEnd()"/>
+        -<context>
+            <option name="COMMENT" value="true"/>
+        </context>
+    </template>-->
+
+</templateSet>

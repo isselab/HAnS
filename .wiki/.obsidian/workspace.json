@@ -1,0 +1,224 @@
+{
+  "main": {
+    "id": "4169a9645aeeb720",
+    "type": "split",
+    "children": [
+      {
+        "id": "227f6d27dc885e4d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4781ce88f4f624f2",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "wiki/modules/HAnS Feature Model.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "HAnS Feature Model"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "cbde749147f471f0",
+    "type": "split",
+    "children": [
+      {
+        "id": "aa24e16cee1efb3a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "52ffed2b0f01d080",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "7c6039696f981630",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "8d913fa9425d0d00",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "2ddd71e4d75e9740",
+    "type": "split",
+    "children": [
+      {
+        "id": "c80a70b0f83e951f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ff5ee4768382b9f8",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "wiki/modules/HAnS Feature Model.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for HAnS Feature Model"
+            }
+          },
+          {
+            "id": "0eb3277753e76eb1",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "wiki/modules/HAnS Feature Model.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from HAnS Feature Model"
+            }
+          },
+          {
+            "id": "5a61d586163d4f82",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "2e2279918a602fcb",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "6fd2d77935aad3e4",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "wiki/modules/HAnS Feature Model.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of HAnS Feature Model"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "4781ce88f4f624f2",
+  "lastOpenFiles": [
+    "wiki/modules/Feature Location Module.md",
+    "wiki/hot.md",
+    "WIKI.md",
+    "wiki/sources/CHANGELOG.md",
+    "wiki/decisions/ADR-005 Feature Location Caching.md",
+    "wiki/decisions/ADR-004 Optional LPQ Paths.md",
+    "wiki/decisions/ADR-003 Traffic Light Feature.md",
+    "wiki/decisions/ADR-002 Dual File Extensions.md",
+    "wiki/decisions/ADR-001 Extension Points for Metrics.md",
+    "wiki/modules/HAnS Feature Model.md",
+    "wiki/modules/Code Annotation Module.md",
+    "wiki/modules/Plugin Extensions Module.md",
+    "wiki/modules/Metrics Module.md",
+    "wiki/log.md",
+    "wiki/overview.md",
+    "wiki/components/Traffic Light Indicator.md",
+    "wiki/sources/plugin.xml.md",
+    "wiki/sources/README.md",
+    "wiki/components/Annotation Syntax.md",
+    "wiki/flows/Annotation Processing Flow.md",
+    "wiki/components/Live Templates.md",
+    "wiki/components/Syntax Highlighting.md",
+    "wiki/entities/johmara.md",
+    "wiki/entities/ISSELab.md",
+    "wiki/entities",
+    "wiki/components/Extension Points.md",
+    "wiki/components/Feature Model View.md",
+    "wiki/sources",
+    "wiki/meta",
+    "wiki/flows",
+    "wiki/dependencies",
+    "wiki/decisions",
+    "wiki/components",
+    "wiki/modules",
+    "wiki"
+  ]
+}
