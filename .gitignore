@@ -51,3 +51,6 @@ build/
 .intellijPlatform
 
 .claude/settings.local.json
+
+# Obsidian metadata
+.wiki/.obsidian/
