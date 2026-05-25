@@ -23,23 +23,17 @@ jobs:
           path: wiki-repo
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Flatten and sync wiki content
+      - name: Sync wiki content
         run: |
-          # Remove all existing .md files and subdirs (preserve .git)
-          find wiki-repo -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
-
-          # Flatten: copy all .md files to wiki-repo root
-          # _index.md files are renamed to their parent directory name
-          find .wiki/wiki -name "*.md" | while IFS= read -r f; do
-            filename=$(basename "$f")
-            if [ "$filename" = "_index.md" ]; then
-              parent=$(basename "$(dirname "$f")")
-              dest="${parent}.md"
-            else
-              dest="$filename"
-            fi
-            cp "$f" "wiki-repo/$dest"
-          done
+          rsync -av --delete \
+            --exclude='.git/' \
+            --filter='- entities/' \
+            --filter='- meta/' \
+            --filter='- sources/' \
+            --filter='- log.md' \
+            --filter='- hot.md' \
+            --filter='- index.md' \
+            .wiki/wiki/ wiki-repo/
 
       - name: Commit and push
         working-directory: wiki-repo
