@@ -27,6 +27,12 @@ jobs:
         run: |
           rsync -av --delete \
             --exclude='.git/' \
+            --filter='- entities/' \
+            --filter='- meta/' \
+            --filter='- sources/' \
+            --filter='- log.md' \
+            --filter='- hot.md' \
+            --filter='- index.md' \
             .wiki/wiki/ wiki-repo/
 
       - name: Commit and push
