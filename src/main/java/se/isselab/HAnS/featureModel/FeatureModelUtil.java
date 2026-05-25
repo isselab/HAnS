@@ -29,6 +29,7 @@ import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
+import se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -120,7 +121,8 @@ public final class FeatureModelUtil {
         } else if (selectedFeatures.size() > 1) {
             selectedFeatures.forEach(feature -> {
                 var fullLPQ = feature.getFullLPQText();
-                if (feature.getParent() instanceof FeatureModelFeature parent) {
+                FeatureModelFeature parent = FeatureModelPsiImplUtil.getParentFeature(feature);
+                if (parent != null) {
                     var parentFeatureName = parent.getFeatureName();
                     if (lpq.startsWith(parentFeatureName) && fullLPQ.endsWith(lpq)) {
                         result.add(feature);
