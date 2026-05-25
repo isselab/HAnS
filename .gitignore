@@ -50,3 +50,4 @@ Thumbs.db
 build/
 .intellijPlatform
 
+.claude/settings.local.json

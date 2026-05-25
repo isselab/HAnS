@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "HAnS-wiki": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@bitbonsai/mcpvault@latest", "${PROJECT_DIR}/.wiki"]
+    }
+  }
+}
