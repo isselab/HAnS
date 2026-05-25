@@ -14,8 +14,8 @@ HAnS is a JetBrains IDE plugin that supports feature-oriented software developme
 
 ### Feature Modeling & Annotation
 - **Feature Model Language** - Define hierarchical feature models using the `.feature-model` format
-- **Code Annotation** - Annotate code fragments with feature markers using lightweight comments (`&begin[Feature]`, `&end[Feature]`, `&line[Feature]`). Parent paths are optional for readability: `&begin[Parent::Feature]`
-- **File & Folder Mapping** - Map entire files or directories to features using `.feature-to-file` (alias: `.feature-file`) and `.feature-to-folder` (alias: `.feature-folder`) mappings
+- **Code Annotation** - Annotate code fragments with feature markers using lightweight comments (`&begin[Feature]`, `&end[Feature]`, `&line[Feature]`)
+- **File & Folder Mapping** - Map entire files or directories to features using `.feature-to-file` and `.feature-to-folder` mappings
 - **Live Templates** - Quick insertion of feature annotations with predefined templates
 - **Intelligent Completion** - Context-aware code completion for feature names and annotation syntax
 
@@ -26,9 +26,6 @@ HAnS is a JetBrains IDE plugin that supports feature-oriented software developme
   - Feature-to-File mappings
   - Feature Scattering degree
   - Feature Tangling degree
-  - Nesting Depth (avg, max, min)
-  - Number of annotated files
-  - File and folder annotation counts
 - **Traffic Light Indicator** - Visual indicator showing file/folder feature mapping status
 - **Syntax Highlighting** - Custom syntax highlighting for all feature annotation languages with configurable color schemes (Darcula and Default themes)
 
@@ -82,8 +79,8 @@ We welcome contributions from the community! HAnS itself is annotated with featu
 
 1. **Fork the repository**
 2. **Annotate your contribution** - Add feature annotations to your code following the existing patterns
-3. **Build and test** - Run the `runIde` Gradle task to test your changes, write unit tests when appropriate
-4. **Submit a pull request**
+4. **Build and test** - Run the `runIde` Gradle task to test your changes, write unit tests when appropriate
+5. **Submit a pull request**
 
 ### Pull Request Guidelines
 

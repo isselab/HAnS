@@ -50,3 +50,7 @@ Thumbs.db
 build/
 .intellijPlatform
 
+.claude/settings.local.json
+
+# Obsidian - personal session state only
+.wiki/.obsidian/workspace.json
