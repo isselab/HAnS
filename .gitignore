@@ -52,5 +52,5 @@ build/
 
 .claude/settings.local.json
 
-# Obsidian metadata
-.wiki/.obsidian/
+# Obsidian - personal session state only
+.wiki/.obsidian/workspace.json
