@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
 
+    @Nullable
     public static ItemPresentation getPresentation(final FeatureModelFeature element) {
         return new ItemPresentation() {
             @Nullable
@@ -62,6 +63,7 @@ public class FeatureModelPsiImplUtil {
     }
 
     // &begin[Referencing]
+    @Nullable
     public static String getFeatureName(FeatureModelFeature element){
         ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
         if (featureNode != null) {
@@ -72,10 +74,12 @@ public class FeatureModelPsiImplUtil {
         }
     }
 
+    @Nullable
     public static String getName(FeatureModelFeature feature) {
         return feature.getFeatureName();
     }
 
+    @NotNull
     public static FeatureModelFeature setName(FeatureModelFeature element, String newName) {
         if (FeatureReferenceUtil.getOrigin() == element || FeatureReferenceUtil.getOrigin() == null) {
             FeatureReferenceUtil.getLPQ(element, newName);
@@ -123,6 +127,7 @@ public class FeatureModelPsiImplUtil {
         return elementsToRename;
     }
 
+    @Nullable
     public static PsiElement getNameIdentifier(FeatureModelFeature element) {
         ASTNode node = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
         if (node != null) {
@@ -149,6 +154,7 @@ public class FeatureModelPsiImplUtil {
         return null;
     }
 
+    @Nullable
     public static String getFullLPQText(FeatureModelFeature feature) {
         Deque<PsiElement> lpqStack = getFullLPQStack(feature);
 
@@ -183,6 +189,7 @@ public class FeatureModelPsiImplUtil {
         return stack;
     }
 
+    @Nullable
     public static String getLPQText(FeatureModelFeature feature) {
         Deque<PsiElement> lpqStack = getLPQStack(feature);
         String lpq = null;
@@ -204,6 +211,7 @@ public class FeatureModelPsiImplUtil {
         return lpq;
     }
 
+    @Nullable
     public static Deque<PsiElement> getLPQStack(FeatureModelFeature feature) {
         List<Deque<PsiElement>> candidates = new ArrayList<>();
 
@@ -258,6 +266,7 @@ public class FeatureModelPsiImplUtil {
         return findLPQRecursively(remainingCandidates, feature);
     }
 
+    @SuppressWarnings("UnstableApiUsage") // RenameDialog is internal IntelliJ API; no stable replacement available
     public static void renameFeature(@NotNull FeatureModelFeature feature){
         RenameDialog dialog = new RenameDialog(feature.getProject(), feature, null, null);
         dialog.show();
@@ -324,9 +333,13 @@ public class FeatureModelPsiImplUtil {
 
         sb.append(feature.getName()).append("\n"); // add current feature name
 
-        // Recursively process children with increased indentation level
+        // Recursively process children with increased indentation level.
+        // Only recurse into direct FeatureModelFeature children; COMPONENT/LOGIC wrappers
+        // from OR/XOR groups are skipped here (drag-and-drop for grouped features is a follow-up).
         for (PsiElement child : feature.getChildren()) {
-            sb.append(generateTreeString(((FeatureModelFeature)child), level + 1));
+            if (child instanceof FeatureModelFeature featureChild) {
+                sb.append(generateTreeString(featureChild, level + 1));
+            }
         }
 
         return sb.toString();
@@ -335,7 +348,9 @@ public class FeatureModelPsiImplUtil {
     private static void generateListOfLpqs(FeatureModelFeature feature, List<String> lpqs) {
         lpqs.add(feature.getLPQText());
         for (PsiElement child : feature.getChildren()) {
-            generateListOfLpqs(((FeatureModelFeature) child), lpqs);
+            if (child instanceof FeatureModelFeature featureChild) {
+                generateListOfLpqs(featureChild, lpqs);
+            }
         }
     }
 
