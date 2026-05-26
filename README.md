@@ -85,6 +85,16 @@ We welcome contributions from the community! HAnS itself is annotated with featu
 3. **Build and test** - Run the `runIde` Gradle task to test your changes, write unit tests when appropriate
 4. **Submit a pull request**
 
+### AI Coding Assistant Setup (Claude Code)
+
+The project wiki lives in `.wiki/` and is available as an MCP server for Claude Code. Run once after cloning:
+
+```bash
+claude mcp add-json hans-wiki '{"type":"stdio","command":"npx","args":["-y","@bitbonsai/mcpvault@latest",".wiki"]}' --scope project
+```
+
+This creates a local `.mcp.json` (gitignored). Claude will then use the wiki as a knowledge base when working on the project.
+
 ### Pull Request Guidelines
 
 Name your PR using this format: `[Folder]-[FeatureName]-[Contributor]-[Description]`
