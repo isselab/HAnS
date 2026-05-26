@@ -2,6 +2,40 @@
 
 ## [Unreleased]
 
+## [0.3.0-beta.2] - 2026-05-26
+
+### Fixed 🐛
+
+- **Feature Model view now expands grouped children** — features nested inside `or`/`xor` groups appear in the tree view again
+- **Metrics view populated** — metrics are computed for every feature including those inside `or`/`xor` groups
+- **Reduced startup background load** — traffic-light widget no longer schedules duplicate background scans per editor, which previously could stagger the IDE on startup
+
+## [0.3.0-beta.1] - 2026-05-26
+
+### New ✨
+
+- **OR/XOR feature groups** — you can now express variability constraints directly in the feature model:
+  - `or` group: one or more children must be selected
+  - `xor` group: exactly one child must be selected
+- **Optional features** — suffix any feature name with `?` to mark it as optional
+
+  ```
+  telematicsSystem
+      xor channel
+          single
+          dual
+
+      extraDisplay ?
+
+      xor size
+          small
+          large
+  ```
+
+### Fixed 🐛
+
+- Feature names that start with `or` or `xor` (e.g. `orange`, `xorfoo`) are now correctly recognized as feature names instead of keywords
+
 ## [0.2.5] - 2025-11-17
 
 ### Enhanced 🚀
@@ -198,21 +232,23 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.2.5...HEAD
-[0.2.5]: https://github.com/isselab/HAnS/compare/v0.2.4...v0.2.5
-[0.2.4]: https://github.com/isselab/HAnS/compare/v0.2.3...v0.2.4
-[0.2.3]: https://github.com/isselab/HAnS/compare/v0.2.2...v0.2.3
-[0.2.2]: https://github.com/isselab/HAnS/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/isselab/HAnS/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/isselab/HAnS/compare/v0.1.2...v0.2.0
-[0.1.2]: https://github.com/isselab/HAnS/compare/v0.1.1...v0.1.2
-[0.1.1]: https://github.com/isselab/HAnS/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/isselab/HAnS/compare/v0.0.8...v0.1.0
-[0.0.8]: https://github.com/isselab/HAnS/compare/v0.0.7...v0.0.8
-[0.0.7]: https://github.com/isselab/HAnS/compare/v0.0.6...v0.0.7
-[0.0.6]: https://github.com/isselab/HAnS/compare/v0.0.5...v0.0.6
-[0.0.5]: https://github.com/isselab/HAnS/compare/v0.0.4...v0.0.5
-[0.0.4]: https://github.com/isselab/HAnS/compare/v0.0.3...v0.0.4
-[0.0.3]: https://github.com/isselab/HAnS/compare/v0.0.2...v0.0.3
-[0.0.2]: https://github.com/isselab/HAnS/compare/v0.0.1...v0.0.2
-[0.0.1]: https://github.com/isselab/HAnS/commits/v0.0.1
+[Unreleased]: https://github.com/isselab/HAnS/compare/0.3.0-beta.2...HEAD
+[0.3.0-beta.2]: https://github.com/isselab/HAnS/compare/0.3.0-beta.1...0.3.0-beta.2
+[0.3.0-beta.1]: https://github.com/isselab/HAnS/compare/0.2.5...0.3.0-beta.1
+[0.2.5]: https://github.com/isselab/HAnS/compare/0.2.4...0.2.5
+[0.2.4]: https://github.com/isselab/HAnS/compare/0.2.3...0.2.4
+[0.2.3]: https://github.com/isselab/HAnS/compare/0.2.2...0.2.3
+[0.2.2]: https://github.com/isselab/HAnS/compare/0.2.1...0.2.2
+[0.2.1]: https://github.com/isselab/HAnS/compare/0.2.0...0.2.1
+[0.2.0]: https://github.com/isselab/HAnS/compare/0.1.2...0.2.0
+[0.1.2]: https://github.com/isselab/HAnS/compare/0.1.1...0.1.2
+[0.1.1]: https://github.com/isselab/HAnS/compare/0.1.0...0.1.1
+[0.1.0]: https://github.com/isselab/HAnS/compare/0.0.8...0.1.0
+[0.0.8]: https://github.com/isselab/HAnS/compare/0.0.7...0.0.8
+[0.0.7]: https://github.com/isselab/HAnS/compare/0.0.6...0.0.7
+[0.0.6]: https://github.com/isselab/HAnS/compare/0.0.5...0.0.6
+[0.0.5]: https://github.com/isselab/HAnS/compare/0.0.4...0.0.5
+[0.0.4]: https://github.com/isselab/HAnS/compare/0.0.3...0.0.4
+[0.0.3]: https://github.com/isselab/HAnS/compare/0.0.2...0.0.3
+[0.0.2]: https://github.com/isselab/HAnS/compare/0.0.1...0.0.2
+[0.0.1]: https://github.com/isselab/HAnS/commits/0.0.1

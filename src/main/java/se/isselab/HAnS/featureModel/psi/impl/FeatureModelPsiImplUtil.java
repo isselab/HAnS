@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 
 public class FeatureModelPsiImplUtil {
 
+    @Nullable
     public static ItemPresentation getPresentation(final FeatureModelFeature element) {
         return new ItemPresentation() {
             @Nullable
@@ -62,6 +63,7 @@ public class FeatureModelPsiImplUtil {
     }
 
     // &begin[Referencing]
+    @Nullable
     public static String getFeatureName(FeatureModelFeature element){
         ASTNode featureNode = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
         if (featureNode != null) {
@@ -72,10 +74,12 @@ public class FeatureModelPsiImplUtil {
         }
     }
 
+    @Nullable
     public static String getName(FeatureModelFeature feature) {
         return feature.getFeatureName();
     }
 
+    @NotNull
     public static FeatureModelFeature setName(FeatureModelFeature element, String newName) {
         if (FeatureReferenceUtil.getOrigin() == element || FeatureReferenceUtil.getOrigin() == null) {
             FeatureReferenceUtil.getLPQ(element, newName);
@@ -123,6 +127,7 @@ public class FeatureModelPsiImplUtil {
         return elementsToRename;
     }
 
+    @Nullable
     public static PsiElement getNameIdentifier(FeatureModelFeature element) {
         ASTNode node = element.getNode().findChildByType(FeatureModelTypes.FEATURENAME);
         if (node != null) {
@@ -132,7 +137,47 @@ public class FeatureModelPsiImplUtil {
     }
     // &end[Referencing]
 
-    public static String getFullLPQText(PsiElement feature) {
+    /**
+     * Returns direct child FeatureModelFeature elements of the given node, descending through
+     * any COMPONENT/LOGIC/OR_BLOCK/XOR_BLOCK/SUB_LOGIC wrapper nodes introduced by the XOR/OR
+     * grouping grammar. Does NOT descend into nested FeatureModelFeature.
+     */
+    @NotNull
+    public static List<FeatureModelFeature> getChildFeatures(@NotNull PsiElement parent) {
+        List<FeatureModelFeature> result = new ArrayList<>();
+        collectDirectChildFeatures(parent, result);
+        return result;
+    }
+
+    private static void collectDirectChildFeatures(@NotNull PsiElement node, @NotNull List<FeatureModelFeature> out) {
+        for (PsiElement child : node.getChildren()) {
+            if (child instanceof FeatureModelFeature f) {
+                out.add(f);
+            } else {
+                collectDirectChildFeatures(child, out);
+            }
+        }
+    }
+
+    /**
+     * Returns the nearest FeatureModelFeature ancestor of the given element,
+     * skipping intermediate COMPONENT/LOGIC/OR_BLOCK/XOR_BLOCK/SUB_LOGIC wrapper
+     * nodes introduced by the XOR/OR grouping grammar. Returns null at file root.
+     */
+    @Nullable
+    public static FeatureModelFeature getParentFeature(@NotNull PsiElement element) {
+        PsiElement current = element.getParent();
+        while (current != null && !(current instanceof PsiFile)) {
+            if (current instanceof FeatureModelFeature) {
+                return (FeatureModelFeature) current;
+            }
+            current = current.getParent();
+        }
+        return null;
+    }
+
+    @Nullable
+    public static String getFullLPQText(FeatureModelFeature feature) {
         Deque<PsiElement> lpqStack = getFullLPQStack(feature);
 
         if (lpqStack.isEmpty()) {
@@ -153,19 +198,21 @@ public class FeatureModelPsiImplUtil {
 
         PsiElement current = feature;
         while (current != null && !(current instanceof PsiFile)) {
-            // Assuming FeatureModelFeature nodes have a firstChild that is the name identifier
-            PsiElement nameElement = current.getFirstChild();
-            if (nameElement != null) {
-                stack.push(nameElement);
+            // Only collect name tokens from actual feature nodes; skip COMPONENT/LOGIC wrappers
+            if (current instanceof FeatureModelFeature) {
+                PsiElement nameElement = current.getFirstChild();
+                if (nameElement != null) {
+                    stack.push(nameElement);
+                }
             }
-            // Move up: parent of the feature node → then its parent, etc.
             current = current.getParent();
         }
 
         return stack;
     }
 
-    public static String getLPQText(PsiElement feature) {
+    @Nullable
+    public static String getLPQText(FeatureModelFeature feature) {
         Deque<PsiElement> lpqStack = getLPQStack(feature);
         String lpq = null;
 
@@ -186,7 +233,8 @@ public class FeatureModelPsiImplUtil {
         return lpq;
     }
 
-    public static Deque<PsiElement> getLPQStack(PsiElement feature) {
+    @Nullable
+    public static Deque<PsiElement> getLPQStack(FeatureModelFeature feature) {
         List<Deque<PsiElement>> candidates = new ArrayList<>();
 
         feature.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
@@ -207,22 +255,31 @@ public class FeatureModelPsiImplUtil {
         return findLPQRecursively(candidates, stack);
     }
 
-    private static Deque<PsiElement> findLPQRecursively(List<Deque<PsiElement>> candidates,Deque<PsiElement> feature) {
-        if (candidates.size() == 1 || Objects.requireNonNull(feature.peek()).getParent().getParent() instanceof PsiFile) {
+    private static Deque<PsiElement> findLPQRecursively(List<Deque<PsiElement>> candidates, Deque<PsiElement> feature) {
+        PsiElement peekEl = Objects.requireNonNull(feature.peek());
+        if (!(peekEl.getParent() instanceof FeatureModelFeature currentFeature)) {
+            return feature;
+        }
+        FeatureModelFeature parentFeature = getParentFeature(currentFeature);
+
+        // Base case: only one candidate remaining, or we've reached the file root
+        if (candidates.size() == 1 || parentFeature == null) {
             return feature;
         }
 
         List<Deque<PsiElement>> remainingCandidates = new ArrayList<>();
+        PsiElement fParent = parentFeature.getFirstChild();
 
-        assert feature.peek() != null;
-        PsiElement fParent = feature.peek().getParent().getParent().getFirstChild();
-
-        for (Deque<PsiElement> c:candidates) {
-            assert c.peek() != null;
-            PsiElement cParent = c.peek().getParent().getParent().getFirstChild();
-            if (cParent.getText().equals(fParent.getText())) {
-                c.push(cParent);
-                remainingCandidates.add(c);
+        for (Deque<PsiElement> c : candidates) {
+            PsiElement cPeek = Objects.requireNonNull(c.peek());
+            if (!(cPeek.getParent() instanceof FeatureModelFeature cCurrent)) continue;
+            FeatureModelFeature cParentFeature = getParentFeature(cCurrent);
+            if (cParentFeature != null) {
+                PsiElement cParent = cParentFeature.getFirstChild();
+                if (cParent.getText().equals(fParent.getText())) {
+                    c.push(cParent);
+                    remainingCandidates.add(c);
+                }
             }
         }
 
@@ -231,6 +288,7 @@ public class FeatureModelPsiImplUtil {
         return findLPQRecursively(remainingCandidates, feature);
     }
 
+    @SuppressWarnings("UnstableApiUsage") // RenameDialog is internal IntelliJ API; no stable replacement available
     public static void renameFeature(@NotNull FeatureModelFeature feature){
         RenameDialog dialog = new RenameDialog(feature.getProject(), feature, null, null);
         dialog.show();
@@ -255,9 +313,8 @@ public class FeatureModelPsiImplUtil {
                 continue;
             }
             else {
-                PsiElement[] l = feature.getChildren();
-                for (PsiElement e : l) {
-                    if (Objects.requireNonNull(e.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getText().equals(newFeatureName)) {
+                for (FeatureModelFeature child : getChildFeatures(feature)) {
+                    if (newFeatureName.equals(child.getFeatureName())) {
                         Messages.showMessageDialog("Feature \"" + newFeatureName + "\" already exists.",
                                 "Error", Messages.getErrorIcon());
                         continue outer;
@@ -297,9 +354,13 @@ public class FeatureModelPsiImplUtil {
 
         sb.append(feature.getName()).append("\n"); // add current feature name
 
-        // Recursively process children with increased indentation level
+        // Recursively process children with increased indentation level.
+        // Only recurse into direct FeatureModelFeature children; COMPONENT/LOGIC wrappers
+        // from OR/XOR groups are skipped here (drag-and-drop for grouped features is a follow-up).
         for (PsiElement child : feature.getChildren()) {
-            sb.append(generateTreeString(((FeatureModelFeature)child), level + 1));
+            if (child instanceof FeatureModelFeature featureChild) {
+                sb.append(generateTreeString(featureChild, level + 1));
+            }
         }
 
         return sb.toString();
@@ -308,7 +369,9 @@ public class FeatureModelPsiImplUtil {
     private static void generateListOfLpqs(FeatureModelFeature feature, List<String> lpqs) {
         lpqs.add(feature.getLPQText());
         for (PsiElement child : feature.getChildren()) {
-            generateListOfLpqs(((FeatureModelFeature) child), lpqs);
+            if (child instanceof FeatureModelFeature featureChild) {
+                generateListOfLpqs(featureChild, lpqs);
+            }
         }
     }
 
@@ -333,11 +396,12 @@ public class FeatureModelPsiImplUtil {
 
         // finds new element that corresponds to childFeature, since original childFeature no longer exists in Psi tree
         AtomicReference<FeatureModelFeature> newChild = new AtomicReference<>();
-        Arrays.stream(parentFeature.getChildren()).forEach(child -> {
-            if(((FeatureModelFeature) child).getLPQText().contains(childFeature.getFeatureName())) {
-                newChild.set((FeatureModelFeature) child);
+        for (FeatureModelFeature child : getChildFeatures(parentFeature)) {
+            String childLpq = child.getLPQText();
+            if (childLpq != null && childLpq.contains(childFeature.getFeatureName())) {
+                newChild.set(child);
             }
-        });
+        }
         List<String> newLpqs = new ArrayList<>();
         generateListOfLpqs(newChild.get(), newLpqs);
 
@@ -378,11 +442,9 @@ public class FeatureModelPsiImplUtil {
     }
 
     private static int getIndentationLevel(@NotNull FeatureModelFeature parentFeature, Document document) {
-        PsiElement prevSibling = parentFeature.getPrevSibling();
         int indent;
-        // if root feature -> 4
-        // otherwise indent of parentFeature + 4
-        if (prevSibling instanceof PsiFile) {
+        // if root feature -> 4; otherwise indent of parentFeature + 4
+        if (parentFeature.getParent() instanceof PsiFile) {
             indent = 4;
         } else {
             int parentOffset = parentFeature.getTextOffset();
@@ -412,15 +474,16 @@ public class FeatureModelPsiImplUtil {
         Document document = PsiDocumentManager.getInstance(feature.getProject()).getDocument(feature.getContainingFile());
         int offset = feature.getTextOffset() + Objects.requireNonNull(feature.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getTextLength();
 
+        // Compute indentation: feature's column position + 4.
+        // This is grammar-agnostic and works whether feature is at root or nested inside
+        // COMPONENT/LOGIC wrapper nodes introduced by the XOR/OR grouping grammar.
         int indent;
         if (feature.getParent() instanceof PsiFile) {
             indent = 4;
-        }
-        else if (feature.getPrevSibling() instanceof FeatureModelFeature) {
-            indent = feature.getPrevSibling().getLastChild().getTextLength() + 4; // TODO: Make indentation setting dependent
-        }
-        else {
-            indent = feature.getPrevSibling().getTextLength() + 4;
+        } else {
+            String fileText = feature.getContainingFile().getText();
+            int lineStart = fileText.lastIndexOf('\n', feature.getTextOffset());
+            indent = (feature.getTextOffset() - lineStart - 1) + 4;
         }
 
         if (document != null) {
@@ -437,7 +500,7 @@ public class FeatureModelPsiImplUtil {
         return newFeatureName;
     }
 
-    public static FeatureModelFeature deleteFromFeatureModel(@NotNull PsiElement feature) {
+    public static FeatureModelFeature deleteFromFeatureModel(@NotNull FeatureModelFeature feature) {
         Project projectInstance = feature.getProject();
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
         if (document!= null) {
@@ -449,16 +512,16 @@ public class FeatureModelPsiImplUtil {
             };
             WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
 
-            return (FeatureModelFeature) feature;
+            return feature;
         }
         return null;
     }
-    public static FeatureModelFeature deleteFeatureWithAnnotations(@NotNull PsiElement feature) {
+    public static FeatureModelFeature deleteFeatureWithAnnotations(@NotNull FeatureModelFeature feature) {
         Project projectInstance = feature.getProject();
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
         if (document!= null) {
-            FeatureReferenceUtil.setElementsToDelete((FeatureModelFeature) feature);
-            FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
+            FeatureReferenceUtil.setElementsToDelete(feature);
+            FeatureReferenceUtil.setElementsToRenameWhenDeleting(feature);
             FeatureReferenceUtil.delete();
 
             deleteFromFeatureModel(feature);
@@ -467,16 +530,16 @@ public class FeatureModelPsiImplUtil {
 
             FeatureReferenceUtil.rename();
             FeatureReferenceUtil.reset();
-            return (FeatureModelFeature) feature;
+            return feature;
         }
         return null;
     }
 
-    public static boolean deleteFeatureWithCode(@NotNull PsiElement feature) {
+    public static boolean deleteFeatureWithCode(@NotNull FeatureModelFeature feature) {
         Project projectInstance = feature.getProject();
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
         if (document!= null) {
-            Set<FeatureAnnotationToDelete> annotations = FeatureReferenceUtil.setElementsToDropWhenDeleting((FeatureModelFeature) feature);
+            Set<FeatureAnnotationToDelete> annotations = FeatureReferenceUtil.setElementsToDropWhenDeleting(feature);
             if (!annotations.isEmpty()) {
                 TangledFeaturesModal modal = new TangledFeaturesModal(feature.getProject());
                 modal.setFileList(annotations);
@@ -492,8 +555,8 @@ public class FeatureModelPsiImplUtil {
             } else { // if no tangled features are present
                 Runnable r = () -> {
                     ReadAction.run(() -> {
-                        FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
-                        FeatureReferenceUtil.setMapToDeleteWithCode((FeatureModelFeature) feature);
+                        FeatureReferenceUtil.setElementsToRenameWhenDeleting(feature);
+                        FeatureReferenceUtil.setMapToDeleteWithCode(feature);
 
                         FeatureReferenceUtil.deleteWithCode();
                         deleteFromFeatureModel(feature);
@@ -516,7 +579,7 @@ public class FeatureModelPsiImplUtil {
         return false;
     }
 
-    public static int deleteFeature(@NotNull PsiElement feature){
+    public static int deleteFeature(@NotNull FeatureModelFeature feature){
         int response = Messages.showOkCancelDialog(
                 "Are you sure you want to remove the feature from the list?",
                 "Delete Feature",

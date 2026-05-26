@@ -38,6 +38,7 @@ import se.isselab.HAnS.featureLocation.FeatureLocationManager;
 import se.isselab.HAnS.featureModel.psi.FeatureModelElementFactory;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
+import se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil;
 import se.isselab.HAnS.featureAnnotation.fileAnnotation.psi.FileAnnotationFileReferences;
 import se.isselab.HAnS.metrics.calculators.FeatureTangling;
 
@@ -679,9 +680,8 @@ public class FeatureReferenceUtil {
     private static void traverseFeatureWithChildren(FeatureModelFeature parentFeature, List<PsiElement> featureList, List<String> lpqList) {
         featureList.add(parentFeature);
         lpqList.add(parentFeature.getLPQText());
-        PsiElement[] children = parentFeature.getChildren();
-        for (PsiElement child : children) {
-            traverseFeatureWithChildren(((FeatureModelFeature) child), featureList, lpqList);
+        for (FeatureModelFeature child : FeatureModelPsiImplUtil.getChildFeatures(parentFeature)) {
+            traverseFeatureWithChildren(child, featureList, lpqList);
         }
     }
 

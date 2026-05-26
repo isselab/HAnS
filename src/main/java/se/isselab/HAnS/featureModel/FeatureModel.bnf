@@ -30,15 +30,17 @@ limitations under the License.
   psiImplUtilClass="se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil"
 }
 
-featureModelFile ::= (feature (feature)?)?
 
+featureModelFile ::= (feature (feature)?)?
 // &begin[Referencing]
-feature ::= (FEATURENAME (CRLF+ ((INDENT) feature* DEDENT)?)?) {
+COMPONENT ::= feature | LOGIC
+LOGIC ::= (OR_BLOCK) | (XOR_BLOCK)
+XOR_BLOCK ::= XOR CRLF* (SUB_LOGIC)
+OR_BLOCK ::= OR CRLF* (SUB_LOGIC)
+SUB_LOGIC ::= INDENT COMPONENT (COMPONENT)+ DEDENT
+feature ::= (FEATURENAME (QUESTIONMARK)? (CRLF+ ((INDENT) (COMPONENT)* DEDENT)?)?) {
 mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
 implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getFullLPQText getLPQText getLPQStack renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName getPresentation
-addToFeatureModel deleteFromFeatureModel moveFeatureWithChildren deleteFeatureWithAnnotations deleteFeatureWithCode
-getTanglingDegree setTanglingDegree getScatteringDegree setScatteringDegree getLineCount setLineCount
-getMaxNestingDepth setMaxNestingDepth getMinNestingDepth setMinNestingDepth getAvgNestingDepth setAvgNestingDepth
-getNumberOfAnnotatedFiles setNumberOfAnnotatedFiles getNumberOfFileAnnotations setNumberOfFileAnnotations getNumberOfFolderAnnotations setNumberOfFolderAnnotations]}
+addToFeatureModel deleteFromFeatureModel moveFeatureWithChildren deleteFeatureWithAnnotations deleteFeatureWithCode]}
 // &end[Referencing]

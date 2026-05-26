@@ -19,4 +19,30 @@ import com.intellij.psi.PsiNameIdentifierOwner;
 
 public interface FeatureAnnotationNamedElement extends PsiNameIdentifierOwner {
 
+    int getTanglingDegree();
+    void setTanglingDegree(int tanglingDegree);
+
+    int getScatteringDegree();
+    void setScatteringDegree(int scatteringDegree);
+
+    int getLineCount();
+    void setLineCount(int lineCount);
+
+    int getMaxNestingDepth();
+    void setMaxNestingDepth(int maxNestingDepth);
+
+    int getMinNestingDepth();
+    void setMinNestingDepth(int minNestingDepth);
+
+    double getAvgNestingDepth();
+    void setAvgNestingDepth(double avgNestingDepth);
+
+    int getNumberOfAnnotatedFiles();
+    void setNumberOfAnnotatedFiles(int numberOfAnnotatedFiles);
+
+    int getNumberOfFolderAnnotations();
+    void setNumberOfFolderAnnotations(int numberOfFolderAnnotations);
+
+    int getNumberOfFileAnnotations();
+    void setNumberOfFileAnnotations(int numberOfFileAnnotations);
 }

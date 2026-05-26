@@ -54,3 +54,5 @@ build/
 
 # Obsidian - personal session state only
 .wiki/.obsidian/workspace.json
+*.java~
+.gradle-isolated/

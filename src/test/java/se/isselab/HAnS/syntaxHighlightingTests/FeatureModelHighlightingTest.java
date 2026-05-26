@@ -79,7 +79,6 @@ public class FeatureModelHighlightingTest extends BasePlatformTestCase {
     }
 
     public void testFeatureModelSyntaxHighlighting() {
-        // Test that basic feature model syntax is highlighted correctly with unused warnings
         myFixture.configureByText("features.feature-model",
                 """
                         Root
@@ -88,7 +87,62 @@ public class FeatureModelHighlightingTest extends BasePlatformTestCase {
                             <weak_warning descr="Feature is never used">AnotherFeature</weak_warning>
                         """);
 
-        // This verifies that the file is parsed correctly and highlighting is applied
         myFixture.checkHighlighting();
+    }
+
+    public void testOrXorKeywordsHighlighted() {
+        // 'or' and 'xor' must be highlighted as keywords; feature names must not trigger keyword highlighting
+        myFixture.configureByText("groups.feature-model",
+                """
+                        Root
+                            or
+                                <weak_warning descr="Feature is never used">OptionA</weak_warning>
+                                <weak_warning descr="Feature is never used">OptionB</weak_warning>
+                            xor
+                                <weak_warning descr="Feature is never used">ModeX</weak_warning>
+                                <weak_warning descr="Feature is never used">ModeY</weak_warning>
+                        """);
+
+        myFixture.checkHighlighting(true, false, true);
+    }
+
+    public void testOptionalMarkerHighlighted() {
+        // '?' must be highlighted as an operation sign; space before '?' must be accepted
+        myFixture.configureByText("optional.feature-model",
+                """
+                        Root
+                            <weak_warning descr="Feature is never used">RequiredFeature</weak_warning>
+                            <weak_warning descr="Feature is never used">OptionalA</weak_warning>?
+                            <weak_warning descr="Feature is never used">OptionalB</weak_warning> ?
+                        """);
+
+        myFixture.checkHighlighting(true, false, true);
+    }
+
+    public void testKeywordPrefixedFeaturesNotHighlightedAsKeywords() {
+        // Feature names starting with 'or'/'xor' prefixes must be treated as feature names, not keywords
+        myFixture.configureByText("keyword-prefix.feature-model",
+                """
+                        Root
+                            <weak_warning descr="Feature is never used">orange</weak_warning>
+                            <weak_warning descr="Feature is never used">xorfoo</weak_warning>
+                            <weak_warning descr="Feature is never used">ordinal</weak_warning>
+                        """);
+
+        myFixture.checkHighlighting(true, false, true);
+    }
+
+    public void testNamedXorGroupHighlighting() {
+        // Named group shorthand: 'xor channel' — 'xor' highlighted as keyword, 'channel' as feature name
+        myFixture.configureByText("named-group.feature-model",
+                """
+                        telematicsSystem
+                            xor <weak_warning descr="Feature is never used">channel</weak_warning>
+                                <weak_warning descr="Feature is never used">single</weak_warning>
+                                <weak_warning descr="Feature is never used">dual</weak_warning>
+                            <weak_warning descr="Feature is never used">extraDisplay</weak_warning> ?
+                        """);
+
+        myFixture.checkHighlighting(true, false, true);
     }
 }
