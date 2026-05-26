@@ -149,7 +149,7 @@ public class FeatureModelPsiImplUtil {
         return null;
     }
 
-    public static String getFullLPQText(PsiElement feature) {
+    public static String getFullLPQText(FeatureModelFeature feature) {
         Deque<PsiElement> lpqStack = getFullLPQStack(feature);
 
         if (lpqStack.isEmpty()) {
@@ -183,7 +183,7 @@ public class FeatureModelPsiImplUtil {
         return stack;
     }
 
-    public static String getLPQText(PsiElement feature) {
+    public static String getLPQText(FeatureModelFeature feature) {
         Deque<PsiElement> lpqStack = getLPQStack(feature);
         String lpq = null;
 
@@ -204,7 +204,7 @@ public class FeatureModelPsiImplUtil {
         return lpq;
     }
 
-    public static Deque<PsiElement> getLPQStack(PsiElement feature) {
+    public static Deque<PsiElement> getLPQStack(FeatureModelFeature feature) {
         List<Deque<PsiElement>> candidates = new ArrayList<>();
 
         feature.getContainingFile().accept(new PsiRecursiveElementWalkingVisitor() {
@@ -463,7 +463,7 @@ public class FeatureModelPsiImplUtil {
         return newFeatureName;
     }
 
-    public static FeatureModelFeature deleteFromFeatureModel(@NotNull PsiElement feature) {
+    public static FeatureModelFeature deleteFromFeatureModel(@NotNull FeatureModelFeature feature) {
         Project projectInstance = feature.getProject();
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
         if (document!= null) {
@@ -475,16 +475,16 @@ public class FeatureModelPsiImplUtil {
             };
             WriteCommandAction.runWriteCommandAction(feature.getProject(), r);
 
-            return (FeatureModelFeature) feature;
+            return feature;
         }
         return null;
     }
-    public static FeatureModelFeature deleteFeatureWithAnnotations(@NotNull PsiElement feature) {
+    public static FeatureModelFeature deleteFeatureWithAnnotations(@NotNull FeatureModelFeature feature) {
         Project projectInstance = feature.getProject();
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
         if (document!= null) {
-            FeatureReferenceUtil.setElementsToDelete((FeatureModelFeature) feature);
-            FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
+            FeatureReferenceUtil.setElementsToDelete(feature);
+            FeatureReferenceUtil.setElementsToRenameWhenDeleting(feature);
             FeatureReferenceUtil.delete();
 
             deleteFromFeatureModel(feature);
@@ -493,16 +493,16 @@ public class FeatureModelPsiImplUtil {
 
             FeatureReferenceUtil.rename();
             FeatureReferenceUtil.reset();
-            return (FeatureModelFeature) feature;
+            return feature;
         }
         return null;
     }
 
-    public static boolean deleteFeatureWithCode(@NotNull PsiElement feature) {
+    public static boolean deleteFeatureWithCode(@NotNull FeatureModelFeature feature) {
         Project projectInstance = feature.getProject();
         Document document = PsiDocumentManager.getInstance(projectInstance).getDocument(feature.getContainingFile());
         if (document!= null) {
-            Set<FeatureAnnotationToDelete> annotations = FeatureReferenceUtil.setElementsToDropWhenDeleting((FeatureModelFeature) feature);
+            Set<FeatureAnnotationToDelete> annotations = FeatureReferenceUtil.setElementsToDropWhenDeleting(feature);
             if (!annotations.isEmpty()) {
                 TangledFeaturesModal modal = new TangledFeaturesModal(feature.getProject());
                 modal.setFileList(annotations);
@@ -518,8 +518,8 @@ public class FeatureModelPsiImplUtil {
             } else { // if no tangled features are present
                 Runnable r = () -> {
                     ReadAction.run(() -> {
-                        FeatureReferenceUtil.setElementsToRenameWhenDeleting((FeatureModelFeature) feature);
-                        FeatureReferenceUtil.setMapToDeleteWithCode((FeatureModelFeature) feature);
+                        FeatureReferenceUtil.setElementsToRenameWhenDeleting(feature);
+                        FeatureReferenceUtil.setMapToDeleteWithCode(feature);
 
                         FeatureReferenceUtil.deleteWithCode();
                         deleteFromFeatureModel(feature);
@@ -542,7 +542,7 @@ public class FeatureModelPsiImplUtil {
         return false;
     }
 
-    public static int deleteFeature(@NotNull PsiElement feature){
+    public static int deleteFeature(@NotNull FeatureModelFeature feature){
         int response = Messages.showOkCancelDialog(
                 "Are you sure you want to remove the feature from the list?",
                 "Delete Feature",

@@ -15,6 +15,7 @@ limitations under the License.
 */
 package se.isselab.HAnS.featureModel;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import se.isselab.HAnS.featureModel.psi.FeatureModelTypes;
 import com.intellij.psi.TokenType;

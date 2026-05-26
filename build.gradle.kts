@@ -143,62 +143,66 @@ kover {
 }
 
 // GrammarKit generation tasks — run before compilation when .bnf or .flex files change
+// The IntelliJ skeleton provides FlexLexer import and IntelliJ-specific overrides.
+// zzAtBOL and zzEOFDone have been removed from the skeleton; JFlex 1.9.2 generates them internally.
+val skeletonFile = layout.projectDirectory.file("idea-flex.skeleton")
+
 val generateFeatureModelParser by tasks.registering(GenerateParserTask::class) {
-    source.set("src/main/java/se/isselab/HAnS/featureModel/FeatureModel.bnf")
-    targetRoot.set("src/main/gen")
+    sourceFile.set(layout.projectDirectory.file("src/main/java/se/isselab/HAnS/featureModel/FeatureModel.bnf"))
+    targetRootOutputDir.set(layout.projectDirectory.dir("src/main/gen"))
     pathToParser.set("se/isselab/HAnS/featureModel/parser/FeatureModelParser.java")
     pathToPsiRoot.set("se/isselab/HAnS/featureModel/psi")
 }
 
 val generateFeatureModelLexer by tasks.registering(GenerateLexerTask::class) {
-    source.set("src/main/java/se/isselab/HAnS/featureModel/FeatureModel.flex")
-    targetDir.set("src/main/gen/se/isselab/HAnS/featureModel")
-    skeleton.set("idea-flex.skeleton")
+    sourceFile.set(layout.projectDirectory.file("src/main/java/se/isselab/HAnS/featureModel/FeatureModel.flex"))
+    targetOutputDir.set(layout.projectDirectory.dir("src/main/gen/se/isselab/HAnS/featureModel"))
+    skeleton.set(skeletonFile)
 }
 
 val generateFeatureModelHighlightingLexer by tasks.registering(GenerateLexerTask::class) {
-    source.set("src/main/java/se/isselab/HAnS/syntaxHighlighting/featureModel/FeatureModelHighlightingLexer.flex")
-    targetDir.set("src/main/gen/se/isselab/HAnS/featureModel")
-    skeleton.set("idea-flex.skeleton")
+    sourceFile.set(layout.projectDirectory.file("src/main/java/se/isselab/HAnS/syntaxHighlighting/featureModel/FeatureModelHighlightingLexer.flex"))
+    targetOutputDir.set(layout.projectDirectory.dir("src/main/gen/se/isselab/HAnS/featureModel"))
+    skeleton.set(skeletonFile)
 }
 
 val generateCodeAnnotationParser by tasks.registering(GenerateParserTask::class) {
-    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/codeAnnotation/CodeAnnotation.bnf")
-    targetRoot.set("src/main/gen")
+    sourceFile.set(layout.projectDirectory.file("src/main/java/se/isselab/HAnS/featureAnnotation/codeAnnotation/CodeAnnotation.bnf"))
+    targetRootOutputDir.set(layout.projectDirectory.dir("src/main/gen"))
     pathToParser.set("se/isselab/HAnS/featureAnnotation/codeAnnotation/parser/CodeAnnotationParser.java")
     pathToPsiRoot.set("se/isselab/HAnS/featureAnnotation/codeAnnotation/psi")
 }
 
 val generateCodeAnnotationLexer by tasks.registering(GenerateLexerTask::class) {
-    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/codeAnnotation/CodeAnnotation.flex")
-    targetDir.set("src/main/gen/se/isselab/HAnS/featureAnnotation/codeAnnotation")
-    skeleton.set("idea-flex.skeleton")
+    sourceFile.set(layout.projectDirectory.file("src/main/java/se/isselab/HAnS/featureAnnotation/codeAnnotation/CodeAnnotation.flex"))
+    targetOutputDir.set(layout.projectDirectory.dir("src/main/gen/se/isselab/HAnS/featureAnnotation/codeAnnotation"))
+    skeleton.set(skeletonFile)
 }
 
 val generateFileAnnotationParser by tasks.registering(GenerateParserTask::class) {
-    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/fileAnnotation/FileAnnotation.bnf")
-    targetRoot.set("src/main/gen")
+    sourceFile.set(layout.projectDirectory.file("src/main/java/se/isselab/HAnS/featureAnnotation/fileAnnotation/FileAnnotation.bnf"))
+    targetRootOutputDir.set(layout.projectDirectory.dir("src/main/gen"))
     pathToParser.set("se/isselab/HAnS/featureAnnotation/fileAnnotation/parser/FileAnnotationParser.java")
     pathToPsiRoot.set("se/isselab/HAnS/featureAnnotation/fileAnnotation/psi")
 }
 
 val generateFileAnnotationLexer by tasks.registering(GenerateLexerTask::class) {
-    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/fileAnnotation/FileAnnotation.flex")
-    targetDir.set("src/main/gen/se/isselab/HAnS/featureAnnotation/fileAnnotation")
-    skeleton.set("idea-flex.skeleton")
+    sourceFile.set(layout.projectDirectory.file("src/main/java/se/isselab/HAnS/featureAnnotation/fileAnnotation/FileAnnotation.flex"))
+    targetOutputDir.set(layout.projectDirectory.dir("src/main/gen/se/isselab/HAnS/featureAnnotation/fileAnnotation"))
+    skeleton.set(skeletonFile)
 }
 
 val generateFolderAnnotationParser by tasks.registering(GenerateParserTask::class) {
-    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/folderAnnotation/FolderAnnotation.bnf")
-    targetRoot.set("src/main/gen")
+    sourceFile.set(layout.projectDirectory.file("src/main/java/se/isselab/HAnS/featureAnnotation/folderAnnotation/FolderAnnotation.bnf"))
+    targetRootOutputDir.set(layout.projectDirectory.dir("src/main/gen"))
     pathToParser.set("se/isselab/HAnS/featureAnnotation/folderAnnotation/parser/FolderAnnotationParser.java")
     pathToPsiRoot.set("se/isselab/HAnS/featureAnnotation/folderAnnotation/psi")
 }
 
 val generateFolderAnnotationLexer by tasks.registering(GenerateLexerTask::class) {
-    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/folderAnnotation/FolderAnnotation.flex")
-    targetDir.set("src/main/gen/se/isselab/HAnS/featureAnnotation/folderAnnotation")
-    skeleton.set("idea-flex.skeleton")
+    sourceFile.set(layout.projectDirectory.file("src/main/java/se/isselab/HAnS/featureAnnotation/folderAnnotation/FolderAnnotation.flex"))
+    targetOutputDir.set(layout.projectDirectory.dir("src/main/gen/se/isselab/HAnS/featureAnnotation/folderAnnotation"))
+    skeleton.set(skeletonFile)
 }
 
 val allGenerateTasks = listOf(
@@ -217,9 +221,11 @@ tasks {
         dependsOn("patchChangelog")
     }
 
-    compileJava {
-        dependsOn(allGenerateTasks)
-    }
+    // Generation tasks (generateFeatureModel*, generateCodeAnnotation*, etc.) are intentionally NOT
+    // wired to compileJava/compileKotlin here. Run them explicitly when .bnf or .flex files change:
+    //   ./gradlew generateFeatureModelParser generateFeatureModelLexer
+    // After parser regeneration, verify that src/main/gen/**/psi/*Feature*.java still declares all
+    // methods — the CLI generator cannot resolve psiImplUtilClass methods (IDE-only feature).
 }
 
 intellijPlatformTesting {

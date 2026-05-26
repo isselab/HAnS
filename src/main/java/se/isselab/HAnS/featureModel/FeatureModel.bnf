@@ -42,8 +42,5 @@ feature ::= (FEATURENAME (QUESTIONMARK)? (CRLF+ ((INDENT) (COMPONENT)* DEDENT)?)
 mixin="se.isselab.HAnS.referencing.impl.FeatureAnnotationNamedElementImpl"
 implements="se.isselab.HAnS.referencing.FeatureAnnotationNamedElement"
 methods=[getFullLPQText getLPQText getLPQStack renameFeature addFeature deleteFeature getName setName getNameIdentifier getFeatureName getPresentation
-addToFeatureModel deleteFromFeatureModel moveFeatureWithChildren deleteFeatureWithAnnotations deleteFeatureWithCode
-getTanglingDegree setTanglingDegree getScatteringDegree setScatteringDegree getLineCount setLineCount
-getMaxNestingDepth setMaxNestingDepth getMinNestingDepth setMinNestingDepth getAvgNestingDepth setAvgNestingDepth
-getNumberOfAnnotatedFiles setNumberOfAnnotatedFiles getNumberOfFileAnnotations setNumberOfFileAnnotations getNumberOfFolderAnnotations setNumberOfFolderAnnotations]}
+addToFeatureModel deleteFromFeatureModel moveFeatureWithChildren deleteFeatureWithAnnotations deleteFeatureWithCode]}
 // &end[Referencing]
