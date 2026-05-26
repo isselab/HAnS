@@ -8,7 +8,11 @@
 | Philipp Kusmierz   | [![Philipp github](https://img.shields.io/badge/GitHub-Kuzzi04-181717.svg?style=flat&logo=github)](https://www.github.com/Kuzzi04)            |
 | Mariana Hohashvili | [![Mariana github](https://img.shields.io/badge/GitHub-hohashvili-181717.svg?style=flat&logo=github)](https://www.github.com/hohashvili)      |
 | Luca Kramer        | [![Luca github](https://img.shields.io/badge/GitHub-LucaKramer-181717.svg?style=flat&logo=github)](https://www.github.com/LucaKramer)         |
-| Manhal Jasem       | [![Luca github](https://img.shields.io/badge/GitHub-ManhalJasem-181717.svg?style=flat&logo=github)](https://www.github.com/ManhalJasem)                                                                                                                                              |
+| Manhal Jasem       | [![Manhal github](https://img.shields.io/badge/GitHub-ManhalJasem-181717.svg?style=flat&logo=github)](https://www.github.com/ManhalJasem)         |
+| Simon Osterheider  | [![Simon github](https://img.shields.io/badge/GitHub-SimonOsterheider-181717.svg?style=flat&logo=github)](https://www.github.com/SimonOsterheider) |
+| Cindy Liang        | [![Cindy github](https://img.shields.io/badge/GitHub-Lycheers-181717.svg?style=flat&logo=github)](https://www.github.com/Lycheers)                 |
+| Joudi Alakkad      | [![Joudi github](https://img.shields.io/badge/GitHub-JoudiAlakkad-181717.svg?style=flat&logo=github)](https://www.github.com/JoudiAlakkad)         |
+| DSaatz             | [![DSaatz github](https://img.shields.io/badge/GitHub-DSaatz-181717.svg?style=flat&logo=github)](https://www.github.com/DSaatz)                   |
 
 
 

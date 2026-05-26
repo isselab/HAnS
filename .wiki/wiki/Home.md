@@ -8,14 +8,14 @@
 
 ## Modules
 
-| Module | Purpose |
-|--------|---------|
-| [Code Annotation](Code-Annotation-Module) | `&begin`/`&end`/`&line` injection, PSI types |
-| [Feature Model](HAnS-Feature-Model) | 52-feature hierarchy, `.feature-model` language |
-| [Feature Location](Feature-Location-Module) | Location tracking, caching, file mapping |
-| [Metrics](Metrics-Module) | Scattering, Tangling, Nesting Depth calculators |
+| Module                                        | Purpose                                             |
+| --------------------------------------------- | --------------------------------------------------- |
+| [Code Annotation](Code-Annotation-Module)     | `&begin`/`&end`/`&line` injection, PSI types        |
+| [Feature Model](HAnS-Feature-Model)           | 52-feature hierarchy, `.feature-model` language     |
+| [Feature Location](Feature-Location-Module)   | Location tracking, caching, file mapping            |
+| [Metrics](Metrics-Module)                     | Scattering, Tangling, Nesting Depth calculators     |
 | [Plugin Extensions](Plugin-Extensions-Module) | MetricsService, HighlighterService, background APIs |
-| [Build Configuration](Build-Configuration) | Gradle setup, versions, plugins |
+| [Build Configuration](Build-Configuration)    | Gradle setup, versions, plugins                     |
 
 ## Components
 

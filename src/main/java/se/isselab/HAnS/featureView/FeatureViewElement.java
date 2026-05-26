@@ -21,10 +21,10 @@ import com.intellij.ide.util.treeView.smartTree.SortableTreeElement;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.NavigatablePsiElement;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
+import se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,14 +73,14 @@ public class FeatureViewElement implements StructureViewTreeElement, SortableTre
 
     @Override
     public TreeElement @NotNull [] getChildren() {
-        List<FeatureModelFeature> properties = PsiTreeUtil.getChildrenOfTypeAsList(myElement, FeatureModelFeature.class);
-        if (!properties.isEmpty()) {
-            List<TreeElement> treeElements = new ArrayList<>();
-            for (FeatureModelFeature feature : properties) {
-                treeElements.add(new FeatureViewElement((FeatureModelFeatureImpl) feature));
-            }
-            return treeElements.toArray(new TreeElement[0]);
+        List<FeatureModelFeature> properties = FeatureModelPsiImplUtil.getChildFeatures(myElement);
+        if (properties.isEmpty()) {
+            return EMPTY_ARRAY;
         }
-        return EMPTY_ARRAY;
+        List<TreeElement> treeElements = new ArrayList<>();
+        for (FeatureModelFeature feature : properties) {
+            treeElements.add(new FeatureViewElement((FeatureModelFeatureImpl) feature));
+        }
+        return treeElements.toArray(new TreeElement[0]);
     }
 }

@@ -1,16 +1,36 @@
 :root {
-  --wiki-1: #4fc1ff;  --wiki-2: #c586c0;  --wiki-3: #dcdcaa;
-  --wiki-4: #ce9178;  --wiki-5: #6a9955;  --wiki-6: #d16969;
-  --wiki-7: #569cd6;
+  --cb-yellow: #dcdcaa;
+  --cb-orange: #ce9178;
+  --cb-red: #d16969;
+  --cb-blue:   #4fc1ff;   /* concepts, domains — knowledge nodes */
+  --cb-green:  #6a9955;   /* sources, questions — content nodes  */
+  --cb-purple: #c586c0;   /* entities — people & orgs            */
+  --cb-meta:   #569cd6;   /* wiki meta: index, hot, log          */
+  --cb-dim:    #606060;   /* templates, raw — de-emphasized       */
 }
 
-.nav-folder-title[data-path^="wiki/modules"]      { color: var(--wiki-1); }
-.nav-folder-title[data-path^="wiki/components"]   { color: var(--wiki-2); }
-.nav-folder-title[data-path^="wiki/flows"]        { color: var(--wiki-3); }
-.nav-folder-title[data-path^="wiki/dependencies"] { color: var(--wiki-4); }
-.nav-folder-title[data-path^="wiki/decisions"]    { color: var(--wiki-5); }
-.nav-folder-title[data-path^="wiki/meta"]         { color: var(--wiki-6); }
-.nav-folder-title[data-path=".raw"]               { color: #808080; opacity: 0.6; }
+/* ── Wiki meta (light blue) ── */
+.nav-folder-title[data-path="wiki"]              { color: var(--cb-meta); }
+.nav-folder-title[data-path^="wiki/meta"]        { color: var(--cb-meta); }
+.nav-folder-title[data-path^="wiki/dependencies"] { color: var(--cb-meta); }
+
+/* ── Knowledge — yellow ── */
+.nav-folder-title[data-path^="wiki/modules"]      { color: var(--cb-yellow); }
+.nav-folder-title[data-path^="wiki/components"]   { color: var(--cb-yellow); }
+.nav-folder-title[data-path^="wiki/flows"]        { color: var(--cb-yellow); }
+
+
+/* ── Content — green ── */
+.nav-folder-title[data-path^="wiki/sources"]    { color: var(--cb-green); }
+
+
+.nav-folder-title[data-path^="wiki/decisions"]    { color: var(--cb-orange); }
+
+/* ── People & orgs — purple ── */
+.nav-folder-title[data-path="wiki/entities"]      {color: var(--cb-purple)}
+
+
+.nav-folder-title[data-path=".raw"]               { color: var(--cb-dim); opacity: 0.6; }
 
 .callout[data-callout='contradiction'] { --callout-color: 209, 105, 105; --callout-icon: lucide-alert-triangle; }
 .callout[data-callout='gap']           { --callout-color: 220, 220, 170; --callout-icon: lucide-help-circle; }

@@ -29,6 +29,7 @@ import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
+import se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -100,7 +101,6 @@ public final class FeatureModelUtil {
             if(featureModelFile == null) continue;
 
             var selectedFeatures = PsiTreeUtil.collectElementsOfType(featureModelFile, FeatureModelFeature.class).stream()
-                    .filter(Objects::nonNull)
                     .filter(featureModelFeature -> lpq.endsWith(featureModelFeature.getFeatureName()))
                     .toList();
 
@@ -114,15 +114,17 @@ public final class FeatureModelUtil {
         if (selectedFeatures.size() == 1) {
             var feature = selectedFeatures.getFirst();
             var fullLPQ = feature.getFullLPQText();
-            if (fullLPQ.endsWith("::" + lpq) || fullLPQ.equals(lpq)) {
+            if (fullLPQ != null && (fullLPQ.endsWith("::" + lpq) || fullLPQ.equals(lpq))) {
                 result.add(feature);
             }
         } else if (selectedFeatures.size() > 1) {
             selectedFeatures.forEach(feature -> {
                 var fullLPQ = feature.getFullLPQText();
-                if (feature.getParent() instanceof FeatureModelFeature parent) {
+                FeatureModelFeature parent = FeatureModelPsiImplUtil.getParentFeature(feature);
+                if (parent != null) {
                     var parentFeatureName = parent.getFeatureName();
-                    if (lpq.startsWith(parentFeatureName) && fullLPQ.endsWith(lpq)) {
+                    if (parentFeatureName != null && fullLPQ != null
+                            && lpq.startsWith(parentFeatureName) && fullLPQ.endsWith(lpq)) {
                         result.add(feature);
                     }
                 }
@@ -167,6 +169,7 @@ public final class FeatureModelUtil {
                 .submit(AppExecutorUtil.getAppExecutorService());
     }
 
+    @org.jetbrains.annotations.Nullable
     public static PsiFile findFeatureModel(@NotNull Project project) {
         var allFilenames = getVirtualFilesByName(".feature-model", projectScope(project));
         if (!allFilenames.isEmpty()) {

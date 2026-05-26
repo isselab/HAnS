@@ -12,6 +12,30 @@ public class FeatureModelParsingTest extends ParsingTestCase {
         doTest(true);
     }
 
+    public void testPlainHierarchy() {
+        doTest(true);
+    }
+
+    public void testOrGroup() {
+        doTest(true);
+    }
+
+    public void testXorGroup() {
+        doTest(true);
+    }
+
+    public void testOptionalFeature() {
+        doTest(true);
+    }
+
+    public void testNamedXorGroup() {
+        doTest(true);
+    }
+
+    public void testKeywordPrefixedFeatures() {
+        doTest(true);
+    }
+
     /**
      * @return path to test data file directory relative to root of this module.
      */
