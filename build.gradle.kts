@@ -1,5 +1,7 @@
 import org.jetbrains.changelog.Changelog // Gradle Changelog Plugin
 import org.jetbrains.changelog.markdownToHTML // Gradle Changelog Plugin
+import org.jetbrains.grammarkit.tasks.GenerateLexerTask
+import org.jetbrains.grammarkit.tasks.GenerateParserTask
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType // Gradle IntelliJ Plugin
 
 plugins {
@@ -8,6 +10,7 @@ plugins {
     alias(libs.plugins.kotlin) // Kotlin support
     alias(libs.plugins.intelliJPlatform) // Gradle IntelliJ Plugin
     alias(libs.plugins.changelog) // Gradle Changelog Plugin
+    alias(libs.plugins.grammarKit) // Gradle GrammarKit Plugin
     alias(libs.plugins.qodana) // Gradle Qodana Plugin
     alias(libs.plugins.kover) // Gradle Kover Plugin
 }
@@ -139,6 +142,72 @@ kover {
     }
 }
 
+// GrammarKit generation tasks — run before compilation when .bnf or .flex files change
+val generateFeatureModelParser by tasks.registering(GenerateParserTask::class) {
+    source.set("src/main/java/se/isselab/HAnS/featureModel/FeatureModel.bnf")
+    targetRoot.set("src/main/gen")
+    pathToParser.set("se/isselab/HAnS/featureModel/parser/FeatureModelParser.java")
+    pathToPsiRoot.set("se/isselab/HAnS/featureModel/psi")
+}
+
+val generateFeatureModelLexer by tasks.registering(GenerateLexerTask::class) {
+    source.set("src/main/java/se/isselab/HAnS/featureModel/FeatureModel.flex")
+    targetDir.set("src/main/gen/se/isselab/HAnS/featureModel")
+    skeleton.set("idea-flex.skeleton")
+}
+
+val generateFeatureModelHighlightingLexer by tasks.registering(GenerateLexerTask::class) {
+    source.set("src/main/java/se/isselab/HAnS/syntaxHighlighting/featureModel/FeatureModelHighlightingLexer.flex")
+    targetDir.set("src/main/gen/se/isselab/HAnS/featureModel")
+    skeleton.set("idea-flex.skeleton")
+}
+
+val generateCodeAnnotationParser by tasks.registering(GenerateParserTask::class) {
+    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/codeAnnotation/CodeAnnotation.bnf")
+    targetRoot.set("src/main/gen")
+    pathToParser.set("se/isselab/HAnS/featureAnnotation/codeAnnotation/parser/CodeAnnotationParser.java")
+    pathToPsiRoot.set("se/isselab/HAnS/featureAnnotation/codeAnnotation/psi")
+}
+
+val generateCodeAnnotationLexer by tasks.registering(GenerateLexerTask::class) {
+    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/codeAnnotation/CodeAnnotation.flex")
+    targetDir.set("src/main/gen/se/isselab/HAnS/featureAnnotation/codeAnnotation")
+    skeleton.set("idea-flex.skeleton")
+}
+
+val generateFileAnnotationParser by tasks.registering(GenerateParserTask::class) {
+    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/fileAnnotation/FileAnnotation.bnf")
+    targetRoot.set("src/main/gen")
+    pathToParser.set("se/isselab/HAnS/featureAnnotation/fileAnnotation/parser/FileAnnotationParser.java")
+    pathToPsiRoot.set("se/isselab/HAnS/featureAnnotation/fileAnnotation/psi")
+}
+
+val generateFileAnnotationLexer by tasks.registering(GenerateLexerTask::class) {
+    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/fileAnnotation/FileAnnotation.flex")
+    targetDir.set("src/main/gen/se/isselab/HAnS/featureAnnotation/fileAnnotation")
+    skeleton.set("idea-flex.skeleton")
+}
+
+val generateFolderAnnotationParser by tasks.registering(GenerateParserTask::class) {
+    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/folderAnnotation/FolderAnnotation.bnf")
+    targetRoot.set("src/main/gen")
+    pathToParser.set("se/isselab/HAnS/featureAnnotation/folderAnnotation/parser/FolderAnnotationParser.java")
+    pathToPsiRoot.set("se/isselab/HAnS/featureAnnotation/folderAnnotation/psi")
+}
+
+val generateFolderAnnotationLexer by tasks.registering(GenerateLexerTask::class) {
+    source.set("src/main/java/se/isselab/HAnS/featureAnnotation/folderAnnotation/FolderAnnotation.flex")
+    targetDir.set("src/main/gen/se/isselab/HAnS/featureAnnotation/folderAnnotation")
+    skeleton.set("idea-flex.skeleton")
+}
+
+val allGenerateTasks = listOf(
+    generateFeatureModelParser, generateFeatureModelLexer, generateFeatureModelHighlightingLexer,
+    generateCodeAnnotationParser, generateCodeAnnotationLexer,
+    generateFileAnnotationParser, generateFileAnnotationLexer,
+    generateFolderAnnotationParser, generateFolderAnnotationLexer
+)
+
 tasks {
     wrapper {
         gradleVersion = providers.gradleProperty("gradleVersion").get()
@@ -146,6 +215,10 @@ tasks {
 
     publishPlugin {
         dependsOn("patchChangelog")
+    }
+
+    compileJava {
+        dependsOn(allGenerateTasks)
     }
 }
 

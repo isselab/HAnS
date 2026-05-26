@@ -21,6 +21,7 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.util.Query;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +39,7 @@ public class FeatureModelAnnotator implements Annotator {
             return;
         }
 
-        Query<PsiReference> psiReferences = ReferencesSearch.search(feature);
+        Query<PsiReference> psiReferences = ReferencesSearch.search(feature, GlobalSearchScope.projectScope(feature.getProject()));
         if (psiReferences.findFirst() == null) {
             holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Feature is never used")
                     .range(feature.getFirstChild().getTextRange())

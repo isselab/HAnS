@@ -23,7 +23,6 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.*;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.rename.RenameDialog;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -227,8 +226,10 @@ public class FeatureModelPsiImplUtil {
     }
 
     private static Deque<PsiElement> findLPQRecursively(List<Deque<PsiElement>> candidates, Deque<PsiElement> feature) {
-        // feature.peek() is a FEATURENAME token; its parent is the current FeatureModelFeature
-        FeatureModelFeature currentFeature = (FeatureModelFeature) Objects.requireNonNull(feature.peek()).getParent();
+        PsiElement peekEl = Objects.requireNonNull(feature.peek());
+        if (!(peekEl.getParent() instanceof FeatureModelFeature currentFeature)) {
+            return feature;
+        }
         FeatureModelFeature parentFeature = getParentFeature(currentFeature);
 
         // Base case: only one candidate remaining, or we've reached the file root
@@ -240,7 +241,8 @@ public class FeatureModelPsiImplUtil {
         PsiElement fParent = parentFeature.getFirstChild();
 
         for (Deque<PsiElement> c : candidates) {
-            FeatureModelFeature cCurrent = (FeatureModelFeature) Objects.requireNonNull(c.peek()).getParent();
+            PsiElement cPeek = Objects.requireNonNull(c.peek());
+            if (!(cPeek.getParent() instanceof FeatureModelFeature cCurrent)) continue;
             FeatureModelFeature cParentFeature = getParentFeature(cCurrent);
             if (cParentFeature != null) {
                 PsiElement cParent = cParentFeature.getFirstChild();
@@ -403,11 +405,9 @@ public class FeatureModelPsiImplUtil {
     }
 
     private static int getIndentationLevel(@NotNull FeatureModelFeature parentFeature, Document document) {
-        PsiElement prevSibling = parentFeature.getPrevSibling();
         int indent;
-        // if root feature -> 4
-        // otherwise indent of parentFeature + 4
-        if (prevSibling instanceof PsiFile) {
+        // if root feature -> 4; otherwise indent of parentFeature + 4
+        if (parentFeature.getParent() instanceof PsiFile) {
             indent = 4;
         } else {
             int parentOffset = parentFeature.getTextOffset();
