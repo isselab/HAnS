@@ -51,6 +51,7 @@ build/
 .intellijPlatform
 
 .claude/settings.local.json
+.mcp.json
 
 # Obsidian - personal session state only
 .wiki/.obsidian/workspace.json
