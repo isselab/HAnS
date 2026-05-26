@@ -90,6 +90,45 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
             }
             return null;
         }
+        // Like goIntoFeaturename() but pushes back n chars instead of 1.
+        // Used for keyword-prefixed feature names (e.g. "orange", "xorfoo") where
+        // the full token text needs to be preserved for the feature state.
+        private IElementType goIntoFeaturenameN(int n) {
+            if(current_line_indent > indent_levels.peek()) {
+                indent_levels.push(current_line_indent);
+                yypushback(n);
+                yybegin(feature);
+                return FeatureModelTypes.INDENT;
+            }
+            else if(current_line_indent < indent_levels.peek()) {
+                indent_levels.pop();
+                if (current_line_indent > indent_levels.peek()) {
+                    indent_levels.push(current_line_indent);
+                    yypushback(n);
+                    yybegin(feature);
+                }
+                else if(current_line_indent != indent_levels.peek()) {
+                    yypushback(n);
+                    yybegin(dedent);
+                    return FeatureModelTypes.DEDENT;
+                }
+                else {
+                    yypushback(n);
+                    yybegin(feature);
+                    return FeatureModelTypes.DEDENT;
+                }
+            }
+            else if (current_line_indent == 0){
+                yypushback(n);
+                yybegin(feature);
+            }
+            else {
+                yypushback(n);
+                yybegin(feature);
+                return FeatureModelTypes.CRLF;
+            }
+            return null;
+        }
         private IElementType goToDedent(int nextStae) {
             indent_levels.pop();
             if(current_line_indent != indent_levels.peek()) {
@@ -154,6 +193,17 @@ FEATURENAME= [[A-Z]+|[a-z]+|[0-9]+|'_'+|'\''+]
 <indent>{QUESTIONMARK} {
           yybegin(indent);
           return FeatureModelTypes.QUESTIONMARK;
+      }
+// Keyword-prefixed feature names: "or..."/"xor..." followed by more featurename chars.
+// JFlex longest-match picks these over the single-char "o"/"x" rules below,
+// so "orange" → FEATURENAME(orange), NOT OR + FEATURENAME(ange).
+<indent>"or"{FEATURENAME}+ {
+          IElementType result = goIntoFeaturenameN(yylength());
+          if (result != null) return result;
+      }
+<indent>"xor"{FEATURENAME}+ {
+          IElementType result = goIntoFeaturenameN(yylength());
+          if (result != null) return result;
       }
 <indent>"o" {
           yybegin(or1);
