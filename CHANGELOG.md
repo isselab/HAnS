@@ -2,6 +2,32 @@
 
 ## [Unreleased]
 
+## [0.3.0-beta.1] - 2026-05-26
+
+### New ✨
+
+- **OR/XOR feature groups** — you can now express variability constraints directly in the feature model:
+  - `or` group: one or more children must be selected
+  - `xor` group: exactly one child must be selected
+- **Optional features** — suffix any feature name with `?` to mark it as optional
+
+  ```
+  telematicsSystem
+      xor channel
+          single
+          dual
+
+      extraDisplay ?
+
+      xor size
+          small
+          large
+  ```
+
+### Fixed 🐛
+
+- Feature names that start with `or` or `xor` (e.g. `orange`, `xorfoo`) are now correctly recognized as feature names instead of keywords
+
 ## [0.2.5] - 2025-11-17
 
 ### Enhanced 🚀
