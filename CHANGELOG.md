@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.3.0-beta.2] - 2026-05-26
+
+### Fixed 🐛
+
+- **Feature Model view now expands grouped children** — features nested inside `or`/`xor` groups appear in the tree view again
+- **Metrics view populated** — metrics are computed for every feature including those inside `or`/`xor` groups
+- **Reduced startup background load** — traffic-light widget no longer schedules duplicate background scans per editor, which previously could stagger the IDE on startup
+
 ## [0.3.0-beta.1] - 2026-05-26
 
 ### New ✨

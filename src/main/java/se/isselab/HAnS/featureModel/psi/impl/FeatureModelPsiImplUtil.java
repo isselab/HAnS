@@ -138,6 +138,28 @@ public class FeatureModelPsiImplUtil {
     // &end[Referencing]
 
     /**
+     * Returns direct child FeatureModelFeature elements of the given node, descending through
+     * any COMPONENT/LOGIC/OR_BLOCK/XOR_BLOCK/SUB_LOGIC wrapper nodes introduced by the XOR/OR
+     * grouping grammar. Does NOT descend into nested FeatureModelFeature.
+     */
+    @NotNull
+    public static List<FeatureModelFeature> getChildFeatures(@NotNull PsiElement parent) {
+        List<FeatureModelFeature> result = new ArrayList<>();
+        collectDirectChildFeatures(parent, result);
+        return result;
+    }
+
+    private static void collectDirectChildFeatures(@NotNull PsiElement node, @NotNull List<FeatureModelFeature> out) {
+        for (PsiElement child : node.getChildren()) {
+            if (child instanceof FeatureModelFeature f) {
+                out.add(f);
+            } else {
+                collectDirectChildFeatures(child, out);
+            }
+        }
+    }
+
+    /**
      * Returns the nearest FeatureModelFeature ancestor of the given element,
      * skipping intermediate COMPONENT/LOGIC/OR_BLOCK/XOR_BLOCK/SUB_LOGIC wrapper
      * nodes introduced by the XOR/OR grouping grammar. Returns null at file root.
@@ -291,9 +313,8 @@ public class FeatureModelPsiImplUtil {
                 continue;
             }
             else {
-                PsiElement[] l = feature.getChildren();
-                for (PsiElement e : l) {
-                    if (Objects.requireNonNull(e.getNode().findChildByType(FeatureModelTypes.FEATURENAME)).getText().equals(newFeatureName)) {
+                for (FeatureModelFeature child : getChildFeatures(feature)) {
+                    if (newFeatureName.equals(child.getFeatureName())) {
                         Messages.showMessageDialog("Feature \"" + newFeatureName + "\" already exists.",
                                 "Error", Messages.getErrorIcon());
                         continue outer;
@@ -375,11 +396,12 @@ public class FeatureModelPsiImplUtil {
 
         // finds new element that corresponds to childFeature, since original childFeature no longer exists in Psi tree
         AtomicReference<FeatureModelFeature> newChild = new AtomicReference<>();
-        Arrays.stream(parentFeature.getChildren()).forEach(child -> {
-            if(((FeatureModelFeature) child).getLPQText().contains(childFeature.getFeatureName())) {
-                newChild.set((FeatureModelFeature) child);
+        for (FeatureModelFeature child : getChildFeatures(parentFeature)) {
+            String childLpq = child.getLPQText();
+            if (childLpq != null && childLpq.contains(childFeature.getFeatureName())) {
+                newChild.set(child);
             }
-        });
+        }
         List<String> newLpqs = new ArrayList<>();
         generateListOfLpqs(newChild.get(), newLpqs);
 

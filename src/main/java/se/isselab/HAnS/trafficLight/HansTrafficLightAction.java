@@ -32,6 +32,7 @@ import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.
 
 import javax.swing.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class HansTrafficLightAction extends AnAction implements DumbAware, CustomComponentAction {
@@ -41,6 +42,7 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
     private Editor editor;
     private HansTrafficLightWidget widget;
     private HansTrafficLightPopup popup;
+    private final AtomicBoolean inFlight = new AtomicBoolean(false);
 
     public HansTrafficLightAction() {
         super();
@@ -98,52 +100,59 @@ public class HansTrafficLightAction extends AnAction implements DumbAware, Custo
 
         Presentation presentation = e.getPresentation();
         VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
-        if (file != null) {
-            var service = project.getService(MetricsService.class);
-            if (service != null) {
-                service.getAllFeatureFileMappingsBackground(new FeatureFileMappingCallback() {
-                    @Override
-                    public void onComplete(Map<String, FeatureFileMapping> featureFileMappings) {
-                        var currentFilePath = editor.getVirtualFile().getPath();
-                        Set<FeatureMappingInfo> filePathFeatureMappings = new HashSet<>();
-
-                        featureFileMappings.forEach((key, mapping) -> {
-                            var featuresMappedToFiles = ReadAction.compute(() -> 
-                                mapping.getFilePathFeatureMappings(currentFilePath)
-                            );
-
-                            if (!featuresMappedToFiles.isEmpty()) {
-                                filePathFeatureMappings.addAll(featuresMappedToFiles);
-                            }
-                        });
-
-                        Map<String, Map<String, Set<String>>> result = filePathFeatureMappings.stream()
-                                .collect(Collectors.groupingBy(
-                                        FeatureMappingInfo::annotationType, // Grouping by annotation type
-                                        Collectors.groupingBy(
-                                                FeatureMappingInfo::originPath, // Grouping by origin path
-                                                Collectors.mapping(
-                                                        FeatureMappingInfo::featureLpq, // Collect feature LPQ
-                                                        Collectors.toSet()
-                                                )
-                                        )
-                                ));
-
-                        var model = new HansTrafficLightDashboardModel(true, result);
-                        presentation.putClientProperty(DASHBOARD_MODEL, model);
-
-                        ApplicationManager.getApplication().invokeLater(() -> {
-                            if (widget != null) {
-                                widget.refresh(model, popup);
-                                widget.repaint();
-                            }
-                        });
-                    }
-                });
-            }
-        } else {
-            // Set a default model if no file is available
+        if (file == null) {
             presentation.putClientProperty(DASHBOARD_MODEL, new HansTrafficLightDashboardModel(false));
+            return;
         }
+        var service = project.getService(MetricsService.class);
+        if (service == null) {
+            return;
+        }
+        if (!inFlight.compareAndSet(false, true)) {
+            return;
+        }
+        service.getAllFeatureFileMappingsBackground(new FeatureFileMappingCallback() {
+            @Override
+            public void onComplete(Map<String, FeatureFileMapping> featureFileMappings) {
+                try {
+                    var currentFilePath = editor.getVirtualFile().getPath();
+                    Set<FeatureMappingInfo> filePathFeatureMappings = new HashSet<>();
+
+                    featureFileMappings.forEach((key, mapping) -> {
+                        var featuresMappedToFiles = ReadAction.compute(() ->
+                            mapping.getFilePathFeatureMappings(currentFilePath)
+                        );
+
+                        if (!featuresMappedToFiles.isEmpty()) {
+                            filePathFeatureMappings.addAll(featuresMappedToFiles);
+                        }
+                    });
+
+                    Map<String, Map<String, Set<String>>> result = filePathFeatureMappings.stream()
+                            .collect(Collectors.groupingBy(
+                                    FeatureMappingInfo::annotationType,
+                                    Collectors.groupingBy(
+                                            FeatureMappingInfo::originPath,
+                                            Collectors.mapping(
+                                                    FeatureMappingInfo::featureLpq,
+                                                    Collectors.toSet()
+                                            )
+                                    )
+                            ));
+
+                    var model = new HansTrafficLightDashboardModel(true, result);
+                    presentation.putClientProperty(DASHBOARD_MODEL, model);
+
+                    ApplicationManager.getApplication().invokeLater(() -> {
+                        if (widget != null) {
+                            widget.refresh(model, popup);
+                            widget.repaint();
+                        }
+                    });
+                } finally {
+                    inFlight.set(false);
+                }
+            }
+        });
     }
 }

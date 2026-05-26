@@ -24,12 +24,11 @@ import se.isselab.HAnS.featureLocation.FeatureFileMapping;
 import se.isselab.HAnS.featureLocation.FeatureLocation;
 import se.isselab.HAnS.featureLocation.FeatureLocationBlock;
 import se.isselab.HAnS.featureModel.FeatureModelUtil;
-import se.isselab.HAnS.featureModel.psi.impl.FeatureModelFeatureImpl;
+import se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil;
 import se.isselab.HAnS.metrics.calculators.FeatureScattering;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.MetricsCallback;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.GetProjectMetrics;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
-import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.FeatureFileMappingCallback;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.GetFeatureFileMappingForFeature;
 import se.isselab.HAnS.pluginExtensions.backgroundTasks.featureFileMappingTasks.GetFeatureFileMappings;
@@ -81,57 +80,39 @@ public final class ProjectMetricsService implements MetricsService {
 
     @Override
     public List<FeatureModelFeature> getChildFeatures(FeatureModelFeature feature) {
-        List<FeatureModelFeature> childs = new ArrayList<>();
-        for (var child : feature.getChildren()) {
-            childs.add((FeatureModelFeatureImpl) child);
-        }
-        return childs;
+        return FeatureModelPsiImplUtil.getChildFeatures(feature);
     }
 
     @Override
     public FeatureModelFeature getParentFeature(FeatureModelFeature feature) {
-        if (feature.getParent() instanceof FeatureModelFile) {
-            return (FeatureModelFeature) feature.getParent();
-        }
-        return (FeatureModelFeatureImpl) feature.getParent();
+        return FeatureModelPsiImplUtil.getParentFeature(feature);
     }
 
     @Override
     public boolean isRootFeature(FeatureModelFeature feature) {
-        return feature.getParent() instanceof FeatureModelFile;
+        return FeatureModelPsiImplUtil.getParentFeature(feature) == null;
     }
 
     @Override
     public FeatureModelFeature getRootFeature(FeatureModelFeature feature) {
-        FeatureModelFeature temp = feature;
-        while (!(temp.getParent() instanceof FeatureModelFile)) {
-            temp = (FeatureModelFeature) temp.getParent();
+        FeatureModelFeature current = feature;
+        FeatureModelFeature parent = FeatureModelPsiImplUtil.getParentFeature(current);
+        while (parent != null) {
+            current = parent;
+            parent = FeatureModelPsiImplUtil.getParentFeature(current);
         }
-        return temp;
+        return current;
     }
 
     @Override
     public List<FeatureModelFeature> getRootFeatures() {
-        var featureList = FeatureModelUtil.findFeatures(project);
-        ArrayList<FeatureModelFeature> rootFeatures = new ArrayList<>();
-
-        if (featureList.isEmpty())
-            return rootFeatures;
-
-        FeatureModelFeature siblingFeature = featureList.getFirst();
-        rootFeatures.add(siblingFeature);
-
-        //traverse left siblings
-        while (siblingFeature.getPrevSibling() instanceof FeatureModelFeature featureModelFeature) {
-            rootFeatures.add(featureModelFeature);
+        List<FeatureModelFeature> roots = new ArrayList<>();
+        for (FeatureModelFeature feature : FeatureModelUtil.findFeatures(project)) {
+            if (isRootFeature(feature)) {
+                roots.add(feature);
+            }
         }
-
-        //traverse right siblings
-        while (siblingFeature.getNextSibling() instanceof FeatureModelFeature featureModelFeature) {
-            rootFeatures.add(featureModelFeature);
-        }
-
-        return rootFeatures;
+        return roots;
     }
     //endregion
 
