@@ -19,6 +19,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.UnloadedModuleDescription;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.FileIndexFacade;
+import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.search.DelegatingGlobalSearchScope;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -29,12 +30,14 @@ import java.util.Collection;
 public class FeatureAnnotationSearchScope extends GlobalSearchScope {
 
     private final FileIndexFacade myFileIndexFacade;
+    private final ProjectFileIndex myProjectFileIndex;
     private final Project p;
 
     public FeatureAnnotationSearchScope(Project project) {
         super(project);
         this.p = project;
         myFileIndexFacade = FileIndexFacade.getInstance(project);
+        myProjectFileIndex = ProjectFileIndex.getInstance(project);
     }
 
     @Override
@@ -51,7 +54,8 @@ public class FeatureAnnotationSearchScope extends GlobalSearchScope {
         // even if isSearchInLibraries returns false, the check for isInLibraryXXX is still needed
         return !myFileIndexFacade.isExcludedFile(file) &&
                 !myFileIndexFacade.isInLibraryClasses(file) &&
-                !myFileIndexFacade.isInLibrarySource(file);
+                !myFileIndexFacade.isInLibrarySource(file) &&
+                !myProjectFileIndex.isInTestSourceContent(file);
     }
     @Override
     public boolean isSearchInLibraries() {

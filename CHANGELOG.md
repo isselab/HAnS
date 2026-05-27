@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.3.0-beta.5] - 2026-05-27
+
+### Fixed 🐛
+
+- **Restore feature discovery for project-root `.feature-model`** — beta.4 narrowed the feature-model scan to production source roots, which dropped `.feature-model` files placed at the project root (the most common location). Metrics view, Feature Model view, and reference resolution were empty.
+  - `FeatureAnnotationSearchScope` now also excludes test source content, so test-fixture features stay out of the scan while project-root and module content-root feature models remain visible.
+  - `FeatureModelUtil.getFeatureModelFiles` uses `FeatureAnnotationSearchScope` instead of `GlobalSearchScopesCore.projectProductionScope`.
+
 ## [0.3.0-beta.4] - 2026-05-27
 
 ### Fixed 🐛
