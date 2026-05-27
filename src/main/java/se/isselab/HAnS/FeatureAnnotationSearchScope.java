@@ -51,8 +51,11 @@ public class FeatureAnnotationSearchScope extends GlobalSearchScope {
 
     @Override
     public boolean contains(@NotNull VirtualFile file) {
-        // even if isSearchInLibraries returns false, the check for isInLibraryXXX is still needed
-        return !myFileIndexFacade.isExcludedFile(file) &&
+        // Restrict to this project's content so FilenameIndex/FileTypeIndex queries do not bleed
+        // files from other open projects (e.g. opening project A while project B is still open
+        // previously caused metric calculations to pull in B's .feature-model).
+        return myFileIndexFacade.isInContent(file) &&
+                !myFileIndexFacade.isExcludedFile(file) &&
                 !myFileIndexFacade.isInLibraryClasses(file) &&
                 !myFileIndexFacade.isInLibrarySource(file) &&
                 !myProjectFileIndex.isInTestSourceContent(file);

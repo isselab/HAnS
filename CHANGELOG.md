@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.3.0-beta.7] - 2026-05-27
+
+### Fixed 🐛
+
+- **Metrics no longer pull features from other open projects** — `FeatureAnnotationSearchScope.contains` did not restrict to the scope's own project content. When two projects were open at the same time (or one was opened on top of another), `FilenameIndex`/`FileTypeIndex` queries could return `.feature-model` files from the other project, so opening the HAnS project while a Snake project was still loaded showed Snake's features in the HAnS Metrics view. The scope now requires the file to be in the project's own content.
+
 ## [0.3.0-beta.6] - 2026-05-27
 
 ### Fixed 🐛
