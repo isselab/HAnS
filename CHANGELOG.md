@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.3.0-beta.3] - 2026-05-27
+
+### Fixed 🐛
+
+- **No more IDE freezes at startup** — concurrent callers (traffic-light widget, metrics tool window) of the feature-location scan now share a single computation per project instead of racing on `ReferencesSearch`. Resolves the EDT freeze popup observed when the metrics tool window opened alongside the editor traffic-light.
+
 ## [0.3.0-beta.2] - 2026-05-26
 
 ### Fixed 🐛

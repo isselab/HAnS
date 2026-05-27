@@ -77,6 +77,11 @@ public class FeatureLocationManager {
     private static final ConcurrentMap<Project, Boolean> FULLY_INITIALIZED =
             ContainerUtil.createConcurrentWeakMap();
 
+    // Per-project lock so only one thread runs the full project scan at a time.
+    // Subsequent callers block here, then see the populated cache and return immediately.
+    private static final ConcurrentMap<Project, Object> COMPUTATION_LOCKS =
+            ContainerUtil.createConcurrentWeakMap();
+
     private FeatureLocationManager() {
         // Utility class - prevent instantiation
     }
@@ -99,10 +104,18 @@ public class FeatureLocationManager {
         }
 
         if (!isFullyInitialized(project)) {
-            calculateAllFeatureFileMappings(project);
+            synchronized (getComputationLock(project)) {
+                if (!isFullyInitialized(project)) {
+                    calculateAllFeatureFileMappings(project);
+                }
+            }
         }
 
         return Collections.unmodifiableMap(getProjectCache(project));
+    }
+
+    private static Object getComputationLock(@NotNull Project project) {
+        return COMPUTATION_LOCKS.computeIfAbsent(project, p -> new Object());
     }
 
     // &begin[FeatureFileMapping]
