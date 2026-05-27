@@ -259,21 +259,27 @@ First Release to marketplace
 
 - Updated intellij plugin version to ```1.15.0```
 
-[Unreleased]: https://github.com/isselab/HAnS/compare/v0.2.5...HEAD
-[0.2.5]: https://github.com/isselab/HAnS/compare/v0.2.4...v0.2.5
-[0.2.4]: https://github.com/isselab/HAnS/compare/v0.2.3...v0.2.4
-[0.2.3]: https://github.com/isselab/HAnS/compare/v0.2.2...v0.2.3
-[0.2.2]: https://github.com/isselab/HAnS/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/isselab/HAnS/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/isselab/HAnS/compare/v0.1.2...v0.2.0
-[0.1.2]: https://github.com/isselab/HAnS/compare/v0.1.1...v0.1.2
-[0.1.1]: https://github.com/isselab/HAnS/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/isselab/HAnS/compare/v0.0.8...v0.1.0
-[0.0.8]: https://github.com/isselab/HAnS/compare/v0.0.7...v0.0.8
-[0.0.7]: https://github.com/isselab/HAnS/compare/v0.0.6...v0.0.7
-[0.0.6]: https://github.com/isselab/HAnS/compare/v0.0.5...v0.0.6
-[0.0.5]: https://github.com/isselab/HAnS/compare/v0.0.4...v0.0.5
-[0.0.4]: https://github.com/isselab/HAnS/compare/v0.0.3...v0.0.4
-[0.0.3]: https://github.com/isselab/HAnS/compare/v0.0.2...v0.0.3
-[0.0.2]: https://github.com/isselab/HAnS/compare/v0.0.1...v0.0.2
-[0.0.1]: https://github.com/isselab/HAnS/commits/v0.0.1
+[Unreleased]: https://github.com/isselab/HAnS/compare/0.3.0-beta.6...HEAD
+[0.3.0-beta.6]: https://github.com/isselab/HAnS/compare/0.3.0-beta.5...0.3.0-beta.6
+[0.3.0-beta.5]: https://github.com/isselab/HAnS/compare/0.3.0-beta.4...0.3.0-beta.5
+[0.3.0-beta.4]: https://github.com/isselab/HAnS/compare/0.3.0-beta.3...0.3.0-beta.4
+[0.3.0-beta.3]: https://github.com/isselab/HAnS/compare/0.3.0-beta.2...0.3.0-beta.3
+[0.3.0-beta.2]: https://github.com/isselab/HAnS/compare/0.3.0-beta.1...0.3.0-beta.2
+[0.3.0-beta.1]: https://github.com/isselab/HAnS/compare/0.2.5...0.3.0-beta.1
+[0.2.5]: https://github.com/isselab/HAnS/compare/0.2.4...0.2.5
+[0.2.4]: https://github.com/isselab/HAnS/compare/0.2.3...0.2.4
+[0.2.3]: https://github.com/isselab/HAnS/compare/0.2.2...0.2.3
+[0.2.2]: https://github.com/isselab/HAnS/compare/0.2.1...0.2.2
+[0.2.1]: https://github.com/isselab/HAnS/compare/0.2.0...0.2.1
+[0.2.0]: https://github.com/isselab/HAnS/compare/0.1.2...0.2.0
+[0.1.2]: https://github.com/isselab/HAnS/compare/0.1.1...0.1.2
+[0.1.1]: https://github.com/isselab/HAnS/compare/0.1.0...0.1.1
+[0.1.0]: https://github.com/isselab/HAnS/compare/0.0.8...0.1.0
+[0.0.8]: https://github.com/isselab/HAnS/compare/0.0.7...0.0.8
+[0.0.7]: https://github.com/isselab/HAnS/compare/0.0.6...0.0.7
+[0.0.6]: https://github.com/isselab/HAnS/compare/0.0.5...0.0.6
+[0.0.5]: https://github.com/isselab/HAnS/compare/0.0.4...0.0.5
+[0.0.4]: https://github.com/isselab/HAnS/compare/0.0.3...0.0.4
+[0.0.3]: https://github.com/isselab/HAnS/compare/0.0.2...0.0.3
+[0.0.2]: https://github.com/isselab/HAnS/compare/0.0.1...0.0.2
+[0.0.1]: https://github.com/isselab/HAnS/commits/0.0.1
