@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.3.0-beta.4] - 2026-05-27
+
+### Fixed 🐛
+
+- **Metrics view no longer shows test-fixture features** — feature-model files under test source roots are now excluded from the project-wide feature scan. Only feature models under production source roots (or the project root) appear in the Metrics view, Feature Model view, and reference resolution.
+
 ## [0.3.0-beta.3] - 2026-05-27
 
 ### Fixed 🐛

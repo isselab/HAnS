@@ -23,6 +23,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.GlobalSearchScopesCore;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Consumer;
 import com.intellij.util.concurrency.AppExecutorUtil;
@@ -158,7 +159,9 @@ public final class FeatureModelUtil {
     }
 
     private static Collection<VirtualFile> getFeatureModelFiles(Project project) {
-        return FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScope.allScope(project));
+        // Production scope excludes test source roots and libraries so feature-model
+        // fixtures under src/test/resources do not leak into the user-visible feature set.
+        return FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, GlobalSearchScopesCore.projectProductionScope(project));
     }
 
 
