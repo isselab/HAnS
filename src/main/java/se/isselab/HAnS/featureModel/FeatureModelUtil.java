@@ -21,13 +21,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.FileTypeIndex;
-import com.intellij.psi.search.GlobalSearchScope;
-import se.isselab.HAnS.FeatureAnnotationSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.Consumer;
 import com.intellij.util.concurrency.AppExecutorUtil;
 import org.jetbrains.annotations.NotNull;
+import se.isselab.HAnS.FeatureAnnotationSearchScope;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFeature;
 import se.isselab.HAnS.featureModel.psi.FeatureModelFile;
 import se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil;
@@ -35,11 +33,9 @@ import se.isselab.HAnS.featureModel.psi.impl.FeatureModelPsiImplUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 import static com.intellij.psi.search.FilenameIndex.getAllFilesByExt;
 import static com.intellij.psi.search.FilenameIndex.getVirtualFilesByName;
-import static com.intellij.psi.search.GlobalSearchScope.projectScope;
 
 public final class FeatureModelUtil {
 
@@ -47,13 +43,8 @@ public final class FeatureModelUtil {
     }
 
     /**
-     * Searches for {@link FeatureModelFeature} instances in the given {@link Project} whose LPQ (Least Partially Qualified)
-     * exactly matches the specified {@code lpq} string.
-     * <p>
-     * This method scans all files of type {@code FeatureModelFileType} within the project's global scope and collects
-     * all {@code FeatureModelFeature} elements. It then compares each feature's LPQ text with the provided {@code lpq}
-     * and returns those that match exactly.
-     * </p>
+     * Searches for {@link FeatureModelFeature} instances in the project's canonical feature model whose
+     * LPQ (Least Partially Qualified) exactly matches the specified {@code lpq} string.
      *
      * @param project the IntelliJ {@link Project} context used to search for feature model files.
      * @param lpq the Least Partially Qualified string to match against each feature's LPQ text.
@@ -61,53 +52,35 @@ public final class FeatureModelUtil {
      */
     public static List<FeatureModelFeature> findLPQ(Project project, String lpq) {
         List<FeatureModelFeature> result = new ArrayList<>();
-        Collection<VirtualFile> virtualFiles = getFeatureModelFiles(project);
-        for (VirtualFile virtualFile : virtualFiles) {
-            FeatureModelFile featureModelFile = (FeatureModelFile) PsiManager.getInstance(project).findFile(virtualFile);
-            if (featureModelFile == null) continue;
-
-            Collection<FeatureModelFeature> features = PsiTreeUtil.collectElementsOfType(featureModelFile, FeatureModelFeature.class);
-            features.stream()
-                    .filter(feature -> lpq.equals(feature.getLPQText()))
-                    .forEach(result::add);
+        for (FeatureModelFeature feature : findFeatures(project)) {
+            if (lpq.equals(feature.getLPQText())) {
+                result.add(feature);
+            }
         }
         return result;
     }
 
     /**
-     * Searches for {@link FeatureModelFeature} instances in the given {@link Project} that match the specified LPQ (Least Partially Qualified).
-     * <p>
-     * This method scans all files of type {@code FeatureModelFileType} within the project scope and attempts to find features
-     * whose names or LPQ text match the provided {@code lpq} string. It handles both exact and hierarchical matches.
-     * </p>
+     * Searches for {@link FeatureModelFeature} instances in the project's canonical feature model that
+     * match the specified LPQ (Least Partially Qualified).
      *
-     * <p>
-     * Matching logic:
+     * <p>Matching logic:
      * <ul>
-     *   <li>If exactly one feature matches the end of the LPQ string, it checks if the full LPQ ends with "::lpq" or equals lpq.</li>
-     *   <li>If multiple features match, it checks if the LPQ starts with the parent feature name and ends with the full LPQ.</li>
+     *   <li>If exactly one feature ends with the LPQ string, it checks if the full LPQ ends with
+     *       {@code "::lpq"} or equals {@code lpq}.</li>
+     *   <li>If multiple features match, it checks if the LPQ starts with the parent feature name
+     *       and ends with the full LPQ.</li>
      * </ul>
-     * </p>
      *
      * @param project the IntelliJ {@link Project} context used to search for feature model files.
      * @param lpq the Least Partially Qualified string to match against feature names and LPQ text.
      * @return a list of {@link FeatureModelFeature} instances that match the given LPQ.
      */
     public static List<FeatureModelFeature> findFullLPQ(Project project, String lpq) {
-        List<FeatureModelFeature> result = new ArrayList<>();
-        Collection<VirtualFile> virtualFiles = getFeatureModelFiles(project);
-        for (VirtualFile virtualFile : virtualFiles) {
-            FeatureModelFile featureModelFile = (FeatureModelFile) PsiManager.getInstance(project).findFile(virtualFile);
-
-            if(featureModelFile == null) continue;
-
-            var selectedFeatures = PsiTreeUtil.collectElementsOfType(featureModelFile, FeatureModelFeature.class).stream()
-                    .filter(featureModelFeature -> lpq.endsWith(featureModelFeature.getFeatureName()))
-                    .toList();
-
-            result.addAll(processSelectedFeatures(lpq, selectedFeatures));
-        }
-        return result;
+        List<FeatureModelFeature> selectedFeatures = findFeatures(project).stream()
+                .filter(feature -> lpq.endsWith(feature.getFeatureName()))
+                .toList();
+        return new ArrayList<>(processSelectedFeatures(lpq, selectedFeatures));
     }
 
     private static Collection<FeatureModelFeature> processSelectedFeatures(String lpq, List<FeatureModelFeature> selectedFeatures) {
@@ -136,34 +109,22 @@ public final class FeatureModelUtil {
 
 
     /**
-     * Retrieves all {@link FeatureModelFeature} instances defined in the current {@link Project}.
+     * Retrieves all {@link FeatureModelFeature} instances defined in the project's canonical feature model.
      * <p>
-     * This method scans all files of type {@code FeatureModelFileType} within the project's global scope
-     * and collects every {@code FeatureModelFeature} found in those files.
-     * </p>
+     * Resolves the canonical feature model via {@link #findFeatureModel(Project)} so that wiki copies,
+     * test fixtures, and other stray {@code .feature-model} files in the project tree do not pollute the
+     * feature set.
      *
-     * @param project the IntelliJ {@link Project} context used to search for feature model files.
-     * @return a list of all {@link FeatureModelFeature} instances found in the project.
+     * @param project the IntelliJ {@link Project} context used to search for the canonical feature model.
+     * @return a list of every {@link FeatureModelFeature} in the canonical feature model file.
      */
     public static List<FeatureModelFeature> findFeatures(Project project) {
-        List<FeatureModelFeature> result = new ArrayList<>();
-        Collection<VirtualFile> virtualFiles = getFeatureModelFiles(project);
-        for (VirtualFile virtualFile : virtualFiles) {
-            FeatureModelFile featureModelFile = (FeatureModelFile) PsiManager.getInstance(project).findFile(virtualFile);
-            if (featureModelFile != null) {
-                Collection<FeatureModelFeature> features = PsiTreeUtil.collectElementsOfType(featureModelFile, FeatureModelFeature.class);
-                result.addAll(features);
-            }
+        PsiFile file = findFeatureModel(project);
+        if (!(file instanceof FeatureModelFile)) {
+            return new ArrayList<>();
         }
-        return result;
+        return new ArrayList<>(PsiTreeUtil.collectElementsOfType(file, FeatureModelFeature.class));
     }
-
-    private static Collection<VirtualFile> getFeatureModelFiles(Project project) {
-        // FeatureAnnotationSearchScope excludes libraries, excluded files, and test source content,
-        // but still covers project content roots so a .feature-model at the project root is visible.
-        return FileTypeIndex.getFiles(FeatureModelFileType.INSTANCE, new FeatureAnnotationSearchScope(project));
-    }
-
 
     public static void findFeatureModelAsync(@NotNull Project project, @NotNull Consumer<PsiFile> callback) {
         ReadAction.nonBlocking(() -> findFeatureModel(project))
@@ -174,17 +135,14 @@ public final class FeatureModelUtil {
 
     @org.jetbrains.annotations.Nullable
     public static PsiFile findFeatureModel(@NotNull Project project) {
-        var allFilenames = getVirtualFilesByName(".feature-model", projectScope(project));
+        FeatureAnnotationSearchScope scope = new FeatureAnnotationSearchScope(project);
+        var allFilenames = getVirtualFilesByName(".feature-model", scope);
         if (!allFilenames.isEmpty()) {
             return PsiManager.getInstance(project).findFile(allFilenames.iterator().next());
         }
-        Collection<VirtualFile> virtualFileCollection = getAllFilesByExt(project, "feature-model");
+        Collection<VirtualFile> virtualFileCollection = getAllFilesByExt(project, "feature-model", scope);
         if (!virtualFileCollection.isEmpty()) {
             return PsiManager.getInstance(project).findFile(virtualFileCollection.iterator().next());
-        }
-        Collection<VirtualFile> virtualFiles = getFeatureModelFiles(project);
-        if (!virtualFiles.isEmpty()) {
-            return PsiManager.getInstance(project).findFile(virtualFiles.iterator().next());
         }
         return null;
     }

@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.3.0-beta.6] - 2026-05-27
+
+### Fixed 🐛
+
+- **Metrics view no longer leaks between projects** — the metrics tool window previously shared a single `JPanel` instance across all open projects, so opening one project would show the metrics of whichever project was opened last. The content panel is now created per tool window invocation.
+- **References resolve in projects with multiple `.feature-model` files** — feature discovery now uses the canonical feature model file (resolved via `findFeatureModel`) instead of scanning every `.feature-model` file in the project. Duplicate copies under e.g. wiki vaults no longer cause LPQ resolution to return null with "multiple matches", which had broken Find Usages, navigation, and metric calculation in the HAnS project itself.
+
 ## [0.3.0-beta.5] - 2026-05-27
 
 ### Fixed 🐛

@@ -43,17 +43,14 @@ import java.util.List;
 
 public class MetricsViewFactory implements ToolWindowFactory {
 
-    JPanel contentPanel;
-
     public MetricsViewFactory() {
-        contentPanel = new JPanel();
     }
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         toolWindow.setIcon(AnnotationIcons.FeatureModelIcon);
 
-        contentPanel.setLayout(new BorderLayout());
+        JPanel contentPanel = new JPanel(new BorderLayout());
 
         ContentFactory contentFactory = ContentFactory.getInstance();
         Content content = contentFactory.createContent(contentPanel, "", false);
@@ -62,15 +59,15 @@ public class MetricsViewFactory implements ToolWindowFactory {
         toolWindow.setTitleActions(List.of(new AnAction("Refresh Metrics", "Refresh metrics", AllIcons.Actions.Refresh) {
                                                @Override
                                                public void actionPerformed(@NotNull AnActionEvent e) {
-                                                   triggerService(project);
+                                                   triggerService(project, contentPanel);
                                                }
                                            }
         ));
 
-        triggerService(project);
+        triggerService(project, contentPanel);
     }
 
-    private void triggerService(Project project) {
+    private void triggerService(Project project, JPanel contentPanel) {
         MetricsService service = project.getService(MetricsService.class);
 
         if (!DumbService.isDumb(project)) {
