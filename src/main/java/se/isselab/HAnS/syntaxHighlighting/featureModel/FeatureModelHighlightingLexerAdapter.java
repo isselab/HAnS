@@ -17,6 +17,7 @@ package se.isselab.HAnS.syntaxHighlighting.featureModel;
 
 import com.intellij.lexer.FlexAdapter;
 import se.isselab.HAnS.featureModel.FeatureModelHighlightingLexer;
+import se.isselab.HAnS.featureModel.FeatureModelLexer;
 
 public class FeatureModelHighlightingLexerAdapter extends FlexAdapter {
     public FeatureModelHighlightingLexerAdapter() {
